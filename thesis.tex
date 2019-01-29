@@ -1,35 +1,20 @@
-%\documentclass[a4paper,12pt]{report}
-%\documentclass[a4paper,12pt,twoside,openright]{report}
 \documentclass[a4paper,12pt,oneside,openright]{report}
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 % Input structure files
 \input{structure/packages.tex}
 \input{structure/commands.tex}
 \input{structure/margins.tex}
+\input{structure/text.tex}
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{document}
 
 % TITLE PAGE
 \include{chapters/titlepage}
 
-\normalsize %text back to normal
-%\renewcommand{\baselinestretch}{1.0}%  %1.5 spacing
-%
-%Need 1.5 times spacing for submitted version of thesis.
-%
-
-%______________________________________________________________________________
-
-%\begin{onehalfspace}
-%\begin{doublespace}
-%\onehalfspacing
-%\doublespacing
-
-%______________________________________________________________________________
-
 %\begin{comment}
-\onehalfspacing
-%\chapter*{Declaration}
+\onehalfspacing{}
 \newgeometry{top=12cm, left=5cm, right=4cm}
 \vspace{4cm}
 \begin{center}
@@ -45,7 +30,7 @@
 
 {\hspace{7cm}\large --- Chris Hadfield}
 
-\restoregeometry
+\restoregeometry{}
 
 \tableofcontents \clearpage
 \listoffigures \clearpage
