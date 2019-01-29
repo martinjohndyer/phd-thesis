@@ -1,67 +1,39 @@
 \documentclass[a4paper,12pt,oneside,openright]{report}
-
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% Input structure files
 \input{structure/packages.tex}
 \input{structure/commands.tex}
 \input{structure/margins.tex}
 \input{structure/text.tex}
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{document}
 
-% TITLE PAGE
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+% TITLE PAGE & QUOTE
 \include{chapters/titlepage}
 
-%\begin{comment}
-\onehalfspacing{}
-\newgeometry{top=12cm, left=5cm, right=4cm}
-\vspace{4cm}
-\begin{center}
-{\Huge \noindent \textbf{\textcolor{sections}{``}}}\\
-\vspace{0.6cm}
-{\huge There is no problem so bad that}
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\pagenumbering{roman}
 
-{\vspace{0.5cm}\huge you can't make it worse.}\\
-
-{\vspace{0.8cm}\Huge \noindent \textbf{\textcolor{sections}{"}}}\\
-
-\end{center}
-
-{\hspace{7cm}\large --- Chris Hadfield}
-
-\restoregeometry{}
-
+% CONTENTS & LISTS
 \tableofcontents \clearpage
 \listoffigures \clearpage
 \listoftables \clearpage
-\include{chapters/declaration}\clearpage
 
-\include{chapters/acknowledgments}\clearpage
+% DECLARATION
+\include{chapters/declaration}
 
+% ACKNOWLEDGEMENTS
+\include{chapters/acknowledgments}
 
-\include{chapters/summary}\clearpage
+% SUMMARY
+\include{chapters/summary}
 
-%\include{acronyms} \clearpage
-\clearpage
-%\end{comment}
-%==================================================
-%==================================================
+% ACRONYMS
+\include{acronyms}
 
-
-%By regulation, the summary/abstract (which should be prepared by the
-%candidate in consultation with the supervisor) should not exceed 300
-%words. Each bound copy of the thesis must contain a summary/abstract
-%within it, and a further loose copy should be submitted with the
-%thesis to the Graduate Research Office. The University Library has
-%requested that the spare copy of the summary be printed in single
-%spacing on one side only of an A4 sheet.
-
-
-
-%______________________________________________________________________________
-
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \pagenumbering{arabic} \setcounter{page}{1}
+
 \renewcommand{\chaptermark}[1]{\markboth{\bf{ #1}}{}}
 \renewcommand{\sectionmark}[1]{\markright{\thesection\emph{ #1}}{}}
 
@@ -100,44 +72,24 @@
 %\include{subtraction}\clearpage
 
 \begin{onehalfspace}
-%\onehalfspacing
-%\begin{doublespace}
 
-\chapter{Test}
 \include{chapters/example_chapter}
 
-
 \end{onehalfspace}
-%\end{doublespace}
 
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{singlespace}
 
-
+% BIBLIOGRAPHY
 \bibliographystyle{mn2e} %requires mn2e.bst file in same directory
-%\bibliography{../../ref_list}
-\bibliography{/home/heloise/Documents/bib}
-%\include{bib}\clearpage
+\bibliography{bibliography}
+
 \end{singlespace}
 
-%\singlespacing
+%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\onehalfspacing{}
 
-\onehalfspacing
 \appendix
-%\chapter{SN 2008aq}
-\clearpage
-%\includepdf[pages={1,2,3,4,5,6}]{chapters/SN2008aq_clean.pdf}
-
-\include{chapters/App_08aq}\clearpage
-\include{chapters/App_papers}\clearpage
-%\include{appendices/distance_ambiguity}\clearpage
-
-
-%______________________________________________________________________________
-
-%\end{onehalfspace}
-%\end{doublespace}
-
-
-%______________________________________________________________________________
+\include{appendices/example_appendix}
 
 \end{document}
