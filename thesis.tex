@@ -7,87 +7,16 @@
 \input{structure/commands.tex}
 \input{structure/margins.tex}
 
-%\captionsetup{width=1.0\textwidth}
-
-%==================================================
-%==================================================
-
-\title{\textsc{A report on the importance of \LaTeX{} templates}}
-\author{J. Bloggs}
-
 %%%%% my stuff %%%%%
 \chapterfont{\color{sections}}
 \sectionfont{\color{sections}}
 \subsectionfont{\color{sections}}
 \subsubsectionfont{\color{sections}}
 
-
-
-
 \begin{document}
 
-%    * Theses Should normally be ISO-A4 in size and no thesis should
-%      exceed 14" x 10". Good quality paper should be used. The
-%      Library copy of the thesis should be single-sided but the other
-%      two copies required for submission may be double-sided provided
-%      that legibility is not impaired.%
-
-%    * Pages Should be numbered consecutively through the thesis,
-%      including appendices. Students are advised to discuss with
-%      their supervisor whether or not photographs and/or diagrams,
-%      which are not embodied in the text, should be paginated.
-
-%    * Margins At the binding edge should be not less than 40mm and
-%      other margins not less than 20mm. Your work should be
-%      word-processed in 12 point font, with the body of the text (but
-%      not footnotes) double-spaced.
-
-%______________________________________________________________________________
 % TITLE PAGE
-%The title page of your thesis must show:%
-%
-%    * The full title of the thesis.
-%    * The author's name in full.
-%    * The degree for which the thesis is submitted.
-%    * The Department in which the work has been carried out.
-%    * The date (month and year) of submission.
-
-%==================================================
-% Commented out for writing my thesis - put all this back in!
-%==================================================
-%\begin{comment}
-\thispagestyle{empty}
-
-\begin{center}
-\fontsize{24.88}{57.6}
-\vspace*{-1cm}
-
-\textbf{A report on the importanc e of \LaTeX{} templates}\\
-\vspace*{2.5cm}
-\LARGE
-\text{J. Bloggs}\\
-\vspace{2cm}
-\Large{Department of Physics \& Astronomy}\\
-\Large{The University of Sheffield}\\
-\vspace*{1cm}
-
-\includegraphics[width=0.4\textwidth]{./images/University_of_Sheffield_logo.png}\\
-
-\vspace*{1cm}
-
-\large
-{\it A dissertation submitted in candidature for the degree of}\\
-{\it Doctor of Philosophy at the University of Sheffield}\\
-\vspace*{1.5cm}
-{September 20XX}
-\vfill
-\end{center}
-\pagenumbering{roman}
-%\end{comment}
-\afterpage{\blankpage}
-%==================================================
-%==================================================
-
+\include{chapters/titlepage}
 
 \normalsize %text back to normal
 %\renewcommand{\baselinestretch}{1.0}%  %1.5 spacing
@@ -196,7 +125,7 @@
 %\begin{doublespace}
 
 \chapter{Test}
-\include{ChapterTemplate}\clearpage
+\include{chapters/example_chapter}
 
 
 \end{onehalfspace}
