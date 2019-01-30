@@ -1,41 +1,45 @@
+% custom defined commands
+% ~~~~~~~~~~~~~~~~~~~~~~~
 
+% insert a blank page
 \newcommand\blankpage{%
-\null
+\null{}
 \thispagestyle{empty}%
 \addtocounter{page}{-1}%
 \newpage}
+
+% something about footnotes?
+\long\def\symbolfootnote[#1]#2{\begingroup%
+\def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
+
+% icons
 \newcommand{\tick}{\ding{52}}
-%\newcommand{\blackdiamond}{\ding{117}}
-%\newcommand{\moo}{\rm $\mu$m}
-\newcommand{\comments}[1]{}
+\newcommand{\blackdiamond}{\ding{117}}
 
-%==================================================
-%My Definitions
-%==================================================
-
-\DeclareMathOperator{\sech}{sech}
-\newcommand{\Msun}{\ensuremath{\textrm{\,M}_{\odot}}}
-\newcommand{\Lsun}{\ensuremath{\textrm{\,L}_{\odot}}}
-\newcommand{\Mbh}{\ensuremath{\textrm{\,M}_{BH}~}}
-\newcommand{\Mbu}{\ensuremath{\textrm{\,M}_{bulge}~}}
-\newcommand{\rat}{\ensuremath{L/L_{edd}}~}
-\newcommand{\degs}{\ensuremath{^{\circ}}}
+% units
+\newcommand{\ang}{\AA}
 \newcommand{\kms}{\ensuremath{\textrm{\,km s}^{-1}}}
-\newcommand{\nth}{\ensuremath{^{\rm th}}}
-\newcommand{\chisq}{\ensuremath{\chi^{2}_{red}}}
-\newcommand{\chisqlt}{\ensuremath{\chi^{2}_{red} < 1}}
 \newcommand{\ergs}{\ensuremath{\textrm{\,erg s}^{-1}}}
-\newcommand{\microns}{\ensuremath{\mu{\mbox{m}}}}
-\newcommand{\hb}{\ensuremath{\mbox{H}{\beta}}}
-\newcommand{\hg}{\ensuremath{\mbox{H}{\gamma}}}
-\newcommand{\hd}{\ensuremath{\mbox{H}{\delta}}}
-\newcommand{\ha}{\ensuremath{\mbox{H}{\alpha}}}
+\newcommand{\degree}{$^{\circ}$}
+\newcommand{\degs}{\ensuremath{^{\circ}}}
+
+% astro
+\newcommand{\Msol}{M$_\odot$}
+\newcommand{\Lsol}{L$_\odot$}
+\newcommand{\Rsol}{R$_\odot$}
+\newcommand{\Zsol}{Z$_\odot$}
+\newcommand{\Mbh}{M$_{BH}$}
+\newcommand{\Mbulge}{M$_{bulge}$}
+\newcommand{\rat}{$L/L_{edd}$}
 \newcommand{\ebv}{E(B--V)}
-\newcommand{\rv}{\ensuremath{\mathrm{R_V}}}
+\newcommand{\rv}{R$_\mathrm{V}$}
+
+% chemical
+\newcommand{\electron}{$\mathrm{e^{-}}$}
+\newcommand{\Halpha}{H$\alpha$}
+\newcommand{\Hbeta}{H$\beta$}
+\newcommand{\Hgamma}{H$\gamma$}
 \newcommand{\ca}{Ca {\sc ii} K}
-\newcommand{\st}{\ensuremath{^{\rm st}}}
-\newcommand{\nd}{\ensuremath{^{\rm nd}}}
-\newcommand{\rd}{\ensuremath{^{\rm rd}}}
 \newcommand{\ew}{\ensuremath{\mathrm{W}_\lambda}}
 \newcommand{\oiii}{\ensuremath{\mathrm{[OIII]}\,88.36\mu\mathrm{m}}}
 \newcommand{\otwop}{\ensuremath{\mathrm{O}^{2+}}}
@@ -45,12 +49,24 @@
 \newcommand{\stwop}{\ensuremath{\mathrm{S}^{2+}}}
 \newcommand{\sthrp}{\ensuremath{\mathrm{S}^{3+}}}
 
+% maths
+\newcommand{\about}{$\sim$}
 \newcommand{\ds}{\ensuremath{\mathrm{d}s}}
 \newcommand{\dt}{\ensuremath{\mathrm{d}t}}
 \newcommand{\dx}{\ensuremath{\mathrm{d}x}}
 \newcommand{\dy}{\ensuremath{\mathrm{d}y}}
 \newcommand{\dz}{\ensuremath{\mathrm{d}z}}
+\newcommand{\chisq}{\ensuremath{\chi^{2}_{red}}}
+\newcommand{\chisqlt}{\ensuremath{\chi^{2}_{red} < 1}}
+\newcommand{\microns}{\ensuremath{\mu{\mbox{m}}}}
 
+% superscript
+\newcommand{\nth}{\ensuremath{^{\rm th}}}
+\newcommand{\st}{\ensuremath{^{\rm st}}}
+\newcommand{\nd}{\ensuremath{^{\rm nd}}}
+\newcommand{\rd}{\ensuremath{^{\rm rd}}}
+
+% journals
 \newcommand{\actaa}{Acta Astronomica}
 \newcommand{\apj}{Astrophysical Journal}
 \newcommand{\apjs}{Astrophysical Journal Supplements}
@@ -63,7 +79,7 @@
 \newcommand{\pasp}{Publications of the Astronomical Society of the Pacific}
 \newcommand{\araa}{Annual Review of Astronomy and Astrophysics}
 \newcommand{\aapr}{Astronomy and Astrophysics Review}
-\newcommand{\pasj}{Publications of the Astronomical Socie ty of Japan}
+\newcommand{\pasj}{Publications of the Astronomical Society of Japan}
 \newcommand{\apjl}{Astrophysical Journal Letters}
 \newcommand{\rmxaa}{Revista Mexicana de Astronomia y Astrofisica}
 \newcommand{\prd}{Physical Review D}
@@ -74,45 +90,18 @@
 \newcommand{\sex}{SExtractor}
 \newcommand{\zap}{Zeitschrift f{\"u}r Astrophysik}
 
-\def \cbat {CBAT}
-\def \aj {AJ}
-\def \mnras {MNRAS}
-\def \pasp {PASP}
-\def \apj {ApJ}
-\def \apjs {ApJS}
-\def \apjl {ApJL}
-\def \aap {A\&A}
-\def \nat {Nature}
-\def \araa {ARAA}
-\def \iaucirc {IAUC}
-\def \aaps {A\&A Suppl.}
-\def \apss {Ap\&SS}
-\def \na {New Astronomy}
-\def \pasa {PASA}
-\def \Msolar {$\mathrm{M_{\sun}}$}
-\newcommand{\msol} {M$_{\odot}$}
-\newcommand{\lsol} {L$_{\odot}$}
-\newcommand{\mza} {M$_{ZAMS}$}
-\newcommand{\zsol} {Z$_{\odot}$}
-\newcommand{\rsol} {R$_{\odot}$}
-\newcommand{\about} {$\sim$}
-\newcommand{\metal}{12 + log(O/H) }
-%\newcommand\ion[2]{#1$\;${\small\rmfamily\@Roman{#2}}}
-%\newcommand\ion[2]{#1$\;${\scshape{#2}}}%
-\newcommand{\electron} {$\mathrm{e^{-}}$}
-\def\lesssim{\mathrel{\hbox{\rlap{\hbox{\lower4pt\hbox{$\sim$}}}\hbox{$<$}}}}
-\def\gtrsim{\mathrel{\hbox{\rlap{\hbox{\lower4pt\hbox{$\sim$}}}\hbox{$>$}}}}
-
-\newcommand{\ang} {$\mathrm{\AA}$}
-\newcommand{\degree}{$^{\circ}$}
-%\newcommand{\arcsec}{\mbox{$^{\prime\prime}$}}%
-\newcommand{\deps}{$\Delta \epsilon\,$}
-
-\newcommand{\halpha} {$\mathrm{H\alpha}$ }
-\newcommand{\hbeta} {$\mathrm{H\beta}\,$}
-%\newcommand{\heI5876} {HeI $\lambda 5876$}
-%\newcommand{\heI6678} {HeI $\lambda 6678$}
-%\newcommand{\heI7065} {HeI $\lambda 7065$}
-
-\long\def\symbolfootnote[#1]#2{\begingroup%
-\def\thefootnote{\fnsymbol{footnote}}\footnote[#1]{#2}\endgroup}
+\def\cbat{CBAT}
+\def\aj{AJ}
+\def\mnras{MNRAS}
+\def\pasp{PASP}
+\def\apj{ApJ}
+\def\apjs{ApJS}
+\def\apjl{ApJL}
+\def\aap{A\&A}
+\def\nat{Nature}
+\def\araa{ARAA}
+\def\iaucirc{IAUC}
+\def\aaps{A\&A Suppl.}
+\def\apss{Ap\&SS}
+\def\na{New Astronomy}
+\def\pasa{PASA}
