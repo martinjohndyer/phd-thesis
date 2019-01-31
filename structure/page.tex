@@ -1,3 +1,4 @@
+% margins
 \setlength{\marginparwidth}{50pt}
 \setlength{\marginparsep}{10pt}
 \setlength{\marginparpush}{5pt}
@@ -28,3 +29,16 @@
 \setlength{\columnsep}{10pt}
 \setlength{\columnseprule}{0pt}
 \setlength{\LTcapwidth}{8in}
+
+% headings
+\chapterfont{\color{sections}}
+\sectionfont{\color{sections}}
+\subsectionfont{\color{sections}}
+\subsubsectionfont{\color{sections}}
+
+% header/footer
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ \emph{#1}}}
+\fancyhead[L]{\rightmark}
+\fancyhead[R]{\textbf{\thepage}}
+\fancyfoot{}

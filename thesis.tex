@@ -3,8 +3,7 @@
 \input{structure/commands.tex}
 \input{structure/functions.tex}
 \input{structure/colours.tex}
-\input{structure/margins.tex}
-\input{structure/text.tex}
+\input{structure/page.tex}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -17,6 +16,7 @@
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \pagenumbering{roman}
+\pagestyle{plain}
 
 % TITLE PAGE
 \include{preamble/titlepage}
@@ -50,43 +50,7 @@
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \pagenumbering{arabic}
-
-\renewcommand{\chaptermark}[1]{\markboth{\bf{ #1}}{}}
-\renewcommand{\sectionmark}[1]{\markright{\thesection\emph{ #1}}{}}
-
- \pagestyle{fancy}			 % Sets fancy header and footer
- \fancyfoot{}				 % Delete current footer settings
- \renewcommand{\chaptermark}[1]{	 % Lower Case Chapter marker style in Italics
-   \markright{{\bf\chaptername\ \thechapter.}\ #1}{}} %
- \renewcommand{\sectionmark}[1]{	 % Lower case Section marker style
-   \markright{\thesection.\ #1}}	 %
- \fancyhead[RE,RO]{\bfseries\thepage}	 % Page number (boldface) in left on even
-%   				 	 % pages and right on odd pages
-\fancyhead[LE]{\bfseries\rightmark}	 % Chapter in the right on even pages
-\fancyhead[LO]{\bfseries\rightmark}	 % Section in the left on odd pages in italics
- \renewcommand{\headrulewidth}{0.3pt}	 % Width of head rule
-
-
-%\pagenumbering{arabic} \setcounter{page}{1}  % reset counter - use normal numbering
-
-%\pagestyle{fancy}
-%\fancyfoot{}				 % Delete current footer settings
-%\fancyhead{}
-%
-
-%\renewcommand{\chaptermark}[1]{          %
-%  \markright{\thechapter.\ #1}}
-%\renewcommand{\sectionmark}[1]{	         % Lower case Section marker style
-%   \markright{\thesection.\ #1}}
-
-
-%\renewcommand{\chaptermark}[1]{          % Lower Case Chapter marker style in Italics
-%   \markright{\chaptername\ \thechapter.\ #1}}
-
-
-%\fancyhead[RE,RO]{\bfseries\thepage}	 % Page number (boldface) in left on even
-%\fancyhead[LE,LO]{\thechaptername}
-%\include{subtraction}\clearpage
+\pagestyle{fancy}
 
 \begin{onehalfspace}
 
@@ -106,7 +70,7 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \onehalfspacing{}
 
-\appendix
-\include{appendices/example_appendix}
+%\appendix
+%\include{appendices/example_appendix}
 
 \end{document}
