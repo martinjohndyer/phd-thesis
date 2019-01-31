@@ -1,37 +1,25 @@
+% Quote function
+\newcommand\makequote[3]{
+    \begin{center}
+        \Huge{\textbf{\textcolor{sections}{``~~}}}\\
+            \LARGE{#1}\\
+        \vspace{0.3cm}
+        \Huge{\textbf{\textcolor{sections}{~~''}}}
+    \end{center}
+    \vspace{-0.7cm} \hspace{8cm}
+    \large{ --- #2\ifthenelse{\isempty{#3}}{}{, \textit{#3}}}
+}
+
+% ~~~~~~~~~~~~~~~~~~~~~~
+
 \thispagestyle{empty}
 
 \vspace*{\stretch{2}}
 
-\begin{center}
-
-\Huge{\textbf{\textcolor{sections}{``~~}}}
-
-\LARGE{There's no sense crying over every mistake. \\ You just keep on trying `till you run out of cake.}
-
-\vspace{0.3cm}
-\Huge{\textbf{\textcolor{sections}{~~''}}}
-
-\end{center}
-
-\vspace{-0.7cm} \hspace{8cm}
-\large{ --- GLaDOS, \textit{Portal}}
-
-% ~~~~~~~~
+\makequote{There's no sense crying over every mistake. \\ You just keep on trying `till you run out of cake.}{GLaDOS}{Portal}
 
 \vspace{3cm}
 
-\begin{center}
-
-\Huge{\textbf{\textcolor{sections}{``~~}}}
-
-\LARGE{Let's all stay positive and do some Science.}
-
-\vspace{0.3cm}
-\Huge{\textbf{\textcolor{sections}{~~''}}}
-
-\end{center}
-
-\vspace{-0.7cm} \hspace{8cm}
-\large{ --- Cave Johnson, \textit{Portal 2}}
+\makequote{Let's all stay positive and do some Science.}{Cave Johnson}{Portal 2}
 
 \vspace*{\stretch{3}}
