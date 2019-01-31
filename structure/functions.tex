@@ -17,3 +17,11 @@
     \vspace{-0.7cm} \hspace{8cm}
     \large{ --- #2\ifthenelse{\isempty{#3}}{}{, \textit{#3}}}
     }
+
+% add a small contents to the start of a chapter
+\newcommand\chaptoc{
+    \startcontents[chapters]
+    \noindent{\color{sections}\rule{\textwidth}{1.5pt}}
+    \medskip
+    \printcontents[chapters]{}{1}{\noindent}
+    }
