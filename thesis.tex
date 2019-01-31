@@ -18,27 +18,35 @@
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \pagenumbering{roman}
 
-% TITLE PAGE & QUOTE
+% TITLE PAGE
 \include{preamble/titlepage}
-\include{preamble/quotepage}
 
-% CONTENTS & LISTS
-\tableofcontents \clearpage
-\listoffigures \clearpage
-\listoftables \clearpage
-\listoftodos[List of TODOs] \clearpage
+% QUOTE
+\include{preamble/quotepage}
 
 % DECLARATION
 \include{preamble/declaration}
 
 % ACKNOWLEDGEMENTS
-\include{preamble/acknowledgments}
+\include{preamble/acknowledgements}
 
 % SUMMARY
 \include{preamble/summary}
 
-% ACRONYMS
+% CONTENTS
+\include{preamble/contents}
+
+% LIST OF FIGURES
+\include{preamble/figures}
+
+% LIST OF TABLES
+\include{preamble/tables}
+
+% LIST OF ACRONYMS
 \include{preamble/acronyms}
+
+% TODOS
+\include{preamble/todos}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \pagenumbering{arabic} \setcounter{page}{1}
