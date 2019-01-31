@@ -1,72 +1,193 @@
 % imported packages
 % ~~~~~~~~~~~~~~~~~
 
-\usepackage{xcolor,sectsty}%%%%%% to add colors %%%%%
-%\usepackage{titlesec}
-\usepackage{pdfpages}
-\usepackage[nodayofweek]{datetime}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{natbib}
-%\usepackage{psfig}
-\usepackage{fancyhdr}
-%\usepackage{doublespace}
-\usepackage{setspace}
-\usepackage{footnote}
+% CORE MODULES
+% ~~~~~~~~~~~~
+% Enhanced support for graphics
+% https://ctan.org/pkg/graphicx
 \usepackage{graphicx}
-\usepackage{epstopdf} %allows use of .eps figures with pdflatex
-\usepackage{lscape}
-\usepackage{rotating}
-\usepackage{subfigure}
-\usepackage{caption}
-\usepackage{wrapfig,lipsum,booktabs}
-\usepackage{afterpage}
-\usepackage{pifont}
-\usepackage{longtable}
-%\usepackage{mathabx}
-\usepackage{latexsym}
-\usepackage{amsfonts}
-\usepackage{verbatim}
-\usepackage[printonlyused]{acronym}
-\usepackage{epigraph}
-%\usepackage{stmaryrd}
-%\usepackage{amssymb}
-%\usepackage{txfonts}
-%\usepackage{pxfonts}
-%\usepackage{wasysym}
-%%\usepackage{aas_macros}
-%\usepackage{aastex_hack}
-%\usepackage{deluxetable}
-\usepackage{pifont}
-%\usepackage{ifsym}
-%\usepackage[lmargin=3.0cm,rmargin=2.3cm,twoside]{geometry}
+
+% Driver-independent color extensions
+% https://ctan.org/pkg/xcolor
+\usepackage{xcolor}
+
+
+
+% PAGE FORMATTING
+% ~~~~~~~~~~~~~~~
+% Flexible and complete interface to document dimensions
+% https://ctan.org/pkg/geometry
 \usepackage[lmargin=3.0cm,rmargin=2.3cm]{geometry}
-\usepackage{color}
-\usepackage{url}
-\usepackage{float}
-\usepackage{nicefrac}
-\usepackage[section]{placeins}
-\usepackage{multicol,multirow}
-\usepackage[titletoc]{appendix}
+
+% Intermix single and multiple columns
+% https://ctan.org/pkg/multicol
+\usepackage{multicol}
+
+% Set space between lines
+% https://ctan.org/pkg/setspace
+\usepackage{setspace}
+
+% Control page headers and footers
+% https://ctan.org/pkg/fancyhdr
+\usepackage{fancyhdr}
+
+% Improve footnote handling
+% https://ctan.org/pkg/footnote
+\usepackage{footnote}
+
+% Add epigraphs (quotes at the start of chapters)
+% https://ctan.org/pkg/epigraph
+\usepackage{epigraph}
+
+% Insert whole PDF documents with the \includepdf command
+% https://ctan.org/pkg/pdfpages
+\usepackage{pdfpages}
+
+% Make a page landscape orientated
+% https://ctan.org/pkg/pdflscape
 \usepackage{pdflscape}
 
-%\usepackage{verbatim}
-%\usepackage{captcont}
-\usepackage{geometry}
-%\usepackage{subfig}
-\usepackage[colorinlistoftodos]{todonotes}
-\usepackage[
-%\hypersetup{
-	pdfauthor={NA},
-	pdftitle={NA},
-%	pdfkeywords={},
-	breaklinks=true,
-	colorlinks   = true, %Colours links instead of ugly boxes
-	urlcolor     = blue, %Colour for external hyperlinks
-	linkcolor    = black, %Colour of internal links
-	citecolor    = blue] %Colour of citations
-	{hyperref}
-%}
-%\usepackage{caption}
-%\usepackage{subcaption}
+% Execute command after the next page break
+% https://ctan.org/pkg/afterpage
 \usepackage{afterpage}
+
+
+
+% TEXT FORMATTING
+% ~~~~~~~~~~~~~~~
+% Format headers (e.g. \sectionfont)
+% https://ctan.org/pkg/sectsty
+\usepackage{sectsty}
+
+% Format hyperlinks (\href, \url)
+% https://ctan.org/pkg/hyperref
+\usepackage[pdfusetitle,      % Gets PDF metadata from \author and \title
+			breaklinks=true,  % Allow links to break over lines
+			colorlinks=true,  % Colours links instead of the default boxes
+			linkcolor=black,  % Colour of internal links
+			urlcolor=blue,    % Colour of external hyperlinks
+			citecolor=blue,   % Colour of citations
+			]{hyperref}
+
+% Control of acronyms (\ac)
+% https://ctan.org/pkg/acronym
+\usepackage[printonlyused]{acronym}
+
+
+
+% BIBLIOGRAPHY
+% ~~~~~~~~~~~~
+% Flexible bibliography support
+% (but see https://tex.stackexchange.com/questions/5091/what-to-do-to-switch-to-biblatex)
+% https://ctan.org/pkg/natbib
+\usepackage{natbib}
+
+
+
+% APPENDIX
+%~~~~~~~~~
+% Extra control of appendices
+% https://ctan.org/pkg/appendix
+\usepackage[titletoc]{appendix}
+
+
+
+% FLOATS
+% ~~~~~~
+% Improved interface for floating objects (figures, tables etc)
+% https://ctan.org/pkg/float
+\usepackage{float}
+
+% Customising captions in floating environments
+% https://ctan.org/pkg/caption
+\usepackage{caption}
+
+% Retain float number across several floats
+% https://ctan.org/pkg/captcont
+\usepackage{captcont}
+
+% Control float placement
+% https://ctan.org/pkg/placeins
+\usepackage[section]{placeins}
+
+% Rotation tools, including rotated full-page floats
+% https://ctan.org/pkg/rotating
+\usepackage{rotating}
+
+% Rotate floats, i.e. combining the rotating and float packages
+% https://ctan.org/pkg/rotfloat
+\usepackage{rotfloat}
+
+
+
+% FIGURES
+% ~~~~~~~
+% Produces figures which text can flow around
+% https://ctan.org/pkg/wrapfig
+\usepackage{wrapfig}
+
+% Convert EPS to PDF, so you can include .eps figures with pdflatex
+% https://ctan.org/pkg/epstopdf
+\usepackage{epstopdf}
+
+
+
+% TABLES
+% ~~~~~~~
+% Publication quality tables in LaTeX
+% https://ctan.org/pkg/booktabs
+\usepackage{booktabs}
+
+% Allow tables to flow over page boundaries
+% https://ctan.org/pkg/longtable
+\usepackage{longtable}
+
+%  Create tabular cells spanning multiple rows
+% https://ctan.org/pkg/multirow
+\usepackage{multirow}
+
+
+
+
+% SCIENTIFIC
+% ~~~~~~~~~~
+% AMS mathematical facilities
+% https://ctan.org/pkg/amsmath
+\usepackage{amsmath,amssymb,amsthm}
+
+% Typeset in-line fractions in a "nice" way
+% https://ctan.org/pkg/nicefrac
+\usepackage{nicefrac}
+
+
+
+% SYMBOLS
+% ~~~~~~~
+% Access to PostScript standard Symbol and Dingbats fonts
+% https://ctan.org/pkg/pifont
+\usepackage{pifont}
+
+% St Mary Road symbols for theoretical computer science
+% https://ctan.org/pkg/stmaryrd
+\usepackage{stmaryrd}
+
+
+
+
+% MISCELLANEOUS
+% ~~~~~~~~~~~~~
+% Add \verbatim and \comment environments
+% https://ctan.org/pkg/verbatim
+\usepackage{verbatim}
+
+% Formats for dates, times and time zones
+% https://ctan.org/pkg/datetime2
+\usepackage{datetime2}
+
+% Easy access to the Lorem Ipsum dummy text (\lipsum)
+% https://ctan.org/pkg/lipsum
+\usepackage{lipsum}
+
+% Mark things to do
+% https://ctan.org/pkg/todonotes
+\usepackage[colorinlistoftodos]{todonotes}
