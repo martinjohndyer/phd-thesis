@@ -1,76 +1,50 @@
 \documentclass[a4paper,12pt,oneside,openright]{report}
+
+% Input structure files
 \input{structure/packages.tex}
 \input{structure/commands.tex}
 \input{structure/functions.tex}
 \input{structure/colours.tex}
 \input{structure/page.tex}
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+% Begin document
 \begin{document}
 
-% Define properties
+% Document properties
 \title{A report on the importance of \LaTeX{} templates}
 \author{J. Bloggs}
 \date{September 20XX}
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Preamble pages
 \pagenumbering{roman}
 \pagestyle{plain}
-
-% TITLE PAGE
+\singlespacing{}
 \include{preamble/titlepage}
-
-% QUOTE
 \include{preamble/quotepage}
-
-% DECLARATION
 \include{preamble/declaration}
-
-% ACKNOWLEDGEMENTS
 \include{preamble/acknowledgements}
-
-% SUMMARY
 \include{preamble/summary}
-
-% CONTENTS
 \include{preamble/contents}
-
-% LIST OF FIGURES
 \include{preamble/figures}
-
-% LIST OF TABLES
 \include{preamble/tables}
-
-% LIST OF ACRONYMS
 \include{preamble/acronyms}
-
-% TODOS
 \include{preamble/todos}
 
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Main chapters
 \pagenumbering{arabic}
 \pagestyle{fancy}
-
-\begin{onehalfspace}
-
+\onehalfspacing{}
 \include{chapters/example_chapter}
 
-\end{onehalfspace}
-
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-\begin{singlespace}
-
-% BIBLIOGRAPHY
+% Bibliography
+\singlespacing{}
 \bibliographystyle{mn2e} %requires mn2e.bst file in same directory
 \bibliography{bibliography}
 
-\end{singlespace}
-
-%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% Appendices
 \onehalfspacing{}
-
 %\appendix
 %\include{appendices/example_appendix}
 
+% End document
 \end{document}
