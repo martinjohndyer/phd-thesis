@@ -38,7 +38,8 @@
 
 % header/footer
 \pagestyle{fancy}
-\renewcommand{\sectionmark}[1]{\markright{\thesection\ \emph{#1}}}
-\fancyhead[L]{\rightmark}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+%\renewcommand{\sectionmark}[1]{\markright{\thesection\ \emph{#1}}}
+\fancyhead[L]{\chaptername\ \thechapter: \leftmark}
 \fancyhead[R]{\textbf{\thepage}}
 \fancyfoot{}
