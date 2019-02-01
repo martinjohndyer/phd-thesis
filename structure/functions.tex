@@ -20,8 +20,9 @@
 
 % add a small contents to the start of a chapter
 \newcommand\chaptoc{
-    \startcontents[chapters]
     \noindent{\color{sections}\rule{\textwidth}{1.5pt}}
-    \medskip
-    \printcontents[chapters]{}{1}{\noindent}
+    \vspace{-0.5cm}
+    \startcontents[chapters]
+    \printcontents[chapters]{}{1}{}
+    \noindent{\color{sections}\rule{\textwidth}{1.5pt}}
     }
