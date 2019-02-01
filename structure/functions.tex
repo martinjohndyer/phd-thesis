@@ -9,10 +9,10 @@
 % create a quote function
 \newcommand\makequote[3]{
     \begin{center}
-        \Huge{\textbf{\textcolor{sections}{``~~}}}\\
+        \Huge{\textbf{\textcolor{GOTOlightblue}{``~~}}}\\
             \LARGE{#1}\\
         \vspace{0.3cm}
-        \Huge{\textbf{\textcolor{sections}{~~''}}}
+        \Huge{\textbf{\textcolor{GOTOlightblue}{~~''}}}
     \end{center}
     \vspace{-0.7cm} \hspace{8cm}
     \large{ --- #2\ifthenelse{\isempty{#3}}{}{, \textit{#3}}}
@@ -20,9 +20,9 @@
 
 % add a small contents to the start of a chapter
 \newcommand\chaptoc{
-    \noindent{\color{sections}\rule{\textwidth}{1.5pt}}
+    \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     \vspace{-0.5cm}
     \startcontents[chapters]
     \printcontents[chapters]{}{1}{}
-    \noindent{\color{sections}\rule{\textwidth}{1.5pt}}
+    \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     }
