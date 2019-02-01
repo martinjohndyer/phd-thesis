@@ -3,6 +3,10 @@
 
 # LaTeX files
 *.aux
+*.glg
+*.glo
+*.gls*
+*.ist
 *.lof
 *.log
 *.lot
