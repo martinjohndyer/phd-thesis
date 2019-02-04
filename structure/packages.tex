@@ -109,17 +109,18 @@
 
 % Sophisticated Bibliographies
 % https://ctan.org/pkg/biblatex
-\usepackage[backend=biber,
-			%bibstyle=numeric,
-			%citestyle=numeric,
-			%sortcites=true,
-			%givenints=true,
-			%hyperref=true,
-			%maxbibnames=3,
-			%backref=true,
-			%backrefstyle=none,
-			%natbib=true,
-			%sorting=none,
+\usepackage[backend=bibtex,      % Specifies the database backend
+			bibencoding=ascii,   % Bibtex backend expects ASCII
+			style=authoryear,    % Style
+			natbib=true,         % Aliases for natbib commands (\cite, \citep etc)
+			dashed=false,        % No dashes for the same author
+%			maxnames=2,          % Limit number of authors printed
+%			minnames=1,          % Limit number of authors printed
+			url=false,           % Controls whether DOIs are printed
+			doi=false,           % Controls whether DOIs are printed
+			eprint=false,        % Controls whether ArXiv details are printed
+			sortcites=true,
+			sorting=nyvt,
 			]{biblatex}
 
 

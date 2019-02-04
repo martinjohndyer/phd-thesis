@@ -1,5 +1,7 @@
+% suppress the "In:" before journal names
+\renewbibmacro{in:}{}
 
-%\renewbibmacro{in:}{}
+
 %\DeclareNameAlias{sortname}{last-first}
 %\DeclareNameAlias{default}{last-first}
 %\DefineBibliographyStrings{english}{%
@@ -26,5 +28,8 @@
 %}
 
 %\DeclareFieldFormat[article,inbook,incollection,inproceedings,patent,thesis,unpublished]{title}{``#1\isdot ''}
+
+\AtEveryBibitem{\clearfield{title}}
+\AtEveryBibitem{\clearfield{pages}}
 
 \addbibresource{bibliography.bib}

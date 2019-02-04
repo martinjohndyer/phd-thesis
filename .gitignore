@@ -3,9 +3,11 @@
 
 # LaTeX files
 *.aux
+*.bak
 *.bbl
 *.bcf
 *.blg
+*-blx.bib
 *.glg
 *.glo
 *.gls*
