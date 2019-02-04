@@ -3,6 +3,9 @@
 
 # LaTeX files
 *.aux
+*.bbl
+*.bcf
+*.blg
 *.glg
 *.glo
 *.gls*
@@ -13,6 +16,7 @@
 *.out
 *.pdf
 *.ptc
+*.run.xml
 *.synctex.gz
 *.tdo
 *.toc

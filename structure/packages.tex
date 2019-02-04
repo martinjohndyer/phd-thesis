@@ -74,6 +74,10 @@
 			citecolor=blue,   % Colour of citations
 			]{hyperref}
 
+% Context sensitive quotation facilities
+% https://ctan.org/pkg/csquotes
+\usepackage{csquotes}
+
 
 
 % TITLE PAGE
@@ -100,9 +104,23 @@
 % BIBLIOGRAPHY
 % ~~~~~~~~~~~~
 % Flexible bibliography support
-% (but see https://tex.stackexchange.com/questions/5091/what-to-do-to-switch-to-biblatex)
 % https://ctan.org/pkg/natbib
-\usepackage{natbib}
+%\usepackage{natbib}
+
+% Sophisticated Bibliographies
+% https://ctan.org/pkg/biblatex
+\usepackage[backend=biber,
+			%bibstyle=numeric,
+			%citestyle=numeric,
+			%sortcites=true,
+			%givenints=true,
+			%hyperref=true,
+			%maxbibnames=3,
+			%backref=true,
+			%backrefstyle=none,
+			%natbib=true,
+			%sorting=none,
+			]{biblatex}
 
 
 

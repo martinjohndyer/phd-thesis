@@ -8,6 +8,7 @@
 \input{structure/colours.tex}
 \input{structure/acronyms.tex}
 \input{structure/page.tex}
+\input{structure/bibliography.tex}
 
 % Begin document
 \begin{document}
@@ -44,11 +45,12 @@
 
 % Bibliography
 \singlespacing{}
-\bibliographystyle{mn2e} %requires mn2e.bst file in same directory
-\bibliography{bibliography}
+\pagestyle{plain}
+\include{bibliography/bibliography}
 
 % Appendices
 \doublespacing{}
+\pagestyle{fancy}
 \appendix
 \renewcommand\chaptername{Appendix}
 \include{appendices/appendix}
