@@ -22,16 +22,16 @@
 \pagenumbering{roman}
 \pagestyle{plain}
 \singlespacing{}
-\include{prelims/titlepage}
-\include{prelims/quotepage}
-\include{prelims/declaration}
-\include{prelims/acknowledgements}
-\include{prelims/summary}
-\include{prelims/contents}
-\include{prelims/figurelist}
-\include{prelims/tablelist}
-\include{prelims/acronymlist}
-%\include{prelims/todo}
+\include{support/titlepage}
+\include{support/quotepage}
+\include{support/declaration}
+\include{support/acknowledgements}
+\include{support/summary}
+\include{support/contents}
+\include{support/figurelist}
+\include{support/tablelist}
+\include{support/acronymlist}
+%\include{support/todo}
 
 % Main body
 \pagenumbering{arabic}
@@ -46,14 +46,14 @@
 % Bibliography
 \singlespacing{}
 \pagestyle{plain}
-\include{bibliography/bibliography}
+\include{support/bibliography}
 
 % Appendices
 \doublespacing{}
 \pagestyle{fancy}
 \appendix
 \renewcommand\chaptername{Appendix}
-\include{appendices/appendix}
+\include{chapters/appendix}
 
 % End document
 \end{document}
