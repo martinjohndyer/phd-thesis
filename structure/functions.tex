@@ -19,11 +19,21 @@
     }
 
 % add a small contents to the start of a chapter
+\mtcsettitle{minitoc}{}
+\mtcsetrules{*}{off}
+\mtcsetfont{minitoc}{section}{\normalsize\bfseries}
+\mtcsetfont{minitoc}{subsection}{\normalsize}
+\mtcsetoffset{minitoc}{-1em}
+\setlength{\mtcindent}{-0.5em}
+\let\oldappendices\appendices\def\appendices{\oldappendices\adjustmtc}
 \newcommand\chaptoc{
+    \begin{singlespacing}
+    \vspace{-0.7cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
-    \vspace{-0.5cm}
-    \startcontents[chapters]
-    \printcontents[chapters]{}{1}{}
+    \vspace{-0.7cm}
+    \minitoc{}
+    \vspace{-0.7cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     \bigskip
+    \end{singlespacing}
     }
