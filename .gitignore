@@ -2,6 +2,7 @@
 .vscode*
 
 # LaTeX files
+thesis.pdf
 *.aux
 *.bak
 *.bbl
@@ -18,7 +19,6 @@
 *.maf
 *.mtc*
 *.out
-*.pdf
 *.ptc
 *.run.xml
 *.synctex.gz
