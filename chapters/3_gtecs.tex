@@ -4,8 +4,68 @@
 
 % ####################
 \newpage
-\section{Overview}
+\section{Introduction}
+\label{sec:gtecs_intro}
+
+This chapter describes <blah> <blah>.
+I did most of the work with the help of Vik and Stu and so on.
+It's based on my SPIE paper, plus some GOTO talks.
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Requirements of the control system}
+\label{sec:control_desision}
+
+My first task as part of the GOTO collaboration, in the summer before I even started in Sheffield, was to decide on what control system software to use for the telescope. There were several requirements of the system to consider.
+
+Firstly the chosen system had to allow for remote and, and most importantly, robotic operation of GOTO.\@ There are many telescope software packages available, but the majority are designed for a human observer to operate. GOTO however was to be a fully autonomous telescope, which meant operating nightly with no human intervention. This meant the control system had to contain routines for observing targets and standard tasks like taking calibration frames. On top of that it was desirable for the system to be able to monitor itself to detect and fix any errors as much as possible without the need for human intervention. Finally it had to be able to monitor and react to external conditions, closing the dome if rain was detected for example.
+
+Secondly the system had to include an observation scheduler, which could decide what the telescope should observe during the night. A basic scheduler might be run in the evening to create a night plan, as observers typically do when operating a telescope. However that alone would not fit the expected operations required from GOTO:\@ normally carrying out an all-sky survey but with a robust interrupt protocol for gravitational wave follow-up. The system therefore had to be able to recalculate what to observe on-the-fly, and be able to immediately react to transient \gls{too} events.
+
+Furthermore, although the project was still at an early stage the idea of linking together multiple telescopes into a global network was also considered, and the chosen control system implementation would ideally be expandable to facilitate this in the future (or at least not hinder the possibility).
+
+There were also several physical considerations when it came to choosing between software systems. The telescope hardware had already been decided on: an Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})}, a custom mount with a \gls{sitech} servo controller\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})} and multiple unit telescopes all using \gls{fli} cameras, focusers and filter wheels\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}. Any control system would need to communicate with all of them, so any control systems with existing drivers or packages used by established projects would be desirable.
+
+Two particular hardware-related challenges faced the control system project. The first was that the SiTech controller software, \software{SiTechEXE}, only ran on Microsoft Windows. The software did an accessible \gls{api} through the \software{ASCOM} standard\footnote{\url{www.ascom-standards.org}} but that still required some form of the mount control system to be running on Windows. As most scientific software in astronomy runs on Linux systems this lead to two options: either have just a small interface running on the Windows machine and the majority of the system on Linux, or have the entire system run on Windows.
+
+The second challenge was to deal with the multiple-unit telescope design of \gls{goto}. A full array of eight \glspl{ut} would require eight cameras, focusers and filter wheels. These would all need to be run in parallel, most importantly there needed to be no delay between the exposures starting and finishing on each camera. The physical construction of the telescope also came into play. The \gls{fli} units all require a USB connection to the control computer. A single computer situated in the dome would therefore require 24 USB cables to run up the mount, not only a practical difficulty but also a layout that could lead to interference and data loss. The suggested solution was to have small computers attached to the mount boom arms to act as intermediate interfaces to the \gls{ut} hardware. The control system therefore needed to be able to run in a distributed manner across multiple computers, potentially even running different operating systems.
+
+Finally, there were practical details consider. Cost was one: \gls{goto} was designed as a relatively inexpensive project that could be built quickly and copied across multiple sites. Therefore any costly software licenses would ideally be avoided. Experience and support requirements should also be considered: reusing a system that members of the collaboration had experience with would provide benefits compared to a completely new and exotic system.
+
+
+I gave a talk outlining the different options:
+\begin{itemize}
+    \item ACP Expert
+    \item RTS2
+    \item pt5m/home built
+    \item Talon
+\end{itemize}
+
+Maybe put the table of pros/cons here.
+
+In the end the choice was fairly obvious: go with pt5m.
+
+\newpage
+% ~~~~~~~~~~~~~~~~~~~~
+\subsection{pt5m}
+\label{sec:pt5m}
+
+The starting point was the control system already developed for pt5m, a \SI{0.5}{\metre} robotic telescope built and operated by Sheffield and Durham Universities and also located on La Palma~\citep{pt5m}. The pt5m control system is written in Python and was built around multiple independent hardware daemon programs with a pilot program to control them.
+
+More on pt5m, maybe a picture? Or the flowchart from the paper?
+
+% ####################
+\newpage
+\section{Overview of G-TeCS}
 \label{sec:gtecs}
+
+%%%%% MORE TO WRITE \/\/\/
+The pt5m control system formed the basis for the \gls{gtecs}, which built upon it to adapt and upgrade it specifically for use on the \gls{goto} project. The core \gls{gtecs} system architecture is shown in Fig.~\ref{fig:flow} and is described in the following sections.
+
+The major difference between pt5m, and one of the reasons it was chosen, was the need to be able to control multiple UTs as described in previous section. The flexibility of the pt5m system using Pyro made this much easier. At the time we also needed to be able to control the SiTech system on Windows, which was thankfully something I knew how to do with DOTT (which was also inspired by pt5m, thanks Tim). And after the fact it made it much easier to be able to run the scheduler and sentinel on the database machine. This will be important for multi-scopes too.
+
+Also, G-TeCS is run as a package \pkg{gtecs}. And there are others built in: \pkg{obsdb}, \pkg{gototile} and \pkg{gotoalert}. Python3 only, really 3.5+.
+%%%%% MORE TO WRITE /\/\/\
 
 \begin{figure}[htb]
 \begin{center}
@@ -23,25 +83,61 @@
 \label{fig:flow2}
 \end{figure}
 
-In order to meet the requirements for controlling \gls{goto}, it was decided to implement a custom telescope control system.
-%% Other options
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Daemons}
+\label{sec:daemons}
 
-The starting point was the control system already developed for pt5m, a \SI{0.5}{\metre} robotic telescope built and operated by Sheffield and Durham Universities and also located on La Palma~\citep{pt5m}. The pt5m control system is written in Python and was built around multiple independent hardware daemon programs with a pilot program to control them.
-%% More on pt5m, maybe a picture? Or the flowchart from the paper?
+The core elements of the control system are the daemons. A \emph{daemon} is a type of computer program that runs as a background process, continually cycling and awaiting any input from the user. This is in contrast to a \emph{script} which is run once (either by the system or a user), carries out a series of tasks in the foreground and then exits once it is completed. Common examples of daemons on a Unix-based system are \software{sshd}, which listens for and creates \gls{ssh} connections, and \software{cron}, which runs commands at predefined times. Incidentally both are used by G-TeCS:\@ \gls{ssh} to issue commands on remote machines and \software{cron} to start scripts like the pilot at a set time.
 
-The pt5m control system formed the basis for the \gls{gtecs}, which built upon it to adapt and upgrade it specifically for use on the \gls{goto} project. The core \gls{gtecs} system architecture is shown in Fig.~\ref{fig:flow} and is described in the following sections.
-%% Major changes?
+Daemons are the ideal form of software for hardware control. Once started each daemon runs continually as a background process, with a main control loop that repeats on a regular timescale (for the G-TeCS hardware daemons this is usually every \SI{0.1}{\second}). There are two primary tasks that are carried out within the loop by every daemon: monitoring the status of the hardware, and listening for and carrying out input commands. The former is typically not carried out every time the loop runs, because attempting to request and process the hardware status every \SI{0.1}{\second} would overwhelm the daemon and delay the loop. Instead the status checks are typically carried out every \SI{2}{\second}, or sooner if requested. By continually requesting the status of the hardware the daemon will detect very quickly if there are any problems. However the daemons themselves will not attempt to self-diagnose and fix any problems that are detected, with the notable exception of the dome daemon (Section~\ref{sec:dome}). Instead that is the job of the hardware monitors (see Section~\ref{sec:monitors}), the daemons themselves will just report any problems to the pilot or user. The second reason for a control loop within the daemons is to listen for and carry out any commands issued to them. As these commands are dealt with within the loop it insures only one is carried out at once, the alternative of user input going directly to the hardware could cause problems with overlapping commands. These commands can be as simple as querying the cameras for how long left until an exposure finishes to opening the dome, taking and saving an image or calculating the current highest priority pointing to observe.
+
+Within G-TeCS each category of hardware has a dedicated control daemon that acts as an interface to the hardware. For example, the mount daemon communicates with the SiTech mount controller, sending commands and reading the current status, while the camera daemon does the same for every camera attached to the telescope. Therefore there is not necessarily a one-to-one correspondence between daemons and pieces of hardware. Although typically grouped together as ``hardware daemons'' not every daemon within G-TeCS falls into that category: there is the scheduler daemon which is the interface to the observation database and the sentinel daemon which monitors alert channels. Although not connected to physical hardware like a dome or a camera, both operate in a similar way to the others.
+
+Functionally each daemon is built around a \proglang{Python} class which contains hardware control functions and the main loop. When the daemon starts the loop is set running in its own thread, and when a control function is called it sets a flag within this loop to carry out the requested commands. The daemons are created using the \gls{pyro} module \pkg{Pyro4}\footnote{\url{https://pythonhosted.org/Pyro4/}}. Each daemon is run as a \gls{pyro} server, so any client script can then access its functions and methods across the network using the associated server ID.\@ This system allows complicated interactions across the network between daemons and scripts with very simple code, and was one of the major benefits of using the \textit{pt5m} system.
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Scripts}
+\label{sec:scripts}
+
+As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, or with utilities like \software{cron}.
+
+In order to send commands to the daemons each has an associated control script that can be called by a user from a terminal, or by the pilot in robotic mode (see Sec~\ref{sec:pilot}). The commands follow a simple format which was inherited from \textit{pt5m}, first the short name of the daemon, then the command and finally any arguments. There are several commands that are common to all daemons: \code{start}, \code{shutdown} and \code{restart} to control if the daemon is running; \code{ping} to see the current status of the daemon; \code{info} to see the current status of the hardware; \code{log} to print the daemon output log. Some examples of other daemon-specific commands are given below,
+more details are given in the sections for each daemon:
+\begin{itemize}
+    \item ``\code{foc~home}'' homes all connected focusers
+    \item ``\code{dome~close}'' closes the dome
+    \item ``\code{mnt~slew~<ra>~<dec>}'' will slew the mount to the given coordinates
+    \item ``\texttt{cam~image~60}'' will take a \SI{60}{\second} exposure with all connected cameras
+    \item ``\texttt{cam~image~2~60}'' will take a \SI{60}{\second} exposure with camera 2 only
+\end{itemize}
+
+Every daemon can also be controlled in ``interactive mode'', which is a user-friendly way to save time sending multiple commands to the same daemon. Interactive mode is entered with \code{i} and exited with \code{q}.
+
+There is also a utility script, \code{lilith}, which can send the same command to all the installed daemons. For example, to shutdown every daemon it is possible to call each directly (\code{cam shutdown}, \code{foc shutdown}, \code{mnt shutdown} etc\ldots) but it is instead much easier to run \code{lilith shutdown}. The name ``Lilith'' comes from the biblical ``mother of demons''.
+
+The most important script to the robotic operation of the telescope is the pilot, an asynchronous script that is run every night using \software{cron} at 5pm. The functions carried out by the pilot and the following scripts are detailed in Section~\ref{sec:pilot}. The pilot can also be started manually with the command \code{pilot start}, which is the command defined in the \code{crontab} file used by \software{cron} (note although this uses the same syntax as a daemon it is mechanically different, as it simply runs the script in the current terminal instead of starting a background process). There is also a daytime counterpart to the pilot, called the day marshal, which is run in the same way. Finally within the pilot, several of the standard tasks are separated off into ``observation scripts'', lists of commands to the daemons to carry out tasks like focusing the telescope, taking flat fields or starting/shutting down the hardware in the evening/morning respectively. As standard tasks these can also be run by human observers though a command line script \code{obs\_script} (for example \code{obs\_script~startup} or \code{obs\_script~autofocus}).
+
 
 % ####################
 \newpage
 \section{Hardware Control}
-\label{sec:daemons}
-
-The core elements of the control system are the hardware daemons. A \textit{daemon} is a type of computer program that runs as a background process, continually cycling and awaiting any input from the user. This makes it ideal for hardware control as each daemon can constantly monitor its associated hardware and then execute commands when received via a command line script. Each category of hardware has a dedicated control daemon, meaning that while the dome daemon only controls the single dome the camera daemon centralises commands to all cameras on the one mount (8 in the full system).
-
-Each daemon is built around a Python class which contains hardware control functions and a main loop. The loop is set running in its own thread, and when a control function is called it issues the relevant command to the hardware. The daemons are created using the Python Remote Objects (\textsf{Pyro}) module\footnote{Pyro-website}. Each daemon is a \textsf{Pyro} server, any client script can then access its functions across the network using the associated server ID.\@ For ease of use each daemon has an associated control script, which allows commands run by a user in a terminal to be executed by the daemon. In robotic mode these commands will be issued by the pilot (see Sec~\ref{sec:pilot}). Commands follow a simple format, e.g. \texttt{foc~home} homes all connected focusers, \texttt{dome~close} closes the dome, \texttt{cam~image~2~60} will take a 60 second science exposure on camera 2 only.
+\label{sec:hardware_control}
 
 There are seven primary hardware control daemons, as shown in Fig.~\ref{fig:flow}. A brief description of each is given in the following sections.
+
+% ~~~~~~~~~~~~~~~~~~~~
+\subsection{Cameras / Focusers / Filter Wheels}
+\label{sec:fli}
+
+The GOTO detectors use off-the-shelf hardware from FLI\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}: each GOTO unit telescope uses a MicroLine ML50100 camera with a KAF-50100 CCD detector, an Atlas focuser and a CFW9--5 filter wheel with a set of Baader LRGBC filters\footnote{Baader Planetarium, Germany; (\url{www.baader-planetarium.com})}. A GOTO mount will hold up to eight unit telescopes each equipped with a camera, focuser and filter wheel. Each piece of hardware needs to be connected by USB, but running 24 USB cables down the mount was deemed impractical. Therefore for each pair of UTs these cables are connected to a small PC --- an Intel NUC in a sealed fanless enclosure --- attached to the boom arm. Interface scripts are run on these, as shown in Fig.~\ref{fig:flow}. Using the FLI SDK a Cython wrapper called \textsf{fli-api} was written to allow easy control through Python, and using \textsf{Pyro} these functions are published to the network to be accessed by the control daemons on the main control computer. This allows all the pieces of the hardware to be controlled individually.
+
+The camera (\texttt{cam}), focuser (\texttt{foc}) and filter (\texttt{filt}) daemons each issue commands to every one of their connected pieces of hardware. Commands can be sent independently or to all: \texttt{cam~image~2~60} will take a 60 second exposure on camera 2 only while not including the specifier (\texttt{cam~image~60}) would execute it on all cameras simultaneously. Multiple selections can be made using a simple comma-separated syntax, such as \texttt{cam~image~1,2,4~60}.
+
+There is also a fourth related daemon called the exposure queue daemon (\texttt{exq}), which coordinates taking frames in sequence and setting filters before the exposures start. The command \texttt{exq~image~60~L} would add a single exposure in the L filter to the queue while \texttt{exq~multiimage~3~60~L} would add three. The command \texttt{exq~image~60~R,G,B} would add three images, each to be taken in the R, G and B filters, and the exposure queue daemon would issue commands to the filter daemon to move the filter wheel between exposure commands to the camera daemon.
+
+Images are written to FITS files by the camera daemon and are archived by date. Each camera output is saved as a separate file (e.g. \texttt{r00033\_UT2.fits} is the image for run 33 from camera 2). These images are then copied via a dedicated fibre link from La Palma to Warwick University where the photometry pipeline is run.
 
 % ~~~~~~~~~~~~~~~~~~~~
 \subsection{Dome}
@@ -63,18 +159,6 @@ The power daemon (\texttt{power}) provides a unified interface for the various n
 
 The mount daemon (\texttt{mnt}, so as not to interfere with the Linux \texttt{mount} command) sends commands to the GOTO mount. The mount hardware is connected to a SiTech servo controller, and the system uses the SiTech control software\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})}. This is run as \textsf{SiTechEXE} on a Windows computer attached to the mount. Initially commands could only be sent through the \textsf{ASCOM} system running on that computer, which required an interface daemon to convert between \textsf{ASCOM} and Python commands accessible using \textsf{Pyro}. However an update to \textsf{SiTechEXE} added the ability to send TCP commands, meaning there is no need for an interface and now the mount daemon can communicate with it directly. Using the SiTech software provides several advantages, in particular an inbuilt pointing model system using \textsf{PointXP}.
 
-% ~~~~~~~~~~~~~~~~~~~~
-\subsection{Cameras / Focusers / Filter Wheels}
-\label{sec:fli}
-
-The GOTO detectors use off-the-shelf hardware from FLI\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}: each GOTO unit telescope uses a MicroLine ML50100 camera with a KAF-50100 CCD detector, an Atlas focuser and a CFW9--5 filter wheel with a set of Baader LRGBC filters\footnote{Baader Planetarium, Germany; (\url{www.baader-planetarium.com})}. A GOTO mount will hold up to eight unit telescopes each equipped with a camera, focuser and filter wheel. Each piece of hardware needs to be connected by USB, but running 24 USB cables down the mount was deemed impractical. Therefore for each pair of UTs these cables are connected to a small PC --- an Intel NUC in a sealed fanless enclosure --- attached to the boom arm. Interface scripts are run on these, as shown in Fig.~\ref{fig:flow}. Using the FLI SDK a Cython wrapper called \textsf{fli-api} was written to allow easy control through Python, and using \textsf{Pyro} these functions are published to the network to be accessed by the control daemons on the main control computer. This allows all the pieces of the hardware to be controlled individually.
-
-The camera (\texttt{cam}), focuser (\texttt{foc}) and filter (\texttt{filt}) daemons each issue commands to every one of their connected pieces of hardware. Commands can be sent independently or to all: \texttt{cam~image~2~60} will take a 60 second exposure on camera 2 only while not including the specifier (\texttt{cam~image~60}) would execute it on all cameras simultaneously. Multiple selections can be made using a simple comma-separated syntax, such as \texttt{cam~image~1,2,4~60}.
-
-There is also a fourth related daemon called the exposure queue daemon (\texttt{exq}), which coordinates taking frames in sequence and setting filters before the exposures start. The command \texttt{exq~image~60~L} would add a single exposure in the L filter to the queue while \texttt{exq~multiimage~3~60~L} would add three. The command \texttt{exq~image~60~R,G,B} would add three images, each to be taken in the R, G and B filters, and the exposure queue daemon would issue commands to the filter daemon to move the filter wheel between exposure commands to the camera daemon.
-
-Images are written to FITS files by the camera daemon and are archived by date. Each camera output is saved as a separate file (e.g. \texttt{r00033\_UT2.fits} is the image for run 33 from camera 2). These images are then copied via a dedicated fibre link from La Palma to Warwick University where the photometry pipeline is run.
-
 
 % ####################
 \newpage
@@ -84,7 +168,6 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 The hardware control systems described in Sec.~\ref{sec:hardware} provide the basic methods to control the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount, take exposures and repeat for the rest of the night.
 
 GOTO however is designed as a robotic installation, and therefore requires another level of software to take the place as the source of these commands. In \textsf{G-TeCS} this role is filled by a master control program called the pilot. There are also several support daemons that perform roles allowing the system to operate robotically: the conditions daemon which monitors weather and other system conditions, the sentinel daemon which listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
-
 
 % ~~~~~~~~~~~~~~~~~~~~
 \subsection{Pilot}
