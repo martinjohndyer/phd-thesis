@@ -18,6 +18,13 @@
     \large{ --- #2\ifthenelse{\isempty{#3}}{}{, \textit{#3}}}
     }
 
+% resize ToC numbers to fit in >100
+% https://tex.stackexchange.com/questions/49887/
+\makeatletter
+\renewcommand{\@pnumwidth}{3em}
+\renewcommand{\@tocrmarg}{4em}
+\makeatother
+
 % add a small contents to the start of a chapter
 \mtcsettitle{minitoc}{}
 \mtcsetrules{*}{off}
