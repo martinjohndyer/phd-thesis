@@ -65,3 +65,8 @@
     \bigskip
     \end{singlespacing}
     }
+
+% format bibliography
+\renewbibmacro{in:}{}
+\AtEveryBibitem{\clearfield{title}}
+\AtEveryBibitem{\clearfield{pages}}
