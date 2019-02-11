@@ -3,6 +3,7 @@
 \newcommand{\uptriangle}{\ding{115}}
 \newcommand{\blackdiamond}{\ding{117}}
 \newcommand{\about}{\ensuremath{\sim}}
+\newcommand{\done}{\textcolor{green}{~\tick~}}
 
 % superscript
 \newcommand{\st}{\ensuremath{^{\rm st}}}
@@ -27,6 +28,12 @@
     \addtocounter{page}{-1}
     \newpage
     }
+
+% a completely blank environment, so I can collapse sections nicely
+\newenvironment{mysection}[2]{\newpage\section{#1}\label{#2}}{}
+\newenvironment{mysection*}{}{}
+\newenvironment{mysubsection}[2]{\newpage\subsection{#1}\label{#2}}{}
+\newenvironment{mysubsection*}{}{}
 
 % format a quote
 \newcommand\makequote[3]{

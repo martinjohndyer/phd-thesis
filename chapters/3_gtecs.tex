@@ -2,19 +2,23 @@
 \label{chap:gtecs}
 \chaptoc{}
 
-% ####################
-\newpage
-\section{Introduction}
-\label{sec:gtecs_intro}
+% ########################################
+
+\begin{mysection}{Introduction}{sec:gtecs_intro}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{mysubsection*}
 
 This chapter describes <blah> <blah>.
 I did most of the work with the help of Vik and Stu and so on.
 It's based on my SPIE paper, plus some GOTO talks.
 
+\end{mysubsection*}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
-\subsection{Requirements of the control system}
-\label{sec:control_desision}
+
+\begin{mysubsection}{Requirements of the control system}{sec:control_desision}
 
 My first task as part of the GOTO collaboration, in the summer before I even started in Sheffield, was to decide on what control system software to use for the telescope. There were several requirements of the system to consider.
 
@@ -45,19 +49,29 @@ Maybe put the table of pros/cons here.
 
 In the end the choice was fairly obvious: go with pt5m.
 
-\newpage
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{pt5m}
-\label{sec:pt5m}
+
+\begin{mysubsection}{pt5m}{sec:pt5m}
 
 The starting point was the control system already developed for pt5m, a \SI{0.5}{\metre} robotic telescope built and operated by Sheffield and Durham Universities and also located on La Palma~\citep{pt5m}. The pt5m control system is written in Python and was built around multiple independent hardware daemon programs with a pilot program to control them.
 
 More on pt5m, maybe a picture? Or the flowchart from the paper?
 
-% ####################
-\newpage
-\section{Overview of G-TeCS}
-\label{sec:gtecs}
+\end{mysubsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{mysection}
+
+% ########################################
+
+\begin{mysection}{Overview of G-TeCS}{sec:gtecs}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{mysubsection*}
 
 %%%%% MORE TO WRITE \/\/\/
 The pt5m control system formed the basis for the \gls{gtecs}, which built upon it to adapt and upgrade it specifically for use on the \gls{goto} project. The core \gls{gtecs} system architecture is shown in Fig.~\ref{fig:flow} and is described in the following sections.
@@ -83,10 +97,11 @@ Also, G-TeCS is run as a package \pkg{gtecs}. And there are others built in: \pk
 \label{fig:flow2}
 \end{figure}
 
+\end{mysubsection*}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
-\subsection{Daemons}
-\label{sec:daemons}
+
+\begin{mysubsection}{Daemons}{sec:daemons}
 
 The core elements of the control system are the daemons. A \emph{daemon} is a type of computer program that runs as a background process, continually cycling and awaiting any input from the user. This is in contrast to a \emph{script} which is run once (either by the system or a user), carries out a series of tasks in the foreground and then exits once it is completed. Common examples of daemons on a Unix-based system are \software{sshd}, which listens for and creates \gls{ssh} connections, and \software{cron}, which runs commands at predefined times. Incidentally both are used by G-TeCS:\@ \gls{ssh} to issue commands on remote machines and \software{cron} to start scripts like the pilot at a set time.
 
@@ -96,10 +111,11 @@ Within G-TeCS each category of hardware has a dedicated control daemon that acts
 
 Functionally each daemon is built around a \proglang{Python} class which contains hardware control functions and the main loop. When the daemon starts the loop is set running in its own thread, and when a control function is called it sets a flag within this loop to carry out the requested commands. The daemons are created using the \gls{pyro} module \pkg{Pyro4}\footnote{\url{https://pythonhosted.org/Pyro4/}}. Each daemon is run as a \gls{pyro} server, so any client script can then access its functions and methods across the network using the associated server ID.\@ This system allows complicated interactions across the network between daemons and scripts with very simple code, and was one of the major benefits of using the \textit{pt5m} system.
 
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
-\subsection{Scripts}
-\label{sec:scripts}
+
+\begin{mysubsection}{Scripts}{sec:scripts}
 
 As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, or with utilities like \software{cron}.
 
@@ -119,17 +135,27 @@ There is also a utility script, \code{lilith}, which can send the same command t
 
 The most important script to the robotic operation of the telescope is the pilot, an asynchronous script that is run every night using \software{cron} at 5pm. The functions carried out by the pilot and the following scripts are detailed in Section~\ref{sec:pilot}. The pilot can also be started manually with the command \code{pilot start}, which is the command defined in the \code{crontab} file used by \software{cron} (note although this uses the same syntax as a daemon it is mechanically different, as it simply runs the script in the current terminal instead of starting a background process). There is also a daytime counterpart to the pilot, called the day marshal, which is run in the same way. Finally within the pilot, several of the standard tasks are separated off into ``observation scripts'', lists of commands to the daemons to carry out tasks like focusing the telescope, taking flat fields or starting/shutting down the hardware in the evening/morning respectively. As standard tasks these can also be run by human observers though a command line script \code{obs\_script} (for example \code{obs\_script~startup} or \code{obs\_script~autofocus}).
 
+\end{mysubsection}
 
-% ####################
-\newpage
-\section{Hardware Control}
-\label{sec:hardware_control}
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{mysection}
+
+% ########################################
+
+\begin{mysection}{Hardware Control}{sec:hardware_control}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{mysubsection*}
 
 There are seven primary hardware control daemons, as shown in Fig.~\ref{fig:flow}. A brief description of each is given in the following sections.
 
+\end{mysubsection*}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Cameras / Focusers / Filter Wheels}
-\label{sec:fli}
+
+\begin{mysubsection}{Cameras / Focusers / Filter Wheels}{sec:fli}
 
 The GOTO detectors use off-the-shelf hardware from FLI\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}: each GOTO unit telescope uses a MicroLine ML50100 camera with a KAF-50100 CCD detector, an Atlas focuser and a CFW9--5 filter wheel with a set of Baader LRGBC filters\footnote{Baader Planetarium, Germany; (\url{www.baader-planetarium.com})}. A GOTO mount will hold up to eight unit telescopes each equipped with a camera, focuser and filter wheel. Each piece of hardware needs to be connected by USB, but running 24 USB cables down the mount was deemed impractical. Therefore for each pair of UTs these cables are connected to a small PC --- an Intel NUC in a sealed fanless enclosure --- attached to the boom arm. Interface scripts are run on these, as shown in Fig.~\ref{fig:flow}. Using the FLI SDK a Cython wrapper called \textsf{fli-api} was written to allow easy control through Python, and using \textsf{Pyro} these functions are published to the network to be accessed by the control daemons on the main control computer. This allows all the pieces of the hardware to be controlled individually.
 
@@ -139,39 +165,55 @@ There is also a fourth related daemon called the exposure queue daemon (\texttt{
 
 Images are written to FITS files by the camera daemon and are archived by date. Each camera output is saved as a separate file (e.g. \texttt{r00033\_UT2.fits} is the image for run 33 from camera 2). These images are then copied via a dedicated fibre link from La Palma to Warwick University where the photometry pipeline is run.
 
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Dome}
-\label{sec:dome}
+
+\begin{mysubsection}{Dome}{sec:dome}
 
 The dome daemon (command name \texttt{dome}) sends commands to the Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})} through a serial connection. It also independently monitors the output of the conditions daemon, meaning it will close the dome if any of the conditions flags are set to bad (see Sec.~\ref{sec:conditions}). As a safety feature it will also refuse to open if a \texttt{dome open} command is issued while external conditions are bad, although this can be overridden when in manual mode (see Sec.~\ref{sec:pilot}). The dome daemon will also automatically turn on the dome dehumidifier if the internal humidity gets too high, and will turn it off when it reaches a lower level or if the dome is opened.
 
 The GOTO dome also has two additional Arduino boards fitted inside. The first is connected to additional sensors attached to the dome shutters and hatch door to act as backups to the in-built open/close sensors, as well as a siren which the dome daemon will sound whenever the dome is about to move. The second Arduino acts as an emergency backup system in case the dome daemon or control computer is disabled. The dome daemon emits a heartbeat signal to this board every second, and if this signal is not received after ten seconds the Arduino will take over the serial connection and issue commands to close the dome.
 
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Power}
-\label{sec:power}
+
+\begin{mysubsection}{Power}{sec:power}
 
 The power daemon (\texttt{power}) provides a unified interface for the various networked power units within the GOTO dome. This includes two uninterruptible power supplies (UPSs), one for the mount and electronics rack and a second for the dome, the power distribution units (PDUs) in the rack which power the individual computers and units, and the DC switch boards on the mount boom arm which power the interface computers and camera hardware (see Sec.~\ref{sec:fli}). Each power outlet has a unique name assigned and can be powered on or off through the power daemon, this gives the ability to remotely power cycle each system on the network in case of any problems. Similar outlets can be grouped together even if they are on different units, so the command \texttt{power on cams} will power on all of the CCD cameras.
 
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Mount}
-\label{sec:mount}
+
+\begin{mysubsection}{Mount}{sec:mount}
 
 The mount daemon (\texttt{mnt}, so as not to interfere with the Linux \texttt{mount} command) sends commands to the GOTO mount. The mount hardware is connected to a SiTech servo controller, and the system uses the SiTech control software\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})}. This is run as \textsf{SiTechEXE} on a Windows computer attached to the mount. Initially commands could only be sent through the \textsf{ASCOM} system running on that computer, which required an interface daemon to convert between \textsf{ASCOM} and Python commands accessible using \textsf{Pyro}. However an update to \textsf{SiTechEXE} added the ability to send TCP commands, meaning there is no need for an interface and now the mount daemon can communicate with it directly. Using the SiTech software provides several advantages, in particular an inbuilt pointing model system using \textsf{PointXP}.
 
+\end{mysubsection}
 
-% ####################
-\newpage
-\section{Autonomous Observing}
-\label{sec:autonomous}
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{mysection}
+
+% ########################################
+
+\begin{mysection}{Autonomous Observing}{sec:autonomous}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{mysubsection*}
 
 The hardware control systems described in Sec.~\ref{sec:hardware} provide the basic methods to control the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount, take exposures and repeat for the rest of the night.
 
 GOTO however is designed as a robotic installation, and therefore requires another level of software to take the place as the source of these commands. In \textsf{G-TeCS} this role is filled by a master control program called the pilot. There are also several support daemons that perform roles allowing the system to operate robotically: the conditions daemon which monitors weather and other system conditions, the sentinel daemon which listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
 
+\end{mysubsection*}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Pilot}
-\label{sec:pilot}
+
+\begin{mysubsection}{Pilot}{sec:pilot}
 
 The pilot is a Python script that is run once each night: starting automatically in the late afternoon, running through to the morning and exiting once the system has shut down. It issues commands to the hardware in exactly the same way as a human would, executing the terminal commands which call the control scripts and send the commands to the daemon. The pilot is written as an asynchronous program using the standard Python \textsf{asyncio} module. The program runs with a single-threaded event loop with multiple running tasks as coroutines. Each task contains a loop which executes particular commands and then pauses using the \texttt{await} command to allow other routines to be run. There are two types of routines: the night marshal which runs through tasks as the night progresses and the check routines which monitor the rest of the system.
 
@@ -211,15 +253,19 @@ The main pilot nightly operations are carried out by the \texttt{night\_marshal}
 
 Once the night marshal has completed all of its tasks it exits. The pilot has an internal shutdown timer which set at the beginning of the night to when the rising Sun will reach \SI{0}{\degree} altitude again. When this time is reached the pilot then runs the \texttt{shutdown} script, which powers off the cameras, parks the mount and ensures the dome is closed. This is on a separate timer to the rest of the night marshal tasks, meaning if something goes wrong during the night the system will always shut down in the morning. It is also possible for the system to emergency shut down during the night, which will occur if a critical error occurs that can not be solved without human intervention (see the definition of a critical conditions flag in Sec.~\ref{sec:conditions}). This ends the pilot for the night, and it falls on whoever checks the alert to restart it if they decide the cause of the alert is resolved.
 
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Hardware monitors}
-\label{sec:monitors}
+
+\begin{mysubsection}{Hardware monitors}{sec:monitors}
 
 \lipsum{}
 
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Conditions}
-\label{sec:conditions}
+
+\begin{mysubsection}{Conditions}{sec:conditions}
 
 The conditions daemon is a support daemon that runs on the central server. It takes in readings from the three local weather stations next to the GOTO dome on La Palma, as well as other sources such as internal sensors, every 10 seconds. The daemon processes these inputs into a series of output flags, which have a value of 0 (Good), 1 (Bad) or 2 (ERROR). If any of the flags are marked as not Good then the overall conditions are bad: the dome will close (Sec.~\ref{sec:dome}) and the pilot will pause (Sec.~\ref{sec:pilot}). The conditions daemon is run centrally on the main server because it deals with site-wide values, so when the second instrument is built it is envisioned that they will both share the same conditions daemon (as shown in Fig.~\ref{fig:flow2}).
 
@@ -248,11 +294,11 @@ An explanation of all the conditions flags is given below. Note the exact values
 
 \end{itemize}
 
+\end{mysubsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Observation database}
-\label{sec:obsdb}
 
+\begin{mysubsection}{Observation database}{sec:obsdb}
 
 \begin{figure}[ht]
 \begin{center}
@@ -272,10 +318,11 @@ The commands to be executed once the telescope has slewed to a pointing are stor
 
 Each entry in the pointings table can only be observed once. For observing a target more than once there also exists the \textit{mpointings} table, which contains information to dynamically re-generate pointings for a given target. An mpointing entry is defined with three key values: the requested number of observations, the time each should be valid in the queue and the time to wait between each observation. Each time the database caretaker script is run it looks for any entries in the mpointing table that still have observations to do and it creates another entry in the pointings table for that target. Setting the time values allows a lot of control over when pointings can be valid, for example scheduling follow-up observations a set number of hours or days after an initial pointing is observed.
 
-% ~~~~~~~~~~~~~~~~~~~~
-\subsection{Scheduler}
-\label{sec:scheduler}
+\end{mysubsection}
 
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{mysubsection}{Scheduler}{sec:scheduler}
 
 \begin{figure}[t]
 \begin{center}
@@ -288,9 +335,11 @@ Each entry in the pointings table can only be observed once. For observing a tar
 
 In order for targets to be observed by GOTO in robotic mode they must have entries defined in the pointings (or mpointings) table in the observation database. These can be added manually, using a command line script or a web interface, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in Fig.~\ref{fig:flow}. The sentinel acts as the alert listener for the system, taking any incoming targets and adding them to the database. For individual well-located sources like supernovae a single target is sufficient, but GOTO was designed to cover large areas resulting from gravitational wave skymaps. When an alert with a skymap is detected the sentinel calls functions from a Python module called \textsf{goto-tile}, which maps the skymap onto the fixed GOTO all-sky grid and returns a list of tile pointings and contained skymap probability within each. These are then added to the database by and processed by the scheduler daemon as described in Sec.~\ref{sec:scheduler}. An example of a skymap and the tiles output by \textsf{goto-tile} is shown in Fig.~\ref{fig:tiling}.
 
+\end{mysubsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Sentinel}
-\label{sec:sentinel}
+
+\begin{mysubsection}{Sentinel}{sec:sentinel}
 
 The scheduler daemon runs on the master server that also holds the primary observation database (see Sec.~\ref{sec:obsdb}). There is no specific command loop or hardware restrictions like in other daemons, but there are several advantages to having the scheduling calculations take place in their own daemon on the central server. Firstly, having the calculations done on the same machine as the database is more efficient when it comes to making queries, it is also a more powerful machine than the control computer that the pilot is running on. Furthermore when the second GOTO instrument is built having one scheduler that can speak to either pilot as required opens up further observation strategy opportunities.
 
@@ -452,3 +501,11 @@ Some examples of calculated priority values using this method are given in Table
 As demonstrated in this example, priorities can be sorted easily in the first case by considering their repeat numbers, ranks and ToO flags. In the cases these are the same then the tiebreaking value is needed. This is most important when a new gravitational wave event comes in, which can result in up to one hundred new pointings being inserted at once at the same rank. The tiebreaker is a weighted combination of the airmass, contained probability (for skymap tiles) and time since last observation (for survey tiles). The exact weighting is shown in Equation~(\ref{eq:priority}) and depends on the values of $a$, $p$ and $t$. For standard non-skymap, non-survey pointings only airmass is considered, as $P$ is always set to 1 and $T$ is always 0 (as shown in Table~\ref{tab:priority}). Therefore pointings will be selected based on their altitude. For gravitational wave pointings the weighting between airmass and probability determines the observation strategy. Weighting airmass higher will prioritise pointings at a higher altitude and therefore increase typical data quality, but potentially at the loss of GW skymap coverage. On the other hand prioritising only probability would ensure the maximum possible coverage of the skymap, but low-altitude pointings might be selected when it might instead be better to wait until they were at a higher airmass. To attempt to find optimal weighting values many simulations were run with different skymaps and values. These simulations ran through a full night of observing, with the gravitational wave tiles inserted at a random time that day --- so simulating both an alert occurring during the night interrupting observations and the alert occurring during daytime so the pointings are there as soon as the system starts observing. Telescope downtime due to weather was also simulated as a Gaussian process with a 10\% chance of occurring and a typical timescale of 1 hour. The initial results of these simulations indicated a weighting of $a=1$ and $p=10$ provided the best optimisation between coverage and average airmass.
 
 Once every pointing in the queue has had its priority calculated, the pointing with the smallest value is selected as the highest priority to observe. However before returning this pointing's database ID the  scheduler takes into account what the pilot is currently observing. In most cases the pilot will currently be observing a pointing previously given by the scheduler, and on the next check the scheduler will return that the same pointing is still the highest priority --- in which case pilot will continue observing. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets in the middle of observing unless the new pointing has the ToO flag set. Otherwise the pilot will wait until it has finished the current job. Finally if the scheduler finds nothing to do the pilot will park the telescope and wait for the next valid target.
+
+\end{mysubsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{mysection}
+
+% ########################################
