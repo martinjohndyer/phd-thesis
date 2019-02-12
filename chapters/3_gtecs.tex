@@ -59,6 +59,11 @@ The starting point was the control system already developed for pt5m, a \SI{0.5}
 
 More on pt5m, maybe a picture? Or the flowchart from the paper?
 
+
+The major obvious difference between \textit{pt5m} and \gls{goto} are the multiple unit telescopes.
+
+, and one of the reasons it was chosen, was the need to be able to control multiple UTs as described in previous section. The flexibility of the pt5m system using Pyro made this much easier. At the time we also needed to be able to control the SiTech system on Windows, which was thankfully something I knew how to do with DOTT (which was also inspired by pt5m, thanks Tim). And after the fact it made it much easier to be able to run the scheduler and sentinel on the database machine. This will be important for multi-scopes too.
+
 \end{mysubsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -73,31 +78,29 @@ More on pt5m, maybe a picture? Or the flowchart from the paper?
 
 \begin{mysubsection*}
 
-%%%%% MORE TO WRITE \/\/\/
-The pt5m control system formed the basis for the \gls{gtecs}, which built upon it to adapt and upgrade it specifically for use on the \gls{goto} project. The core \gls{gtecs} system architecture is shown in Fig.~\ref{fig:flow} and is described in the following sections.
+The \gls{gtecs} is the name given to the collection of programs and systems that have been developed to fulfil the requirements of the GOTO project. The \textit{pt5m} control system as described in the previous section formed the basis for \gls{gtecs}. Its structure of multiple independent daemons was developed into the core system architecture, shown in Fig.~\ref{fig:flow} below. This section gives an overview of the system and its implementation, and the following sections discuss in detail the two core branches of G-TeCS:\@ the base hardware control programmes (Section~\ref{sec:hardware_control}) and autonomous systems built on top of them (Section~\ref{sec:autonomous}).
 
-The major difference between pt5m, and one of the reasons it was chosen, was the need to be able to control multiple UTs as described in previous section. The flexibility of the pt5m system using Pyro made this much easier. At the time we also needed to be able to control the SiTech system on Windows, which was thankfully something I knew how to do with DOTT (which was also inspired by pt5m, thanks Tim). And after the fact it made it much easier to be able to run the scheduler and sentinel on the database machine. This will be important for multi-scopes too.
-
-Also, G-TeCS is run as a package \pkg{gtecs}. And there are others built in: \pkg{obsdb}, \pkg{gototile} and \pkg{gotoalert}. Python3 only, really 3.5+.
-%%%%% MORE TO WRITE /\/\/\
-
-\begin{figure}[htb]
+\begin{figure}[h]
 \begin{center}
-\includegraphics[width=11cm]{images/flow.pdf}
+\includegraphics[width=\linewidth]{images/flow.pdf}
 \end{center}
-\caption[The G-TeCS system architecture]{\textsf{G-TeCS} system architecture. The observation database as well as the sentinel, scheduler and conditions daemons shown to the left run on an observatory-wide master server, while the pilot and hardware daemons are located on the telescope control computer within the dome. Control for the unit telescope hardware (focuser, filter wheel and camera) is sent via an interface daemon for each pair of UTs, running on computers located on the mount. Only the system for the prototype instrument (one mount with four unit telescopes) is shown, see Fig.~\ref{fig:flow2} for the proposed full system.}
+\caption[The G-TeCS system architecture]{The \gls{gtecs} system architecture as deployed on La Palma. The observation database as well as the sentinel, scheduler and conditions daemons shown to the left run on an observatory-wide master server, while the pilot and hardware daemons are located on the telescope control computer within the dome. Control for the unit telescope hardware (focuser, filter wheel and camera) is sent via an interface daemon for each pair of UTs, running on computers attached to the mount. Only the system for the prototype instrument (one mount with four unit telescopes) is shown.}
 \label{fig:flow}
 \end{figure}
 
-\begin{figure}[htb]
-\begin{center}
-\includegraphics[width=15cm]{images/flow2.pdf}
-\end{center}
-\caption[An expanded version of Fig.~\ref{fig:flow}]{An expanded version of Fig.~\ref{fig:flow}, showing the proposed full system architecture for two GOTO mounts each with eight unit telescopes. Each telescope is envisioned to have an independent pilot while sharing common scheduling and conditions monitoring systems running on the central server.}
-\label{fig:flow2}
-\end{figure}
-
 \end{mysubsection*}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{mysubsection}{Implementation}{sec:implementation}
+
+The core \gls{gtecs} code is written as a \proglang{Python} package, \pkg{gtecs}. This includes all the daemons, scripts, associated modules and functions. One core component, the code and functions to interact with the observation database (see Section~\ref{sec:obsdb}), has been split off into a separate \proglang{Python} package ObsDB (\pkg{obsdb}), this was to allow other users to interact with the database without the need to install the entire \pkg{gtecs} package. In addition, the code for alert processing within the sentinel (see Section~\ref{sec:sentinel}) is in a separate module, GOTO-alert (\pkg{gotoalert}). This is because it originated as a separate code project developed by Alex Obradovic at Monash, that I then took over and integrated with the \gls{gtecs} sentinel.
+
+G-TeCS and the associated packages are written almost entirely in \proglang{Python}, specifically \proglang{Python3}. \proglang{Python} is a versatile programming language that is increasingly common in astronomy, helped by the popular open-source Astropy Project \citep{astropy}. \proglang{Python} version 3.0 was released in 2008 and is infamously not backwards-compatible with \proglang{Python2}. The code for \textit{pt5m} was written in \proglang{Python2}, and therefore initially so was G-TeCS.\@ Over the subsequent years the code was re-written to be compatible with both \proglang{Python2} and \proglang{Python3}, which was possible due to the inbuilt \code{\_\_future\_\_} module in \proglang{Python2} and the \code{six} package. Finally the addition of new features added to \proglang{Python3}, such as the \pkg{asyncio} package (used heavily by the pilot) in version 3.5, and the imminent end-of-life of \proglang{Python2} in 2020 lead to the dropping of \proglang{Python2} support. This is in line with most other scientific \proglang{Python} packages including \pkg{astropy}, which is no longer developed for \proglang{Python2}. % chktex 21
+
+The \pkg{gtecs} and associated packages have a variety of requirements. Some of the most critical external packages (not included in the \proglang{Python} standard library) are \pkg{numpy} for mathematical and scientific structures, \pkg{astropy} for astronomical functions, \pkg{sqlalchemy} for \proglang{SQL} database management (see Section~\ref{sec:obsdb}), \pkg{astroplan} for scheduling (see Section~\ref{sec:scheduler}), \pkg{voeventparse} for handling VOEvents (Section~\ref{sec:sentinel}) and \pkg{gototile} for sky map processing (Section~\ref{sec:gototile}).
+
+\end{mysubsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -267,7 +270,7 @@ Once the night marshal has completed all of its tasks it exits. The pilot has an
 
 \begin{mysubsection}{Conditions}{sec:conditions}
 
-The conditions daemon is a support daemon that runs on the central server. It takes in readings from the three local weather stations next to the GOTO dome on La Palma, as well as other sources such as internal sensors, every 10 seconds. The daemon processes these inputs into a series of output flags, which have a value of 0 (Good), 1 (Bad) or 2 (ERROR). If any of the flags are marked as not Good then the overall conditions are bad: the dome will close (Sec.~\ref{sec:dome}) and the pilot will pause (Sec.~\ref{sec:pilot}). The conditions daemon is run centrally on the main server because it deals with site-wide values, so when the second instrument is built it is envisioned that they will both share the same conditions daemon (as shown in Fig.~\ref{fig:flow2}).
+The conditions daemon is a support daemon that runs on the central server. It takes in readings from the three local weather stations next to the GOTO dome on La Palma, as well as other sources such as internal sensors, every 10 seconds. The daemon processes these inputs into a series of output flags, which have a value of 0 (Good), 1 (Bad) or 2 (ERROR). If any of the flags are marked as not Good then the overall conditions are bad: the dome will close (Sec.~\ref{sec:dome}) and the pilot will pause (Sec.~\ref{sec:pilot}). The conditions daemon is run centrally on the main server because it deals with site-wide values, so when the second instrument is built it is envisioned that they will both share the same conditions daemon.
 
 Each conditions flag has a limit below or above which the flag will turn from good to bad. For categories with multiple sources (for example each of the three weather stations gives an independent external temperature reading) then the limit will be applied to each and if any are found to be bad then the flag is set. Each category also has two parameters, the bad delay and the good delay. These are the time the conditions daemon waits between an input going bad/good and setting the flag accordingly, which has the effect of smoothing out any sudden spikes in a value and ensures the dome will not be opening and closing too often. Certain flags are also marked as critical flags, for conditions that will not be solved by the system pausing and will need human intervention to fix. Alerts are sent out in the form of automated messages to the system Slack channel, with further email and text messages being considered before the system moves to fully unsupervised operations. Alerts are only sent out when critical flags are set, which is why some flags have a normal and a more serious critical version.
 
