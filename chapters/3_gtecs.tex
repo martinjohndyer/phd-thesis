@@ -21,43 +21,60 @@ It's based on my SPIE paper, plus some GOTO talks.
 % ~~~~~~~~~~~~~~~~~~~~
 
 \subsection{Requirements of the control system}
-\label{sec:control_desision}
+\label{sec:control_requirements}
 \begin{colsection}
 
-My first task as part of the GOTO collaboration, in the summer before I even started in Sheffield, was to decide on what control system software to use for the telescope. There were several requirements of the system to consider.
+My first task as part of the GOTO collaboration, in the summer before I started in Sheffield, was to decide on what control system software to use for the telescope. There were several requirements to consider.
 
-Firstly the chosen system had to allow for remote and, and most importantly, robotic operation of GOTO.\@ There are many telescope software packages available, but the majority are designed for a human observer to operate. GOTO however was to be a fully autonomous telescope, which meant operating nightly with no human intervention. This meant the control system had to contain routines for observing targets and standard tasks like taking calibration frames. On top of that it was desirable for the system to be able to monitor itself to detect and fix any errors as much as possible without the need for human intervention. Finally it had to be able to monitor and react to external conditions, closing the dome if rain was detected for example.
+Firstly the chosen system had to allow for remote and, most importantly, robotic operation of GOTO.\@ There are many telescope software packages available, but the majority are designed for a human observer to operate. GOTO however was to be a fully autonomous telescope, which meant operating nightly with no human intervention. This meant the control system had to contain routines for observing targets and standard tasks like taking calibration frames. On top of that it was desirable for the system to be able to monitor itself to detect and fix any errors as much as possible without the need for human intervention. Finally it had to be able to monitor and react to external conditions, for example closing the dome if rain was detected.
 
 Secondly the system had to include an observation scheduler, which could decide what the telescope should observe during the night. A basic scheduler might be run in the evening to create a night plan, as observers typically do when operating a telescope. However that alone would not fit the expected operations required from GOTO:\@ normally carrying out an all-sky survey but with a robust interrupt protocol for gravitational wave follow-up. The system therefore had to be able to recalculate what to observe on-the-fly, and be able to immediately react to transient \gls{too} events.
 
 Furthermore, although the project was still at an early stage the idea of linking together multiple telescopes into a global network was also considered, and the chosen control system implementation would ideally be expandable to facilitate this in the future (or at least not hinder the possibility).
 
-There were also several physical considerations when it came to choosing between software systems. The telescope hardware had already been decided on: an Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})}, a custom mount with a \gls{sitech} servo controller\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})} and multiple unit telescopes all using \gls{fli} cameras, focusers and filter wheels\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}. Any control system would need to communicate with all of them, so any control systems with existing drivers or packages used by established projects would be desirable.
+There were also several physical considerations when it came to choosing between software systems. The telescope hardware had already been decided on: an Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})}, a custom mount with a \gls{sitech} servo controller\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})} and multiple unit telescopes all using \gls{fli} cameras, focusers and filter wheels\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}. Any control system would need to communicate with all of them, so any systems with existing drivers or packages used by established projects would be desirable.
 
-Two particular hardware-related challenges faced the control system project. The first was that the SiTech controller software, \software{SiTechEXE}, only ran on Microsoft Windows. The software did an accessible \gls{api} through the \software{ASCOM} standard\footnote{\url{www.ascom-standards.org}} but that still required some form of the mount control system to be running on Windows. As most scientific software in astronomy runs on Linux systems this lead to two options: either have just a small interface running on the Windows machine and the majority of the system on Linux, or have the entire system run on Windows.
+Two particular hardware-related challenges faced the control system project. The first was that the SiTech controller software, \software{SiTechEXE}, only ran on Microsoft Windows. The software did have an accessible \gls{api} through the \software{ASCOM} standard\footnote{\url{www.ascom-standards.org}} but that still required some form of the mount control system to be running on Windows. As most scientific software in astronomy runs on Linux systems this lead to two options: either have just a small interface running on the Windows machine and the majority of the system on Linux, or have the entire system run on Windows.
 
 The second challenge was to deal with the multiple-unit telescope design of \gls{goto}. A full array of eight \glspl{ut} would require eight cameras, focusers and filter wheels. These would all need to be run in parallel, most importantly there needed to be no delay between the exposures starting and finishing on each camera. The physical construction of the telescope also came into play. The \gls{fli} units all require a USB connection to the control computer. A single computer situated in the dome would therefore require 24 USB cables to run up the mount, not only a practical difficulty but also a layout that could lead to interference and data loss. The suggested solution was to have small computers attached to the mount boom arms to act as intermediate interfaces to the \gls{ut} hardware. The control system therefore needed to be able to run in a distributed manner across multiple computers, potentially even running different operating systems.
 
-Finally, there were practical details consider. Cost was one: \gls{goto} was designed as a relatively inexpensive project that could be built quickly and copied across multiple sites. Therefore any costly software licenses would ideally be avoided. Experience and support requirements should also be considered: reusing a system that members of the collaboration had experience with would provide benefits compared to a completely new and exotic system.
-
-
-I gave a talk outlining the different options:
-\begin{itemize}
-    \item ACP Expert
-    \item RTS2
-    \item pt5m/home built
-    \item Talon
-\end{itemize}
-
-Maybe put the table of pros/cons here.
-
-In the end the choice was fairly obvious: go with pt5m.
+Finally, there were practical details to consider. \gls{goto} was designed as a relatively inexpensive project that could be built quickly and copied across multiple sites, therefore any costly software licenses would ideally be avoided. Experience and support requirements should also be considered, and reusing a system that members of the collaboration had experience with would provide benefits compared to a completely new and exotic system.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{pt5m}
+\subsection{Different control system options}
+\label{sec:control_options}
+\begin{colsection}
+
+Four possible options for the GOTO control systems were considered.
+
+\subsubsection{\software{ACP Expert}}
+\software{ACP Expert}\footnote{\url{http://acp.dc3.com}} is a commercial observatory control software system by DC3-Dreams. It is used by some advanced amateur astronomers and a few scientific and university telescopes, such as the Open University's \gls{pirate} \citep{PIRATE}. As a complete Windows software package with a web interface it is marketed as being straightforward to use, in either remote or fully robotic modes. It uses the \software{ASCOM} standard library and DC3-Dreams also provide professional support and updates. This however came at a cost: \$2495 for the base software, plus an additional \$599 for Maxim DL camera control and \$650 per year for continued support. At the time of making the control system decision \gls{goto} was anticipated to be deployed in a matter of months, so the quick and simple pre-existing commercial solution was perhaps more attractive than it might have otherwise been. However it was unsure if the \software{ACP} software would be able to cope with \gls{goto}'s unusual design, and its closed-source model would restrict our ability to make modifications. Therefore it was fairly quickly discounted.
+
+\subsubsection{\software{Talon}}
+
+The \software{Talon} observatory control system\footnote{\url{https://observatory.sourceforge.io}} is a Linux-based, open-source system created by \gls{omi}. It was included as an option primarily as at the time it was the control system of choice for the other observatories operated by Warwick University, such as SuperWASP \citep{SuperWASP}. \gls{omi} had built the SuperWASP mount and developed \software{Talon} alongside it, before later making it open source. However as a programme development has been limited to non-existent over the past decade, and Warwick were already looking at replacing it for their \gls{w1m} telescope and, ultimately, when upgrading SuperWASP.\@ Therefore adopting it for \gls{goto} would be unlikely and even counter-productive, as whatever was chosen for \gls{goto} was expected to (and ultimately did) influence and benefit the concurrent development of a new control system for \gls{w1m}.
+
+\subsubsection{\software{RTS2}}
+
+The \gls{rts2}\footnote{\url{https://rts2.org}} \citep{RTS2, RTS2b} is another free and open-source Linux software package. Unlike \software{Talon}, \software{RTS2} is under active development and is used by telescopes and observatories around the world \citep{BORAT, BOOTES-3, antarctic, ARTN}. There is a small but active community and multiple different drivers for the hardware \gls{goto} would use have been developed. The first version of RTS was written in \proglang{Python}, while the second version was rewritten in \proglang{C++} but with a \proglang{Python} interface available. \gls{rts2} was an attractive choice, however like the others it was unclear if it could be easily modified to meet the requirements for \gls{goto}'s multiple telescopes and Windows-controlled mount and no one in the collaboration had prior experience of using or implementing it.
+
+\subsubsection{\textit{pt5m} (\proglang{Python})}
+
+Built and operated by Sheffield and Durham Universities, \textit{pt5m} is a small \SI{0.5}{\metre} telescope located on La Palma on the roof of the \gls{wht} \citep{pt5m}.
+
+
+At the July 2015 GOTO meeting at Warwick University I gave a talk outlining the control system requirements and presenting the above four options. The choice was quickly between \gls{rts2} and a system based off of \textit{pt5m}.
+
+The decision taken was to adapt the \textit{pt5m} system for use by GOTO.\@
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{The \textit{pt5m} control system}
 \label{sec:pt5m}
 \begin{colsection}
 
