@@ -48,10 +48,10 @@ Finally, there were practical details to consider. \gls{goto} was designed as a 
 \label{sec:control_options}
 \begin{colsection}
 
-Four possible options for the GOTO control systems were considered.
+Four possible options for the GOTO control systems were considered: the existing software packages \software{ACP Expert}, \software{Talon} and \software{RTS2} or a custom system based on the code written for the \textit{pt5m} telescope. At the July 2015 GOTO meeting at Warwick University I gave a talk outlining the control system requirements and presenting the four options, and the decision taken was to adapt the \textit{pt5m} system for use by GOTO.\@ The three rejected systems are described below, while the \textit{pt5m} system is described in more detail in Section~\ref{sec:pt5m}.
 
 \subsubsection{\software{ACP Expert}}
-\software{ACP Expert}\footnote{\url{http://acp.dc3.com}} is a commercial observatory control software system by DC3-Dreams. It is used by some advanced amateur astronomers and a few scientific and university telescopes, such as the Open University's \gls{pirate} \citep{PIRATE}. As a complete Windows software package with a web interface it is marketed as being straightforward to use, in either remote or fully robotic modes. It uses the \software{ASCOM} standard library and DC3-Dreams also provide professional support and updates. This however came at a cost: \$2495 for the base software, plus an additional \$599 for Maxim DL camera control and \$650 per year for continued support. At the time of making the control system decision \gls{goto} was anticipated to be deployed in a matter of months, so the quick and simple pre-existing commercial solution was perhaps more attractive than it might have otherwise been. However it was unsure if the \software{ACP} software would be able to cope with \gls{goto}'s unusual design, and its closed-source model would restrict our ability to make modifications. Therefore it was fairly quickly discounted.
+\software{ACP Expert}\footnote{\url{http://acp.dc3.com}} is a commercial observatory control software system by DC3-Dreams. It is used by some advanced amateur astronomers and a few scientific and university telescopes, such as the Open University's \gls{pirate} \citep{PIRATE}. As a complete Windows software package with a web interface it is marketed as being straightforward to use, in either remote or fully robotic modes. It uses the \software{ASCOM} standard library and DC3-Dreams also provide professional support and updates. This however came at a cost: \$2495 for the base software, plus an additional \$599 for Maxim DL camera control and \$650 per year for continued support. At the time \gls{goto} was anticipated to be deployed in a matter of months, so the quick and simple pre-existing commercial solution was tempting. However it was unsure if the \software{ACP} software would be able to cope with \gls{goto}'s unusual design, and its closed-source model would restrict our ability to make modifications.
 
 \subsubsection{\software{Talon}}
 
@@ -61,15 +61,6 @@ The \software{Talon} observatory control system\footnote{\url{https://observator
 
 The \gls{rts2}\footnote{\url{https://rts2.org}} \citep{RTS2, RTS2b} is another free and open-source Linux software package. Unlike \software{Talon}, \software{RTS2} is under active development and is used by telescopes and observatories around the world \citep{BORAT, BOOTES-3, antarctic, ARTN}. There is a small but active community and multiple different drivers for the hardware \gls{goto} would use have been developed. The first version of RTS was written in \proglang{Python}, while the second version was rewritten in \proglang{C++} but with a \proglang{Python} interface available. \gls{rts2} was an attractive choice, however like the others it was unclear if it could be easily modified to meet the requirements for \gls{goto}'s multiple telescopes and Windows-controlled mount and no one in the collaboration had prior experience of using or implementing it.
 
-\subsubsection{\textit{pt5m} (\proglang{Python})}
-
-Built and operated by Sheffield and Durham Universities, \textit{pt5m} is a small \SI{0.5}{\metre} telescope located on La Palma on the roof of the \gls{wht} \citep{pt5m}.
-
-
-At the July 2015 GOTO meeting at Warwick University I gave a talk outlining the control system requirements and presenting the above four options. The choice was quickly between \gls{rts2} and a system based off of \textit{pt5m}.
-
-The decision taken was to adapt the \textit{pt5m} system for use by GOTO.\@
-
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -78,14 +69,17 @@ The decision taken was to adapt the \textit{pt5m} system for use by GOTO.\@
 \label{sec:pt5m}
 \begin{colsection}
 
-The starting point was the control system already developed for pt5m, a \SI{0.5}{\metre} robotic telescope built and operated by Sheffield and Durham Universities and also located on La Palma~\citep{pt5m}. The pt5m control system is written in Python and was built around multiple independent hardware daemon programs with a pilot program to control them.
+Built and operated by Sheffield and Durham Universities, \textit{pt5m} is a small \SI{0.5}{\metre} telescope located on La Palma on the roof of the \gls{wht} \citep{pt5m}. The telescope was originally developed as a \gls{slodar} system for atmospheric turbulence profiling \citep{SLODAR_LaPalma} and is one of several around the world operated by Durham, including one in Korea that had just been commissioned at the time I joined GOTO \citep{SLODAR_Korea}. In order to make the most of the telescope when not being used for \gls{slodar} observations a science camera was added to \textit{pt5m} and it was upgraded for robotic observations. Since it has successfully been used for automatic observations of transient events, as well as being used for undergraduate teaching at Sheffield and Durham. All the \gls{slodar} telescopes used a custom control system developed at Durham, and a similar system was used by the teaching telescopes of the Durham Department of Physics that I worked with during my undergraduate program. The \textit{pt5m} system has been modified for its extra roles which matched well to what we needed for \gls{goto}, and so it was chosen to be the base for the GOTO control system.
 
-More on pt5m, maybe a picture? Or the flowchart from the paper?
+The pt5m control system is written in \proglang{Python} and was built around multiple independent hardware daemon programs with a pilot program to control them. This basic framework was adopted for \gls{goto}, with some changes. The major obvious difference between \textit{pt5m} and \gls{goto} are the multiple unit telescopes, but the same system could be adapted through the creation of interface daemons on which allow communication to the unit telescopes over the network. In fact the nature of the daemon system made it very easy to expand to have daemons running on physically separate machines but still communicate over the network, including on both Linux and Windows computers. This also made it possible to run the scheduler and sentinel on the database machine, a key detail for the multiple-telescope system.
 
-
-The major obvious difference between \textit{pt5m} and \gls{goto} are the multiple unit telescopes.
-
-, and one of the reasons it was chosen, was the need to be able to control multiple UTs as described in previous section. The flexibility of the pt5m system using Pyro made this much easier. At the time we also needed to be able to control the SiTech system on Windows, which was thankfully something I knew how to do with DOTT (which was also inspired by pt5m, thanks Tim). And after the fact it made it much easier to be able to run the scheduler and sentinel on the database machine. This will be important for multi-scopes too.
+\begin{figure}[p]
+\begin{center}
+\includegraphics[width=\linewidth]{images/pt5m_software.png}
+\end{center}
+\caption[\textit{pt5m} control system architecture]{The \textit{pt5m} control system architecture, taken from~\cite{pt5m}. The hardware daemons are shown on the right, they communicate with the pilot which receives information from the observation scheduler and the conditions monitor. This basic framework was adapted for the GOTO control system, c.f. Figure~\ref{fig:flow}.}
+\label{fig:pt5m_software}
+\end{figure}
 
 \end{colsection}
 
