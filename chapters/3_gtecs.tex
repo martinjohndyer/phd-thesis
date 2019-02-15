@@ -127,6 +127,7 @@ The \pkg{gtecs} and associated packages have a variety of requirements. Some of 
 
 \subsection{Daemons}
 \label{sec:daemons}
+% hardware connection errors
 \begin{colsection}
 
 The core elements of the control system are the daemons. A \emph{daemon} is a type of computer program that runs as a background process, continually cycling and awaiting any input from the user. This is in contrast to a \emph{script} which is run once (either by the system or a user), carries out a series of tasks in the foreground and then exits once it is completed. Common examples of daemons on a Unix-based system are \software{sshd}, which listens for and creates \gls{ssh} connections, and \software{cron}, which runs commands at predefined times. Incidentally both are used by G-TeCS:\@ \gls{ssh} to issue commands on remote machines and \software{cron} to start scripts like the pilot at a set time.
@@ -143,6 +144,7 @@ Functionally each daemon is built around a \proglang{Python} class which contain
 
 \subsection{Scripts}
 \label{sec:scripts}
+% mode?
 \begin{colsection}
 
 As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, or with utilities like \software{cron}.
@@ -179,7 +181,7 @@ The most important script to the robotic operation of the telescope is the pilot
 
 \begin{colsection}
 
-There are seven primary hardware control daemons, as shown in Fig.~\ref{fig:flow}. A brief description of each is given in the following sections.
+The core programmes of \gls{gtecs} are the hardware daemons. There are seven primary daemons, as shown in the centre-right of Fig.~\ref{fig:flow}. This section provides a summary of each of the hardware categories, describing the how the daemons interact with them and the particular challenges and features unique to each.
 
 \end{colsection}
 
@@ -187,6 +189,41 @@ There are seven primary hardware control daemons, as shown in Fig.~\ref{fig:flow
 
 \subsection{Cameras / Focusers / Filter Wheels}
 \label{sec:fli}
+% describe the hardware (see commissioning)
+% fli-api
+%   includes fakes
+% fli interfaces:
+%   need for n u c s
+%   communicate through pyro
+%   transfer images as num py arrays, so pickle
+%   "meta-daemons"??
+% cam:
+%   types of images (light/dark), SCIENCE/etc, binning, area and so on
+%   how images are written
+%       multiple FITS extensions considered
+%       don't have space to store a whole image on the chip... (inside fli api)
+%   speed ups (#248, #250)
+%   need to cool
+%   headers
+%       all cards in appendix?
+%   glance
+%   WCS not added (#143)
+%   much more in the pipeline
+% filt:
+%   serial numbers
+%   filter profiles? no, see throughput section
+%   need to home
+%   timing was also an issue
+% foc:
+%   fairly simple?
+%   autofocus is later
+% exq:
+%   talks to both cam and filt
+%   exposure list system
+%       can pause and unpause
+%   multi filters
+%   normal way to operate
+%   more timing concerns
 \begin{colsection}
 
 The GOTO detectors use off-the-shelf hardware from FLI\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}: each GOTO unit telescope uses a MicroLine ML50100 camera with a KAF-50100 CCD detector, an Atlas focuser and a CFW9--5 filter wheel with a set of Baader LRGBC filters\footnote{Baader Planetarium, Germany; (\url{www.baader-planetarium.com})}. A GOTO mount will hold up to eight unit telescopes each equipped with a camera, focuser and filter wheel. Each piece of hardware needs to be connected by USB, but running 24 USB cables down the mount was deemed impractical. Therefore for each pair of UTs these cables are connected to a small PC --- an Intel NUC in a sealed fanless enclosure --- attached to the boom arm. Interface scripts are run on these, as shown in Fig.~\ref{fig:flow}. Using the FLI SDK a Cython wrapper called \textsf{fli-api} was written to allow easy control through Python, and using \textsf{Pyro} these functions are published to the network to be accessed by the control daemons on the main control computer. This allows all the pieces of the hardware to be controlled individually.
@@ -203,6 +240,32 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 
 \subsection{Dome}
 \label{sec:dome}
+% astrohaven hardware
+% software based on SLODAR/pt5m
+%   but they made their own PLC
+% sends commands to the PLC as bytes
+% timing
+%   stutter south side
+% repeated commands ("close" overwrites opening, but not closing)
+% limit switches + extras with Aurduino (in commissioning chapter?)
+%   sometimes didn't fully open
+%   closing slightly and reopening worked most of the time
+%   limit switches needed adjustment
+% hatch sensor
+%   see conditions flag
+% siren
+%   can be silenced
+%   depending on mode
+%   never for autoclose though
+% quick-close button
+% lockdown/autoclose (see conditions)
+%   depends on mode
+% paul's heartbeat box
+% dehumidifier
+%   don't want to run too much (dust in rotor, loses efficiency, needs power)
+%   auto turns on and off
+%   humidity and temperature
+%   can be overridden
 \begin{colsection}
 
 The dome daemon (command name \texttt{dome}) sends commands to the Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})} through a serial connection. It also independently monitors the output of the conditions daemon, meaning it will close the dome if any of the conditions flags are set to bad (see Sec.~\ref{sec:conditions}). As a safety feature it will also refuse to open if a \texttt{dome open} command is issued while external conditions are bad, although this can be overridden when in manual mode (see Sec.~\ref{sec:pilot}). The dome daemon will also automatically turn on the dome dehumidifier if the internal humidity gets too high, and will turn it off when it reaches a lower level or if the dome is opened.
@@ -213,21 +276,48 @@ The GOTO dome also has two additional Arduino boards fitted inside. The first is
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Power}
-\label{sec:power}
+\subsection{Mount}
+\label{sec:mount}
+% SiTechEXE
+%   sync
+%   PointXP (in commissioning section?)
+% version 1: sitech interface (like fli)
+%   had to run on Windows
+%       start, shutdown and kill from Linux
+%   cyg win and so on
+% version 2: TCP/IP
+%   much better!
+%   commands with status info
+% slew commands
+%   target (distance from)
+%   alt az
+%   J now vs J 2000 (cooking)
+% step commands
+%   on-sky or RA (see issue)
+% park/un-park
+% "blinky" mode
+% dec freezing
 \begin{colsection}
 
-The power daemon (\texttt{power}) provides a unified interface for the various networked power units within the GOTO dome. This includes two uninterruptible power supplies (UPSs), one for the mount and electronics rack and a second for the dome, the power distribution units (PDUs) in the rack which power the individual computers and units, and the DC switch boards on the mount boom arm which power the interface computers and camera hardware (see Sec.~\ref{sec:fli}). Each power outlet has a unique name assigned and can be powered on or off through the power daemon, this gives the ability to remotely power cycle each system on the network in case of any problems. Similar outlets can be grouped together even if they are on different units, so the command \texttt{power on cams} will power on all of the CCD cameras.
+The mount daemon (\texttt{mnt}, so as not to interfere with the Linux \texttt{mount} command) sends commands to the GOTO mount. The mount hardware is connected to a SiTech servo controller, and the system uses the SiTech control software\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})}. This is run as \textsf{SiTechEXE} on a Windows computer attached to the mount. Initially commands could only be sent through the \textsf{ASCOM} system running on that computer, which required an interface daemon to convert between \textsf{ASCOM} and Python commands accessible using \textsf{Pyro}. However an update to \textsf{SiTechEXE} added the ability to send TCP commands, meaning there is no need for an interface and now the mount daemon can communicate with it directly. Using the SiTech software provides several advantages, in particular an inbuilt pointing model system using \textsf{PointXP}.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Mount}
-\label{sec:mount}
+\subsection{Power}
+\label{sec:power}
+% simplest of the daemons?
+% lots of hardware
+%   PDUs in rack
+%   UPSs
+%   relays on arms
+% uses whatever that command system is called
+% units defined in params
+%   grouping outlets
 \begin{colsection}
 
-The mount daemon (\texttt{mnt}, so as not to interfere with the Linux \texttt{mount} command) sends commands to the GOTO mount. The mount hardware is connected to a SiTech servo controller, and the system uses the SiTech control software\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})}. This is run as \textsf{SiTechEXE} on a Windows computer attached to the mount. Initially commands could only be sent through the \textsf{ASCOM} system running on that computer, which required an interface daemon to convert between \textsf{ASCOM} and Python commands accessible using \textsf{Pyro}. However an update to \textsf{SiTechEXE} added the ability to send TCP commands, meaning there is no need for an interface and now the mount daemon can communicate with it directly. Using the SiTech software provides several advantages, in particular an inbuilt pointing model system using \textsf{PointXP}.
+The power daemon (\texttt{power}) provides a unified interface for the various networked power units within the GOTO dome. This includes two uninterruptible power supplies (UPSs), one for the mount and electronics rack and a second for the dome, the power distribution units (PDUs) in the rack which power the individual computers and units, and the DC switch boards on the mount boom arm which power the interface computers and camera hardware (see Sec.~\ref{sec:fli}). Each power outlet has a unique name assigned and can be powered on or off through the power daemon, this gives the ability to remotely power cycle each system on the network in case of any problems. Similar outlets can be grouped together even if they are on different units, so the command \texttt{power on cams} will power on all of the CCD cameras.
 
 \end{colsection}
 
