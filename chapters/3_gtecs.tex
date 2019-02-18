@@ -144,7 +144,6 @@ Functionally each daemon is built around a \proglang{Python} class which contain
 
 \subsection{Scripts}
 \label{sec:scripts}
-% mode?
 \begin{colsection}
 
 As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, or with utilities like \software{cron}.
@@ -164,6 +163,68 @@ Every daemon can also be controlled in ``interactive mode'', which is a user-fri
 There is also a utility script, \code{lilith}, which can send the same command to all the installed daemons. For example, to shutdown every daemon it is possible to call each directly (\code{cam shutdown}, \code{foc shutdown}, \code{mnt shutdown} etc\ldots) but it is instead much easier to run \code{lilith shutdown}. The name ``Lilith'' comes from the biblical ``mother of demons''.
 
 The most important script to the robotic operation of the telescope is the pilot, an asynchronous script that is run every night using \software{cron} at 5pm. The functions carried out by the pilot and the following scripts are detailed in Section~\ref{sec:pilot}. The pilot can also be started manually with the command \code{pilot start}, which is the command defined in the \code{crontab} file used by \software{cron} (note although this uses the same syntax as a daemon it is mechanically different, as it simply runs the script in the current terminal instead of starting a background process). There is also a daytime counterpart to the pilot, called the day marshal, which is run in the same way. Finally within the pilot, several of the standard tasks are separated off into ``observation scripts'', lists of commands to the daemons to carry out tasks like focusing the telescope, taking flat fields or starting/shutting down the hardware in the evening/morning respectively. As standard tasks these can also be run by human observers though a command line script \code{obs\_script} (for example \code{obs\_script~startup} or \code{obs\_script~autofocus}).
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{System mode}
+\label{sec:mode}
+\begin{colsection}
+
+\gls{goto} is a robotic telescope, and \gls{gtecs} is designed around that concept. This means the system will operate nightly with no human intervention needed. However sometimes it is necessary for a human operator to take control of the telescope, if one of the automated scripts fails or a situation arises that is easer to deal with manually. One example was taking observations of the asteroid Phaethon \citep{Phaethon}. The \gls{gtecs} observing database and pilot was not designed to observe solar system objects, so it was easier for a human observer to look up and slew to the coordinates. Finally there are cases when it is important that the automated systems are disabled: if work is being done to the hardware on-site it could be dangerous if the system still tried and move the mount or dome.
+
+\gls{gtecs} deals with these situations by having an overall system mode flag stored in a datafile which can be checked by the automated systems before activating. There are three possible modes, outlined below and summarised in Table~\ref{tab:modes}.
+
+\begin{itemize}
+    \item \code{robotic} mode is the default mode for the telescope. In this case it is assumed that the system is completely automated and therefore could move at any time. In this mode during the night the pilot will be in complete control of the telescope, and the dome will automatically close in bad weather.
+    \item \code{manual} mode is designed for manual observing, either on-site or remotely. In this mode the pilot will be paused and so will not interrupt commands sent by the observer. The dome will still sound the alarm when moving and autoclose in bad weather by default, but both of these features can be disabled. It is intended that they should only be disabled if there is an observer physically present in the dome, otherwise the dome should still be able to close automatically when observing remotely.
+    \item \code{engineering} mode is designed to be used only if there are workers on site in situations where the system moving without warning could be dangerous. All of the dome options are automatically disabled, and the pilot and day marshal will refuse to start. Leaving the system in this state for long periods of time is undesirable, and so it should only be used when physical work is ongoing or the telescope is completely deactivated.
+\end{itemize}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{c|ccccc} % chktex 44
+mode &
+pilot &
+day marshal &
+dome autoclose &
+dome alarm &
+\code{hatch} flag
+\\
+\midrule
+
+\code{robotic} &
+\textcolor{Green}{active} &
+\textcolor{Green}{active} &
+\textcolor{Green}{enabled} &
+\textcolor{Green}{enabled} &
+\textcolor{Green}{active}
+
+\\
+
+\code{manual} &
+\textcolor{orange}{paused} &
+\textcolor{Green}{active} &
+\makecell{\textcolor{Green}{enabled} or \\ \textcolor{red}{disabled}} &
+\makecell{\textcolor{Green}{enabled} or \\ \textcolor{red}{disabled}} &
+\textcolor{red}{ignored}
+
+\\
+
+\code{engineering} &
+\textcolor{red}{disabled} &
+\textcolor{red}{disabled} &
+\textcolor{red}{disabled} &
+\textcolor{red}{disabled} &
+\textcolor{red}{ignored}
+\\
+
+\end{tabular}
+\end{center}
+\caption[System mode comparison]{A comparison of the three \gls{gtecs} system modes. In \code{robotic} mode all the automated systems are enabled, while in \code{engineering} mode they are disabled. In \code{manual} mode the pilot is paused and the observer can disable the dome systems if desired. For more information see Section~\ref{sec:pilot} for the pilot and day marshal, Section~\ref{sec:dome} for the dome and Section~\ref{sec:conditions} for the conditions flags.}
+\label{tab:modes}
+\end{table}
 
 \end{colsection}
 
@@ -220,7 +281,7 @@ The core programmes of \gls{gtecs} are the hardware daemons. There are seven pri
 % exq:
 %   talks to both cam and filt
 %   exposure list system
-%       can pause and unpause
+%       can pause and un-pause
 %   multi filters
 %   normal way to operate
 %   more timing concerns
@@ -240,23 +301,10 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 
 \subsection{Dome}
 \label{sec:dome}
-% astrohaven hardware
-% software based on SLODAR/pt5m
-%   but they made their own PLC
-% sends commands to the PLC as bytes
-% timing
-%   stutter south side
-% repeated commands ("close" overwrites opening, but not closing)
 % limit switches + extras with Aurduino (in commissioning chapter?)
 %   sometimes didn't fully open
 %   closing slightly and reopening worked most of the time
 %   limit switches needed adjustment
-% hatch sensor
-%   see conditions flag
-% siren
-%   can be silenced
-%   depending on mode
-%   never for autoclose though
 % quick-close button
 % lockdown/autoclose (see conditions)
 %   depends on mode
@@ -268,7 +316,21 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 %   can be overridden
 \begin{colsection}
 
-The dome daemon (command name \texttt{dome}) sends commands to the Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})} through a serial connection. It also independently monitors the output of the conditions daemon, meaning it will close the dome if any of the conditions flags are set to bad (see Sec.~\ref{sec:conditions}). As a safety feature it will also refuse to open if a \texttt{dome open} command is issued while external conditions are bad, although this can be overridden when in manual mode (see Sec.~\ref{sec:pilot}). The dome daemon will also automatically turn on the dome dehumidifier if the internal humidity gets too high, and will turn it off when it reaches a lower level or if the dome is opened.
+The dome daemon is the primary interface to the Astrohaven clamshell dome. As such is in effect the most critical of all the hardware control systems, because a failure in the software meaning the dome opens in bad weather could be catastrophic to the hardware inside. As such it is one of the more complicated single hardware daemons, and includes multiple levels of checks and backup systems. It is also the only daemon with a small amount of autonomy built-in, and therefore blurs the line between a pure hardware control system and the more complicated autonomous systems described in Section~\ref{sec:autonomous}.
+
+At its core the dome daemon communicates with the \gls{plc} that comes as part of the Astrohaven dome through a simple serial (RS-232) connection. Moving the dome is achieved through sending a single character to the \gls{plc}: \code{a} to open the south shutter, \code{A} to close it, \code{b}/\code{B} for the north shutter. The \gls{plc} will respond with another character: either returning the input while the dome is moving or \code{x}/\code{X}/\code{y}/\code{Y} for when the south/north shutters are fully open/closed. This is a simplistic and quite limited interface, for example while one shutter is moving there is no way to know the status of the other. Therefore when commissioning it was decided to add additional independent limit switches, as described in Section~\ref{sec:arduino}. The Arduino system detailed in that section adds four additional inputs: one at the intersection of the two shutters to confirm the dome is fully closed, two on either side to confirm if either shutter is fully open and one on the dome entrance hatch. Between all these sensors and the feedback from the dome \gls{plc} it is possible to build up a complete picture of the current dome positions. Each shutter has five independent statuses: \code{closed}, \code{part\_open}, \code{full\_open}, \code{opening} and \code{closing}. The dome as a whole is only considered confirmed closed if both shutters report \code{closed}.
+
+As the interface functions of the Astrohaven \gls{plc} are very limited, any more advanced functionality had to be coded from scratch. The commands to the dome are contained within a custom \proglang{Python} class \code{Astrohaven}, which also returns the status of the dome and the additional sensors. The class has functions to open and close the dome, which include being able to move a specific side or both. Due to the five-shutter design of the \gls{goto} dome (\rtxt{shown in picture}) the overlapping side (south) is always opened before the north and closed after it, as it is easier on the mechanism for the shutter casters to roll over the lower shutter than for the lower one to force itself under. When opening the south shutter the motion is deliberately stepped (i.e.\ given in short bursts) rather than one smooth motion. This was added due to the design of the top overlapping shutter: if the move command is sent too quickly slack will appear in the drive belts and the upper shutter will end up ``jerking'' off the lower one, putting more stress on the belts. This sort of functionality is not included in the default Astrohaven software but is easy to do within the \proglang{Python} code by increasing the speed between command characters being sent.
+
+As described in Section~\ref{sec:arduino}, a further addition along with the extra dome sensors was a small siren attached to the Arduino. This siren can be activated for a given number of seconds through a HTML request to the Arduino, and this is called within the dome software whenever the dome is moved automatically. This can be disabled in manual mode and is automatically off in engineering mode, see Section~\ref{sec:mode}. One slight complexity is if the system is in manual mode with the alarm disabled but the autoclose feature still enabled. In this case the dome alarm will not sound when manually sending move commands to the daemon, however if the dome is due to close automatically in bad conditions it will re-enable the alarm and make sure it sounds before moving.
+
+As mentioned above, the dome daemon has an ``autoclose'' feature that is unlike any of the other daemons. The normal design philosophy of the daemons is that they should not take any action without explicit instructions, which could come from a user or another script like the pilot. The dome however is an exception, as in the case of bad weather the survival of the hardware is considered to be of higher importance. Therefore in addition to checking for input commands the dome daemon control loop also monitors the output of the conditions daemon (see Section~\ref{sec:conditions}) to check the conditions flags. If any are set to bad, and the dome autoclose option is enabled, then the dome daemon will automatically enter a ``lockdown'' state. In this state if the dome is currently open it will immediately send itself a close command. If the dome is already closed then the lockdown will refuse to react to any open commands, until either the lockdown is cleared or autoclose is disabled (which could be done by changing the system mode).
+
+
+%%%% HERE
+
+
+The dome daemon will also automatically turn on the dome dehumidifier if the internal humidity gets too high, and will turn it off when it reaches a lower level or if the dome is opened.
 
 The GOTO dome also has two additional Arduino boards fitted inside. The first is connected to additional sensors attached to the dome shutters and hatch door to act as backups to the in-built open/close sensors, as well as a siren which the dome daemon will sound whenever the dome is about to move. The second Arduino acts as an emergency backup system in case the dome daemon or control computer is disabled. The dome daemon emits a heartbeat signal to this board every second, and if this signal is not received after ten seconds the Arduino will take over the serial connection and issue commands to close the dome.
 
