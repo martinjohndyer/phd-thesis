@@ -305,15 +305,6 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 %   sometimes didn't fully open
 %   closing slightly and reopening worked most of the time
 %   limit switches needed adjustment
-% quick-close button
-% lockdown/autoclose (see conditions)
-%   depends on mode
-% paul's heartbeat box
-% dehumidifier
-%   don't want to run too much (dust in rotor, loses efficiency, needs power)
-%   auto turns on and off
-%   humidity and temperature
-%   can be overridden
 \begin{colsection}
 
 The dome daemon is the primary interface to the Astrohaven clamshell dome. As such is in effect the most critical of all the hardware control systems, because a failure in the software meaning the dome opens in bad weather could be catastrophic to the hardware inside. As such it is one of the more complicated single hardware daemons, and includes multiple levels of checks and backup systems. It is also the only daemon with a small amount of autonomy built-in, and therefore blurs the line between a pure hardware control system and the more complicated autonomous systems described in Section~\ref{sec:autonomous}.
@@ -324,15 +315,13 @@ As the interface functions of the Astrohaven \gls{plc} are very limited, any mor
 
 As described in Section~\ref{sec:arduino}, a further addition along with the extra dome sensors was a small siren attached to the Arduino. This siren can be activated for a given number of seconds through a HTML request to the Arduino, and this is called within the dome software whenever the dome is moved automatically. This can be disabled in manual mode and is automatically off in engineering mode, see Section~\ref{sec:mode}. One slight complexity is if the system is in manual mode with the alarm disabled but the autoclose feature still enabled. In this case the dome alarm will not sound when manually sending move commands to the daemon, however if the dome is due to close automatically in bad conditions it will re-enable the alarm and make sure it sounds before moving.
 
-As mentioned above, the dome daemon has an ``autoclose'' feature that is unlike any of the other daemons. The normal design philosophy of the daemons is that they should not take any action without explicit instructions, which could come from a user or another script like the pilot. The dome however is an exception, as in the case of bad weather the survival of the hardware is considered to be of higher importance. Therefore in addition to checking for input commands the dome daemon control loop also monitors the output of the conditions daemon (see Section~\ref{sec:conditions}) to check the conditions flags. If any are set to bad, and the dome autoclose option is enabled, then the dome daemon will automatically enter a ``lockdown'' state. In this state if the dome is currently open it will immediately send itself a close command. If the dome is already closed then the lockdown will refuse to react to any open commands, until either the lockdown is cleared or autoclose is disabled (which could be done by changing the system mode).
+As mentioned above, the dome daemon has an ``autoclose'' feature that is unlike any of the other daemons. The normal design philosophy of the daemons is that they should not take any action without explicit instructions, which could come from a user or another script like the pilot. The dome however is an exception, as in the case of bad weather the survival of the hardware is considered to be of higher importance. Therefore in addition to checking for input commands the dome daemon control loop also monitors the output of the conditions daemon (see Section~\ref{sec:conditions}) to check the conditions flags. If any are set to bad, and the dome autoclose option is enabled, then the dome daemon will automatically enter a ``lockdown'' state. In this state if the dome is currently open it will immediately send itself a close command. If the dome is already closed then the lockdown will refuse to react to any open commands, until either the lockdown is cleared or autoclose is disabled (which could be done by changing the system mode). Part of the hardware additions to the dome was a serial ``quick-close'' button directly attached to the control computer. The dome daemon automatically sends a signal through that serial connection every time the control loop passes, and if the signal is broken (i.e.\ the button has been pressed, breaking the circuit) then it will immediately trigger a lockdown.
 
+The other hardware device added to the \gls{goto} dome was a small backup ``heartbeat'' system. A recognised flaw of the previous dome control structure was that it was entirely relying on the dome daemon, and by extension the master control computer. Should the dome daemon crash, or the control computer die for any reason, then the dome would be completely disabled. This therefore presented a single point of failure, and a system was designed at Warwick to mitigate this. This extra circuit, also powered by an Arduino, is connected over the serial port to the dome \gls{plc}. The dome daemon has a separate thread which continuously sends a ping byte. Should the Arduino not receive a signal from the dome daemon after a given timeout period (the default is \SI{5}{\second}) it will overwrite the serial connection to the dome with close commands. This system therefore provides a secure secondary backup to the other dome software, and although it has so far not been needed it is an important insurance policy.
 
-%%%% HERE
+\rtxt{Need to coordinate with hardware section} %%%%
 
-
-The dome daemon will also automatically turn on the dome dehumidifier if the internal humidity gets too high, and will turn it off when it reaches a lower level or if the dome is opened.
-
-The GOTO dome also has two additional Arduino boards fitted inside. The first is connected to additional sensors attached to the dome shutters and hatch door to act as backups to the in-built open/close sensors, as well as a siren which the dome daemon will sound whenever the dome is about to move. The second Arduino acts as an emergency backup system in case the dome daemon or control computer is disabled. The dome daemon emits a heartbeat signal to this board every second, and if this signal is not received after ten seconds the Arduino will take over the serial connection and issue commands to close the dome.
+Finally the dome daemon is also the hardware interface to the dehumidifier located within the dome. The dehumidifier also requires some automated control, the unit uses a lot of power and can get clogged with dust if used excessively so it's not as easy as having it on whenever the dome is closed. The dome daemon will turn the dehumidifier on if the internal humidity gets too high or temperature gets too low, and will turn it off when they reach normal levels or if the dome is opened. This behaviour can also be overridden and like all the automated systems is disabled in engineering mode.
 
 \end{colsection}
 
