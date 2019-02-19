@@ -332,26 +332,29 @@ Finally the dome daemon is also the hardware interface to the dehumidifier locat
 
 \subsection{Mount}
 \label{sec:mount}
-% SiTechEXE
-%   sync
-%   PointXP (in commissioning section?)
-% version 1: sitech interface (like fli)
-%   had to run on Windows
-%       start, shutdown and kill from Linux
-%   cyg win and so on
-% version 2: TCP/IP
-%   much better!
-%   commands with status info
 % slew commands
 %   target (distance from)
 %   alt az
 %   J now vs J 2000 (cooking)
 % step commands
 %   on-sky or RA (see issue)
+% sync
 % park/un-park
 % "blinky" mode
 % dec freezing
 \begin{colsection}
+
+The mount daemon has changed the most since initially being written. The daemon sends commands to the \gls{goto} mount through the \gls{sitech} servo controller. As discussed in Section~\ref{sec:control_requirements} the software for the servo controller is a Windows-only program called \software{SiTechEXE}. Therefore being able to communicate with it was a key requirement of the control system.
+
+Initially the only \gls{api} available to communicate with \software{SiTechEXE} was via the \software{ASCOM} software. It was possible to communicate directly with the servo controller through a serial interface, however this was a very low-level interface and would have required a lot of work to re-implement the array of commands and functions within \software{SiTechEXE}. In particular the \software{PointXP} pointing model software was very important to make a pointing model for the mount (\rtxt{commissioning section}), and it would have been very hard if not impossible to implement using the pure serial commands.
+
+\software{ASCOM} is so called because it uses the Microsoft \gls{com} interface standard to provide a unified \gls{api} for astronomical hardware. \gls{sitech} provides their own \software{ASCOM} driver for their servo controller, and through the \proglang{Python} \pkg{pywin32} extensions module \software{Python} code could interact with \software{ASCOM} and therefore \software{SiTechEXE}. The \software{ASCOM} \gls{api} gave access to a wide variety of commands and status functions, including being able to slew the telescope, start and stop tracking, parking and setting and clearing targets.
+
+The \software{ASCOM} method did however require the \software{Python} daemon to be running on the Windows computer. The solution to this was to write a \code{sitech} interface in the same manner that the \gls{fli} hardware connected to the boom arm computers use an \code{fli} interface. The \code{sitech} interface was similarly very simple: it acted purely as a way of routing commands sent through the Pyro network to the \software{ASCOM} equivalent. However as it had to run on the Windows machine it differed slightly in implementation, as Windows and Linux have different ways of defining ``daemon'' processes (Windows generally does not call them daemons, instead using terms like ``background processes''). Furthermore the daemon had to be able to be started, stopped and killed from the remote Linux control computer using a \code{sitech} control script, which meant \gls{gtecs} needed to include functions specifically to interact with Windows processes. It also meant the entire \gls{gtecs} package needed to be installable on Windows and deal with configuration file paths and parameters (compare Windows \code{C:\textbackslash{}Users\textbackslash{}goto\textbackslash{}} to Linux \code{/home/goto/}). This was simplified by the use of the \software{Cygwin} package, which provides Unix-like commands and behaviours on Windows (including mapping directories in the Unix format). However once developed the system was reliable enough to correctly control the mount during commissioning.
+
+In July 2017 the creator of \software{SiTechEXE}, Dan Gray, released an update to the software that enabled communication over a network using TCP/IP commands. This meant the mount daemon running on the control computer could communicate directly with \software{SiTechEXE} without the need for the interface, \software{ASCOM}, \software{Cygwin} or maintaining any Windows-compatible code. Although the system as it was functioned reliably removing the need for compatibility with the \software{ASCOM} standards enabled the addition of several new features, such as more error feedback, whether the limit switches have been triggered and turning on and off ``blinky mode'' (see below) which could all be accessed through the TCP \gls{api}. As such it was seen as a worthwhile update, and therefore the \code{sitech} interface and any Windows code was removed from the \pkg{gtecs} module.
+
+%%% HERE
 
 The mount daemon (\texttt{mnt}, so as not to interfere with the Linux \texttt{mount} command) sends commands to the GOTO mount. The mount hardware is connected to a SiTech servo controller, and the system uses the SiTech control software\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})}. This is run as \textsf{SiTechEXE} on a Windows computer attached to the mount. Initially commands could only be sent through the \textsf{ASCOM} system running on that computer, which required an interface daemon to convert between \textsf{ASCOM} and Python commands accessible using \textsf{Pyro}. However an update to \textsf{SiTechEXE} added the ability to send TCP commands, meaning there is no need for an interface and now the mount daemon can communicate with it directly. Using the SiTech software provides several advantages, in particular an inbuilt pointing model system using \textsf{PointXP}.
 
