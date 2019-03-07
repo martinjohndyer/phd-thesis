@@ -290,6 +290,8 @@ The core programmes of \gls{gtecs} are the hardware daemons. There are seven pri
 %   more timing concerns
 \begin{colsection}
 
+Interface \glspl{nuc}!
+
 The GOTO detectors use off-the-shelf hardware from FLI\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}: each GOTO unit telescope uses a MicroLine ML50100 camera with a KAF-50100 CCD detector, an Atlas focuser and a CFW9--5 filter wheel with a set of Baader LRGBC filters\footnote{Baader Planetarium, Germany; (\url{www.baader-planetarium.com})}. A GOTO mount will hold up to eight unit telescopes each equipped with a camera, focuser and filter wheel. Each piece of hardware needs to be connected by USB, but running 24 USB cables down the mount was deemed impractical. Therefore for each pair of UTs these cables are connected to a small PC --- an Intel NUC in a sealed fanless enclosure --- attached to the boom arm. Interface scripts are run on these, as shown in Fig.~\ref{fig:flow}. Using the FLI SDK a Cython wrapper called \textsf{fli-api} was written to allow easy control through Python, and using \textsf{Pyro} these functions are published to the network to be accessed by the control daemons on the main control computer. This allows all the pieces of the hardware to be controlled individually.
 
 The camera (\texttt{cam}), focuser (\texttt{foc}) and filter (\texttt{filt}) daemons each issue commands to every one of their connected pieces of hardware. Commands can be sent independently or to all: \texttt{cam~image~2~60} will take a 60 second exposure on camera 2 only while not including the specifier (\texttt{cam~image~60}) would execute it on all cameras simultaneously. Multiple selections can be made using a simple comma-separated syntax, such as \texttt{cam~image~1,2,4~60}.
@@ -352,17 +354,22 @@ In July 2017 the creator of \software{SiTechEXE}, Dan Gray, released an update t
 
 \subsection{Power}
 \label{sec:power}
-% simplest of the daemons?
-% lots of hardware
-%   PDUs in rack
-%   UPSs
-%   relays on arms
 % uses whatever that command system is called
 % units defined in params
 %   grouping outlets
 \begin{colsection}
 
-The power daemon (\texttt{power}) provides a unified interface for the various networked power units within the GOTO dome. This includes two uninterruptible power supplies (UPSs), one for the mount and electronics rack and a second for the dome, the power distribution units (PDUs) in the rack which power the individual computers and units, and the DC switch boards on the mount boom arm which power the interface computers and camera hardware (see Sec.~\ref{sec:fli}). Each power outlet has a unique name assigned and can be powered on or off through the power daemon, this gives the ability to remotely power cycle each system on the network in case of any problems. Similar outlets can be grouped together even if they are on different units, so the command \texttt{power on cams} will power on all of the CCD cameras.
+Similar to the camera, focuser and filter wheel daemons the power daemon acts as an interface to multiple pieces of hardware. In this case the daemon is connected to three types of power unit in two locations within the \gls{goto} dome:
+
+\begin{itemize}
+    \item Two \glspl{pdu} are located in the main computer rack within the dome. These are used to control and distribute power to a variety of sources; including the primary control computer and ethernet switches in the rack, the servo controller and Windows control \gls{nuc} on the mount, the rack monitor, Wi-Fi router and LED lights within the dome.
+    \item Two additional power relay boxes are attached to the mount boom arms. In the same way that the boom-arm \glspl{nuc} are used to provide control interfaces instead of running multiple USB cables down the mount, these relays are used to power the \glspl{nuc} and hardware (cameras, focusers and filter wheels).
+    \item Two \glspl{ups} are also located in the rack. These are battery devices that provide backup power in the event the mains supply fails. The first of these is connected directly to the dome, so in case of a power failure the dome has it's own supply to enable it to close. The second is connected to the other power units described above.
+\end{itemize}
+
+The rack \glspl{pdu} and \glspl{ups} are manufactured by APC by Schneider Electric, and are communicated with using \gls{snmp} commands over the network using the Linux \code{snmpget} and \code{snmpset} utilities. The relay boxes were manufactured for \gls{goto} using Devantech ETH8020 ethernet boards, controlled through simple TCP/IP commands. All of these are surrounded by \software{Python} wrappers within the power daemon.
+
+The power daemon itself is by far the simplest of the daemons from the user's point of view. Each outlet in any of the above units can be turned on or off or rebooted (switched of and then back on again after a short delay). Each outlet has a unique name assigned, and multiple outlets can be grouped together to be controlled using a single command.
 
 \end{colsection}
 
