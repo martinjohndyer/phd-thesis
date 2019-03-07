@@ -3,6 +3,9 @@
 
 # LaTeX files
 thesis.pdf
+*.acn
+*.acr
+*.alg
 *.aux
 *.bak
 *.bbl
