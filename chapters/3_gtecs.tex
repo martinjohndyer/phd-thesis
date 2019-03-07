@@ -251,7 +251,7 @@ The core programmes of \gls{gtecs} are the hardware daemons. There are seven pri
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Cameras / Focusers / Filter Wheels}
+\subsection{FLI interfaces}
 \label{sec:fli}
 % describe the hardware (see commissioning)
 % fli-api
@@ -261,33 +261,6 @@ The core programmes of \gls{gtecs} are the hardware daemons. There are seven pri
 %   communicate through pyro
 %   transfer images as num py arrays, so pickle
 %   "meta-daemons"??
-% cam:
-%   types of images (light/dark), SCIENCE/etc, binning, area and so on
-%   how images are written
-%       multiple FITS extensions considered
-%       don't have space to store a whole image on the chip... (inside fli api)
-%   speed ups (#248, #250)
-%   need to cool
-%   headers
-%       all cards in appendix?
-%   glance
-%   WCS not added (#143)
-%   much more in the pipeline
-% filt:
-%   serial numbers
-%   filter profiles? no, see throughput section
-%   need to home
-%   timing was also an issue
-% foc:
-%   fairly simple?
-%   autofocus is later
-% exq:
-%   talks to both cam and filt
-%   exposure list system
-%       can pause and un-pause
-%   multi filters
-%   normal way to operate
-%   more timing concerns
 \begin{colsection}
 
 Interface \glspl{nuc}!
@@ -300,6 +273,57 @@ There is also a fourth related daemon called the exposure queue daemon (\texttt{
 
 Images are written to FITS files by the camera daemon and are archived by date. Each camera output is saved as a separate file (e.g. \texttt{r00033\_UT2.fits} is the image for run 33 from camera 2). These images are then copied via a dedicated fibre link from La Palma to Warwick University where the photometry pipeline is run.
 
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Cameras}
+\label{sec:cam}
+% types of images (light/dark), SCIENCE/etc, binning, area and so on
+% how images are written
+%   multiple FITS extensions considered
+%   don't have space to store a whole image on the chip... (inside fli api)
+% speed ups (#248, #250)
+% need to cool
+% headers
+%   all cards in appendix?
+% glance
+% WCS not added (#143)
+% much more in the pipeline
+\begin{colsection}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Filter wheels}
+\label{sec:filt}
+% serial numbers
+% filter profiles? no, see throughput section
+% need to home
+% timing was also an issue
+\begin{colsection}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Focusers}
+\label{sec:filt}
+% fairly simple?
+% autofocus is later
+\begin{colsection}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Exposure queue}
+\label{sec:exq}
+% talks to both cam and filt
+% exposure list system
+%   can pause and un-pause
+% multi filters
+% normal way to operate
+% more timing concerns
+\begin{colsection}
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
