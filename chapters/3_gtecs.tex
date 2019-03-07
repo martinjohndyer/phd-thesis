@@ -263,15 +263,13 @@ The core programmes of \gls{gtecs} are the hardware daemons. There are seven pri
 %   "meta-daemons"??
 \begin{colsection}
 
-Interface \glspl{nuc}!
+\rtxt{As described in the hardware chapter}, \gls{goto} uses off-the-shelf camera hardware from \gls{fli}. Each \gls{goto} unit telescope has a MicroLine ML50100 camera, an Atlas focuser and a CFW9--5 filter wheel connected to a small Intel \gls{nuc} attached to the boom arm. On these \glspl{nuc} run very basic daemons called the \gls{fli} interfaces. Barely daemons by the definition given in Section~\ref{sec:daemons}, these interfaces have no control loop and exist only as a way to expose the serial connection of the hardware to the wider Pyro network. By using these interface daemons, the primary control daemons for the \gls{fli} hardware can run on the main control computer without being physically connected to the hardware (aside from via ethernet).
 
-The GOTO detectors use off-the-shelf hardware from FLI\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}: each GOTO unit telescope uses a MicroLine ML50100 camera with a KAF-50100 CCD detector, an Atlas focuser and a CFW9--5 filter wheel with a set of Baader LRGBC filters\footnote{Baader Planetarium, Germany; (\url{www.baader-planetarium.com})}. A GOTO mount will hold up to eight unit telescopes each equipped with a camera, focuser and filter wheel. Each piece of hardware needs to be connected by USB, but running 24 USB cables down the mount was deemed impractical. Therefore for each pair of UTs these cables are connected to a small PC --- an Intel NUC in a sealed fanless enclosure --- attached to the boom arm. Interface scripts are run on these, as shown in Fig.~\ref{fig:flow}. Using the FLI SDK a Cython wrapper called \textsf{fli-api} was written to allow easy control through Python, and using \textsf{Pyro} these functions are published to the network to be accessed by the control daemons on the main control computer. This allows all the pieces of the hardware to be controlled individually.
+Communicating with the hardware has to be done using the \gls{sdk} provided by \gls{fli}, which is written in \proglang{C}. In order to use this \gls{sdk} with the control system written in \software{Python} a separate wrapper package \pkg{fli-api} was written in \software{Cython}, a programming language that provides a way for \proglang{C} code to be imported and run in \proglang{Python}.
 
-The camera (\texttt{cam}), focuser (\texttt{foc}) and filter (\texttt{filt}) daemons each issue commands to every one of their connected pieces of hardware. Commands can be sent independently or to all: \texttt{cam~image~2~60} will take a 60 second exposure on camera 2 only while not including the specifier (\texttt{cam~image~60}) would execute it on all cameras simultaneously. Multiple selections can be made using a simple comma-separated syntax, such as \texttt{cam~image~1,2,4~60}.
+The other benefit of the interfaces and the Pyro network is to allow a single daemon to interact with multiple pieces of hardware across multiple computers. This means that the single camera daemon running on the primary control computer can interface with all the cameras attached to the mount, and instead of sending commands to each camera individually the user can speak to them all together through the daemon. As an example, the command \code{cam~image~60} will take a 60 second exposure on every attached camera simultaneously. Including a specific number \code{cam~image~2~60} will only start the exposure on the camera attached to \gls{ut} 2. Multiple selections can also be made using a simple comma-separated syntax, such as \texttt{cam~image~1,2,4~60}. This notation and functionality is one of the major differences between \gls{gtecs} and the pt5m control system, and in fact all the other control systems considered in Section~\ref{sec:control_options}, which typically only communicate with a single telescope.
 
-There is also a fourth related daemon called the exposure queue daemon (\texttt{exq}), which coordinates taking frames in sequence and setting filters before the exposures start. The command \texttt{exq~image~60~L} would add a single exposure in the L filter to the queue while \texttt{exq~multiimage~3~60~L} would add three. The command \texttt{exq~image~60~R,G,B} would add three images, each to be taken in the R, G and B filters, and the exposure queue daemon would issue commands to the filter daemon to move the filter wheel between exposure commands to the camera daemon.
-
-Images are written to FITS files by the camera daemon and are archived by date. Each camera output is saved as a separate file (e.g. \texttt{r00033\_UT2.fits} is the image for run 33 from camera 2). These images are then copied via a dedicated fibre link from La Palma to Warwick University where the photometry pipeline is run.
+There are three control daemons that interact with the \gls{fli} interfaces: the camera, filter wheel and focuser daemons. There is also a fourth, the exposure queue daemon, which coordinates sets of exposures and communicates with both the cameras and filter wheels through their daemons, not the interfaces directly. Each of the four are described in the following sections.
 
 \end{colsection}
 
@@ -291,6 +289,9 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 % WCS not added (#143)
 % much more in the pipeline
 \begin{colsection}
+
+Images are written to FITS files by the camera daemon and are archived by date. Each camera output is saved as a separate file (e.g. \texttt{r00033\_UT2.fits} is the image for run 33 from camera 2). These images are then copied via a dedicated fibre link from La Palma to Warwick University where the photometry pipeline is run.
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -302,6 +303,7 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 % need to home
 % timing was also an issue
 \begin{colsection}
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -311,6 +313,7 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 % fairly simple?
 % autofocus is later
 \begin{colsection}
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -324,6 +327,9 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 % normal way to operate
 % more timing concerns
 \begin{colsection}
+
+There is also a fourth related daemon called the exposure queue daemon (\texttt{exq}), which coordinates taking frames in sequence and setting filters before the exposures start. The command \texttt{exq~image~60~L} would add a single exposure in the L filter to the queue while \texttt{exq~multiimage~3~60~L} would add three. The command \texttt{exq~image~60~R,G,B} would add three images, each to be taken in the R, G and B filters, and the exposure queue daemon would issue commands to the filter daemon to move the filter wheel between exposure commands to the camera daemon.
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
