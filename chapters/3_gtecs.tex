@@ -253,14 +253,8 @@ The core programmes of \gls{gtecs} are the hardware daemons. There are seven pri
 
 \subsection{FLI interfaces}
 \label{sec:fli}
-% describe the hardware (see commissioning)
-% fli-api
-%   includes fakes
-% fli interfaces:
-%   need for n u c s
-%   communicate through pyro
-%   transfer images as num py arrays, so pickle
-%   "meta-daemons"??
+% transfer images as num py arrays, so pickle
+% "meta-daemons"??
 \begin{colsection}
 
 \rtxt{As described in the hardware chapter}, \gls{goto} uses off-the-shelf camera hardware from \gls{fli}. Each \gls{goto} unit telescope has a MicroLine ML50100 camera, an Atlas focuser and a CFW9--5 filter wheel connected to a small Intel \gls{nuc} attached to the boom arm. On these \glspl{nuc} run very basic daemons called the \gls{fli} interfaces. Barely daemons by the definition given in Section~\ref{sec:daemons}, these interfaces have no control loop and exist only as a way to expose the serial connection of the hardware to the wider \gls{pyro} network. By using these interface daemons, the primary control daemons for the \gls{fli} hardware can run on the main control computer without being physically connected to the hardware (aside from via ethernet).
@@ -277,20 +271,29 @@ There are three control daemons that interact with the \gls{fli} interfaces: the
 
 \subsection{Camera control}
 \label{sec:cam}
-% types of images (light/dark), SCIENCE/etc, binning, area and so on
 % how images are written
 %   multiple FITS extensions considered
 %   don't have space to store a whole image on the chip... (inside fli api)
-% speed ups (#248, #250)
-% need to cool
 % headers
 %   all cards in appendix?
-% glance
-% WCS not added (#143)
-% much more in the pipeline
 \begin{colsection}
 
-Images are written to FITS files by the camera daemon and are archived by date. Each camera output is saved as a separate file (e.g. \texttt{r00033\_UT2.fits} is the image for run 33 from camera 2). These images are then copied via a dedicated fibre link from La Palma to Warwick University where the photometry pipeline is run.
+The camera daemon interacts with all of the \gls{fli} cameras on a single \gls{goto} mount. This makes it the most complicated daemon, and perhaps the second-most-important after the dome daemon. The commands to the camera daemon are fairly straightforward. There are four types of exposures that can be taken with the daemon:
+
+\begin{itemize}
+    \item Standard light images, with the shutter opening and closing for the given exposure time.
+    \item ``Glance'' images, which are exactly the same as standard exposures but are saved into a separate directory from the normal ``science'' images.
+    \item Dark images, where the shutter remains closed during the exposure time.
+    \item Bias images, which are dark images but with a zero-second exposure time.
+\end{itemize}
+
+The \pkg{fli-api} interface also gives other options for exposures aside from just the exposure time, including different binning factors and the active area of the chip to read out. Although the camera daemon does offer commands to set these they are never regularly used during normal operators, and the image processing pipeline is set up to only expect full-frame, unbinned images.
+
+Once an exposure is completed the image data needs to be downloaded from the cameras and then sent through the interfaces to the camera daemon before the frames can be saved as \gls{fits} files. This is a disadvantage of the interface system, and consideration was given to instead having the interfaces write out the files. Although this would have been faster to save the raw images, they would still need to be copied down from the interfaces to the primary archive on the control computer. Having the interfaces send the raw count arrays to the camera daemon for processing proved to save more time in the long run. The camera daemon also has to query the other daemons at the start of the exposure to get their current statuses to add to the \gls{fits} header.
+
+The time taken by each exposure, from the command being received to the images being created, has been optimised to minimise the amount of ``dead time'' wasted. One of the primary ways to save time was to have the two most time-dependent processes, downloading the images from the interfaces and writing them to disk, run as separate threads for each camera independently of the main daemon control loop. Other time-saving improvements included only fetching the status information from the other daemons once, just after starting the exposures (so it doesn't take any extra time in addition to the exposure time).
+
+Images are written to \gls{fits} files by the camera daemon and are archived by date. Each camera output is saved as a separate file, named by the current run number and the name of the unit telescope it originated from (e.g. \texttt{r000033\_UT2.fits} is the image from camera 2 for run 33). The run number is increased whenever a non-glance exposure is taken. After being saved the images are copied on regular intervals from La Palma to Warwick University via a dedicated fibre link, where the photometry pipeline is run. The image processing pipeline is a separate project from the control system being worked on at Warwick and Monash, which means image calibration, astrometry and photometry are all out of the scope of this thesis.
 
 \end{colsection}
 
@@ -321,6 +324,7 @@ Images are written to FITS files by the camera daemon and are archived by date. 
 \subsection{Exposure queue control}
 \label{sec:exq}
 % talks to both cam and filt
+% types of images (light/dark), SCIENCE/etc, binning, area and so on
 % exposure list system
 %   can pause and un-pause
 % multi filters
