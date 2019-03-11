@@ -324,16 +324,27 @@ The focuser daemon is the third of the three \gls{fli} hardware daemons, and is 
 
 \subsection{Exposure queue control}
 \label{sec:exq}
-% talks to both cam and filt
-% types of images (light/dark), SCIENCE/etc, binning, area and so on
-% exposure list system
-%   can pause and un-pause
-% multi filters
-% normal way to operate
-% more timing concerns
 \begin{colsection}
 
-There is also a fourth related daemon called the exposure queue daemon (\texttt{exq}), which coordinates taking frames in sequence and setting filters before the exposures start. The command \texttt{exq~image~60~L} would add a single exposure in the L filter to the queue while \texttt{exq~multiimage~3~60~L} would add three. The command \texttt{exq~image~60~R,G,B} would add three images, each to be taken in the R, G and B filters, and the exposure queue daemon would issue commands to the filter daemon to move the filter wheel between exposure commands to the camera daemon.
+The exposure queue daemon (often abbreviated to ExQ or `exq') is unusual amongst the daemons, as it does not directly talk to hardware. Instead it is the only daemon that's primary purpose is communicating with other daemons, specifically the camera and filter wheel daemons. The exposure queue daemon coordinates taking frames in sequence and setting filters before the exposures start. Consider wanting a series of \SI{30}{\second} exposures in the R, G and B filters. Through the camera and filter wheel daemons this would require six commands: \code{filt~set~R}, \code{cam~image~30}, \code{filt~set~G}, \code{cam~image~30} etc. The exposure que daemon however gives a way to shortcut this, and the same exposures can be requested with a single command (\code{exq mimage 30 R,G,B} in this case).
+
+\begin{figure}[t]
+\begin{center}
+\vspace{1cm}
+\code{1111;30;R;1;normal;M101;SCIENCE;0;1;3;545}\\
+\code{1111;30;G;1;normal;M101;SCIENCE;0;2;3;545}\\
+\code{1111;30;B;1;normal;M101;SCIENCE;0;3;3;545}\\
+\vspace{0cm}
+\end{center}
+\caption[An example exposure queue file]{An example exposure queue file. Each line is a new exposure, and details of the exposure are separated by semicolons. In order these are the \gls{ut} mask, exposure time, filter, binning factor, frame type, object name, image type, glance flag, set position, set total and database ID number.}
+\label{fig:exq_file}
+\end{figure}
+
+When a set of exposures is defined and passed to the exposure queue daemon the are added to the queue, which is a physical file written to and read by the daemon. An example of the contents of the file is given in Figure~\ref{fig:exq_file}. The details of each exposure are saved in this file, and adding more using the \code{exq} commands adds more exposures to the end of the queue. When the queue is running (it can be paused and resumed, to allow for example slews between exposures) the daemon will select the first exposure in the queue, tell the filter wheel daemon to change filter if necessary and then tell the cam daemon to start the exposure.
+
+As shown in Figure~\ref{fig:exq_file} extra meta-data can be written for each exposure. The \gls{ut} mask is simply a binary representation of the unit telescopes to use for this exposure, so \code{0101} would be exposing on \glspl{ut} 1 and 3 only (counting from the right), while \code{1111} will be on all four. The frame type is a variable used within \pkg{fli-api}, it is either \code{normal} or \code{dark} depending on if the shutter will open or not. Exposures taken through the exposure queue can also have a target name (use to identify target objects, in the case shown in Figure~\ref{fig:exq_file} galaxy M101) and an image type (used to define the type of image, either SCIENCE, FOCUS, FLAT, DARK or BIAS). The set position and total are results of adding sets of exposures with one command, as in the example above. This is important to the image pipeline for knowing sets of, for example, 3 \SI{60}{\second} L images which are typically co-added to produce reference frames. Finally the concept of ``exposure sets'' is defined in the observing database, with each pointing having at least one or more sets defined to be added to the exposure queue by the pilot when that set is observed (see Section~\ref{sec:obsdb}).
+
+Similar to the camera daemon, the timing of code and functions within the exposure queue daemon has been optimised to minimise any wasted ``dead time''. However the commands sent also need to be timed correctly to ensure that, for example, the exposure doesn't start while the filter wheel is still moving. This was one of the major reasons for having a separate exposure queue daemon to handle these timing concerns while the camera and filter wheel daemons dealt only with individual commands (incidentally \gls{pt5m} uses a QSI camera with an integrated filter wheel, so the \gls{gtecs} camera, filter wheel and exposure queue daemons are combined into a single ``CCD'' daemon in Figure~\ref{fig:pt5m_software}).
 
 \end{colsection}
 
