@@ -430,15 +430,15 @@ The power daemon itself is by far the simplest of the daemons from the user's po
 
 \begin{colsection}
 
-The hardware control systems described in Sec.~\ref{sec:hardware} provide the basic methods to control the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount, take exposures and repeat for the rest of the night.
+The hardware control systems described in Section~\ref{sec:hardware_control} provide the basic methods to control and operate the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount to a given target, take exposures once there, and then repeat with other targets for the rest of the night. There is a limited autonomy provided by the dome daemon, so the dome will close in bad weather without the delay from a human sending the command, but even that can be disabled if desired. Fundamentally the software described in Section~\ref{sec:hardware_control} provides a perfectly usable human-operated telescope control system. \gls{goto}, however, was always designed as a fully robotic installation, as described in Section~\ref{sec:control_requirements}. Therefore an additional level of software is required, to take the place of the observer as the source of the commands to the daemons.
 
-GOTO however is designed as a robotic installation, and therefore requires another level of software to take the place as the source of these commands. In \textsf{G-TeCS} this role is filled by a master control program called the pilot. There are also several support daemons that perform roles allowing the system to operate robotically: the conditions daemon which monitors weather and other system conditions, the sentinel daemon which listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
+In \gls{gtecs}, as in the \gls{pt5m} system before it, the role of the observer is filled by a master control program called the pilot. The pilot decides what to observe, sends commands to the daemons, monitors the hardware and attempts to fix any arising problems. The intention is that the pilot will fully replicate anything a trained on-site observer would be required to do. In order to manage this there are several auxiliary systems and additional support daemons that the pilot confers with. The conditions daemon monitors weather and other system conditions, the sentinel daemon listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Pilot}
+\subsection{The Pilot}
 \label{sec:pilot}
 \begin{colsection}
 
@@ -484,7 +484,7 @@ Once the night marshal has completed all of its tasks it exits. The pilot has an
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Hardware monitors}
+\subsection{Hardware monitoring}
 \label{sec:monitors}
 \begin{colsection}
 
@@ -494,7 +494,7 @@ WIP
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Conditions}
+\subsection{Conditions monitoring}
 \label{sec:conditions}
 \begin{colsection}
 
@@ -529,7 +529,7 @@ An explanation of all the conditions flags is given below. Note the exact values
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Observation database}
+\subsection{The observation database}
 \label{sec:obsdb}
 \begin{colsection}
 
@@ -555,8 +555,8 @@ Each entry in the pointings table can only be observed once. For observing a tar
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Scheduler}
-\label{sec:scheduler}
+\subsection{Alert processing (the sentinel)}
+\label{sec:sentinel}
 \begin{colsection}
 
 \begin{figure}[t]
@@ -574,8 +574,8 @@ In order for targets to be observed by GOTO in robotic mode they must have entri
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Sentinel}
-\label{sec:sentinel}
+\subsection{Scheduling observations}
+\label{sec:scheduler}
 \begin{colsection}
 
 The scheduler daemon runs on the master server that also holds the primary observation database (see Sec.~\ref{sec:obsdb}). There is no specific command loop or hardware restrictions like in other daemons, but there are several advantages to having the scheduling calculations take place in their own daemon on the central server. Firstly, having the calculations done on the same machine as the database is more efficient when it comes to making queries, it is also a more powerful machine than the control computer that the pilot is running on. Furthermore when the second GOTO instrument is built having one scheduler that can speak to either pilot as required opens up further observation strategy opportunities.
