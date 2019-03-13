@@ -438,27 +438,57 @@ In \gls{gtecs}, as in the \gls{pt5m} system before it, the role of the observer 
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{The Pilot}
+\subsection{The pilot}
 \label{sec:pilot}
 \begin{colsection}
 
-The pilot is a Python script that is run once each night: starting automatically in the late afternoon, running through to the morning and exiting once the system has shut down. It issues commands to the hardware in exactly the same way as a human would, executing the terminal commands which call the control scripts and send the commands to the daemon. The pilot is written as an asynchronous program using the standard Python \textsf{asyncio} module. The program runs with a single-threaded event loop with multiple running tasks as coroutines. Each task contains a loop which executes particular commands and then pauses using the \texttt{await} command to allow other routines to be run. There are two types of routines: the night marshal which runs through tasks as the night progresses and the check routines which monitor the rest of the system.
+The pilot is a \proglang{Python} script, not a daemon. It is run once each night; started automatically in the late afternoon by the Linux \software{cron} utility, it runs through to the morning and then quits. In the afternoon it will be started again and the process will be repeated.
 
-Most of the coroutines are designed as monitoring systems to regularly check different parts of the system, which fits well into the asynchronous model. The pilot has two modes of operation: normally it is in robotic mode meaning it is in complete control, but it can be switched into manual mode by a human operator which will suspend the check routines. These check routines are as follows:
+% ---------
+\subsubsection{Asynchronous code}
+\label{sec:async}
+
+The pilot is written as an \textit{asynchronous} program, using the standard Python \pkg{asyncio} module. An asynchronous program is one where its code runs in separate parallel routines, which are switched between as required, and should not be confused with programs that are written utilising multiple processes or threads that run in parallel. See Figure~\ref{fig:async} for a graphical comparison between the two methods.
+
+An example of a simple task might be monitoring a particular source of data, like a weather station. It would contain a function to download the current weather information from the external mast, and then a \code{sleep} command to wait for 10 seconds, which when put inside a loop will ensure that the weather information is queried and updated every 10 seconds. If this loop was called in a multi-threaded program then the thread will be held up for a majority of the time not doing anything between checks. If there were multiple threads, for example checking different masts, then there could be no coordination between them and the whole program would end up very inefficient. There are also other issues with multi-threaded programs, including input/output and sharing data between threads.
+
+Asynchronous code contains multiple parallel \textit{coroutines}. The program itself runs an \textit{event loop}, which is a function with the job of choosing between the different coroutines to execute in the main thread. In an asynchronous version of the weather-monitoring program instead of a \code{sleep} function each coroutine would include an \code{await} function. When a routine reaches an \code{await} command it is suspended for the given time period, and control is passed back to the event loop which then chooses which of the other suspended routines should be run. Importantly when it resumes the coroutine remembers where it stopped and continues from that point. The asynchronous style of writing code is ideally used with multiple coroutines that contain short functions with wait periods between when they need to be called again, and the pilot is a good example of this. The pilot runs a single-threaded event loop with multiple coroutines, which execute commands and then pause using the \texttt{await} command to allow other routines to be run.
+
+\begin{figure}[p]
+\begin{center}
+\includegraphics[width=0.9\linewidth]{images/async.pdf}
+\end{center}
+\caption[Multi-threaded vs asynchronous programming]{A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolor{blue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolor{ForestGreen}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolor{red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated for clarity, a typical pilot routine might take a second or less to run but then wait for anywhere between 10 and 60 seconds.
+\\
+\textbf{Top}: The three tasks with different execution periods (solid blocks) and wait times (blank) are run in a multi-threaded program. Each task is being run in an independent parallel thread on its own core, even though they rarely overlap and it is uncommon for multiple cores to be in use at the same time.
+\\
+\textbf{Bottom}: The same three tasks are run as coroutines in an asynchronous program. The event loop decides which coroutine to run on the single core, represented by the black arrows. This does lead to some coroutines being left waiting (lighter blocks) until the previous is finished, however the overall core usage is much more efficient.}
+\label{fig:async}
+\end{figure}
+
+% ---------
+\subsubsection{The check routines}
+\label{sec:check_routines}
+
+The coroutines within the pilot can be separated into two types: the check routines and the night marshal. Most of the coroutines are designed as monitors to regularly check different parts of the system, which fits well into the asynchronous model. These check routines are as follows:
 
 \begin{itemize}
 
-\item \texttt{check\_hardware} monitors the hardware daemons, checking every 60 seconds that they are all reporting their expected statuses. If any abnormal status is detected then the pilot is paused (see below) and a series of pre-set recovery commands are executed in turn. When in recovery mode it will check the daemon statuses more frequently. If the commands work and the status returns to normal the pilot is resumed, but if the commands are exhausted without the problem being fixed then an alert is issued (see Sec.~\ref{sec:conditions}) that the system requires human intervention.
+\item \texttt{check\_hardware} monitors the hardware daemons, checking every 60 seconds that they are all reporting their expected statuses. It does this using the hardware monitor functions, which are described in Section~\ref{sec:monitors}. If an abnormal status is returned then the pilot will pause (see below) and a series of pre-set recovery commands generated by the monitor are executed in turn. While in recovery mode the pilot will check the monitors more frequently. If the commands work and the status returns to normal the pilot is resumed, but if the commands are exhausted without the problem being fixed then an alert is issued that the system requires human intervention and the pilot triggers an emergency shutdown.
 
-\item \texttt{check\_dome} is a backup to the primary hardware check routine. \texttt{check\_hardware} does monitor the dome along with the other hardware daemons, but \texttt{check\_dome} provides a simple, dedicated backup to ensure the dome is told to close when needed and to raise the alarm if it does not.
+\item \texttt{check\_dome} is a backup to the primary hardware check routine. \texttt{check\_hardware} does monitor the dome along with the other hardware daemons, but \texttt{check\_dome} provides a simple, dedicated backup to ensure the dome is closed when it should be and to raise the alarm if it is not.
 
-\item \texttt{check\_flags} is a routine that monitors the system flags, most notably those created by the conditions monitor (see Sec.~\ref{sec:conditions}). If any of the conditions flags are bad then the dome daemon will close the dome immediately (see Sec.~\ref{sec:dome}) without needing to wait for the pilot. When this happens the \texttt{check\_flags} routine will check that the dome is closed and then pause the pilot and ensure it is not resumed until the flag is cleared. When it is the pilot will reopen the dome and allow normal operations to be restored. The \texttt{check\_flags} routine also monitors the pilot mode flag and will pause the pilot if it is set to manual mode, which suspends the other check routines and any observation scripts launched by the night marshal (see below).
+\item \texttt{check\_flags} is a routine that monitors the system flags, most notably those created by the conditions daemon (see Sec.~\ref{sec:conditions}). If any of the conditions flags are bad then the dome daemon will enter lockdown and close the dome on its own (see Sec.~\ref{sec:dome}), but the \texttt{check\_flags} routine will abort exposures, pause the pilot and ensure it is not resumed until the flag is cleared. When conditions are clear again the pilot will reopen the dome and allow normal operations to be restored. The \texttt{check\_flags} routine also monitors the system mode and will pause the pilot if it is set to manual mode or exit if set to engineering mode (see Section~\ref{sec:mode}).
 
-\item \texttt{check\_scheduler} is a routine that queries the scheduler daemon every 10 seconds to find the best job to observe. Each pointing has an ID assigned to its entry in the observation database, as described in Sec.~\ref{sec:obsdb}. It the pilot is currently observing the scheduler will either return the database ID of the current pointing, in which case the pilot will continue with the current job, or a new ID which will lead to the pilot interrupting the current job and moving to observe the new one. The details of how the scheduler decides which target to observe are given in Sec.~\ref{sec:scheduler}.
+\item \texttt{check\_scheduler} is a routine that queries the scheduler daemon every 10 seconds to find the best job to observe. If the pilot is currently observing the scheduler will either return the database ID of the current pointing, in which case the pilot will continue with the current job, or a new ID which will lead to the pilot interrupting the current job and moving to observe the new one. If the pilot is not currently observing (either it is the start of the night, resuming from being paused or the previous pointing has just completed) then it will begin observing whatever the scheduler returns. The details of how the scheduler decides which target to observe are given in Sec.~\ref{sec:scheduler}. The ID returned is then passed to the observe (OBS) task run by the night marshal.
 
 \end{itemize}
 
-The main pilot nightly operations are carried out by the \texttt{night\_marshal}. This is a separate coroutine which runs through a list of set tasks as the night progresses, based on the altitude of the Sun. Each key task is contained in a separate script, called an observation script, which contains the commands to send to the hardware daemons. These scripts are self-contained processes which mean they can also be called independently, for example if the pilot is not running and a manual observer wants to run the autofocus routine they can use the command \texttt{obs\_script~autoFocus}.  In the order they are performed during the night, the night marshal tasks are:
+% ---------
+\subsubsection{The night marshal}
+\label{sec:night_marshal}
+
+The above check routines are support tasks for the primary routine, which is called the \texttt{night\_marshal}. Unlike the check routines the night marshal does not contain a repeating loop, instead it runs through an ordered list of set tasks as the night progresses, based on the altitude of the Sun. Each key task is contained in a separate \proglang{Python} observation script, which contains the commands to send to the hardware daemons. Each is run spawning a new coroutine, meaning that while they are running the other routines such as the check tasks can continue. In the order they are performed during the night, the night marshal tasks are:
 
 \begin{enumerate}
 
@@ -468,25 +498,23 @@ The main pilot nightly operations are carried out by the \texttt{night\_marshal}
 
 \item OPEN, run once the Sun reaches \SI{0}{\degree} altitude. It simply executes the \texttt{dome~open} command. If the pilot is paused due to bad weather or a hardware fault then the night marshal will wait and not open until the weather improves or fault is fixed. If it is never resolved then the night marshal will remain here until the end of the night and the shutdown timer runs out (see below).
 
-\item FLATS, run once the dome is open and the Sun reaches \SI{-1}{\degree}. This executes the \texttt{takeFlats} script, which moves the telescope into the stored flat position. This is defined as pointing at an altitude of \SI{75}{\degree} and an azimuth \SI{180}{\degree} from the sun, using the strategy for wide-field telescopes suggested by the Antarctic Survey Telescope\cite{flats}. The script then takes flat fields in each filter, stepping in position between exposure and automatically increasing the exposure time as the sky darkens.
+\item FLATS, run once the dome is open and the Sun reaches \SI{-1}{\degree}. This executes the \texttt{takeFlats} script, which moves the telescope into anti-sun position and then takes flat fields in each filter, stepping in position between exposure and automatically increasing the exposure time as the sky darkens. See Section~\ref{sec:flats} for details of the flat field routine.
 
-\item FOCUS, run once the Sun reaches \SI{-11}{\degree}. This executes the \texttt{autoFocus} script, which finds the best focus position by stepping the focusers, measuring the average stellar half-flux diameter (HFD) and finding the minimum based on the known constant ``V-curve'' relationship between focuser position and HFD for each individual unit telescope\cite{autofocus}. If the autofocus routine fails for any reason the previous nights' focus positions are restored.
+\item FOCUS, run once the Sun reaches \SI{-11}{\degree}. This executes the \texttt{autoFocus} script, which finds the best focus position for each of the unit telescopes. See Section~\ref{sec:autofocus} for details of the autofocus routine. If the routine fails for any reason the previous nights' focus positions are restored.
 
-\item OBS, begun once the Sun reaches \SI{-15}{\degree} and continuing for the majority of the night until the Sun reaches \SI{-15}{\degree} again in the morning. When a database ID is received from the scheduler via the \texttt{check\_schedule} routine the \texttt{observe} script is executed. The script queries the observation database (see Sec.~\ref{sec:obsdb}) to get the coordinates and exposure settings for that pointing and then sends the commands to the mount and exposure queue daemons. Once a job is finished, either through completing all its exposures or being interrupted, the entry in the database status entry is updated and the routine awaits the next job from the scheduler.
+\item OBS (short for ``observing''), begun once the Sun reaches \SI{-15}{\degree} and continuing for the majority of the night until the Sun reaches \SI{-15}{\degree} again in the morning. When a database ID is received from the scheduler via the \texttt{check\_schedule} routine the \texttt{observe} script is executed. The script queries the observation database (see Sec.~\ref{sec:obsdb}) to get the coordinates and exposure settings for that pointing and then sends the commands to the mount and exposure queue daemons. Once a job is finished, either through completing all its exposures or being interrupted, the entry in the database status entry is updated and the routine awaits the next job from the scheduler.
 
 \item FLATS is repeated once the Sun reaches \SI{-10}{\degree} in the morning, using the same script but this time increasing the exposure times as the sky brightens.
 
 \end{enumerate}
 
+These scripts are self-contained programs which mean they can also be called independently, for example if the pilot is not running and a manual observer wants to run the autofocus routine they can use the command \texttt{obs\_script~autoFocus}.
+
 Once the night marshal has completed all of its tasks it exits. The pilot has an internal shutdown timer which set at the beginning of the night to when the rising Sun will reach \SI{0}{\degree} altitude again. When this time is reached the pilot then runs the \texttt{shutdown} script, which powers off the cameras, parks the mount and ensures the dome is closed. This is on a separate timer to the rest of the night marshal tasks, meaning if something goes wrong during the night the system will always shut down in the morning. It is also possible for the system to emergency shut down during the night, which will occur if a critical error occurs that can not be solved without human intervention (see the definition of a critical conditions flag in Sec.~\ref{sec:conditions}). This ends the pilot for the night, and it falls on whoever checks the alert to restart it if they decide the cause of the alert is resolved.
 
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Hardware monitoring}
+% ---------
+\subsubsection{The hardware monitors}
 \label{sec:monitors}
-\begin{colsection}
 
 WIP
 
