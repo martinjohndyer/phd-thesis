@@ -627,26 +627,21 @@ There are two additional tables that are used to contain supporting information.
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Alert processing (the sentinel)}
+\subsection{The sentinel}
 \label{sec:sentinel}
 \begin{colsection}
 
-\begin{figure}[t]
-\begin{center}
-\includegraphics[width=14cm]{images/tiling.png}
-\end{center}
-\caption[The probability
- for GW151226]{The probability skymap for gravitational wave event GW151226~\citep{GW151226}, covered in tiles matching the field of view of GOTO in the four unit telescope configuration.}
-\label{fig:tiling}
-\end{figure}
+In order for targets to be observed by GOTO in robotic mode they must have entries defined in the \code{pointings} table in the observation database (see Section~\ref{sec:obsdb}). These can be added manually, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in Fig.~\ref{fig:flow}.
 
-In order for targets to be observed by GOTO in robotic mode they must have entries defined in the pointings (or mpointings) table in the observation database. These can be added manually, using a command line script or a web interface, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in Fig.~\ref{fig:flow}. The sentinel acts as the alert listener for the system, taking any incoming targets and adding them to the database. For individual well-located sources like supernovae a single target is sufficient, but GOTO was designed to cover large areas resulting from gravitational wave skymaps. When an alert with a skymap is detected the sentinel calls functions from a Python module called \textsf{goto-tile}, which maps the skymap onto the fixed GOTO all-sky grid and returns a list of tile pointings and contained skymap probability within each. These are then added to the database by and processed by the scheduler daemon as described in Sec.~\ref{sec:scheduler}. An example of a skymap and the tiles output by \textsf{goto-tile} is shown in Fig.~\ref{fig:tiling}.
+The sentinel acts as the alert listener for the system, taking any incoming targets and adding them to the database. In order to do this it uses the \pkg{pygcn} \proglang{Python} package to monitor the 4 Pi Sky transient alert stream \citep{4pisky}. Alerts come in to the listener in the form of VOEvents \citep{voevent}, and are processed by the \proglang{Python} module GOTO-alert (\pkg{gotoalert}). The details of how alerts are processed, including which are selected and how they are mapped onto the all-sky grid using the GOTO-tile module, are described in Section~\ref{sec:alerts}. The processes within GOTO-alert are all called using a single function, the \code{event_handler}. The sentinel passes new alerts through this event handler, and it adds entries into the tables in the observing database. These are then processed by the scheduler daemon as described in Sec.~\ref{sec:scheduler}.
+
+The sentinel daemon includes an alert listener loop that continuously listens for events coming from the 4 Pi Sky event broker. Should the link to the 4 Pi Sky server fail then the daemon will continuously attempt to re-establish the connection. Pending alerts are appended to an internal queue before being processed, and the sentinel also has an additional manual \code{ingest} command which can be used to insert test events or other cases that want to bypass the alert listener.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Scheduling observations}
+\subsection{The scheduler}
 \label{sec:scheduler}
 \begin{colsection}
 
