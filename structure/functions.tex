@@ -1,6 +1,7 @@
 % icons
 \newcommand{\tick}{\ding{52}}
 \newcommand{\uptriangle}{\ding{115}}
+\newcommand{\backarrow}{\rotatebox[origin=c]{180}{\ding{252}}}
 \newcommand{\blackdiamond}{\ding{117}}
 \newcommand{\about}{\ensuremath{\sim}}
 \newcommand{\done}{\textcolor{green}{~\tick~}}
@@ -67,14 +68,14 @@
 \let\oldappendices\appendices\def\appendices{\oldappendices\adjustmtc}
 \newcommand\chaptoc{
     \begin{singlespacing}
-    \vspace{-0.7cm}
+    \vspace{-1.4cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     \vspace{-0.7cm}
     \minitoc{}
     \vspace{-0.2cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     \begin{center}
-        \hyperref[contents]{\uptriangle}
+        \hyperref[contents]{\textcolor{white}{\uptriangle}}
     \end{center}
     \end{singlespacing}
     }
