@@ -31,7 +31,7 @@ Secondly the system had to include an observation scheduler, which could decide 
 
 Furthermore, although the project was still at an early stage the idea of linking together multiple telescopes into a global network was also considered, and the chosen control system implementation would ideally be expandable to facilitate this in the future (or at least not hinder the possibility).
 
-There were also several physical considerations when it came to choosing between software systems. The telescope hardware had already been decided on: an Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})}, a custom mount with a \gls{sitech} servo controller\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})} and multiple unit telescopes all using \gls{fli} cameras, focusers and filter wheels\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}. Any control system would need to communicate with all of them, so any systems with existing drivers or packages used by established projects would be desirable.
+There were also several physical considerations when it came to choosing between software systems. The telescope hardware had already been decided on: an Astrohaven clamshell dome\footnote{Astro Haven Enterprises, CA, USA;\@ (\url{www.astrohaven.com})}, a custom mount with a \gls{sitech} servo controller\footnote{Sidereal Technology, OR, USA;\@ (\url{www.siderealtechnology.com})} and multiple unit telescopes all using \gls{fli} cameras, focusers and filter wheels\footnote{Fingerlake Instruments, NY, USA;\@ (\url{www.flicamera.com})}. Any control system would need to communicate with all of them, so any systems with existing drivers or packages used by established projects would be desirable. \rtxt{Move links to hardware section}
 
 Two particular hardware-related challenges faced the control system project. The first was that the SiTech controller software, \software{SiTechEXE}, only ran on Microsoft Windows. The software did have an accessible \gls{api} through the \software{ASCOM} standard\footnote{\url{www.ascom-standards.org}} but that still required some form of the mount control system to be running on Windows. As most scientific software in astronomy runs on Linux systems this lead to two options: either have just a small interface running on the Windows machine and the majority of the system on Linux, or have the entire system run on Windows.
 
@@ -97,9 +97,10 @@ The \gls{pt5m} control system is written in \proglang{Python} and was built arou
 
 \begin{colsection}
 
-The \gls{gtecs} is the name given to the collection of programs and systems that have been developed to fulfil the requirements of the GOTO project. The \gls{pt5m} control system as described in the previous section formed the basis for \gls{gtecs}. Its structure of multiple independent daemons was developed into the core system architecture, shown in Fig.~\ref{fig:flow} below. This section gives an overview of the system and its implementation, and the following sections discuss in detail the two core branches of G-TeCS:\@ the base hardware control programmes (Section~\ref{sec:hardware_control}) and autonomous systems built on top of them (Section~\ref{sec:autonomous}).
+The \gls{gtecs} is the name given to the collection of programs and systems that have been developed to fulfil the requirements of the GOTO project. The \gls{pt5m} control system as described in the previous section formed the basis for \gls{gtecs}. Its structure of multiple independent daemons was developed into the core system architecture, shown in Figure~\ref{fig:flow}. This section gives an overview of the system and its implementation, and the following sections discuss in detail the two core branches of G-TeCS:\@ the base hardware control programmes (Section~\ref{sec:hardware_control}) and autonomous systems built on top of them (Section~\ref{sec:autonomous}).
 
-\begin{figure}[h]
+
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=\linewidth]{images/flow.pdf}
 \end{center}
@@ -115,7 +116,7 @@ The \gls{gtecs} is the name given to the collection of programs and systems that
 \label{sec:implementation}
 \begin{colsection}
 
-The core \gls{gtecs} code is written as a \proglang{Python} package, \pkg{gtecs}. This includes all the daemons, scripts, associated modules and functions. One core component, the code and functions to interact with the observation database (see Section~\ref{sec:obsdb}), has been split off into a separate \proglang{Python} package ObsDB (\pkg{obsdb}), this was to allow other users to interact with the database without the need to install the entire \pkg{gtecs} package. In addition, the code for alert processing within the sentinel (see Section~\ref{sec:sentinel}) is in a separate module, GOTO-alert (\pkg{gotoalert}). This is because it originated as a separate code project developed by Alex Obradovic at Monash, that I then took over and integrated with the \gls{gtecs} sentinel.
+The core \gls{gtecs} code is written as a \proglang{Python} package, \pkg{gtecs}. This includes all the daemons, scripts, associated modules and functions. One core component, the code and functions to interact with the observation database (see Section~\ref{sec:obsdb}), has been split off into a separate \proglang{Python} package ObsDB (\pkg{obsdb}), this was to allow other users to interact with the database without the need to install the entire \pkg{gtecs} package. In addition, the code for alert processing within the sentinel (see Section~\ref{sec:sentinel}) is in a separate module, GOTO-alert (\pkg{gotoalert}). This is because it originated as a separate code project developed by Alex Obradovic at Monash, that I then took over and integrated with the \gls{gtecs} sentinel. GOTO-alert is described in more detail in Section~\ref{sec:alerts}.
 
 G-TeCS and the associated packages are written almost entirely in \proglang{Python}, specifically \proglang{Python3}. \proglang{Python} is a versatile programming language that is increasingly common in astronomy, helped by the popular open-source Astropy Project \citep{astropy}. \proglang{Python} version 3.0 was released in 2008 and is infamously not backwards-compatible with \proglang{Python2}. The code for \gls{pt5m} was written in \proglang{Python2}, and therefore initially so was G-TeCS.\@ Over the subsequent years the code was re-written to be compatible with both \proglang{Python2} and \proglang{Python3}, which was possible due to the inbuilt \code{\_\_future\_\_} module in \proglang{Python2} and the \code{six} package. Finally the addition of new features added to \proglang{Python3}, such as the \pkg{asyncio} package (used heavily by the pilot) in version 3.5, and the imminent end-of-life of \proglang{Python2} in 2020 lead to the dropping of \proglang{Python2} support. This is in line with most other scientific \proglang{Python} packages including \pkg{astropy}, which is no longer developed for \proglang{Python2}. % chktex 21
 
@@ -147,15 +148,7 @@ Functionally each daemon is built around a \proglang{Python} class which contain
 
 As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, or with utilities like \software{cron}.
 
-In order to send commands to the daemons each has an associated control script that can be called by a user from a terminal, or by the pilot in robotic mode (see Sec~\ref{sec:pilot}). The commands follow a simple format which was inherited from \gls{pt5m}, first the short name of the daemon, then the command and finally any arguments. There are several commands that are common to all daemons: \code{start}, \code{shutdown} and \code{restart} to control if the daemon is running; \code{ping} to see the current status of the daemon; \code{info} to see the current status of the hardware; \code{log} to print the daemon output log. Some examples of other daemon-specific commands are given below,
-more details are given in the sections for each daemon:
-\begin{itemize}
-    \item ``\code{foc~home}'' homes all connected focusers
-    \item ``\code{dome~close}'' closes the dome
-    \item ``\code{mnt~slew~<ra>~<dec>}'' will slew the mount to the given coordinates
-    \item ``\texttt{cam~image~60}'' will take a \SI{60}{\second} exposure with all connected cameras
-    \item ``\texttt{cam~image~2~60}'' will take a \SI{60}{\second} exposure with camera 2 only
-\end{itemize}
+In order to send commands to the daemons each has an associated control script that can be called by a user from a terminal, or by the pilot in robotic mode (see Sec~\ref{sec:pilot}). The commands follow a simple format which was inherited from \gls{pt5m}, first the short name of the daemon, then the command and finally any arguments. There are several commands that are common to all daemons: \code{start}, \code{shutdown} and \code{restart} to control if the daemon is running; \code{ping} to see the current status of the daemon; \code{info} to see the current status of the hardware; \code{log} to print the daemon output log. Examples of daemon-specific commands include ``\code{dome~close}'' to close the dome, ``\code{mnt~slew~30.54~+62}'' to slew the mount to the given coordinates, ``\texttt{cam~image~60}'' to take a \SI{60}{\second} exposure with all connected cameras and ``\texttt{cam~image~2~60}'' to take a \SI{60}{\second} exposure with camera 2 only.
 
 Every daemon can also be controlled in ``interactive mode'', which is a user-friendly way to save time sending multiple commands to the same daemon. Interactive mode is entered with \code{i} and exited with \code{q}.
 
@@ -181,7 +174,7 @@ The most important script to the robotic operation of the telescope is the pilot
     \item \code{engineering} mode is designed to be used only if there are workers on site in situations where the system moving without warning could be dangerous. All of the dome options are automatically disabled, and the pilot and day marshal will refuse to start. Leaving the system in this state for long periods of time is undesirable, and so it should only be used when physical work is ongoing or the telescope is completely deactivated.
 \end{itemize}
 
-\begin{table}[h]
+\begin{table}[ht]
 \begin{center}
 \begin{tabular}{c|ccccc} % chktex 44
 mode &
@@ -242,7 +235,7 @@ dome alarm &
 
 \begin{colsection}
 
-The core programmes of \gls{gtecs} are the hardware daemons. There are seven primary daemons, as shown in the centre-right of Fig.~\ref{fig:flow}. This section provides a summary of each of the hardware categories, describing the how the daemons interact with them and the particular challenges and features unique to each.
+The core programmes of \gls{gtecs} are the hardware daemons. There are seven primary daemons, as shown in the centre-right of Figure~\ref{fig:flow}. This section provides a summary of each of the hardware categories, describing the how the daemons interact with them and the particular challenges and features unique to each.
 
 \end{colsection}
 
@@ -278,8 +271,8 @@ There are three control daemons that interact with the \gls{fli} interfaces: the
 The camera daemon interacts with all of the \gls{fli} cameras on a single \gls{goto} mount. This makes it the most complicated daemon, and perhaps the second-most-important after the dome daemon. The commands to the camera daemon are fairly straightforward. There are four types of exposures that can be taken with the daemon:
 
 \begin{itemize}
-    \item Standard light images, with the shutter opening and closing for the given exposure time.
-    \item ``Glance'' images, which are exactly the same as standard exposures but are saved into a separate directory from the normal ``science'' images.
+    \item Normal images, with the shutter opening and closing for the given exposure time.
+    \item ``Glance'' images, which are the same as standard exposures but are saved into a separate directory from the normal ``science'' images.
     \item Dark images, where the shutter remains closed during the exposure time.
     \item Bias images, which are dark images but with a zero-second exposure time.
 \end{itemize}
@@ -333,7 +326,7 @@ The exposure queue daemon (often abbreviated to ExQ or `exq') is unusual amongst
 \code{1111;30;B;1;normal;M101;SCIENCE;0;3;3;545}\\
 \vspace{0cm}
 \end{center}
-\caption[An example exposure queue file]{An example exposure queue file. Each line is a new exposure, and details of the exposure are separated by semicolons. In order these are the \gls{ut} mask, exposure time, filter, binning factor, frame type, object name, image type, glance flag, set position, set total and database ID number.}
+\caption[A sample exposure queue file]{A sample of an exposure queue file. Each line is a new exposure, and details of the exposure are separated by semicolons. In order these are the \gls{ut} mask, exposure time, filter, binning factor, frame type, object name, image type, glance flag, set position, set total and database ID number.}
 \label{fig:exq_file}
 \end{figure}
 
@@ -629,7 +622,7 @@ There are two additional tables that are used to contain supporting information.
 \label{sec:sentinel}
 \begin{colsection}
 
-In order for targets to be observed by GOTO in robotic mode they must have entries defined in the \code{pointings} table in the observation database (see Section~\ref{sec:obsdb}). These can be added manually, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in Fig.~\ref{fig:flow}.
+In order for targets to be observed by GOTO in robotic mode they must have entries defined in the \code{pointings} table in the observation database (see Section~\ref{sec:obsdb}). These can be added manually, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in Figure~\ref{fig:flow}.
 
 The sentinel acts as the alert listener for the system, taking any incoming targets and adding them to the database. In order to do this it uses the \pkg{pygcn} \proglang{Python} package to monitor the 4 Pi Sky transient alert stream \citep{4pisky}. Alerts come in to the listener in the form of VOEvents \citep{voevent}, and are processed by the \proglang{Python} module GOTO-alert (\pkg{gotoalert}). The details of how alerts are processed, including which are selected and how they are mapped onto the all-sky grid using the GOTO-tile module, are described in Section~\ref{sec:alerts}. The processes within GOTO-alert are all called using a single function, the \code{event\_handler}. The sentinel passes new alerts through this event handler, and it adds entries into the tables in the observing database. These are then processed by the scheduler daemon as described in Sec.~\ref{sec:scheduler}.
 
