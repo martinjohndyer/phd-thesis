@@ -633,7 +633,7 @@ There are two additional tables that are used to contain supporting information.
 
 In order for targets to be observed by GOTO in robotic mode they must have entries defined in the \code{pointings} table in the observation database (see Section~\ref{sec:obsdb}). These can be added manually, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in Fig.~\ref{fig:flow}.
 
-The sentinel acts as the alert listener for the system, taking any incoming targets and adding them to the database. In order to do this it uses the \pkg{pygcn} \proglang{Python} package to monitor the 4 Pi Sky transient alert stream \citep{4pisky}. Alerts come in to the listener in the form of VOEvents \citep{voevent}, and are processed by the \proglang{Python} module GOTO-alert (\pkg{gotoalert}). The details of how alerts are processed, including which are selected and how they are mapped onto the all-sky grid using the GOTO-tile module, are described in Section~\ref{sec:alerts}. The processes within GOTO-alert are all called using a single function, the \code{event_handler}. The sentinel passes new alerts through this event handler, and it adds entries into the tables in the observing database. These are then processed by the scheduler daemon as described in Sec.~\ref{sec:scheduler}.
+The sentinel acts as the alert listener for the system, taking any incoming targets and adding them to the database. In order to do this it uses the \pkg{pygcn} \proglang{Python} package to monitor the 4 Pi Sky transient alert stream \citep{4pisky}. Alerts come in to the listener in the form of VOEvents \citep{voevent}, and are processed by the \proglang{Python} module GOTO-alert (\pkg{gotoalert}). The details of how alerts are processed, including which are selected and how they are mapped onto the all-sky grid using the GOTO-tile module, are described in Section~\ref{sec:alerts}. The processes within GOTO-alert are all called using a single function, the \code{event\_handler}. The sentinel passes new alerts through this event handler, and it adds entries into the tables in the observing database. These are then processed by the scheduler daemon as described in Sec.~\ref{sec:scheduler}.
 
 The sentinel daemon includes an alert listener loop that continuously listens for events coming from the 4 Pi Sky event broker. Should the link to the 4 Pi Sky server fail then the daemon will continuously attempt to re-establish the connection. Pending alerts are appended to an internal queue before being processed, and the sentinel also has an additional manual \code{ingest} command which can be used to insert test events or other cases that want to bypass the alert listener.
 
@@ -645,166 +645,78 @@ The sentinel daemon includes an alert listener loop that continuously listens fo
 \label{sec:scheduler}
 \begin{colsection}
 
-The scheduler daemon runs on the master server that also holds the primary observation database (see Sec.~\ref{sec:obsdb}). There is no specific command loop or hardware restrictions like in other daemons, but there are several advantages to having the scheduling calculations take place in their own daemon on the central server. Firstly, having the calculations done on the same machine as the database is more efficient when it comes to making queries, it is also a more powerful machine than the control computer that the pilot is running on. Furthermore when the second GOTO instrument is built having one scheduler that can speak to either pilot as required opens up further observation strategy opportunities.
+The scheduler daemon runs on the master server that also holds the primary observation database (see Sec.~\ref{sec:obsdb}). There is no specific command loop or hardware restrictions like in other daemons, but there are several advantages to having the scheduling calculations take place in their own daemon on the central server. Firstly, having the calculations done on the same machine as the database is more efficient when it comes to making queries, it is also a more powerful machine than the control computer that the pilot and the other daemons are running on. Furthermore when the second \gls{goto} instrument is built having one scheduler that can speak to either pilot as required opens up further observation strategy opportunities as considered in Section~\ref{sec:multiscope}.
 
-The pilot queries the scheduler daemon every 10 seconds, and the job of the daemon is to return the database ID of the pointing that it has calculated is best to observe at the present time. This means GOTO operates under a ``just-in-time'' scheduling model, rather than creating a fixed plan at the beginning of the night of what to observe at each time. This system is very reactive to any incoming alerts as higher-priority pointings will immediately get included naturally in the calculation. The downside is that it less efficient for predefined targets than a night plan, which can be optimised before the night starts. However most of the time GOTO will normally be observing its all-sky survey, which has no strict timing requirements, and any other observations will be alerts entered by the sentinel daemon which could not be planned for.
+The pilot \code{check\_schedule} coroutine queries the scheduler daemon every 10 seconds, and the job of the daemon is to return the database ID of the pointing that it has calculated is best to observe at the present time. This means GOTO operates under a ``just-in-time'' scheduling model, rather than creating a fixed plan at the beginning of the night of what to observe at each time. This system is very reactive to any incoming alerts as higher-priority pointings will immediately get included naturally in the calculation. The downside is that it less efficient for predefined targets than a night plan, which can be optimised before the night starts. However most of the time GOTO will normally be observing its all-sky survey, which has no strict timing requirements, and any other observations will be alerts entered by the sentinel daemon which could not be planned for.
 
-When called, the scheduler will import the current queue of pointings from the observation database, filter out any that are invalid based on their individual constraints, then calculate a single priority value for each and find the pointing with the highest priority. The scheduling function then returns one of three results: carry on with the current observation, switch to a new observation or park the telescope in the case that there is no valid target. This decision will be returned to the pilot which will either continue what it is doing in the first case, or issue the necessary commands if required.
+When called, the scheduler will import the current queue of pointings from the observation database, filter out any that are invalid based on their individual constraints, sort the list of pointings by various criteria and find the pointing with the highest priority. The scheduling function then returns one of three results: carry on with the current observation, switch to a new observation or park the telescope in the case that there is no valid target. This decision will be returned to the pilot which will either continue what it is doing in the first case, or issue the necessary commands for the second or third.
 
-The first stage requires the scheduler to find the current queue by filtering the database pointings table. Firstly, pointings are selected based on their defined start and stop times by ensuring the current time is after their start time and before their stop time. Then the pointings are filtered in right ascension and declination by using the current local sidereal time to reject any pointings that would not be visible in the sky. After this initial basic filtering further constraints are applied by the scheduler based on the saved values for each pointing. Pointings have limits defined in Sec.~\ref{sec:obsdb} for physical constraints (altitude, Moon separation, Moon phase, Sun altitude) which are applied using the Constraints system in the \textsf{astroplan} Python module\cite{astroplan}. This ensures that only valid pointings are considered going forward.
+The first step requires the scheduler to find the current queue by filtering the database pointings table. Firstly, pointings are selected based on their defined start and stop times by ensuring the current time is after their start time and before their stop time. Then the pointings are filtered in right ascension and declination by using the current local sidereal time to reject any pointings that would not be visible in the sky. This is done through commands sent to the observation database using the \pkg{obsdb} module, and any entries in the pointings table that pass these filters makes up the list of pointings that the scheduler has to sort.
 
-The most important part of the scheduling function is calculating the priority value of each valid pointing in the queue. Each pointing entered into the GOTO database will have an assigned rank, which is fixed. The full priority is a floating point number that takes this rank and adds on values for other criteria so it can be easily compared to other pointings. The pointing with the smallest overall priority value is the highest priority to observe. The current criteria used are:
+Sorting the pointings is done using a variety of parameters, outlined below:
 
 \begin{itemize}
+\item The first order to sort the pointings by is their validity when their observing constraints are applied, based on the saved values for each pointing. Pointings have limits defined in Sec.~\ref{sec:obsdb} for physical constraints (altitude, Moon separation, Moon phase, Sun altitude) which are applied using the Constraints system in the \pkg{astroplan} \proglang{Python} module \citep{astroplan}. These constants are applied both at the current time and after each pointing's minimum time. This ensures that, for example, targets that are setting are visible throughout their observing period. The minimum time constraints are only not applied to the pointing currently being observed (if any). The validity of the pointings is a simple boolean flag, and invalid pointings are naturally sorted below valid ones.
 
-\item The base rank of the pointing ($R$), which is fixed when created. Every pointing is given a rank between 0 and 9, and are deliberately biased towards prioritising gravitational wave events. Ranks 1 to 5 are reserved for these events, with ranks 6 to 9 reserved for other targets, which ensures that any incoming gravitational wave pointings will always be prioritised. Rank 0 is intended to never be used under normal circumstances, but it is a valid value that if set would outrank even gravitational wave events. Survey tiles all automatically have the lowest possible rank of 999, as they are the ever-present background and act as ``queue fillers'' in the system.
+\item The next order pointings are sorted by is the effective rank of the pointing, which comprised of the initial rank of the pointing and the number of times it has been repeated. The base rank is fixed when the pointing was created. Every pointing is given a rank between 0 and 9, and are deliberately biased towards prioritising gravitational wave events. Ranks 1 to 5 are reserved for these events, with ranks 6 to 9 reserved for other targets, which ensures that any incoming gravitational wave pointings will always be prioritised. Rank 0 is intended to never be used under normal circumstances, but it is a valid value that if set would outrank even gravitational wave events. All-survey tiles all automatically have the lowest possible rank of 999, as they are the ever-present background and act as ``queue fillers'' in the system. An addition to the rank is the repeat number, which accounts for the number of times that a limited target has already been observed, up to 99 times. This ensures that newer pointings are prioritised over later ones. The rank ($R$) and repeat number ($n_r$) are added in the formula $R + 10\times n_r$, meaning that a rank-2 pointing that has been observed five times will have an effective rank of 52. Infinitely-repeating pointings like the all-sky survey tiles do not include the repeat humber at this stage, which is why the survey tile ranks are static at 999. The effective ranks are sorted in reverse order, meaning a rank-5 pointing that has been observed one time (with an effective rank of 15) will will be a higher priority than a rank-4 pointing that has been observed twice (and so has an effective rank of 24).
 
-\item The repeat number ($N_{r}$), which accounts for the number of times that a particular target
-or tile has already been observed, up to 99 times. This ensures that newer pointings are prioritised over later ones. Infinitely-repeating pointings like the survey tiles do not include this, which is why the survey tile ranks are static at 999.
+\item The next sorting parameter is based on the \glsfirst{too} flag assigned to the pointing when it was inserted into the database. The flag is simply a boolean value that is true if the target is a \gls{too} and false if it is not, and pointings that have the flag as true are sorted higher than those that are not.
 
-\item The Target of Opportunity True/False flag ($F_{ToO}$). As pointings with the lowest priority value are preferred, pointings marked as ToOs will have $F_{ToO}=0$ and non-ToOs will have $F_{ToO}=1$.
+\item The next parameter is once again the repeat number, the number of times the pointing has already been observed. The purpose of having the repeat number at this stage is to allow sorting of infinite pointings, i.e.\ those where the rank is fixed and the effective rank is not increased due to the number of observations.
 
-\item The airmass of the pointing at the current time ($X$), calculated by the scheduler each time it is called. Including this will prioritise targets that are at lower airmasses and therefore provide the best quality data. Airmasses between 1 and 3 (altitudes between \SI{90}{\degree} and \SI{20}{\degree}) are converted into a value between 0 and 1.
-
-\item For gravitational wave or other skymap pointings, the probability contained in the tile associated with the pointing ($P$). This will be calculated by the sentinel using \textsf{goto-tile} and linked to each pointing entered into the database (see Sec.~\ref{sec:sentinel}). The probability is inverted, as priority is ordered by the smallest value, therefore a tile with a 100\% probability of containing the source would have a value of $P=0$ and a tile with a 5\% probability would have $P=0.95$. Pointings that do not have probability values have the value set to 0 by default.
-
-\item For survey tiles, the time since that tile was last observed ($T$). This is also scaled into a value in the range 0 to 1, where 0 corresponds to 7 days or more since the last observation.
+\item Finally, should all the above parameters still result in equally-weighted pointings then there is a final tie-break value that is calculated for each. The exact calculation of the tie-break parameter is detailed in Section~\ref{sec:simulations}, but the value is primarily based on the current airmass of the pointing and the weighting of the survey tile the pointing is linked to, if any.
 
 \end{itemize}
 
-These values are combined to form a single priority number using the formula:
+Initially a single pointing value was calculated for every pointing based on the above effects, and then the pointings were sorted based on this single value. However this proved to be unnecessary, as within the \proglang{Pyhton} code it is just as easy to sort based on a series of parameters both boolean and numeric. Once the pointings are sorted by the above parameters the one at the top of the list is selected as the highest priority pointing to observe.
 
-\begin{equation}
-Priority = 10 \times N_r + R + 0.1 \times F_{ToO} + 0.01 \times \left(\frac{a}{a+p+t}X + \frac{p}{a+p+t}P + \frac{t}{a+p+t}T\right),
-\label{eq:priority}
-\end{equation}
+The above schema allows for a natural filtering of targets. For example, if the queue is filled with nothing but all-sky survey tiles then they will all have the same rank (999) and weighting (1). Therefore the decision will come down first to the number of times they have been observed. If a majority of tiles have been observed three times already, but some have only been observed twice then these will be a higher priority, to fill out coverage in the all-sky survey. If there are still multiple tiles to decide between then the final tie-breaker will come down to the airmass of the target at the current time, as well as potentially the time until the tile sets depending on the weightings used. If a single target gets inserted into the database at a higher rank, for example a manual observation of a particular galaxy at rank 6, then that will naturally take priority over the all-sky survey. If an event is inserted by the sentinel with a large survey of tiles then deciding between them will depend on their weighting and airmass. Once one of the pointings has been observed then the effective rank will increase by 10, so it will naturally fall down the priority rank behind the pointing in that survey that haven't been observed yet. For example a survey of tiles from a gravitational wave skymap will be inserted at rank 1, and as they get observed their effective rank will fall to 11, 21, 31 etc.
 
-where $a$, $p$ and $t$ are weight factors for the airmass, probability and time-since-observed values. Each pointing in the queue has its priority calculated using Equation~(\ref{eq:priority}), the pointings are then sorted based on priority and the one with the smallest priority value is selected as the highest priority pointing.
+Selecting the highest priority target to observe is not the only purpose of the scheduler. Before returning that pointing's database ID the scheduler also takes into account what the pilot is currently observing, if anything. In most cases the pilot will currently be observing a pointing previously given by the scheduler, and on the next check the scheduler will return that the same pointing is still the highest priority --- in which case pilot will continue observing. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets in the middle of observing unless the new pointing has the ToO flag set. Otherwise the pilot will wait until it has finished the current job. If the scheduler finds nothing to do, which would only be the case if all the pointings in the queue were invalid, then the pilot will park the telescope and wait for the next valid target. A table describing the different cases is given as Table~\ref{tab:sched}.
 
-\begin{sidewaystable}[b]
-\caption{Some examples of calculated priority values. In this example the weight factors are $a=1$, $p=10$, and $t=10$. The final priority value is constructed using Equation~\ref{eq:priority}. The elements are coloured matching which part of the priority value they form --- the rank (\textcolor{red}{red}) and repeat number (\textcolor{orange}{orange}) form the integer part of the priority, the ToO flag (\textcolor{violet}{purple}) forms the first decimal place and the tie-break parameters (airmass, probability and time-since-observed, \textcolor{teal}{teal}) combined form the later decimal places.
-}
-\label{tab:priority}
+%\begin{landscape}
+
+%\begin{table}[p]
+\begin{sidewaystable}[p]
 \begin{center}
-\begin{tabular}{clcclclclclcr}
-
+\begin{tabular}{cc|cccc} % chktex 44
+&
+& \multicolumn{4}{c}{Highest priority pointing is\ldots}
+\\[0.5cm]
+&
+& \makecell{\ldots same as \\ current pointing}
+& \makecell{\ldots a new, \\ valid pointing}
+& \makecell{\ldots a new, \\ invalid pointing}
+& \ldots None
+\\[0.5cm]
 \midrule
-~&
-\textbf{Target name} &
-\textbf{$R$} &
-\textbf{$N_r$} &
-\textbf{ToO} &
-$F_{ToO}$ &
-\textbf{Am.} &
-$X$ &
-\textbf{Prob.} &
-$P$ &
-\textbf{Time} &
-$T$ &
-\textbf{Priority}
-\\
-\midrule
-
-1 &
-GW181202 T4 &
-\textcolor{red}{1} &
-\textcolor{orange}{0} &
-True   & \textcolor{violet}{0}   &
-1.1    & \textcolor{teal}{0.050} &
-4.5\%  & \textcolor{teal}{0.955} &
-$-$    & \textcolor{teal}{0}     &
-\textcolor{orange}{~~}\textcolor{red}{1}.\textcolor{violet}{0}\textcolor{teal}{457} \\
-
-2 &
-GW181202 T9 &
-\textcolor{red}{1} &
-\textcolor{orange}{0} &
-True   & \textcolor{violet}{0}   &
-1.1    & \textcolor{teal}{0.050} &
-0.3\%  & \textcolor{teal}{0.997} &
-$-$    & \textcolor{teal}{0}     &
-\textcolor{orange}{~~}\textcolor{red}{1}.\textcolor{violet}{0}\textcolor{teal}{477} \\
-
-3 &
-M31 &
-\textcolor{red}{8} &
-\textcolor{orange}{0} &
-False  & \textcolor{violet}{1}   &
-1.0    & \textcolor{teal}{0.000} &
-$-$    & \textcolor{teal}{0}     &
-$-$    & \textcolor{teal}{0}     &
-\textcolor{orange}{~~}\textcolor{red}{8}.\textcolor{violet}{1}\textcolor{teal}{000} \\
-
-4 &
-GW181202 T3 &
-\textcolor{red}{1} &
-\textcolor{orange}{1} &
-True   & \textcolor{violet}{0}   &
-1.1    & \textcolor{teal}{0.050} &
-9.1\%  & \textcolor{teal}{0.909} &
-$-$    & \textcolor{teal}{0}     &
-\textcolor{orange}{~1}\textcolor{red}{1}.\textcolor{violet}{0}\textcolor{teal}{435} \\
-
-5 &
-AT 2018bdk &
-\textcolor{red}{6} &
-\textcolor{orange}{2} &
-True   & \textcolor{violet}{0}   &
-1.0    & \textcolor{teal}{0.000} &
-$-$    & \textcolor{teal}{0}     &
-$-$    & \textcolor{teal}{0}     &
-\textcolor{orange}{~2}\textcolor{red}{6}.\textcolor{violet}{0}\textcolor{teal}{000} \\
-
-6 &
-AT 2018bfe &
-\textcolor{red}{6} &
-\textcolor{orange}{2} &
-True   & \textcolor{violet}{0}   &
-1.2    & \textcolor{teal}{0.100} &
-$-$    & \textcolor{teal}{0}     &
-$-$    & \textcolor{teal}{0}     &
-\textcolor{orange}{~2}\textcolor{red}{6}.\textcolor{violet}{0}\textcolor{teal}{005} \\
-
-7 &
-M101 &
-\textcolor{red}{6} &
-\textcolor{orange}{2} &
-False  & \textcolor{violet}{1}   &
-1.1    & \textcolor{teal}{0.050} &
-$-$    & \textcolor{teal}{0}     &
-$-$    & \textcolor{teal}{0}     &
-\textcolor{orange}{~2}\textcolor{red}{6}.\textcolor{violet}{1}\textcolor{teal}{024} \\
-
-8 &
-Survey T31 &
-\textcolor{red}{999} &
-$-$ &
-False  & \textcolor{violet}{1}   &
-1.0    & \textcolor{teal}{0.000} &
-$-$    & \textcolor{teal}{0}     &
-4 days & \textcolor{teal}{0.429} &
-\textcolor{orange}{}\textcolor{red}{999}.\textcolor{violet}{1}\textcolor{teal}{204} \\
-
-9 &
-Survey T33 &
-\textcolor{red}{999} &
-$-$                   &
-False  & \textcolor{violet}{1}   &
-1.0    & \textcolor{teal}{0.000} &
-$-$    & \textcolor{teal}{0}     &
-2 days & \textcolor{teal}{0.714} &
-\textcolor{orange}{}\textcolor{red}{999}.\textcolor{violet}{1}\textcolor{teal}{340} \\
-
-\midrule
+\multirow{8}{*}{\rotatebox[origin=c]{90}{Current pointing is\ldots}}
+& \ldots valid
+& \makecell{\textcolor{ForestGreen}{Continue} \\ \textcolor{ForestGreen}{current pointing}}
+& \makecell{\textcolor{BlueGreen}{Change to new pointing} \\ \textcolor{BlueGreen}{if it is a ToO and the current pointing isn't,} \\ \textcolor{BlueGreen}{otherwise continue current pointing}}
+& \textcolor{red}{Park}
+& \textcolor{red}{Park}
+\\[1cm]
+& \ldots invalid
+& \textcolor{red}{Park}
+& \textcolor{NavyBlue}{Change to new pointing}
+& \textcolor{red}{Park}
+& \textcolor{red}{Park}
+\\[1cm]
+& \ldots None (parked)
+& \textcolor{red}{Remain parked}
+& \textcolor{NavyBlue}{Unpark, start new pointing}
+& \textcolor{red}{Remain parked}
+& \textcolor{red}{Remain parked}
+\\[0.5cm]
 \end{tabular}
 \end{center}
+\caption[Actions to take based on scheduler results]{Actions the pilot will take based on the scheduler results.}
+\label{tab:sched}
+%\end{table}
 \end{sidewaystable}
 
-Some examples of calculated priority values using this method are given in Table~\ref{tab:priority}. The first two pointings are both gravitational wave tiles from the same (fictional) event. They have been inserted at rank 1, neither have been observed yet (meaning $N_r=0$), both are flagged as ToOs and both are at the same airmass. Therefore tie-breaking between the two comes down to the contained probability, and the tile with the higher contained probability (T4) is sorted first. There is another tile from the same event in the queue (T3) with an even higher contained probability, but as it has been marked as already having been observed once ($N_r=1$) is sorted further down below a pointing of M31 manually inserted at rank 8. Next there are three pointings all with the same rank ($R=6$) that have all been observed twice already ($N_r=2$). The first two transient events are both marked as ToOs while the pointing of M101 is not, so it is sorted last of the three. Choosing between the two transient targets comes down to the airmass, with the one currently higher in the sky (so at lower airmass) being sorted first. Finally two tiles from the all-sky survey are shown. These are both automatically fixed at rank 999, and in this case as they are both at the same airmass. Tile 31 is shown as being last observed 4 days ago while Tile 33 was observed only 2 days ago, so Tile 31 comes out with the higher priority.
-
-As demonstrated in this example, priorities can be sorted easily in the first case by considering their repeat numbers, ranks and ToO flags. In the cases these are the same then the tiebreaking value is needed. This is most important when a new gravitational wave event comes in, which can result in up to one hundred new pointings being inserted at once at the same rank. The tiebreaker is a weighted combination of the airmass, contained probability (for skymap tiles) and time since last observation (for survey tiles). The exact weighting is shown in Equation~(\ref{eq:priority}) and depends on the values of $a$, $p$ and $t$. For standard non-skymap, non-survey pointings only airmass is considered, as $P$ is always set to 1 and $T$ is always 0 (as shown in Table~\ref{tab:priority}). Therefore pointings will be selected based on their altitude. For gravitational wave pointings the weighting between airmass and probability determines the observation strategy. Weighting airmass higher will prioritise pointings at a higher altitude and therefore increase typical data quality, but potentially at the loss of GW skymap coverage. On the other hand prioritising only probability would ensure the maximum possible coverage of the skymap, but low-altitude pointings might be selected when it might instead be better to wait until they were at a higher airmass. To attempt to find optimal weighting values many simulations were run with different skymaps and values. These simulations ran through a full night of observing, with the gravitational wave tiles inserted at a random time that day --- so simulating both an alert occurring during the night interrupting observations and the alert occurring during daytime so the pointings are there as soon as the system starts observing. Telescope downtime due to weather was also simulated as a Gaussian process with a 10\% chance of occurring and a typical timescale of 1 hour. The initial results of these simulations indicated a weighting of $a=1$ and $p=10$ provided the best optimisation between coverage and average airmass.
-
-Once every pointing in the queue has had its priority calculated, the pointing with the smallest value is selected as the highest priority to observe. However before returning this pointing's database ID the  scheduler takes into account what the pilot is currently observing. In most cases the pilot will currently be observing a pointing previously given by the scheduler, and on the next check the scheduler will return that the same pointing is still the highest priority --- in which case pilot will continue observing. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets in the middle of observing unless the new pointing has the ToO flag set. Otherwise the pilot will wait until it has finished the current job. Finally if the scheduler finds nothing to do the pilot will park the telescope and wait for the next valid target.
+%\end{landscape}
 
 \end{colsection}
 
