@@ -1,6 +1,8 @@
 \documentclass[a4paper,11pt,oneside,openright]{report}
 
-% Input structure files
+% ~~~~~~~~~~~~~~~~~~~~
+
+% Preamble structure files
 \input{structure/packages.tex}
 \input{structure/functions.tex}
 \input{structure/format.tex}
@@ -8,7 +10,8 @@
 \input{structure/units.tex}
 \input{structure/acronyms.tex}
 
-% Begin document
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{document}
 
 % Document properties
@@ -20,6 +23,7 @@
 \pagenumbering{roman}
 \pagestyle{plain}
 \singlespacing{}
+% ---------
 \include{support/titlepage}
 \include{support/quote}
 \include{support/declaration}
@@ -35,6 +39,7 @@
 \pagenumbering{arabic}
 \pagestyle{fancy}
 \doublespacing{}
+% ---------
 \include{chapters/introduction}
 \include{chapters/gtecs}
 \include{chapters/strategy}
@@ -44,14 +49,19 @@
 
 % Bibliography
 \pagestyle{plain}
+\doublespacing{}
+% ---------
 \include{support/bibliography}
 
 % Appendices
 \pagestyle{fancy}
+\doublespacing{}
+% ---------
 \begin{appendices}
 \renewcommand\chaptername{Appendix}
 \include{chapters/appendix}
 \end{appendices}
 
-% End document
 \end{document}
+
+% ~~~~~~~~~~~~~~~~~~~~
