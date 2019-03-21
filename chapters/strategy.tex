@@ -22,6 +22,8 @@ In this chapter I outline my work developing the observing strategy for the GOTO
 
 \subsection{GOTO as a survey telescope}
 \label{sec:survey_telescope}
+% normal mode of operation
+% compare to other survey telescopes - ASSASSIN [sic], ZTF
 \begin{colsection}
 
 WIP
@@ -61,15 +63,25 @@ WIP
 
 \subsection{GOTO-tile}
 \label{sec:gototile}
+% different ways to make grids
 \begin{colsection}
 
-WIP
+GOTO-tile is a \proglang{Python} module (\pkg{gototile} \rtxt{footnote url?}) created for the \gls{goto} project to contain all the functions and frameworks related to tiling the sky. It was originally developed by Darren White as a way to process \gls{ligo} \gls{gw} skymaps for \gls{goto}, and then maintained by Evert Rol who rearranged it into a module usable for some other telescopes including SuperWASP on La Palma and a proposed southern GOTO node. My contributions to the module have been more fundamental: reworking the foundations to improve how grids are defined and sky maps are applied to them, as well as adding different ways to create skymaps.
+
+% ---------
+\subsubsection{Sky grids}
+
+The core of GOTO-tile as it now exists is the \code{SkyGrid} class. This is used to define a sky grid, a collection of `tiles' defined as points on the celestial sphere. These tiles are aligned to the celestial right ascension/declination coordinates, and are designed to create a base framework for observations to be mapped to.
+
+The most important parameter required when defining a sky grid is the field of view of the telescope, which is taken as the size of the tiles that make up the grid. This is defined by giving a width and height value in degrees, meaning the tiles can only be square or rectangular. This is typically fine for the \gls{goto} array, although there was a period when having three \glspl{ut} in an `L'-shape was considered. This was abandoned due mainly to the complexity of tiling the grid based on abstract shapes.
+
+The second parameter required to define a sky grid is the desired overlap between the tiles. This is given as a value between zero and one in both the right ascension and declination directions, with zero meaning no overlap and one meaning all the tiles are completely overlapping (as this would lead to infinite tiles being created in practice the overlap is restricted to no more than $0.9$). This is used to define the spacing between the tile centrers, although exactly how depends on the algorithm used (see below).
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{The all-sky survey}
+\subsection{The all-sky grid}
 \label{sec:survey}
 \begin{colsection}
 
@@ -81,6 +93,16 @@ WIP
 
 \subsection{Advantages and disadvantages of a fixed grid}
 \label{sec:fixed_grid}
+\begin{colsection}
+
+WIP
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Observing on the grid}
+\label{sec:grid_observing}
 \begin{colsection}
 
 WIP
