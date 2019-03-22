@@ -75,7 +75,21 @@ The core of GOTO-tile as it now exists is the \code{SkyGrid} class. This is used
 
 The most important parameter required when defining a sky grid is the field of view of the telescope, which is taken as the size of the tiles that make up the grid. This is defined by giving a width and height value in degrees, meaning the tiles can only be square or rectangular. This is typically fine for the \gls{goto} array, although there was a period when having three \glspl{ut} in an `L'-shape was considered. This was abandoned due mainly to the complexity of tiling the grid based on abstract shapes.
 
-The second parameter required to define a sky grid is the desired overlap between the tiles. This is given as a value between zero and one in both the right ascension and declination directions, with zero meaning no overlap and one meaning all the tiles are completely overlapping (as this would lead to infinite tiles being created in practice the overlap is restricted to no more than $0.9$). This is used to define the spacing between the tile centrers, although exactly how depends on the algorithm used (see below).
+The second parameter required to define a sky grid is the desired overlap between the tiles. This is given as a value between zero and one in both the right ascension and declination directions, with zero meaning no overlap and one meaning all the tiles are completely overlapping (as this would lead to infinite tiles being created in practice the overlap is restricted to no more than $0.9$). This is used to define the spacing between the tile centrers, although exactly how depends on the algorithm used.
+
+As GOTO-tile has been developed the algorithm used to define tile centres has improved. The very first algorithm written by Darren White used what I have since named the \textbf{product} algorithm:
+\begin{itemize}
+    \item First, the spacing between the declination strips are defined as $s_{\mathrm{dec}} = f_{\mathrm{dec}} (1 - o_{\mathrm{dec}})$, where $f_{\mathrm{dec}}$ and $o_{\mathrm{dec}}$ are the field of view and overlap parameters in the declination direction.
+    \item For example if the field of view $f_{\mathrm{dec}} = \SI{5}{\degree}$ and the overlap $o_{\mathrm{dec}} = 0.5$ then $s_{\mathrm{dec}} = \SI{2.5}{\degree}$. This would therefore produce declination strips separated by \SI{2.5}{\degree}, starting at \SI{-90}{\degree} and increasing to \SI{90}{\degree} (\SI{-90}{\degree}, \SI{-87.5}{\degree}, \dots \SI{-2.5}{\degree}, \SI{0}{\degree}, \SI{2.5}{\degree}, \dots \SI{87.5}{\degree}, \SI{90}{\degree}).
+    \item The strips are defined to always have one strip at declination $=0$, so if $s_{\mathrm{dec}}$ does not divide into 90 an even amount of times then the highest and lowest strips will not be located at exactly \SI{90}{\degree}.
+    \item This mostly occurs due to the field of view, which is dependent on the telescope hardware. For example with $f_{\mathrm{dec}} = \SI{5.5}{\degree}$ then with overlap $o_{\mathrm{dec}} = 0.5$ the spacing $s_{\mathrm{dec}} = \SI{2.75}{\degree}$. As $90/2.57 = 32.727\ldots$ the lowest and highest rows are instead at $\lfloor 90 / s_{\mathrm{dec}} \rfloor \times s_{\mathrm{dec}}$, which for this example is \SI{88}{\degree} (so the strips are \code{[-88, -85.25, \dots -2.75, 0, 2.75 \dots 85.25, 88]}).
+
+
+\end{itemize}
+
+
+
+
 
 \end{colsection}
 
