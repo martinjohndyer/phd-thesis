@@ -47,7 +47,7 @@ WIP
 % ########################################
 
 \newpage
-\section{Tiling the sky}
+\section{Tiling the sky with GOTO-tile}
 \label{sec:tiling}
 \begin{colsection}
 
@@ -55,32 +55,37 @@ WIP
 
 \begin{colsection}
 
-WIP
+GOTO-tile is a \proglang{Python} module (\pkg{gototile} \rtxt{footnote url?}) created for the \gls{goto} project to contain all the functions and frameworks related to tiling the sky. It was originally developed by Darren White as a way to process \gls{ligo} \gls{gw} skymaps for \gls{goto}, and then maintained by Evert Rol who rearranged it into a module usable for some other telescopes including SuperWASP on La Palma and a proposed southern GOTO node. My contributions to the module have been more fundamental: reworking the foundations to improve how grids are defined and sky maps are applied to them, as well as adding different ways to create skymaps.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{GOTO-tile}
+\subsection{Creating sky grids}
 \label{sec:gototile}
 % different ways to make grids
 \begin{colsection}
 
-GOTO-tile is a \proglang{Python} module (\pkg{gototile} \rtxt{footnote url?}) created for the \gls{goto} project to contain all the functions and frameworks related to tiling the sky. It was originally developed by Darren White as a way to process \gls{ligo} \gls{gw} skymaps for \gls{goto}, and then maintained by Evert Rol who rearranged it into a module usable for some other telescopes including SuperWASP on La Palma and a proposed southern GOTO node. My contributions to the module have been more fundamental: reworking the foundations to improve how grids are defined and sky maps are applied to them, as well as adding different ways to create skymaps.
+The core of GOTO-tile as it now exists is the \code{SkyGrid} class. This is used to define a sky grid, a collection of `tiles' defined as points on the celestial sphere (Figure~\ref{fig:sphere}). These tiles are aligned to the celestial right ascension/declination coordinates, and are designed to create a base framework for observations to be mapped to.
 
 % ---------
-\subsubsection{Sky grids}
-
-The core of GOTO-tile as it now exists is the \code{SkyGrid} class. This is used to define a sky grid, a collection of `tiles' defined as points on the celestial sphere. These tiles are aligned to the celestial right ascension/declination coordinates, and are designed to create a base framework for observations to be mapped to.
+\subsubsection{Defining the grid}
 
 The most important parameter required when defining a sky grid is the field of view of the telescope, which is taken as the size of the tiles that make up the grid. This is defined by giving a width and height value in degrees, meaning the tiles can only be square or rectangular. This is typically fine for the \gls{goto} array, although there was a period when having three \glspl{ut} in an `L'-shape was considered. This was abandoned due mainly to the complexity of tiling the grid based on abstract shapes.
 
 The second parameter required to define a sky grid is the desired overlap between the tiles. This is given as a value between zero and one in both the right ascension and declination directions, with zero meaning no overlap and one meaning all the tiles are completely overlapping (as this would lead to infinite tiles being created in practice the overlap is restricted to no more than $0.9$). This is used to define the spacing between the tile centrers, although exactly how depends on the algorithm used.
 
-As GOTO-tile has been developed the algorithm used to define tile centres has evolved and improved. I wrote the latest algorithm, called \code{minverlap}, to
+As GOTO-tile has been developed the algorithm used to define tile centres has evolved and improved, but the basic method has remained the same:
 
+\begin{enumerate}
+    \item Define equally spaced lines of constant declination, separated by the value $\Delta\delta$ (Figure~\ref{fig:deltadelta}). These lines are the basis for the grid, which is defined in ``strips'' of tiles. Exactly how $\Delta\delta$ is defined based on the field of view and overlap parameters depends on the algorithm, in particular how to deal with the poles in case $\Delta\delta$ is not a factor of \SI{90}{\degree}.
+    \item Once the strips are defined, then each is filled equally spaced points separated by the value $\Delta\alpha$ (Figure~\ref{fig:deltaalpha}). This value is constant for each strip but is (in most algorithms) a function of declination ($\Delta\alpha(\delta)$), meaning that moving away from the equator to the poles each strip will contain a reducing number of points.
+    \item These points are then defined as the centre of the tiles, the size of which is given by the field of view (Figure~\ref{fig:tiledsphere}).
+\end{enumerate}
 
-\begin{figure}[pt]
+Once the grid has been created it is encapsulated within the GOTO-tile \code{SkyGrid} class. Each tile is defined by a coordinate at its centre, and each is also given a unique name of the form \code{`T0001'}. The grid itself is also given a name formed using the input field of view and overlap parameters, so a grid created with a field of view of \SI{3.7}{\degree}$\times$\SI{4.9}{\degree} and overlap factor of 0.1 (this is the grid used for the \gls{goto} 4-\gls{ut} all-sky survey) is given the name \code{`allsky-3.7x4.9--0.1--0.1'}. In this way a given tile in a given grid can be recreated just from the names, which is used when storing the grid and tile details in the observation database (see Section~\ref{sec:obsdb}). % chktex 29
+
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=\linewidth]{images/globe1.pdf}
 \end{center}
@@ -89,7 +94,7 @@ As GOTO-tile has been developed the algorithm used to define tile centres has ev
 \label{fig:sphere}
 \end{figure}
 
-\begin{figure}[pt]
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=\linewidth]{images/globe2.pdf}
 \end{center}
@@ -98,7 +103,7 @@ As GOTO-tile has been developed the algorithm used to define tile centres has ev
 \label{fig:deltadelta}
 \end{figure}
 
-\begin{figure}[pt]
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=\linewidth]{images/globe3.pdf}
 \end{center}
@@ -107,7 +112,7 @@ As GOTO-tile has been developed the algorithm used to define tile centres has ev
 \label{fig:deltaalpha}
 \end{figure}
 
-\begin{figure}[pt]
+\begin{figure}[p]
 \begin{center}
 \includegraphics[width=\linewidth]{images/globe4.pdf}
 \end{center}
@@ -117,10 +122,99 @@ As GOTO-tile has been developed the algorithm used to define tile centres has ev
 \label{fig:tiledsphere}
 \end{figure}
 
+\newpage
+
+% ---------
+\subsubsection{Gridding algorithms}
+
+There have been three primary algorithms defined in GOTO-tile's history.
+
+The first has since retroactively been called the ``\textbf{product}'' algorithm, and was used when Darren White first wrote GOTO-tile. It first defines the declination step size as
+
+\begin{equation}
+    \Delta\delta = f_\text{dec}(1-o_\text{dec}),
+    \label{eq:product_deltadelta}
+\end{equation}
+
+where $f_\text{dec}$ and $o_\text{dec}$ are respectively the field of view and overlap parameters in the declination direction. The declination strips are then defined by taking steps of this size from the equator towards the poles, stopping when $|\delta| > 90$. The equivalent formula is used to calculate the steps in right ascension
+
+\begin{equation}
+    \Delta\alpha = f_\text{RA}(1-o_\text{RA}).
+    \label{eq:product_deltaalpha}
+\end{equation}
+
+The clear downside of this method is that $\Delta\alpha$ does not vary depending on declination. In effect this algorithm attempts to define the grid as if it was on a flat plane, where the tiles could be arranged in orthogonal rows and columns. In practice when applied to a sphere this leads to a vast number of redundant tiles at the poles, as shown in Figure~\ref{fig:product}.
+
+Due to the obvious problems with this algorithm a replacement was written by Evert Rol, which I have since called the ``\textbf{cosine}'' algorithm. It is a more refined version of the ``product'' algorithm, and the declination strips are calculated in the same manor using Equation~(\ref{eq:product_deltadelta}). However Equation~(\ref{eq:product_deltaalpha}) is modified to depend on declination into
+
+\begin{equation}
+    \Delta\alpha(\delta) = \frac{f_\text{RA}(1-o_\text{RA})}{\cos(\delta)}.
+    \label{eq:cosine_deltaalpha}
+\end{equation}
+
+This produces a much more sensible grid as shown in Figure~\ref{fig:cosine}. However there remained an issue of asymmetry: the strips are arranged increasing and decreasing from $\delta=0$ and the tiles are then arranged within the strips starting from $\alpha=0$. As visible in Figure~\ref{fig:cosine} this leads to varying overlaps when the the tiles within the strips overlap as $\alpha$ approaches \SI{360}{\degree}. Although more subtle there are similar issues at the north and south poles, and it's common for there to be small gaps between the tiles at high and low declinations.
+
+Due to these problems a method to create the grid was added, called the ``\textbf{minverlap}'' (minimum overlap) algorithm. In this case
+
+
+\begin{equation}
+    n_\text{dec} = \left \lceil \frac{90}{f_\text{dec}(1-o_\text{dec})} \right \rceil,
+    \label{eq:minverlap_ndec}
+\end{equation}
+
+
+\begin{equation}
+    \Delta\delta = \frac{90}{n_\text{dec}},
+    \label{eq:minverlap_deltadelta}
+\end{equation}
+
+
+\begin{equation}
+    n_\text{RA}(\delta) = \left \lceil \frac{360}{f_\text{RA}(1-o_\text{RA})/\cos(\delta)} \right \rceil,
+    \label{eq:minverlap_nra}
+\end{equation}
+
+
+\begin{equation}
+    \Delta\delta = \frac{360}{n_\text{dec}},
+    \label{eq:minverlap_deltaalpha}
+\end{equation}
 
 
 
 
+\begin{figure}[p]
+\begin{minipage}[c]{0.46\textwidth}
+\includegraphics[width=\linewidth]{images/algo_product.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.50\textwidth}
+\caption[The ``product'' gridding algorithm]{A sky grid of tiles defined using the ``product'' gridding algorithm. The inputs were a field of view of \SI{13}{\degree} $\times$ \SI{13}{\degree} and an overlap factor of $0.2$ in both axes. The colours show overlapping coverage: \textcolor{Yellow}{yellow} areas are within only one tile, \textcolor{green}{green} two, \textcolor{blue}{blue} three, \textcolor{cyan}{cyan} four and \textcolor{RubineRed}{pink} five or more. This grid contains 595 tiles. Note the constant spacing of tiles in RA and the huge number of redundant tiles at the pole.}
+\label{fig:product}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[p]
+\begin{minipage}[c]{0.50\textwidth}
+\caption[The ``cosine'' gridding algorithm]{A sky grid of tiles defined using the ``product'' gridding algorithm. The input parameters and colours are the same as in Figure~\ref{fig:product}. This grid contains 393 tiles. Note the asymmetric ``seam'' along the $\alpha=0$ meridian, and the \textcolor{red}{red} areas near the pole that are not within the area of any tiles.}
+\label{fig:cosine}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.46\textwidth}
+\includegraphics[width=\linewidth]{images/algo_cosine.pdf}
+\end{minipage}
+\end{figure}
+
+\begin{figure}[p]
+\begin{minipage}[c]{0.46\textwidth}
+\includegraphics[width=\linewidth]{images/algo_minverlap.pdf}
+\end{minipage}
+\hfill
+\begin{minipage}[c]{0.50\textwidth}
+\caption[The ``minverlap'' gridding algorithm]{A sky grid of tiles defined using the ``minverlap'' gridding algorithm. The input parameters and colours are the same as in Figure~\ref{fig:product}. This grid contains 407 tiles.  Note the even spacing of tiles even over the $\alpha=0$ meridian, and the better coverage at the pole.}
+\label{fig:minverlap}
+\end{minipage}
+\end{figure}
 
 
 
