@@ -77,15 +77,49 @@ The most important parameter required when defining a sky grid is the field of v
 
 The second parameter required to define a sky grid is the desired overlap between the tiles. This is given as a value between zero and one in both the right ascension and declination directions, with zero meaning no overlap and one meaning all the tiles are completely overlapping (as this would lead to infinite tiles being created in practice the overlap is restricted to no more than $0.9$). This is used to define the spacing between the tile centrers, although exactly how depends on the algorithm used.
 
-As GOTO-tile has been developed the algorithm used to define tile centres has improved. The very first algorithm written by Darren White used what I have since named the \textbf{product} algorithm:
-\begin{itemize}
-    \item First, the spacing between the declination strips are defined as $s_{\mathrm{dec}} = f_{\mathrm{dec}} (1 - o_{\mathrm{dec}})$, where $f_{\mathrm{dec}}$ and $o_{\mathrm{dec}}$ are the field of view and overlap parameters in the declination direction.
-    \item For example if the field of view $f_{\mathrm{dec}} = \SI{5}{\degree}$ and the overlap $o_{\mathrm{dec}} = 0.5$ then $s_{\mathrm{dec}} = \SI{2.5}{\degree}$. This would therefore produce declination strips separated by \SI{2.5}{\degree}, starting at \SI{-90}{\degree} and increasing to \SI{90}{\degree} (\SI{-90}{\degree}, \SI{-87.5}{\degree}, \dots \SI{-2.5}{\degree}, \SI{0}{\degree}, \SI{2.5}{\degree}, \dots \SI{87.5}{\degree}, \SI{90}{\degree}).
-    \item The strips are defined to always have one strip at declination $=0$, so if $s_{\mathrm{dec}}$ does not divide into 90 an even amount of times then the highest and lowest strips will not be located at exactly \SI{90}{\degree}.
-    \item This mostly occurs due to the field of view, which is dependent on the telescope hardware. For example with $f_{\mathrm{dec}} = \SI{5.5}{\degree}$ then with overlap $o_{\mathrm{dec}} = 0.5$ the spacing $s_{\mathrm{dec}} = \SI{2.75}{\degree}$. As $90/2.57 = 32.727\ldots$ the lowest and highest rows are instead at $\lfloor 90 / s_{\mathrm{dec}} \rfloor \times s_{\mathrm{dec}}$, which for this example is \SI{88}{\degree} (so the strips are \code{[-88, -85.25, \dots -2.75, 0, 2.75 \dots 85.25, 88]}).
+As GOTO-tile has been developed the algorithm used to define tile centres has evolved and improved. I wrote the latest algorithm, called \code{minverlap}, to
 
 
-\end{itemize}
+\begin{figure}[pt]
+\begin{center}
+\includegraphics[width=\linewidth]{images/globe1.pdf}
+\end{center}
+\caption[The celestial sphere]{The celestial sphere. The celestial equator is marked in \textcolor{red}{red}, the vernal equinox (where the ecliptic (not shown) crosses the equator) is marked with the symbol \Aries{} and the meridian that intercepts the vernal equinox is marked in \textcolor{blue}{blue}. The northern and southern celestial poles are marked as NCP and SCP respectively. The definition of the equatorial coordinate system is shown: declination (Dec, $\delta$) is defined as the angle from the equator, ranging from \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP, and right ascension (RA, $\alpha$) is defined as angle east from the vernal equinox between \SI{0}{\degree} and \SI{360}{\degree}.
+}
+\label{fig:sphere}
+\end{figure}
+
+\begin{figure}[pt]
+\begin{center}
+\includegraphics[width=\linewidth]{images/globe2.pdf}
+\end{center}
+\caption[Defining declination strips]{The first stage when creating a sky grid is defining the declination strips. This is done by dividing the full range of declination (\SI{-90}{\degree} to \SI{90}{\degree}) equally by a constant spacing value $\Delta\delta$. In this example $\Delta\delta =$ \SI{10}{\degree}, and so strips are defined at $\delta=$ \SI{0}{\degree}, \SI{10}{\degree}, \SI{20}{\degree} etc\ldots, and mirrored in the southern hemisphere. There is always a strip with $\delta=0$. Exactly how the strips are defined when $\Delta\delta$ is not an integer factor of \SI{90}{\degree} depends on the algorithm used, in this case using the ``minverlap'' algorithm the strips range from \SI{-90}{\degree} to \SI{90}{\degree} and include a ``strip'' at the poles which will contain single tile (as shown in Figure~\ref{fig:tiledsphere}).
+}
+\label{fig:deltadelta}
+\end{figure}
+
+\begin{figure}[pt]
+\begin{center}
+\includegraphics[width=\linewidth]{images/globe3.pdf}
+\end{center}
+\caption[Defining the spacing between tiles]{After the declination strips are defined (see Figure~\ref{fig:deltadelta}) for each strip tile centres are defined with a set spacing $\Delta\alpha(\delta)$. Unlike $\Delta\delta$, which is fixed across the sphere, $\Delta\alpha$ varies as a function of declination meaning strips closer to the poles will contain fewer tiles. Two examples of defining tiles are shown above, one at declination $\delta_1$ (\SI{50}{\degree}, in \textcolor{cyan}{light blue}) in the northern hemisphere and another at $\delta_2$ (\SI{-10}{\degree}, in \textcolor{Plum}{purple}) in the southern hemisphere. The results of the ``minverlap'' algorithm are shown, previous algorithms had different ways of defining $\Delta\alpha$ that would have resulted in different spacings.
+}
+\label{fig:deltaalpha}
+\end{figure}
+
+\begin{figure}[pt]
+\begin{center}
+\includegraphics[width=\linewidth]{images/globe4.pdf}
+\end{center}
+\caption[A fully tiled sphere]{Once every declination strip is complete the full grid is defined, as shown above. The same two strips are shown in \textcolor{cyan}{light blue} and \textcolor{Plum}{purple} as in Figure~\ref{fig:deltaalpha}. Due to each strip starting the tile spacing at RA$=0$, there is a fully aligned column of tiles along the vernal equinox, shown in \textcolor{orange}{yellow}. The grid in these examples was defined using the ``minverlap'' algorithm, with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and the overlap was set to zero for clarity (note this leads to gaps between tiles towards the poles). In this case the full grid contains 424 tiles.
+\\
+}
+\label{fig:tiledsphere}
+\end{figure}
+
+
+
+
 
 
 
