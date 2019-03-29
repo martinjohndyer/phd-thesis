@@ -132,14 +132,14 @@ There have been three primary algorithms defined in GOTO-tile's history.
 The first has since retroactively been called the ``\textbf{product}'' algorithm, and was used when Darren White first wrote GOTO-tile. It first defines the declination step size as
 
 \begin{equation}
-    \Delta\delta = f_\text{dec}(1-o_\text{dec}),
+    \Delta\delta = f_\text{dec}(1-v_\text{dec}),
     \label{eq:product_deltadelta}
 \end{equation}
 
-where $f_\text{dec}$ and $o_\text{dec}$ are respectively the field of view and overlap parameters in the declination direction. The declination strips are then defined by taking steps of this size from the equator towards the poles, stopping when $|\delta| > 90$. The equivalent formula is used to calculate the steps in right ascension
+where $f_\text{dec}$ and $v_\text{dec}$ are respectively the field of view and overlap parameters in the declination direction. The declination strips are then defined by taking steps of this size from the equator towards the poles, stopping when $|\delta| > 90$. The equivalent formula is used to calculate the steps in right ascension
 
 \begin{equation}
-    \Delta\alpha = f_\text{RA}(1-o_\text{RA}).
+    \Delta\alpha = f_\text{RA}(1-v_\text{RA}).
     \label{eq:product_deltaalpha}
 \end{equation}
 
@@ -148,17 +148,18 @@ The clear downside of this method is that $\Delta\alpha$ does not vary depending
 Due to the obvious problems with this algorithm a replacement was written by Evert Rol, which I have since called the ``\textbf{cosine}'' algorithm. It is a more refined version of the ``product'' algorithm, and the declination strips are calculated in the same manor using Equation~(\ref{eq:product_deltadelta}). However Equation~(\ref{eq:product_deltaalpha}) is modified to depend on declination into
 
 \begin{equation}
-    \Delta\alpha(\delta) = \frac{f_\text{RA}(1-o_\text{RA})}{\cos(\delta)}.
+    \Delta\alpha(\delta) = \frac{f_\text{RA}(1-v_\text{RA})}{\cos(\delta)}.
     \label{eq:cosine_deltaalpha}
 \end{equation}
 
 This produces a much more sensible grid as shown in Figure~\ref{fig:cosine}. However there remained an issue of asymmetry: the strips are arranged increasing and decreasing from $\delta=0$ and the tiles are then arranged within the strips starting from $\alpha=0$. As visible in Figure~\ref{fig:cosine} this leads to varying overlaps when the the tiles within the strips overlap as $\alpha$ approaches \SI{360}{\degree}. Although more subtle there are similar issues at the north and south poles, and it's common for there to be small gaps between the tiles at high and low declinations.
 
-Due to these problems a method to create the grid was added, called the ``\textbf{minverlap}'' (minimum overlap) algorithm. In this case
+Due to these problems a method to create the grid was added, called the ``\textbf{minverlap}'' (minimum overlap) algorithm. The same grid created with this algorithm is shown in Figure~\ref{fig:minverlap}.
+
 
 
 \begin{equation}
-    n_\text{dec} = \left \lceil \frac{90}{f_\text{dec}(1-o_\text{dec})} \right \rceil,
+    n_\text{dec} = \left \lceil \frac{90}{f_\text{dec}(1-v_\text{dec})} \right \rceil,
     \label{eq:minverlap_ndec}
 \end{equation}
 
@@ -170,18 +171,19 @@ Due to these problems a method to create the grid was added, called the ``\textb
 
 
 \begin{equation}
-    n_\text{RA}(\delta) = \left \lceil \frac{360}{f_\text{RA}(1-o_\text{RA})/\cos(\delta)} \right \rceil,
+    n_\text{RA}(\delta) = \left \lceil \frac{360}{f_\text{RA}(1-v_\text{RA})/\cos(\delta)} \right \rceil - 1,
     \label{eq:minverlap_nra}
 \end{equation}
 
 
 \begin{equation}
-    \Delta\delta = \frac{360}{n_\text{dec}},
+    \Delta\delta = \frac{360}{n_\text{RA}},
     \label{eq:minverlap_deltaalpha}
 \end{equation}
 
 
 
+% ---------
 
 \begin{figure}[p]
 \begin{minipage}[c]{0.46\textwidth}
@@ -216,8 +218,33 @@ Due to these problems a method to create the grid was added, called the ``\textb
 \end{minipage}
 \end{figure}
 
+% ---------
 
+\begin{figure}[p]
+\begin{center}
+\includegraphics[width=\linewidth]{images/spacing_cosine.pdf}
+\end{center}
+\caption[Tile spacing with the ``cosine'' algorithm]{Tile spacing with the ``cosine'' algorithm, with a \SI{13}{\degree}$\times$\SI{13}{\degree} FoV and $0.2$ overlap.
+\\
+\textbf{Left}: Equation~\ref{eq:product_deltadelta} gives $\Delta\delta = $ \SI{10.4}{\degree}, which does not divide into \SI{90}{\degree} without a remainder. 17 strips are defined moving away from $\delta=0$, with last being \SI{6.8}{\degree} from the poles. As this is less than half of the field of view (\SI{6.5}{\degree}) the poles themselves will not fall within the area of any tile.
+\\
+\textbf{Right}: Equation~\ref{eq:cosine_deltaalpha} gives $\Delta\alpha = $ \SI{10.4}{\degree} on the equator ($\delta=0$). This results in 35 tiles and a reduced spacing of \SI{6.4}{\degree} to the west of the $\alpha=0$ meridian. This remainder will be different for each strip as $\delta$ changes, as visible in Figure~\ref{fig:cosine}.
+}
+\label{fig:cosine_spacing}
+\end{figure}
 
+\begin{figure}[p]
+\begin{center}
+\includegraphics[width=\linewidth]{images/spacing_minverlap.pdf}
+\end{center}
+\caption[Tile spacing with the ``minverlap'' algorithm]{Tile spacing with the ``minverlap'' algorithm, with the same parameters as Figure~\ref{fig:cosine_spacing}.
+\\
+\textbf{Left:} Equation~\ref{eq:minverlap_deltadelta} gives $\Delta\delta = $ \SI{10}{\degree}, therefore neatly arranging 19 strips between \SI{-90}{\degree} and \SI{90}{\degree}.
+\\
+\textbf{Right:} Equation~\ref{eq:minverlap_deltaalpha} also gives $\Delta\alpha = $ \SI{10}{\degree} on the equator ($\delta=0$), so 36 tiles are uniformly arranged around the circumference of the sphere.
+}
+\label{fig:minverlap_spacing}
+\end{figure}
 
 \end{colsection}
 
