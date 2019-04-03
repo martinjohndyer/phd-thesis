@@ -154,33 +154,39 @@ Due to the obvious problems with this algorithm a replacement was written by Eve
 
 This produces a much more sensible grid as shown in Figure~\ref{fig:cosine}. However there remained an issue of asymmetry: the strips are arranged increasing and decreasing from $\delta=0$ and the tiles are then arranged within the strips starting from $\alpha=0$. As visible in Figure~\ref{fig:cosine} this leads to varying overlaps when the the tiles within the strips overlap as $\alpha$ approaches \SI{360}{\degree}. Although more subtle there are similar issues at the north and south poles, and it's common for there to be small gaps between the tiles at high and low declinations.
 
-Due to these problems a method to create the grid was added, called the ``\textbf{minverlap}'' (minimum overlap) algorithm. The same grid created with this algorithm is shown in Figure~\ref{fig:minverlap}.
+Due to these problems a method to create the grid was added, called the ``\textbf{minverlap}'' (minimum overlap) algorithm. The same grid created with this algorithm is shown in Figure~\ref{fig:minverlap}. The intention of the new algorithm was to solve these issues by adjusting the spacing between tiles to prevent odd gaps. The previous two algorithms both treat the given overlap parameter as as unegotiable, and if the resulting spacings don't give an integer number of tiles within the ranges available then there are uneven gaps at the edges. This is shown more clearly in Figure~\ref{fig:cosine_spacing}, where a tricky spacing results in gaps at the poles and variable overlaps on the meridian. The ``minverlap'' algorithm solves this by treating the given overlap parameter not as fixed but as the \textit{minimum} required overlap between tiles. If a grid is requested with an overlap of $0.2$ (20\%), but the odd field of view of the tiles doesn't fit neatly into the ranges then the overlap can be incensed until the tiles fit.
 
-
+In order to do this mathematically, it is first necessary to find the number of tiles $n$ that would fit into the range using the previous spacing, and then if it isn't an integer number round it up to the next whole number. In declination this is calculated as
 
 \begin{equation}
     n_\text{dec} = \left \lceil \frac{90}{f_\text{dec}(1-v_\text{dec})} \right \rceil,
     \label{eq:minverlap_ndec}
 \end{equation}
 
+where $\lceil x \rceil$ is the mathematical ceiling function. This is a modification of the previous Equation~(\ref{eq:product_deltadelta}) but one that will always find an integer number of tiles. For example, with $f_\text{dec} = $ \SI{13}{\degree} and $v_\text{dec} = 0.2$ the previous spacing $\Delta\delta = 13 \times (1-0.2) = $ \SI{10.4}{\degree}. This clearly doesn't divide into the \SI{90}{\degree} range without a remainder, which is \SI{6.8}{\degree} as shown in Figure~\ref{fig:cosine_spacing}. The problem is that \SI{90}{\degree} $/$ \SI{10.4}{\degree} $= 8.65$. So the previous algorithms will fit in 8 tiles and have over half a tile remaining at the poles. Instead the minverlap algorithm rounds this up to $n_\text{dec} = 9$ tiles, and then simply calculates the spacing using
 
 \begin{equation}
-    \Delta\delta = \frac{90}{n_\text{dec}},
+    \Delta\delta = \frac{90}{n_\text{dec}}.
     \label{eq:minverlap_deltadelta}
 \end{equation}
 
+In this case the new $\Delta\delta = $ \SI{10}{\degree}, which gives an even arrangement of tiles from the equator to the poles, as shown in Figure~\ref{fig:minverlap_spacing}. The other benefit of this method is that, in addition to there always being a declination strip at $\delta=0$, there will always be ``strips'' at \SI{+90}{\degree} and \SI{-90}{\degree}, which results in a single tile being located covering the poles and ensuring there are no major gaps in coverage.
+
+Right ascension is treated similarly. The integer number of tiles that can fit into a given declination strip is given by
 
 \begin{equation}
-    n_\text{RA}(\delta) = \left \lceil \frac{360}{f_\text{RA}(1-v_\text{RA})/\cos(\delta)} \right \rceil - 1,
+    n_\text{RA}(\delta) = \left \lceil \frac{360}{f_\text{RA}(1-v_\text{RA})/\cos(\delta)} \right \rceil + 1,
     \label{eq:minverlap_nra}
 \end{equation}
 
+where the $+1$ is here necessary to account for tiles being located both at $\alpha=$\SI{0}{\degree} and $\alpha=$\SI{360}{\degree}. The logic is exactly the same as with declination, and the revised spacing is given by
 
 \begin{equation}
-    \Delta\delta = \frac{360}{n_\text{RA}},
+    \Delta\alpha(\delta) = \frac{360}{n_\text{RA}(\delta)}.
     \label{eq:minverlap_deltaalpha}
 \end{equation}
 
+The effect of this is also shown in Figure~\ref{fig:minverlap_spacing}, and tiles are uniformly spaced around the declination strip. Note here the ceiling function does produce a slight degeneracy in $\Delta\alpha$ being a function of $\delta$. Using the same parameters as the previous example $\Delta\delta=$\SI{10}{\degree}, so declination strips start at \SI{0}{\degree} and continue to \SI{\pm10}{\degree}, \SI{\pm20}{\degree} \ldots (mirrored in both hemispheres). From Equation~(\ref{eq:minverlap_nra}) the number of tiles on the equator is $n_\text{RA}(\delta=\SI{0}{\degree}) = \lceil 360/(10.4/\cos(0)) \rceil + 1 = \lceil 34.6 \rceil + 1 = 36$. But on the next strip up (or down) $n_\text{RA}(\delta=\SI{\pm10}{\degree}) = \lceil 360/(10.4/\cos(\pm10)) \rceil + 1 = \lceil 34.1 \rceil + 1 = 36$ as well. This is a natural occurrence as there are only a limited number of ways to fit an integer number of fixed tiles into a given range, and so as shown in Figure~\ref{fig:minverlap} the three strips around the equator align perfectly with the same number of tiles.
 
 
 % ---------
