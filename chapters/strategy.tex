@@ -48,7 +48,7 @@ WIP
 
 \newpage
 \section{Tiling the sky with GOTO-tile}
-\label{sec:tiling}
+\label{sec:gototile}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -62,14 +62,11 @@ GOTO-tile is a \proglang{Python} module (\pkg{gototile} \rtxt{footnote url?}) cr
 % ~~~~~~~~~~~~~~~~~~~~
 
 \subsection{Creating sky grids}
-\label{sec:gototile}
+\label{sec:grids}
 % different ways to make grids
 \begin{colsection}
 
 The core of GOTO-tile as it now exists is the \code{SkyGrid} class. This is used to define a sky grid, a collection of `tiles' defined as points on the celestial sphere (Figure~\ref{fig:sphere}). These tiles are aligned to the celestial right ascension/declination coordinates, and are designed to create a base framework for observations to be mapped to.
-
-% ---------
-\subsubsection{Defining the grid}
 
 The most important parameter required when defining a sky grid is the field of view of the telescope, which is taken as the size of the tiles that make up the grid. This is defined by giving a width and height value in degrees, meaning the tiles can only be square or rectangular. This is typically fine for the \gls{goto} array, although there was a period when having three \glspl{ut} in an `L'-shape was considered. This was abandoned due mainly to the complexity of tiling the grid based on abstract shapes.
 
@@ -84,6 +81,8 @@ As GOTO-tile has been developed the algorithm used to define tile centres has ev
 \end{enumerate}
 
 Once the grid has been created it is encapsulated within the GOTO-tile \code{SkyGrid} class. Each tile is defined by a coordinate at its centre, and each is also given a unique name of the form \code{`T0001'}. The grid itself is also given a name formed using the input field of view and overlap parameters, so a grid created with a field of view of \SI{3.7}{\degree}$\times$\SI{4.9}{\degree} and overlap factor of 0.1 (this is the grid used for the \gls{goto} 4-\gls{ut} all-sky survey) is given the name \code{`allsky-3.7x4.9--0.1--0.1'}. In this way a given tile in a given grid can be recreated just from the names, which is used when storing the grid and tile details in the observation database (see Section~\ref{sec:obsdb}). % chktex 29
+
+% ---------
 
 \begin{figure}[p]
 \begin{center}
@@ -124,10 +123,18 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
 
 \newpage
 
-% ---------
-\subsubsection{Gridding algorithms}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Defining gridding algorithms}
+\label{sec:algorithms}
+\begin{colsection}
 
 There have been three primary algorithms defined in GOTO-tile's history.
+
+% ---------
+\subsubsection{The product algorithm}
 
 The first has since retroactively been called the ``\textbf{product}'' algorithm, and was used when Darren White first wrote GOTO-tile. It first defines the declination step size as
 
@@ -145,7 +152,10 @@ where $f_\text{dec}$ and $v_\text{dec}$ are respectively the field of view and o
 
 The clear downside of this method is that $\Delta\alpha$ does not vary depending on declination. In effect this algorithm attempts to define the grid as if it was on a flat plane, where the tiles could be arranged in orthogonal rows and columns. In practice when applied to a sphere this leads to a vast number of redundant tiles at the poles, as shown in Figure~\ref{fig:product}.
 
-Due to the obvious problems with this algorithm a replacement was written by Evert Rol, which I have since called the ``\textbf{cosine}'' algorithm. It is a more refined version of the ``product'' algorithm, and the declination strips are calculated in the same manor using Equation~(\ref{eq:product_deltadelta}). However Equation~(\ref{eq:product_deltaalpha}) is modified to depend on declination into
+% ---------
+\subsubsection{The cosine algorithm}
+
+Due to the obvious problems with the previous algorithm a replacement was written by Evert Rol, which I have since called the ``\textbf{cosine}'' algorithm. It is a more refined version of the ``product'' algorithm, and the declination strips are calculated in the same manor using Equation~(\ref{eq:product_deltadelta}). However Equation~(\ref{eq:product_deltaalpha}) is modified to depend on declination into
 
 \begin{equation}
     \Delta\alpha(\delta) = \frac{f_\text{RA}(1-v_\text{RA})}{\cos(\delta)}.
@@ -154,7 +164,10 @@ Due to the obvious problems with this algorithm a replacement was written by Eve
 
 This produces a much more sensible grid as shown in Figure~\ref{fig:cosine}. However there remained an issue of asymmetry: the strips are arranged increasing and decreasing from $\delta=0$ and the tiles are then arranged within the strips starting from $\alpha=0$. As visible in Figure~\ref{fig:cosine} this leads to varying overlaps when the the tiles within the strips overlap as $\alpha$ approaches \SI{360}{\degree}. Although more subtle there are similar issues at the north and south poles, and it's common for there to be small gaps between the tiles at high and low declinations.
 
-Due to these problems a method to create the grid was added, called the ``\textbf{minverlap}'' (minimum overlap) algorithm. The same grid created with this algorithm is shown in Figure~\ref{fig:minverlap}. The intention of the new algorithm was to solve these issues by adjusting the spacing between tiles to prevent odd gaps. The previous two algorithms both treat the given overlap parameter as as unegotiable, and if the resulting spacings don't give an integer number of tiles within the ranges available then there are uneven gaps at the edges. This is shown more clearly in Figure~\ref{fig:cosine_spacing}, where a tricky spacing results in gaps at the poles and variable overlaps on the meridian. The ``minverlap'' algorithm solves this by treating the given overlap parameter not as fixed but as the \textit{minimum} required overlap between tiles. If a grid is requested with an overlap of $0.2$ (20\%), but the odd field of view of the tiles doesn't fit neatly into the ranges then the overlap can be incensed until the tiles fit.
+% ---------
+\subsubsection{The minverlap algorithm}
+
+Due to these problems I created a new method to create the grid, called the ``\textbf{minverlap}'' (minimum overlap) algorithm. The same grid created with this algorithm is shown in Figure~\ref{fig:minverlap}. The intention of the new algorithm was to solve these issues by adjusting the spacing between tiles to prevent odd gaps. The previous two algorithms both treat the given overlap parameter as as unegotiable, and if the resulting spacings don't give an integer number of tiles within the ranges available then there are uneven gaps at the edges. This is shown more clearly in Figure~\ref{fig:cosine_spacing}, where a tricky spacing results in gaps at the poles and variable overlaps on the meridian. The ``minverlap'' algorithm solves this by treating the given overlap parameter not as fixed but as the \textit{minimum} required overlap between tiles. If a grid is requested with an overlap of $0.2$ (20\%), but the odd field of view of the tiles doesn't fit neatly into the ranges then the overlap can be incensed until the tiles fit.
 
 In order to do this mathematically, it is first necessary to find the number of tiles $n$ that would fit into the range using the previous spacing, and then if it isn't an integer number round it up to the next whole number. In declination this is calculated as
 
@@ -187,7 +200,6 @@ where the $+1$ is here necessary to account for tiles being located both at $\al
 \end{equation}
 
 The effect of this is also shown in Figure~\ref{fig:minverlap_spacing}, and tiles are uniformly spaced around the declination strip. Note here the ceiling function does produce a slight degeneracy in $\Delta\alpha$ being a function of $\delta$. Using the same parameters as the previous example $\Delta\delta=$\SI{10}{\degree}, so declination strips start at \SI{0}{\degree} and continue to \SI{\pm10}{\degree}, \SI{\pm20}{\degree} \ldots (mirrored in both hemispheres). From Equation~(\ref{eq:minverlap_nra}) the number of tiles on the equator is $n_\text{RA}(\delta=\SI{0}{\degree}) = \lceil 360/(10.4/\cos(0)) \rceil + 1 = \lceil 34.6 \rceil + 1 = 36$. But on the next strip up (or down) $n_\text{RA}(\delta=\SI{\pm10}{\degree}) = \lceil 360/(10.4/\cos(\pm10)) \rceil + 1 = \lceil 34.1 \rceil + 1 = 36$ as well. This is a natural occurrence as there are only a limited number of ways to fit an integer number of fixed tiles into a given range, and so as shown in Figure~\ref{fig:minverlap} the three strips around the equator align perfectly with the same number of tiles.
-
 
 % ---------
 
@@ -252,12 +264,20 @@ The effect of this is also shown in Figure~\ref{fig:minverlap_spacing}, and tile
 \label{fig:minverlap_spacing}
 \end{figure}
 
+\newpage
+
+% ---------
+\subsubsection{Limits of the minverlap algorithm}
+
+
+
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{The all-sky grid}
-\label{sec:survey}
+\subsection{HEALPix and probability sky maps}
+\label{sec:skymaps}
 \begin{colsection}
 
 WIP
@@ -266,8 +286,66 @@ WIP
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Advantages and disadvantages of a fixed grid}
-\label{sec:fixed_grid}
+\subsection{Mapping sky maps to sky grids}
+\label{sec:mapping_skymaps}
+\begin{colsection}
+
+WIP
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Alert processing with GOTO-alert}
+\label{sec:gotoalert}
+\begin{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{colsection}
+
+WIP
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{The VOEvent schema}
+\label{sec:voevents}
+\begin{colsection}
+
+WIP
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Processing VOEvents}
+\label{sec:alert_processing}
+\begin{colsection}
+
+WIP
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Observing with GOTO}
+\label{sec:observing}
+\begin{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 WIP
@@ -286,27 +364,8 @@ WIP
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\end{colsection}
-
-% ########################################
-
-\newpage
-\section{Automated alert follow-up}
-\label{sec:followup}
-\begin{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
-
-WIP
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Alert processing}
-\label{sec:alerts}
+\subsection{Alert follow-up}
+\label{sec:alert_followup}
 \begin{colsection}
 
 WIP
