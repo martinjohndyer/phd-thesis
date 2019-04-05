@@ -279,7 +279,61 @@ The new ``minverlap'' algorithm is an improvement on the previous versions, in p
 \label{sec:skymaps}
 \begin{colsection}
 
-WIP
+\gls{healpix} is a system used to define pixelised data on the surface of a sphere~\citep{HEALPix}. Developed at NASA JPL for microwave background data, it is now widely used for other applications including for gravitational wave skymaps produced by the \gls{lvc}. HEALPix divides the sphere into a series of nested (hierarchical) equal-area (although not equal-shape) pixels arranged in declination strips (``isoLatitude''). Shown in Figure~\ref{fig:healpix} are the first four orders of spheres, starting from a base resolution with 12 pixels and increasing as each pixel is split into four. The resolution of the sphere is defined using the $N_\text{side}$ parameter, which is given by the number of pixels along the side of one of the 12 base pixels in the given resolution. At every resolution each base-resolution pixel contains $N_\text{side}^2$ pixels, so the total number of pixels in a sphere is given by
+
+\begin{equation}
+    N_\text{pix} = 12 N_\text{side}^2.
+    \label{eq:healpix_npix}
+\end{equation}
+
+Each pixel therefore has an equal area of
+
+\begin{equation}
+    \Omega_\text{pix} = \frac{4\pi}{12 N_\text{side}^2} = \frac{\pi}{3 N_\text{side}^2},
+    \label{eq:healpix_area}
+\end{equation}
+
+on a unit sphere where the radius $r=1$. Taking the celestial sphere, the circumference in degrees is $\SI{360}{\degree} = 2 \pi r$ meaning the area of the whole sky is given by
+
+\begin{equation}
+    A_\text{sky} = 4 \pi r^2 = 4 \pi \left ( \frac{\SI{360}{\degree}}{2 \pi} \right )^2 = \frac{129600}{\pi}~\text{sq deg} \approx 41252~\text{sq deg} , %chktex 3
+    \label{eq:sky_area}
+\end{equation}
+
+and therefore the area of each HEALPix pixel is
+
+\begin{equation}
+    A_\text{pix} = \frac{129600}{12 \pi N_\text{side}^2}~\text{sq~deg} \approx \frac{3438}{N_\text{side}^2}~\text{sq~deg}.
+    \label{eq:healpix_area_degrees}
+\end{equation}
+
+Figure~\ref{fig:healpix} shows only the first four orders of HEALPix pixelisation, up to $N_\text{side} = 8$ where the sphere is split into 768 pixels each with an area (which can be considered the resolution of the grid) of 53.7~sq deg. An initial, low-resolution \gls{lvc} skymap might use a grid with $N_\text{side} = 64$ (49 thousand pixels) and resolution (pixel area) of 0.84~sq~deg, where as a final output skymap will have $N_\text{side} = 1024$, 12.5 million pixels and a resolution of $3.27 \times 10^{-3}$~sq~deg (11.7 square arcminutes).
+
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=0.75\linewidth]{images/healpix.pdf}
+\end{center}
+\caption[HEALPix partitions of a sphere]{HEALPix partitions of a sphere, of increasing order and $N_\text{side}$ resolution parameter. Note that as the resolution increases each pixel on the previous sphere is split into four on the new sphere, and $N_\text{side}$ is the number of pixels along the side of a base-resolution pixel (two of which are highlighted). Adapted (colourised) from Figure~4 of \citet{HEALPix}.
+}
+\label{fig:healpix}
+\end{figure}
+
+In addition to being a way to divide the sphere, each HEALPix pixel has a unique index from one of two different numbering schemes: either the ring (counting around each ring from the north to the south) or nested (based on the sub-pixel tree) system. Each scheme has its own advantages, ring-indexed grids are easier to apply spherical harmonics to while nested grids are easier to enter into hierarchical databases. Ultimately for astronomical sky maps the harmonics are less relevant and so nested grids are usually used, but conversion between the two is fairly straightforward.
+
+HEALPix is used to provide localisation of sky probabilities for transient astronomical events, in the form of sky maps. Each point on the HEALPix grid is assigned a probability between 0 and 1 that the counterpart object is located within that pixel, and the whole sphere should sum to unity.
+
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=0.75\linewidth]{images/skymap_plot.pdf}
+\end{center}
+\caption[An example skymap]{An example skymap.
+}
+\label{fig:example_skymap}
+\end{figure}
+
+
 
 \end{colsection}
 
