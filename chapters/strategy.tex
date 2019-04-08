@@ -309,10 +309,9 @@ and therefore the area of each HEALPix pixel is
 
 Figure~\ref{fig:healpix} shows only the first four orders of HEALPix pixelisation, up to $N_\text{side} = 8$ where the sphere is split into 768 pixels each with an area (which can be considered the resolution of the grid) of 53.7~sq deg. An initial, low-resolution \gls{lvc} skymap might use a grid with $N_\text{side} = 64$ (49 thousand pixels) and resolution (pixel area) of 0.84~sq~deg, where as a final output skymap will have $N_\text{side} = 1024$, 12.5 million pixels and a resolution of $3.27 \times 10^{-3}$~sq~deg (11.7 square arcminutes).
 
-
 \begin{figure}[t]
 \begin{center}
-\includegraphics[width=0.75\linewidth]{images/healpix.pdf}
+\includegraphics[width=0.7\linewidth]{images/healpix.pdf}
 \end{center}
 \caption[HEALPix partitions of a sphere]{HEALPix partitions of a sphere, of increasing order and $N_\text{side}$ resolution parameter. Note that as the resolution increases each pixel on the previous sphere is split into four on the new sphere, and $N_\text{side}$ is the number of pixels along the side of a base-resolution pixel (two of which are highlighted). Adapted (colourised) from Figure~4 of \citet{HEALPix}.
 }
@@ -321,19 +320,16 @@ Figure~\ref{fig:healpix} shows only the first four orders of HEALPix pixelisatio
 
 In addition to being a way to divide the sphere, each HEALPix pixel has a unique index from one of two different numbering schemes: either the ring (counting around each ring from the north to the south) or nested (based on the sub-pixel tree) system. Each scheme has its own advantages, ring-indexed grids are easier to apply spherical harmonics to while nested grids are easier to enter into hierarchical databases. Ultimately for astronomical sky maps the harmonics are less relevant and so nested grids are usually used, but conversion between the two is fairly straightforward.
 
-HEALPix is used to provide localisation of sky probabilities for transient astronomical events, in the form of sky maps. Each point on the HEALPix grid is assigned a probability between 0 and 1 that the counterpart object is located within that pixel, and the whole sphere should sum to unity.
+HEALPix is used to provide localisation of sky probabilities for transient astronomical events, in the form of sky maps. Each point on the HEALPix grid is assigned a probability between 0 and 1 that the counterpart object is located within that pixel, and the whole sphere should sum to unity. Figure~\ref{fig:example_skymap} shows an example \gls{lvc} skymap, produced as part of the ``First Two Years'' simulations \citep{First2Years}.
 
-
-\begin{figure}[t]
+\begin{figure}[p]
 \begin{center}
-\includegraphics[width=0.75\linewidth]{images/skymap_plot.pdf}
+\includegraphics[width=\linewidth]{images/skymap_plot.pdf}
 \end{center}
-\caption[An example skymap]{An example skymap.
+\caption[An example low-resolution skymap]{An example low-resolution gravitational wave skymap. The original skymap has been deliberately downgraded from $N_\text{side} = 256$ to $N_\text{side} = 32$ ($N_\text{pix} = 12288$) so that individual HEALPix pixels are visible. Each point is assigned a probability value as shown by the colour scale, which indicates the contained probability within that pixel.
 }
 \label{fig:example_skymap}
 \end{figure}
-
-
 
 \end{colsection}
 
@@ -343,7 +339,32 @@ HEALPix is used to provide localisation of sky probabilities for transient astro
 \label{sec:mapping_skymaps}
 \begin{colsection}
 
-WIP
+When gravitational wave signals are detected the \gls{lvc} analysis pipelines create HEALPix sky maps to describe the sky localisation, and these are then distributed with the public VOEvent (see Section~\ref{sec:voevents}). GOTO-tile uses these skymaps to produce follow-up targets for \gls{goto}. This is done by mapping the sky maps onto the previously-defined all-sky grid used for the all-sky survey. As described previously in Section~\ref{sec:grids}, these grids are defined by a series of tiles covering the celestial sphere. GOTO-tile's task is to find all of the HEALPix points that fall within each tile, and then summing the probability values for each of these points gives the contained probability within the tile.
+
+The first step to finding the probability contained within a tile is to define the edges of the tile in terms of celestial coordinates. This is done using the \code{get\_tile\_vertices} function within \pkg{gototile} written by Evert Rol. After that a polygon is defined that matches the tile area, and then using the \pkg{healpy} \code{query\_polygon} function the indices of the HEALPix points within each tile are found. This of course differs depending on the resolution required, and so is only calculated when applying a sky map with a defined $N_\text{side}$ to the previously-generated grid. Once it's found which HEALPix points are within a given tile it's easy to mask the skymap HEALPix array and sum the probability of these points, which gives the total contained probability within each tile.
+
+Figure~\ref{fig:170817_tiles} shows an example of GOTO-tile applied to the sky map for the GW170817 event (\cite{GW170817}). The points within each tile were identified and summed in order to find the total contained probability within each tile. There is some redundancy due to the overlap between tiles, however this is typically negligible (the final GW170817 sky map used was notably smaller than usual LVC sky maps due to the coincident \textit{Fermi} localisation, which makes the overlaps more pronounced).
+
+\begin{sidewaysfigure}[p]
+\begin{center}
+\includegraphics[width=\linewidth]{images/170817_tileplot.pdf}
+\end{center}
+\caption[Tile probabilities using GW170817]{Tile probabilities using the final sky map for GW170817 (\cite{GW170817}). The sphere shows the whole skymap for this event, with each pixel coloured by probability. Overlaid is the GOTO-4 sky grid, with tiles of \SI{3.7}{\degree} $\times$ \SI{4.9}{\degree} and overlap of $0.1$. The inset shows the tiles overlaid and coloured by their contained probability (the sum of all pixel within). The four tiles with contained probability of higher than 5\% are highlighted in red. The combined probability of these tiles adds to greater than 100\%, due to the overlapping regions being counted twice. The actual probability covered by the four tiles accounting for this is 92\%.
+}
+\label{fig:170817_tiles}
+\end{sidewaysfigure}
+
+\newpage
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Creating sky maps for GRB events}
+\label{sec:grb_skymaps}
+\begin{colsection}
+
+This system described in the previous sections works well for gravitational wave events using \gls{lvc} skymaps, and it has since ben expanded to other types of events. As part of the commissioning observations (\rtxt{see commissioning}) when the LIGO-Virgo detectors were down \gls{goto} also followed-up \gls{grb} events from the \textit{Fermi} satellite \gls{gbm}. 
 
 \end{colsection}
 
