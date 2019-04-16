@@ -404,7 +404,22 @@ This radius is then used with Equation~(\ref{eq:gaussian_sigma}) onwards to crea
 
 \begin{colsection}
 
-WIP
+GOTO-alert is another \proglang{Python} module (\pkg{gotoalert} \rtxt{footnote url?}) created for the \gls{goto} project to contain functions related to alert handling and VOEvents. It was originally created based on code written by Alex Obradovic (a student at Monash) for \gls{grb} events. After he uploaded his code I reworked it into an object-oriented Python module and integrated it into the wider \gls{goto} software ecosystem, specifically adding in functions related to the GOTO-tile and ObsDB modules.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{GCN alerts}
+\label{sec:gcn}
+\begin{colsection}
+
+The \gls{gcn}, also known as the Transient Astronomy Network or together GCN/TAN, is a system hosted by NASA originally to publish alerts relating to gamma-ray burst detections \citep{GCN}. It publishes events from a variety of telescopes including \textit{INTEGRAL}, \textit{Fermi} and \textit{Swift}, and more recently has expanded to neutrino and gravitational wave alerts --- including publishing alerts from the LIGO-Virgo Collaboration.
+
+Alerts are produced by the projects and missions in the form of \gls{gcn} Notices, standard machine-readable text messages that are distributed by the network. Notices are designed to be written and sent out automatically by the instrument without the need for human intervention, and likewise can be received and acted on by automated systems run by follow-up projects such as \gls{goto}'s sentinel. Transmitting notices is only done by the projects that are part of the network.
+
+There is a second form of alerts distributed by the network called \gls{gcn} Circulars. Unlike notices, circulars are designed to be written by humans and sent out by email to anyone subscribed to the distribution list. They act as a formal, citable way to share information about events: both the detection by the instrument but also follow-up activity from other groups.
+
 
 \end{colsection}
 
