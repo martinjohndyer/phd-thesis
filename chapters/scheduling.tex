@@ -25,14 +25,36 @@ In this chapter I outline \rtxt{<blah><blah><blah>}
 
 \newpage
 \section{The G-TeCS scheduler}
-\label{sec:the_scheduler}
+\label{sec:scheduler_detail}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-WIP
+\rtxt{TODO:\@ this is moved wholesale from G-TeCS}
+
+The first step requires the scheduler to find the current queue by filtering the database pointings table. Firstly, pointings are selected based on their defined start and stop times by ensuring the current time is after their start time and before their stop time. Then the pointings are filtered in right ascension and declination by using the current local sidereal time to reject any pointings that would not be visible in the sky. This is done through commands sent to the observation database using the \pkg{obsdb} module, and any entries in the pointings table that pass these filters makes up the list of pointings that the scheduler has to sort.
+
+Sorting the pointings is done using a variety of parameters, outlined below:
+
+\begin{itemize}
+\item The first order to sort the pointings by is their validity when their observing constraints are applied, based on the saved values for each pointing. Pointings have limits defined in Section~\ref{sec:obsdb} for physical constraints (altitude, Moon separation, Moon phase, Sun altitude) which are applied using the Constraints system in the \pkg{astroplan} \proglang{Python} module \citep{astroplan}. These constants are applied both at the current time and after each pointing's minimum time. This ensures that, for example, targets that are setting are visible throughout their observing period. The minimum time constraints are only not applied to the pointing currently being observed (if any). The validity of the pointings is a simple boolean flag, and invalid pointings are naturally sorted below valid ones.
+
+\item The next order pointings are sorted by is the effective rank of the pointing, which comprised of the initial rank of the pointing and the number of times it has been repeated. The base rank is fixed when the pointing was created. Every pointing is given a rank between 0 and 9, and are deliberately biased towards prioritising gravitational wave events. Ranks 1 to 5 are reserved for these events, with ranks 6 to 9 reserved for other targets, which ensures that any incoming gravitational wave pointings will always be prioritised. Rank 0 is intended to never be used under normal circumstances, but it is a valid value that if set would outrank even gravitational wave events. All-survey tiles all automatically have the lowest possible rank of 999, as they are the ever-present background and act as ``queue fillers'' in the system. An addition to the rank is the repeat number, which accounts for the number of times that a limited target has already been observed, up to 99 times. This ensures that newer pointings are prioritised over later ones. The rank ($R$) and repeat number ($n_r$) are added in the formula $R + 10\times n_r$, meaning that a rank-2 pointing that has been observed five times will have an effective rank of 52. Infinitely-repeating pointings like the all-sky survey tiles do not include the repeat humber at this stage, which is why the survey tile ranks are static at 999. The effective ranks are sorted in reverse order, meaning a rank-5 pointing that has been observed one time (with an effective rank of 15) will will be a higher priority than a rank-4 pointing that has been observed twice (and so has an effective rank of 24).
+
+\item The next sorting parameter is based on the \glsfirst{too} flag assigned to the pointing when it was inserted into the database. The flag is simply a boolean value that is true if the target is a \gls{too} and false if it is not, and pointings that have the flag as true are sorted higher than those that are not.
+
+\item The next parameter is once again the repeat number, the number of times the pointing has already been observed. The purpose of having the repeat number at this stage is to allow sorting of infinite pointings, i.e.\ those where the rank is fixed and the effective rank is not increased due to the number of observations.
+
+\item Finally, should all the above parameters still result in equally-weighted pointings then there is a final tie-break value that is calculated for each. The exact calculation of the tie-break parameter is detailed in Section~\ref{sec:simulations}, but the value is primarily based on the current airmass of the pointing and the weighting of the survey tile the pointing is linked to, if any.
+
+\end{itemize}
+
+Initially a single pointing value was calculated for every pointing based on the above effects, and then the pointings were sorted based on this single value. However this proved to be unnecessary, as within the \proglang{Pyhton} code it is just as easy to sort based on a series of parameters both boolean and numeric. Once the pointings are sorted by the above parameters the one at the top of the list is selected as the highest priority pointing to observe.
+
+The above schema allows for a natural filtering of targets. For example, if the queue is filled with nothing but all-sky survey tiles then they will all have the same rank (999) and weighting (1). Therefore the decision will come down first to the number of times they have been observed. If a majority of tiles have been observed three times already, but some have only been observed twice then these will be a higher priority, to fill out coverage in the all-sky survey. If there are still multiple tiles to decide between then the final tie-breaker will come down to the airmass of the target at the current time, as well as potentially the time until the tile sets depending on the weightings used. If a single target gets inserted into the database at a higher rank, for example a manual observation of a particular galaxy at rank 6, then that will naturally take priority over the all-sky survey. If an event is inserted by the sentinel with a large survey of tiles then deciding between them will depend on their weighting and airmass. Once one of the pointings has been observed then the effective rank will increase by 10, so it will naturally fall down the priority rank behind the pointing in that survey that haven't been observed yet. For example a survey of tiles from a gravitational wave skymap will be inserted at rank 1, and as they get observed their effective rank will fall to 11, 21, 31 etc.
+
 
 \end{colsection}
 
