@@ -420,26 +420,149 @@ Alerts are produced by the projects and missions in the form of \gls{gcn} Notice
 
 There is a second form of alerts distributed by the network called \gls{gcn} Circulars. Unlike notices, circulars are designed to be written by humans and sent out by email to anyone subscribed to the distribution list. They act as a formal, citable way to share information about events: both the detection by the instrument but also follow-up activity from other groups.
 
-
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{The VOEvent schema}
+\subsection{VOEvents}
 \label{sec:voevents}
 \begin{colsection}
 
-WIP
+The GCN/TAN system broadcasts notices in multiple ways over many different channels, but the most useful for automated telescopes such as \gls{goto} uses the \gls{ivoa} VOEvent standard \citep{voevent}. VOEvents are a standard way to transmit information about transient astronomical events, in a structured format to make the reports easily machine-readable. Each event is assigned an \gls{ivorn} and follows a defined schema. By defining a standard template to follow diverse events can all be universally processed and robotic telescopes triggered without the need for human interpretation or vetting.
+
+The structure to transmit these events is fairly flexible, but there are certain common roles. The names below are taken from \citet{voevent}:
+
+\begin{itemize}
+    \item \textbf{Authors} are the projects, instruments or institutions that create the original data worthy of reporting in the VOEvent.
+    \item \textbf{Publishers} take the information about the astronomical event, put it into the VOEvent format and broadcast it from their servers.
+    \item \textbf{Brokers} act as nodes in the communication web, they can take in events from multiple publishers and rebroadcast them in a single stream.
+    \item \textbf{Subscribers} are the end users that listen to VOEvent servers (either directly to the publishers or a common broker).
+\end{itemize}
+
+In some cases roles can be combined, but for the case of \gls{goto} receiving \gls{lvc} events there are distinct actors: the LIGO-Virgo Collaboration is the author, NASA and the GCN/TAN system are the publishers and the \gls{goto} sentinel is the subscriber.
+
+It is possible to listen directly to the GCN/TAN servers, in which case the sentinel would receive VOEvents from the NASA missions and other projects like \gls{ligo}. However there are other groups out there publishing their own VOEvents separate to the GCN system which we might want to receive. It would be possible to run multiple event listeners within the sentinel, each listening to other servers, but it is much easier to listen to a common broker that already does that and provides a single point of access to these pipelines. The broker chosen for the \gls{gtecs} sentinel is the same as for pt5m: the 4 Pi Sky VOEvents Hub \citep{4pisky}.
+
+4 Pi Sky provides alerts from the GCN system\footnote{\url{https://gcn.gsfc.nasa.gov/burst_info.html}} as well as from the Gaia\footnote{\url{http://gsaweb.ast.cam.ac.uk/alerts/alertsindex}} and \gls{asassn}\footnote{\url{http://www.astronomy.ohio-state.edu/~assassin/transients}} projects. At the time of writing \gls{goto} only follows up \gls{lvc} \gls{gw} as well as \textit{Fermi} and \textit{Swift} \gls{grb} events, all of which are published through \glspl{gcn}, meaning there's technically no benefit of listening to 4 Pi Sky over listening directly to NASA.\@ However pt5m automatically followed up Gaia events meaning the 4 Pi Sky broker was necessary, and it has been suggested \gls{goto} could do the same.
+
+In order to receive VOEvents from any source it is necessary to set up a VOEvent client. The most common way to do this is using the \software{Comet} software \citep{comet}, which allows both sending and receiving of events. For the \gls{gtecs} sentinel (see Section~\ref{sec:sentinel}) all that was needed was a simple way to listen to and download alerts, which is why it instead uses code based on the \software{Python} module PyGCN (\pkg{pygcn}\footnote{\url{https://github.com/lpsinger/pygcn}}). Despite the name, PyGCN works perfectly fine to receive any VOEvents, not just those from the GCN servers. The sentinel uses PyGCN to open a socket to the 4 Pi Sky server and ingest binary packets, as well as sending the required receipt and ``\code{iamalive}'' responses to the server to ensure it keeps receiving events.
+
+VOEvents take the form of a structured \gls{xml} document. \gls{xml} is a ``markup'' language similar to HTML, JSON or \LaTeX, meaning it is understandable by humans but follows a set schema and so can be easily read and processed by computers. A sample of a VOEvent is given in Figure~\ref{fig:voevent_xml}.
+
+\begin{figure}[p]
+\begin{lstlisting}[language=xml,
+       tabsize=2,
+       breaklines=true,
+       keywordstyle={},
+       stringstyle=\color{red},
+       showstringspaces=false,
+       basicstyle=\scriptsize,
+       emph={voe,Who,What,WhereWhen,How,Citations},
+       emphstyle={\color{magenta}}
+       ]
+<?xml version=\'1.0\'
+      encoding=\'UTF-8\'?>\n<voe:VOEvent
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:voe="http://www.ivoa.net/xml/VOEvent/v2.0"
+      xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v2.0
+                          http://www.ivoa.net/xml/VOEvent/VOEvent-v2.0.xsd"
+      role="observation"
+      ivorn="ivo://gwnet/LVC#S190408an-2-Initial">
+<Who>
+ <Date>2019-04-08T20:21:42</Date>
+ <Author>
+  <contactName>LIGO Scientific Collaboration and Virgo Collaboration</contactName>
+ </Author>
+</Who>
+<What>
+ <Param name="Packet_Type" dataType="int" value="151"></Param>
+ <Param name="internal" dataType="int" value="0"></Param>
+ <Param name="Pkt_Ser_Num" dataType="string" value="2"></Param>
+ <Param name="GraceID" dataType="string" value="S190408an" ucd="meta.id"></Param>
+ <Param name="AlertType" dataType="string" value="Initial" ucd="meta.version"></Param>
+ <Param name="HardwareInj" dataType="int" value="0" ucd="meta.number"></Param>
+ <Param name="OpenAlert" dataType="int" value="1" ucd="meta.number"></Param>
+ <Param name="EventPage" dataType="string" value="https://gracedb.ligo.org/superevents/S190408an/view/" ucd="meta.ref.url"></Param>
+ <Param name="Instruments" dataType="string" value="H1,L1,V1" ucd="meta.code"> </Param>
+ <Param name="FAR" dataType="float" value="2.81096164616e-18" ucd="arith.rate;stat.falsealarm" unit="Hz"></Param>
+ <Param name="Group" dataType="string" value="CBC" ucd="meta.code"></Param>
+ <Param name="Pipeline" dataType="string" value="gstlal" ucd="meta.code"></Param>
+ <Param name="Search" dataType="string" value="AllSky" ucd="meta.code"></Param>
+ <Group type="GW_SKYMAP" name="bayestar">
+  <Param name="skymap_fits" dataType="string" value="https://gracedb.ligo.org/api/superevents/S190408an/files/bayestar.fits.gz" ucd="meta.ref.url"></Param>
+ </Group>
+ <Group type="Classification">
+  <Param name="BNS" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="NSBH" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="BBH" dataType="float" value="0.99999999999" ucd="stat.probability"></Param>
+  <Param name="MassGap" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="Terrestrial" dataType="float" value="9.82357724531e-12" ucd="stat.probability"></Param>
+ </Group>
+ <Group type="Properties">
+  <Param name="HasNS" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="HasRemnant" dataType="float" value="0.12" ucd="stat.probability"></Param>
+ </Group>
+</What>
+<WhereWhen>
+ <ObsDataLocation>
+ <ObservatoryLocation id="LIGO Virgo"/>
+ <ObservationLocation>
+ <AstroCoordSystem id="UTC-FK5-GEO"/>
+ <AstroCoords coord_system_id="UTC-FK5-GEO">
+ <Time><TimeInstant><ISOTime>2019-04-08T18:18:02.288180</ISOTime></TimeInstant></Time>
+ </AstroCoords>
+ </ObservationLocation>
+ </ObsDataLocation>
+</WhereWhen>
+...
+\end{lstlisting}
+\caption[VOEvent XML sample]{A sample of VOEvent \gls{xml} text from an \gls{lvc} event, formatted so the core \gls{xml} structure is visible. Some of the key pieces of information are the role and \gls{ivorn} defined in the header, the URL of the sky map and the event classification probabilities.
+}
+\label{fig:voevent_xml}
+\end{figure}
+
+\newpage
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Processing VOEvents}
-\label{sec:alert_processing}
+\subsection{Event handling}
+\label{sec:event_handling}
 \begin{colsection}
 
-WIP
+Once the VOEvent is received by the \gls{gtecs} sentinel the work of parsing and processing the event uses another \proglang{Python} module GOTO-Alert (\pkg{gotoalert}).
+
+At the core of the GOTO-alert code is the \code{Event} object class. An Event is created from a raw binary payload from the PyGCN VOEvent client, and from the \gls{xml} a \proglang{Python} class is populated with the event information (\gls{ivorn}, type, source etc). Once the basic Event is created it is checked against an internal list of so-called ``interesting'' event packet types --- the ones we care about processing for \gls{goto}. At the time of writing these are \code{SWIFT\_BAT}, \code{FERMI\_GBM} and \code{LVC} events. Should the event not match any of the recognised packet types is is flagged and wil lbe rejected by the handler. If it does match one of the interesting types however then further information is filled out. For example, if it is an \gls{lvc} gravitational wave event then it should have a \code{skymap\_fits} parameter which gives a URL for where the sky map can be downloaded from GraceDB, the \gls{ligo} event database (as shown in Figure~\ref{fig:voevent_xml}). On the other hand if it is a gamma-ray bust event it should contain a sky position in right ascension and declination as well as an error radius. These attributes are parsed and stored as attributes of the \code{Event} class on creation.
+
+Once the Event has been created the sentinel runs it through the GOTO-alert \code{event\_handler} function. This function carries out three primary tasks:
+\begin{enumerate}
+    \item Filter out uninteresting events. There are several possible filters, such as disallowing events too close to the galactic plane, but the two key ones are filtering by role (only events marked \code{observation} are allowed through, other roles include \code{utility} or \code{test}) and type (as noted when creating the Event currently only gravitational wave and selected gamma-ray busts are allowed). Should it fail to pass the filters then the function returns at this stage.
+    \item If the event passes the filters then the \code{db\_insert} function is called to create and insert pointings into the observation database (see below).
+    \item Finally, GOTO-alert also contains functions for checking observability at predefined sites and creating webpages for each event. These are based on Alex Obradovic's original GOTO-alert code and are not currently used by the live version running on La Palma.
+\end{enumerate}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Inserting events into the observation database}
+\label{sec:db_insert}
+\begin{colsection}
+
+The most important job of the sentinel is to insert events into the observation database so they are visible to the scheduler (see Sections~\ref{sec:obsdb}~\&~\ref{sec:scheduler}). This is done within the event handler by the \code{db\_insert} function.
+
+The first thing the \code{db\_insert} function does is check for existing records for this event in the observing database \code{Events} table. This is to account for updating events as revised VOEvent alerts are received. For example, \gls{lvc} events have several stages: first a ``Preliminary'' alert is released as soon as the signal is detected, then an ``Initial'' alert is issued when it has been human-vetted. From then future versions are marked as ``Update'' alert, unless the event itself is found to be non-physical or below certain thresholds in which case a ``Retraction'' alert is issued. At any of these stages the event sky map might be modified shifting the observing area, and \gls{goto} needs to update to these changes. Therefore if a previous entry for a new event is detected then all of the old pointings that are still pending in the queue are deleted before the new ones are added.
+
+Once previous event have been dealt with then the new entries in the database need to be created. All \gls{goto} pointings from the sentinel are defined \textit{on-grid}, meaning that they need to be mapped to the current GOTO-tile sky grid (see Section~\ref{sec:grids}). The database \code{Grids} table contains the field of view and overlap parameters of the current grid, allowing it to be reconstructed using GOTO-tile within the event handler. Once a GOTO-tile \code{SkyGrid} class has been created then a corresponding \code{SkyMap} is made based on the information in the event. If it was created from a gravitational wave alert then it should have a URL to download the \gls{lvc}-created sky map. If instead it just has a coordinate and error radius, i.e.\ a \gls{grb} alert, then a new Gaussian sky map is constructed as described in Section~\ref{sec:grb_skymaps}. Once both are ready then the sky map is mapped onto the grid simply using the attribute \code{SkyGrid.apply\_skymap(SkyMap)}, which returns a table of tiles and associated contained probabilities. %chktex 36
+
+The tile probability table created by GOTO-tile contains entries for every tile within the all-sky grid, of which a vast majority will contain a very small amount of the overall probability for any reasonably-well located sky map. Therefore before adding anything to the database the tile table is masked to exclude all but the highest probability tiles. The limit is configurable depending on the event type. For gravitational wave events which are \gls{goto}'s highest priority all tiles which contain more than 1\% of the overall sky map probability. \gls{grb} events however, although still interesting, are a lower priority and therefore only the top 5 most probable tiles are inserted into the database and only if they contain more than 5\% of the overall probability. It is not uncommon to receive very poorly-localised \textit{Fermi} events where no tiles pass these criteria, in which case no pointings end up being inserted.
+
+Once the tile list has been trimmed down to only the ones worth observing, then entries can be inserted into the database. First a new entry in the \code{Events} table is added for this event, containing the source, type, ID and \gls{ivorn}. Then an entry in the \code{Surveys} table is also created in order to group together all the pointings from this particular event. Although it is currently not used, the database is defined to allow multiple surveys per event. For example, there could be a quick initial survey in a wide-passband filter that prioritises possible host galaxies followed by a slower survey using the colour filters and longer exposure times that focuses on covering the sky map. But at the time of writing each event only has a single survey defined.
+
+Finally the individual tiles are inserted as entries in the \code{Mpointings} table. Each is connected to an entry in the \code{GridTiles} table for this particular grid, and the tile probabilities are stored as corresponding entries in the \code{SurveyTiles} table. The most important entries for the mpointings are the rank, target constraint values (minimum altitude, moon phase etc), the time block parameters (the time between pointings being valid) and the actual exposure settings (exposure time, filter, number in a set). These can also be varied depending on the type of event, with \gls{gw} events being inserted at the highest ranks and with the most lenient constraints. Then once the mpointings are defined the first pointings are also created and added to the database \code{Pointings} table, to insure they become immediately valid in the queue without having to wait for the caretaker to create them.
+
+Once all those entries are added to the database then the event has been successfully handled. The only other thing the sentinel will do is send out a \software{Slack} message to the \gls{goto} channel, to register that is has processed an alert and report which tiles have been triggered for observation. When the scheduler next fetches the queue the pointings should be there ready to observe, and if they are valid they will be sent to the pilot to begin follow-up observations.
 
 \end{colsection}
 
