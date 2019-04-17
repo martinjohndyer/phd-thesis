@@ -13,8 +13,7 @@
 
 \begin{colsection}
 
-In this chapter I outline my work developing the observing strategy for the GOTO prototype telescope.
-\rtxt{Thanks to Darren and Evert <blah><blah><blah>}
+In this chapter I outline my work on the systems that allow GOTO to automatically follow up alerts of transient events, specifically gravitational wave detections and gamma-ray bursts. Section~\ref{sec:gototile} describes the \software{Python} module GOTO-tile, which is used to create the all-sky grid that probability sky maps are mapped onto. The module was originally created by Darren White and then expanded by Evert Rol before I took over development, and the functions to create Gaussian sky maps were originally written by Yik Lun Mong. Section~\ref{sec:gotoalert} describes another \software{Python} module GOTO-alert, which contains the structures and functions to process alerts published by LIGO, NASA and other sources. This module was originally based on work by Alex Obradovic before I took over the code and developed it to work with the other GOTO modules. All work described in this chapter is my own and has not been published before anywhere else.
 
 \end{colsection}
 
