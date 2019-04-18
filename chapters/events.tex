@@ -19,6 +19,30 @@ In this chapter I outline my work on the systems that allow GOTO to automaticall
 
 % ~~~~~~~~~~~~~~~~~~~~
 
+\subsection{Transient astronomy}
+\label{sec:transient_astronomy}
+\begin{colsection}
+
+For the last few decades the number of detections of transient astronomical sources has been rapidly increasing. From space-based gamma-ray burst monitors such as \textit{Fermi} and \textit{Swift} to wide-field survey telescopes such as the \gls{ptf} or \gls{asassn}, increasing numbers of time-critical events have been detected and therefore had to be rapidly sent to other observing partners for follow-up campaigns. Historically this was done, at a much slower pace, through physical post and telegrams --- hence the names of some of the current services offering modern, email-based alternatives: the Astronomer's Telegram \citep{ATel} GCN Circulars \citep{GCN}.
+
+Today the global system has evolved to increasingly remove the human factor entirely in order to reduce the delay between events being detected and telescope observations being triggered. Robotic telescopes are now common and can be triggered automatically by machine processing of alerts generated automatically by the detection instruments. The \gls{ivoa} VOEvent protocol for transient alerts has become the standard language for such inter-robotic communications \citep{voevent}, allowing telescopes around to world to respond within seconds to transient alerts. Even then new projects such as the \gls{ztf}, itself paving the way for the imminent addition of the \gls{lsst}, will produce millions ove events per night requiring even faster and more efficient systems \citep{ZTF_alerts}.
+
+GOTO's priority is of course detecting optical counterparts to gravitational wave events. Such events are published by the LIGO-Virgo Collaboration as VOEvents through the GCN Notice system, and the G-TeCS sentinel (see Section~\ref{sec:sentinel}) is the system in charge of listening for and acting on those events when they occur, adding new pointings to the observation database to trigger the counterpart search.
+
+In order for the \gls{goto} imaging pipeline to identify new sources that might be related to a gravitational wave signal it needs previous observations of the same point in the sky to compare to. Therefore for a majority of the time \gls{goto} observes an all-sky survey corresponding to a fixed grid, to build up an archive of reference images. Then as new exposures are taken they can be compared to these references, allowing new sources to be detected through difference imaging (see Figure~\ref{fig:difference_imaging}).
+
+
+\begin{figure}[t]
+\includegraphics[width=\linewidth]{images/diffimg.pdf}
+\caption[The detection of SN 2019bpc through difference imaging]{The detection of Type Ia supernova SN 2019bpc by the GOTOphoto difference imaging pipeline. The new exposure on the left (a) has the reference image (b) subtracted to give the difference image on the right (c), where the new source is clearly visible.}
+\label{fig:difference_imaging}
+\end{figure}
+
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \end{colsection}
 
 % ########################################
