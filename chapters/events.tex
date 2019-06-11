@@ -116,8 +116,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
 \begin{center}
 \includegraphics[width=\linewidth]{images/globe4.pdf}
 \end{center}
-\caption[A fully tiled sphere]{Once every declination strip is complete the full grid is defined, as shown above. The same two strips are shown in \textcolor{cyan}{light blue} and \textcolor{Plum}{purple} as in Figure~\ref{fig:deltaalpha}. Due to each strip starting the tile spacing at RA$=0$, there is a fully aligned column of tiles along the vernal equinox, shown in \textcolor{orange}{yellow}. The grid in these examples was defined using the ``minverlap'' algorithm, with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and the overlap was set to zero for clarity (note this leads to gaps between tiles towards the poles). In this case the full grid contains 424 tiles.
-\\
+\caption[A fully tiled sphere]{Once every declination strip is complete the full grid is defined, as shown above. The same two strips are shown in \textcolor{cyan}{light blue} and \textcolor{Plum}{purple} as in Figure~\ref{fig:deltaalpha}. Due to each strip starting the tile spacing at RA$=0$, there is a fully aligned column of tiles along the vernal equinox, shown in \textcolor{orange}{yellow}. The grid in these examples was defined using the ``minverlap'' algorithm, with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and the overlap was set to zero for clarity (note this can lead to gaps between tiles towards the poles, as visible here). In this case the complete grid contains 424 tiles.
 }
 \label{fig:tiledsphere}
 \end{figure}
@@ -350,7 +349,7 @@ Figure~\ref{fig:170817_gw} shows an example of GOTO-tile applied to the sky map 
 \begin{center}
 \includegraphics[width=\linewidth]{images/skymaps_170817_gw.pdf}
 \end{center}
-\caption[Tile probabilities for GW170817]{Tile probabilities using the final sky map for GW170817 (\cite{GW170817}). The sphere shows the whole skymap for this event, with each pixel coloured by probability, and the location of the source of the event is shown with the blue star. Overlaid is the GOTO-4 sky grid, with tiles of \SI{3.7}{\degree} $\times$ \SI{4.9}{\degree} and overlap of $0.1$. The inset shows the tiles coloured by their contained probability (the sum of all pixels within). The four tiles with contained probability of higher than 5\% are highlighted in red..
+\caption[Tile probabilities for GW170817]{Tile probabilities using the final sky map for GW170817 (\cite{GW170817}). The sphere shows the whole skymap for this event, with each pixel coloured by probability, and the location of the source of the event is shown with the blue star. Overlaid is the GOTO-4 sky grid, with tiles of \SI{3.7}{\degree} $\times$ \SI{4.9}{\degree} and overlap of $0.1$. The inset shows the tiles coloured by their contained probability (the sum of all pixels within). The four tiles with contained probability of higher than 5\% are highlighted in red.
 }
 \label{fig:170817_gw}
 \end{figure}
@@ -405,7 +404,7 @@ This radius is then used with Equation~(\ref{eq:gaussian_sigma}) onwards to crea
 \begin{center}
 \includegraphics[width=\linewidth]{images/skymaps_170817_grb.pdf}
 \end{center}
-\caption[Tile probabilities for GRB 170817A]{Tile probabilities using the constructed Gaussian sky map for GRB 170817A (\cite{GW170817_Fermi}). As in Figure~\ref{fig:170817_gw} the sphere shows the skymap and the GOTO-4 grid, with the source shown by the blue star. The tiles highlighted in red each contain more than 1\% of the probability instead of 5\% used in Figure~\ref{fig:170817_gw}, due to the greater spread of the skymap meaning no tile here contains more than 5\%.\\
+\caption[Tile probabilities for GRB 170817A]{Tile probabilities using the constructed Gaussian sky map for GRB 170817A (\cite{GW170817_Fermi}). As in Figure~\ref{fig:170817_gw} the sphere shows the skymap and the GOTO-4 grid, with the identified source of GW170817 shown by the blue star. The tiles highlighted in red each contain more than 1\% of the probability instead of 5\% used in Figure~\ref{fig:170817_gw}, due to the greater spread of the skymap meaning no tile here contains more than 5\%.
 }
 \label{fig:170817_grb}
 \end{figure}
