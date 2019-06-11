@@ -361,7 +361,7 @@ Figure~\ref{fig:170817_gw} shows an example of GOTO-tile applied to the sky map 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \subsection{Creating sky maps for GRB events}
-\label{sec:grb_skymaps}
+\label{sec:gaussian_skymaps}
 \begin{colsection}
 
 This system described in the previous sections works well for gravitational wave events using \gls{lvc} sky maps, and it has since ben expanded to other types of events. As part of the commissioning observations (\rtxt{see commissioning}) when the LIGO-Virgo detectors were down \gls{goto} also followed-up \gls{grb} events from the \textit{Fermi} satellite \gls{gbm} \citep{Fermi_GBM}. These events however do not include probability sky maps, instead they only include a central right ascension, declination and error radius. Yik Lun Mong and I developed code in order to create a sky map from these Fermi events, therefore allowing them to be processed by GOTO-tile using the same methods already created for gravitational wave events.
@@ -426,7 +426,7 @@ This radius is then used with Equation~(\ref{eq:gaussian_sigma}) onwards to crea
 
 \begin{colsection}
 
-GOTO-alert is another \proglang{Python} module (\pkg{gotoalert} \rtxt{footnote url?}) created for the \gls{goto} project to contain functions related to alert handling and VOEvents. It was originally created based on code written by Alex Obradovic (a student at Monash) for \gls{grb} events. After he uploaded his code I reworked it into an object-oriented Python module and integrated it into the wider \gls{goto} software ecosystem, specifically adding in functions related to the GOTO-tile and ObsDB modules.
+GOTO-alert is another \proglang{Python} module (\pkg{gotoalert} \rtxt{footnote url?}) created for the \gls{goto} project to contain functions related to alert handling and VOEvents. It was originally created based on code written by Alex Obradovic (a student at Monash) for \gls{grb} events. After he uploaded his code I reworked it into an object-oriented Python module and integrated it into the wider \gls{goto} software ecosystem, specifically adding in functions related to the GOTO-tile and ObsDB modules as well as creating a more advanced strategy system.
 
 \end{colsection}
 
@@ -555,14 +555,106 @@ VOEvents take the form of a structured \gls{xml} document. \gls{xml} is a ``mark
 
 Once the VOEvent is received by the \gls{gtecs} sentinel the work of parsing and processing the event uses another \proglang{Python} module GOTO-Alert (\pkg{gotoalert}).
 
-At the core of the GOTO-alert code is the \code{Event} object class. An Event is created from a raw binary payload from the PyGCN VOEvent client, and from the \gls{xml} a \proglang{Python} class is populated with the event information (\gls{ivorn}, type, source etc). Once the basic Event is created it is checked against an internal list of so-called ``interesting'' event packet types --- the ones we care about processing for \gls{goto}. At the time of writing these are \code{SWIFT\_BAT}, \code{FERMI\_GBM} and \code{LVC} events. Should the event not match any of the recognised packet types is is flagged and wil lbe rejected by the handler. If it does match one of the interesting types however then further information is filled out. For example, if it is an \gls{lvc} gravitational wave event then it should have a \code{skymap\_fits} parameter which gives a URL for where the sky map can be downloaded from GraceDB, the \gls{ligo} event database (as shown in Figure~\ref{fig:voevent_xml}). On the other hand if it is a gamma-ray bust event it should contain a sky position in right ascension and declination as well as an error radius. These attributes are parsed and stored as attributes of the \code{Event} class on creation.
+% ---------
+\subsubsection{Event classes}
 
-Once the Event has been created the sentinel runs it through the GOTO-alert \code{event\_handler} function. This function carries out three primary tasks:
+At the core of the GOTO-alert code is the \code{Event} object class. An Event is created from a raw binary payload from the PyGCN VOEvent client, and from the \gls{xml} a \proglang{Python} class is populated with the basic event information (\gls{ivorn}, type, source etc). Once the basic Event is created it is checked against an internal list of so-called ``interesting'' event packet types --- the ones we care about processing for \gls{goto}. At the time of writing these are \code{SWIFT\_BAT}, \code{FERMI\_GBM} and \code{LVC} events, as listed in Table~\ref{tab:events}. If the event matches any of the recognised packet types then the Event is subclassed into a new object, which allows more specific properties and methods. The current classes are as follows:
+
+\begin{itemize}
+    \item \code{GRBEvent} is the class used for events relating to a Gamma-Ray Bust detections, specifically from \textit{Fermi} and \textit{Swift}. The VOEvents for these events contain a sky position in right ascension and declination as well as an error radius, so a HEALPix sky map is produced using the Gaussian method described in Section~\ref{sec:gaussian_skymaps}. For \textit{Fermi} events the class also has an additional attribute extracted from the VOEvent: the \textbf{duration} of the burst (Long or Short). This property could then be used to select different observing strategies for either type of burst.
+
+    \item \code{GWEvent} is the class used for \gls{lvc} gravitational wave events, for all three \gls{lvc} detection notice types (``Preliminary'', ``Initial'' and ``Update''). As these are events produced by LIGO-Virgo they should contain a \code{skymap\_fits} parameter which gives a URL for where the sky map can be downloaded from GraceDB, the \gls{ligo} event database (as shown in Figure~\ref{fig:voevent_xml}). The gravitational wave VOEvents also contain a variety of properties that are stored on the event class and which can be used to decide which observing strategy to use \citep{LVC_userguide}. These include:
+    \begin{itemize}
+        \item \textbf{\gls{far}}: a value provided to contain the estimated probability that this event is a false alarm i.e.\ not from a real astronomical source. Given in the form of an expected frequency or rate, so an event with a false alarm rate of 1 per year is much more tenuous than one with a \gls{far} of 1 per 10,000 years.
+        \item \textbf{Instruments}: which of the three \gls{lvc} \gls{gw} instruments (\gls{ligo}-Livingston, \gls{ligo}-Hanford and Virgo) detected the signal. Non-detection in one or more instruments is accounted for in the \gls{far}.
+        \item \textbf{Group}: which type of pipeline detected the event signal, either ``\gls{cbc}'' or ``Burst''. The following parameters only apply to \gls{cbc} events.
+        \item \textbf{Classification}: the VOEvents for \gls{cbc} events contain probabilities that the source falls into one of five categories: \gls{bns} merger, \gls{nsbh} merger, \gls{bbh} merger, ``MassGap'' merger (one or other of the components is in the hypothetical ``mass gap'' between neutron stars and black holes, defined as 3--\SI{5}{\solarmass} \citep{GW_MassGap}) or ``Terrestrial'' (a non-astronomical source).
+        \item \textbf{Properties}: \gls{cbc} events also contain two important properties: ``HasNS'', the probability one or both of components is consistent with a neutron star ($<$\SI{3}{\solarmass}), and ``HasRemnant'', the modelled probability a non-zero amount of material was ejected during coalescence and therefore an electromagnetic signal might be expected.
+        \item \textbf{Distance}: The skymaps produced by the \gls{lvc} contain full three-dimensional localisation information \citep{GW_distance}. For deciding on event strategy only the mean distance is stored from the skymap \gls{fits} header, in megaparsec, along with the standard deviation.
+    \end{itemize}
+
+    \item \code{GWRetractionEvent} is a special Event subclass to deal with \gls{lvc} notices that are retractions of earlier events. They are effectively just a more limited version of the \code{GWEvent} class as they don't contain a skymap or any of the additional parameters listed above. Having retraction events occupy their own subclass makes it easier to identify and process them when sent through the event handler.
+
+\end{itemize}
+
+\begin{table}[t]
+\begin{center}
+\begin{tabular}{clll}
+
+Packet type &  Source             & Notice type                  & Event subclass           \\
+\midrule
+\code{61}       & NASA/\textit{Swift} & \code{SWIFT\_BAT\_GRB\_POS}  & \code{GRBEvent}          \\
+\code{115}      & NASA/\textit{Fermi} & \code{FERMI\_GBM\_FIN\_POS}  & \code{GRBEvent}          \\
+\code{150}      & \gls{lvc}           & \code{LVC\_PRELIMINARY}      & \code{GWEvent}           \\
+\code{151}      & \gls{lvc}           & \code{LVC\_INITIAL}          & \code{GWEvent}           \\
+\code{152}      & \gls{lvc}           & \code{LVC\_UPDATE}           & \code{GWEvent}           \\
+\code{164}      & \gls{lvc}           & \code{LVC\_RETRACTION}       & \code{GWRetractionEvent} \\
+
+\end{tabular}
+\end{center}
+\caption[GCN notices recognised by the GOTO-alert event handler]{GCN notices and corresponding classes recognised by the GOTO-alert event handler.}
+\label{tab:events}
+\end{table}
+
+% ---------
+\subsubsection{The event handler}
+
+Once the correct Event class has been created the sentinel passes it to the GOTO-alert \code{event\_handler} function. Before processing the event the handler first has to filter out any uninteresting events, where ``interesting'' events are defined as those that fall into any of the above subclasses. If the event passed to the function is not one of those then it is rejected and the handler exits at this point. The handler will also reject an Event that is ``interesting'' if it has an incorrect role. \gls{lvc} sends out test VOEvents to allow full testing of any follow-up systems, these are identical to real events (even including simulated skymaps) but are explicitly marked as \code{test} events in their role. These can be optionally processed by the event handler, but in the live sentinel system they are also rejected at this point.
+
+If the event passes the above filter the next step is to download the event's skymap (for \gls{gw} events) or create a corresponding Gaussian skymap (for \gls{grb} events). Doing this after filtering out uninteresting events saves time and processing power downloading or creating skymaps that aren't used, for example for \gls{lvc} test events.
+
+Once the event has an associated skymap the observing strategy for the event can be generated. This can only happen after the skymap is downloaded as some parameters, notably the distance for \gls{gw} events, are only stored within the skymap headers instead of in the VOEvent \gls{xml}. The details of the different event strategies and how they are defined are given in Section~\ref{sec:event_strategy}.
+
+Finally the event handler inserts pointings and other information into the observation database, with parameters depending on the strategy determined in the previous stage. This is detailed in Section~\ref{sec:db_insert}.
+
+% ---------
+\subsubsection{\software{Slack} alerts}
+
+Throughout the event handling process GOTO-alert has the option of sending confirmation messages to Slack, in a similar way to the \gls{gtecs} pilot (see Figure~\ref{fig:pilot_slack}). This allows human observers to be informed of any new alerts processed by the sentinel, as well as the expected outcome of upcoming observations. The function deliberately spaces out the alerts it sends at different stages within the code, rather than sending them all at the end, to make sure it's obvious if a problem occurs and one or more alerts are missing. Four alerts are sent out in total:
+
 \begin{enumerate}
-    \item Filter out uninteresting events. There are several possible filters, such as disallowing events too close to the galactic plane, but the two key ones are filtering by role (only events marked \code{observation} are allowed through, other roles include \code{utility} or \code{test}) and type (as noted when creating the Event currently only gravitational wave and selected gamma-ray busts are allowed). Should it fail to pass the filters then the function returns at this stage.
-    \item If the event passes the filters then the \code{db\_insert} function is called to create and insert pointings into the observation database (see below).
-    \item Finally, GOTO-alert also contains functions for checking observability at predefined sites and creating webpages for each event. These are based on Alex Obradovic's original GOTO-alert code and are not currently used by the live version running on La Palma.
+    \item An initial alert is sent out by the sentinel as soon as an interesting event is received, and contains only one line reporting the IVORN of the event to be processed. Sending this first means there is a record should an error occur subsequently while handling the event.
+    \item The first alert is sent out by GOTO-alert once the event has been created and the skymap downloaded. It contains the key information and properties of the event, as well as a plot of the event skymap produced by GOTO-tile.
+    \item The next alert is sent out after the event observing strategy has been retrieved, and reports the contents of the strategy dictionaries (see Section~\ref{sec:event_strategy}).
+    \item The final alert is sent out after the event tiles have been added to the observation database (see Section~\ref{sec:db_insert}). As well as showing the number of tiles selected and their combined skymap coverage this alert also contains predictions of which tiles will be visible from the GOTO site in La Palma over the valid period. Ultimately this could also include a second corresponding calculation of visibility from GOTO-South as well. Note this is only a rough prediction based on visible altitudes during the night, and therefore excluding weather conditions, the position of the Moon and the existence of any higher-priority pointings that would take precedence (see Section~\ref{sec:scheduler} for how the \gls{gtecs} just-in-time scheduler operates).
 \end{enumerate}
+
+The three detailed alerts generated by GOTO-alert for an example \gls{gw} event are shown in Figure~\ref{fig:pilot_slack}.
+
+Should a retraction notice be received for an event previously processed by the sentinel then strategy and visibility alerts would not be applicable. Instead once it has been handled a special alert will be sent out, clarifying that the retraction was received and any previously-inserted pointings have been deleted.
+
+\begin{sidewaysfigure}[p]
+\begin{center}
+\includegraphics[width=\linewidth]{images/gototile_slack_side.png}
+\end{center}
+\caption[Slack alerts created by GOTO-tile for a GW event]{Slack alerts generated by the GOTO-tile event handler for a real gravitational wave event, S190426c.\\
+\textbf{Left}: The first alert includes key information about the event gathered from the GCN notice, for \gls{gw} events that includes \gls{far}, classification and distance information, a link to the GraceDB entry and a skymap image generated by GOTO-tile.\\
+\textbf{Centre}: The second alert details the event observing strategy (see Section~\ref{sec:event_strategy}).\\
+\textbf{Right}: The third alert gives the consequences of the applied strategy: the number of tiles inserted into the database and their visibility over the valid period. The attached GOTO-tile plot shows a prediction of which tiles covering the skymap will be visible.
+}
+\label{fig:gototile_slack}
+\end{sidewaysfigure}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Determining observation strategies for events}
+\label{sec:event_strategy}
+\begin{colsection}
+
+WIP
+
+
+\begin{figure}[p]
+\begin{center}
+\includegraphics[width=\linewidth]{images/strategy_flowchart.pdf}
+\end{center}
+\caption[Decision tree for determining event strategy]{Decision tree for determining event strategy.
+}
+\label{fig:strategy_flowchart}
+\end{figure}
+
 
 \end{colsection}
 
@@ -576,7 +668,7 @@ The most important job of the sentinel is to insert events into the observation 
 
 The first thing the \code{db\_insert} function does is check for existing records for this event in the observing database \code{Events} table. This is to account for updating events as revised VOEvent alerts are received. For example, \gls{lvc} events have several stages: first a ``Preliminary'' alert is released as soon as the signal is detected, then an ``Initial'' alert is issued when it has been human-vetted. From then future versions are marked as ``Update'' alert, unless the event itself is found to be non-physical or below certain thresholds in which case a ``Retraction'' alert is issued. At any of these stages the event sky map might be modified shifting the observing area, and \gls{goto} needs to update to these changes. Therefore if a previous entry for a new event is detected then all of the old pointings that are still pending in the queue are deleted before the new ones are added.
 
-Once previous event have been dealt with then the new entries in the database need to be created. All \gls{goto} pointings from the sentinel are defined \textit{on-grid}, meaning that they need to be mapped to the current GOTO-tile sky grid (see Section~\ref{sec:grids}). The database \code{Grids} table contains the field of view and overlap parameters of the current grid, allowing it to be reconstructed using GOTO-tile within the event handler. Once a GOTO-tile \code{SkyGrid} class has been created then a corresponding \code{SkyMap} is made based on the information in the event. If it was created from a gravitational wave alert then it should have a URL to download the \gls{lvc}-created sky map. If instead it just has a coordinate and error radius, i.e.\ a \gls{grb} alert, then a new Gaussian sky map is constructed as described in Section~\ref{sec:grb_skymaps}. Once both are ready then the sky map is mapped onto the grid simply using the attribute \code{SkyGrid.apply\_skymap(SkyMap)}, which returns a table of tiles and associated contained probabilities. %chktex 36
+Once previous event have been dealt with then the new entries in the database need to be created. All \gls{goto} pointings from the sentinel are defined \textit{on-grid}, meaning that they need to be mapped to the current GOTO-tile sky grid (see Section~\ref{sec:grids}). The database \code{Grids} table contains the field of view and overlap parameters of the current grid, allowing it to be reconstructed using GOTO-tile within the event handler. Once a GOTO-tile \code{SkyGrid} class has been created then a corresponding \code{SkyMap} is made based on the information in the event. If it was created from a gravitational wave alert then it should have a URL to download the \gls{lvc}-created sky map. If instead it just has a coordinate and error radius, i.e.\ a \gls{grb} alert, then a new Gaussian sky map is constructed as described in Section~\ref{sec:gaussian_skymaps}. Once both are ready then the sky map is mapped onto the grid simply using the attribute \code{SkyGrid.apply\_skymap(SkyMap)}, which returns a table of tiles and associated contained probabilities. %chktex 36
 
 The tile probability table created by GOTO-tile contains entries for every tile within the all-sky grid, of which a vast majority will contain a very small amount of the overall probability for any reasonably-well located sky map. Therefore before adding anything to the database the tile table is masked to exclude all but the highest probability tiles. The limit is configurable depending on the event type. For gravitational wave events which are \gls{goto}'s highest priority all tiles which contain more than 1\% of the overall sky map probability. \gls{grb} events however, although still interesting, are a lower priority and therefore only the top 5 most probable tiles are inserted into the database and only if they contain more than 5\% of the overall probability. It is not uncommon to receive very poorly-localised \textit{Fermi} events where no tiles pass these criteria, in which case no pointings end up being inserted.
 

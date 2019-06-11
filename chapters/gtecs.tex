@@ -524,7 +524,7 @@ Finally in addition to its role as a backup the day marshal will also send out a
 
 Although the pilot is a completely robotic system it is still important that it doesn't operate completely unsupervised. As the \gls{goto} collaboration has adopted the \software{Slack} messaging client for instant messaging and collaboration it was decided that the system should send reports automatically to a dedicated \software{Slack} channel. This is fairly easy through the \proglang{Python} \software{Slack} integration module \pkg{slackclient}, and as such has been widely adopted throughout \gls{gtecs}.
 
-The two most complicated messages are the startup report, sent by the night marshal within the pilot, and the morning report sent by the day marshal. These include a summary of the current conditions as well as links to the site webcams and (in the startup report only) the latest IR satellite image over La Palma. An example is shown in Figure~\ref{fig:slack}. More common are short messages reporting, for example, if the system mode has changed, the pilot has paused or a hardware error is being fixed. Other daemons aside from the pilot send \software{Slack} messages as well, including the dome daemon when it enters lockdown (see Section~\ref{sec:dome}) and the sentinel when it processes an interesting alert (see Section~\ref{sec:sentinel}), but a majority come from the pilot.
+The two most complicated messages are the startup report, sent by the night marshal within the pilot, and the morning report sent by the day marshal. These include a summary of the current conditions as well as links to the site webcams and (in the startup report only) the latest IR satellite image over La Palma. An example is shown in Figure~\ref{fig:pilot_slack}. More common are short messages reporting, for example, if the system mode has changed, the pilot has paused or a hardware error is being fixed. Other daemons aside from the pilot send \software{Slack} messages as well, including the dome daemon when it enters lockdown (see Section~\ref{sec:dome}) and the sentinel when it processes an interesting alert (see Section~\ref{sec:sentinel}), but a majority come from the pilot.
 
 \begin{figure}[p]
 \begin{center}
@@ -533,7 +533,7 @@ The two most complicated messages are the startup report, sent by the night mars
 \caption[Slack startup reports from the pilot]{Slack startup reports from the pilot. \textbf{Top} shows a full
 report in good conditions, while \textbf{below} is the conditions line if any of the flags are bad (see Section~\ref{sec:conditions}).
 }
-\label{fig:slack}
+\label{fig:pilot_slack}
 \end{figure}
 
 \end{colsection}
