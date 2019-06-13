@@ -581,14 +581,14 @@ At the core of the GOTO-alert code is the \code{Event} object class. An Event is
 \begin{center}
 \begin{tabular}{clll}
 
-Packet type &  Source             & Notice type                  & Event subclass           \\
+Packet type & Source              & Notice type                  & Event subclass           \\
 \midrule
-\code{61}       & NASA/\textit{Swift} & \code{SWIFT\_BAT\_GRB\_POS}  & \code{GRBEvent}          \\
-\code{115}      & NASA/\textit{Fermi} & \code{FERMI\_GBM\_FIN\_POS}  & \code{GRBEvent}          \\
-\code{150}      & \gls{lvc}           & \code{LVC\_PRELIMINARY}      & \code{GWEvent}           \\
-\code{151}      & \gls{lvc}           & \code{LVC\_INITIAL}          & \code{GWEvent}           \\
-\code{152}      & \gls{lvc}           & \code{LVC\_UPDATE}           & \code{GWEvent}           \\
-\code{164}      & \gls{lvc}           & \code{LVC\_RETRACTION}       & \code{GWRetractionEvent} \\
+\code{61}   & NASA/\textit{Swift} & \code{SWIFT\_BAT\_GRB\_POS}  & \code{GRBEvent}          \\
+\code{115}  & NASA/\textit{Fermi} & \code{FERMI\_GBM\_FIN\_POS}  & \code{GRBEvent}          \\
+\code{150}  & \gls{lvc}           & \code{LVC\_PRELIMINARY}      & \code{GWEvent}           \\
+\code{151}  & \gls{lvc}           & \code{LVC\_INITIAL}          & \code{GWEvent}           \\
+\code{152}  & \gls{lvc}           & \code{LVC\_UPDATE}           & \code{GWEvent}           \\
+\code{164}  & \gls{lvc}           & \code{LVC\_RETRACTION}       & \code{GWRetractionEvent} \\
 
 \end{tabular}
 \end{center}
@@ -639,14 +639,21 @@ Should a retraction notice be received for an event previously processed by the 
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Determining observation strategies for events}
+\newpage
+
+\subsection{Determining observation strategies}
 \label{sec:event_strategy}
 \begin{colsection}
 
-WIP
+An important function of the GOTO-alert event handler is to determine the specific strategy to be used to observe follow-up observations for each interesting event. The \gls{gtecs} observation database (see Section~\ref{sec:obsdb}) contains a large number of tables and structures to enable tailoring observations to the properties of the triggering event, either by altering the validity, priority and cadence of the resulting pointings inserted into the scheduler queue (see Section~\ref{sec:scheduler}) or by customising the commands issued by the pilot when that pointing is selected (see Section~\ref{sec:pilot}).
 
+The term \textit{strategy} is used deliberately to differentiate from the actions carried out by the on-site pilot, which might be better called \textit{tactics}. Properly defined, strategy defines long-term aims and objectives (consider generals directing a war far from the front lines, or the coach of a sports team) whereas tactics are the on-the-ground implementation details used to move towards those objectives (determined by the captain in the trenches or on the pitch). The sentinel decides the observing strategy for a particular event, using the structures and functions within GOTO-alert. These decisions are then communicated to the pilot through the observing database, which decides what to do independently using the scheduler and the local conditions. Only then are commands sent to the hardware daemons to put the plan into action: like the soldiers on the battlefield or players on the pitch theirs is not to reason why but to carry out their orders as issued.
 
-\begin{figure}[p]
+The importance of defining such a distinction is that the strategies and objectives decided by the sentinel can only ever be aspirational, for the best-case scenario. A detailed plan of follow-up observations for a transient event can be determined, but if the target is not visible from La Palma, or it is currently raining, then the pilot will clearly not be able to implement those plans. The sentinel is designed to be aspirational and not consider smaller details such as these in order to make it independent of physical hardware. Ultimately GOTO is envisioned to occupy multiple sites across the world, as described in Section~\ref{sec:multisite}, but they will all still be taking orders from a single central sentinel and database.
+
+\newpage
+
+\begin{figure}[t]
 \begin{center}
 \includegraphics[width=\linewidth]{images/strategy_flowchart.pdf}
 \end{center}
@@ -655,6 +662,119 @@ WIP
 \label{fig:strategy_flowchart}
 \end{figure}
 
+In order to decide the observation strategy for a given event the GOTO-alert event handler uses the decision tree shown in Figure~\ref{fig:strategy_flowchart}. The codes at the end of the branches (\code{GW\_CLOSE\_NS}, \code{GRB\_FERMI} etc) are the individual strategies, and they correspond to keys in the strategy dictionary defined within GOTO-alert as shown in Table~\ref{tab:strategy_dict}. Each strategy corresponds to an integer rank as well as further keys relating to cadence, constraints and exposure sets which are keys in three additional dictionaries shown in Tables~\ref{tab:cadence_dict},~\ref{tab:constraints_dict}~\&~\ref{tab:exposuresets_dict}. Through this structure all the values required for inserting an event into the database are defined, and it is also simple to modify these strategies or add in new ones.
+
+\clearpage
+
+% -----
+
+\begin{table}[!p]
+\begin{center}
+\begin{tabular}{lclll}
+
+Strategy             & Rank & Cadence                        & Constraints    & ExposureSets \\
+\midrule
+\code{GW\_CLOSE\_NS} &    2 & \code{NO\_DELAY}               & \code{LENIENT} & \code{3x60L} \\ % chktex 29
+\code{GW\_FAR\_NS}   &   13 & \code{NO\_DELAY}               & \code{LENIENT} & \code{3x60L} \\ % chktex 29
+\code{GW\_CLOSE\_BH} &   24 & \code{TWO\_NIGHTS}             & \code{LENIENT} & \code{3x60L} \\ % chktex 29
+\code{GW\_FAR\_BH}   &  105 & \code{TWO\_NIGHTS}             & \code{LENIENT} & \code{3x60L} \\ % chktex 29
+\code{GW\_BURST}     &   52 & \code{NO\_DELAY}               & \code{LENIENT} & \code{3x60L} \\ % chktex 29
+\code{GRB\_SWIFT}    &  207 & \code{TWO\_FIRST\_ONE\_SECOND} & \code{NORMAL}  & \code{3x60L} \\ % chktex 29
+\code{GRB\_FERMI}    &  218 & \code{TWO\_FIRST\_ONE\_SECOND} & \code{NORMAL}  & \code{3x60L} \\ % chktex 29
+
+\end{tabular}
+\end{center}
+\caption[Event strategy dictionary keys]{Event strategy dictionary keys.}
+\label{tab:strategy_dict}
+\end{table}
+
+% -----
+
+\begin{table}[!p]
+\begin{center}
+\begin{tabular}{lccc}
+
+Cadence                        & Number of visits & Hours between visits & Valid days \\
+\midrule
+\code{NO\_DELAY}               &               99 &                    0 &          3 \\
+\code{TWO\_NIGHTS}             &                2 &                   12 &          3 \\
+\code{TWO\_FIRST\_ONE\_SECOND} &                3 &                4, 12 &          3 \\
+
+\end{tabular}
+\end{center}
+\caption[Cadence strategy dictionary keys]{Cadence strategy dictionary keys.}
+\label{tab:cadence_dict}
+\end{table}
+
+% -----
+
+\begin{table}[!p]
+\begin{center}
+\begin{tabular}{lcccl}
+
+Constraints    & Min Alt          & Max Sun Alt       & Min Moon Separation & Max Moon Phase \\
+\midrule
+\code{LENIENT} & \SI{30}{\degree} & \SI{-15}{\degree} & \SI{30}{\degree}    &         Bright \\
+\code{NORMAL}  & \SI{30}{\degree} & \SI{-12}{\degree} & \SI{30}{\degree}    &         Bright \\
+
+\end{tabular}
+\end{center}
+\caption[Constraints strategy dictionary keys]{Constraints strategy dictionary keys.}
+\label{tab:constraints_dict}
+\end{table}
+
+% -----
+
+\begin{table}[!p]
+\begin{center}
+\begin{tabular}{lcccl}
+
+ExposureSets   & Set position & Number of exposures &    Exposure time & Filter \\
+\midrule
+\code{3x60L}   &          1/1 &                   3 & \SI{60}{\second} &      L \\ % chktex 29
+\code{3x60RGB} &          1/3 &                   1 & \SI{60}{\second} &      R \\ % chktex 29
+                &          2/3 &                   1 & \SI{60}{\second} &      G \\ % chktex 29
+                &          3/3 &                   1 & \SI{60}{\second} &      B \\ % chktex 29
+
+\end{tabular}
+\end{center}
+\caption[ExposureSets strategy dictionary keys]{ExposureSets strategy dictionary keys.}
+\label{tab:exposuresets_dict}
+\end{table}
+
+% -----
+
+\clearpage
+
+\rtxt{How does this fit into the scheduling sections? What do the readers know at this point about ranks or constraints? Wouldn't this be better after the scheduling chapter (or even within it)?}
+
+The strategies determined using Figure~\ref{fig:strategy_flowchart} and described in Tables~\ref{tab:strategy_dict},~\ref{tab:cadence_dict},~\ref{tab:constraints_dict}~\&~\ref{tab:exposuresets_dict} are the ones used within the \gls{goto} sentinel at the time of writing. They were decided based on the priorities of the \gls{goto} project as described in the following pages.
+
+The first distinction is between gravitational wave and gamma-ray burst events. \gls{goto}'s primary priority is searching for \gls{gw} counterparts, with any \gls{grb} follow-up being a useful but decidedly lower-priority use of \gls{goto}'s time. Therefore all \gls{gw} events have ranks considerably higher than \gls{grb} events, and due to their importance to the project \gls{gw} events also use more lenient constraints (defined in Table~\ref{tab:constraints_dict}) than the normal ones used by \gls{grb} events and the all-sky survey.
+
+The highest priority for \gls{goto} should always be \gls{gw} events that are predicted to contain a neutron star component, as they are the ones that are expected to produce an electromagnetic counterpart that \gls{goto} could detect (see the definitions of ``HasNS'' and ``HasRemnant'' in Section~\ref{sec:event_handling}). This difference is expressed in the different cadence strategies used for each:
+
+\begin{itemize}
+    \item Neutron star events have no delay between visits, meaning once a pointing is completed it will be immediately re-inserted into the queue (with its rank increased by 10). So for these events once the telescope has observed all the visible tiles once it will immediately start covering the map again, and by default this will continue until it reaches the stop time three days after the event (or until it reaches 99 observations of each tile, which is inserted just as a maximum and isn't expected to be reached within three nights).
+    \item Black hole events on the other hand have a more limited \code{TWO\_NIGHTS} strategy, which only requires two observations of each tile with at least 12 hours between them (which in practice means in two subsequent nights).
+\end{itemize}
+
+For both neutron star and black hole events a distinction is also made between ``close'' and ``far'' events based on their reported source distance: a close neutron star event is defined to be within \SI{400}{\mega\parsec} while a close binary black hole event is within \SI{100}{\mega\parsec}. The sole current detection of a gravitational wave counterpart, associated with GW170817, peaked in the optical at approximately 17th magnitude at a distance of \SI{40}{\mega\parsec} \citep{GW170817_followup}, corresponding to an absolute magnitude of -16. Using the equation for apparent magnitude
+
+\begin{equation}
+    m-M = -5 +5\log_{10}(d),
+    \label{eq:magnitude}
+\end{equation}
+
+the GW170817 would have peaked above 19th magnitude out to a distance of \SI{100}{\mega\parsec} and above 22nd magnitude out to a distance of \SI{400}{\mega\parsec}. Binary-black hole mergers are not expected to produce the same amounts of ejected matter that would produce a kilonova, but some predictions suggest there may be material ejected from disks around one or more of the black holes which might reach 22nd magnitude if closer than \SI{100}{\mega\parsec} \citep{BBH_EM, BBH_Gompertz}. As a first approximation therefore the 22nd magnitude limits were adopted for the close/far distinction. Note this is a very arbitrary division, and not one particularly based on \gls{goto}'s capability (which is not able to detect sources down to 22nd magnitude). Instead it is a more a division into sources that \textit{could} have an optical counterpart visible from Earth.
+
+The only difference in strategy between ``close'' and ``far'' events is that they are assigned different initial ranks when inserted into the database. The rest of the strategy including cadence and constraints are identical, and therefore the division is completely academic except in the case where multiple events exist in the observing queue at the same time. Should this happen then the ranking system provides a quick method to prioritise events for observations, assuming tiles for both events were visible at the same time. Using the ranks given in Table~\ref{tab:strategy_dict} events from close neutron star mergers would be inserted at rank 2, while far mergers of the same type would be inserted at rank 13. As the rank of a pointing is increased by 10 every time it is observed this would prioritise two passes of the ``close'' skymap before the ``far'' skymap. The first observation would be at rank 2, the second at rank 12, and by the third it would be in the queue at rank 22. This however is lower than the initial rank of 13 for the ``far'' event, so that would then be higher in the queue. Any following observations would alternate between the two events: ``close'' pass 3 at rank 22, ``far'' pass 2 at rank 23, ``close'' pass 4 at rank 32 etc. The ranks for the other events are likewise carefully chosen: close \gls{bbh} events would be inserted at rank 24 and therefore fall behind the first three passes of a close NS or two passes of a far NS.\@ Far \gls{bbh} events are very unlikely to produce any visible optical counterparts, so although \gls{goto} will still consider them they are inserted at rank 105 well below several passes of any more promising \gls{gw} events.
+
+Gravitational wave events from the LVC burst pipelines are hard to categorise as there is very little information to base any observation strategy on. As a compromise they use the same cadence strategy as neutron star events, but are inserted at rank 52 below any more promising events (aside from far \gls{bbh} events).
+
+Gamma-ray burst events are also processed by the sentinel and inserted into the observation database. These are inserted at ranks above 200, ensuring that \gls{goto} will always prioritise gravitational wave follow up. \gls{grb} events use a different cadence strategy of \code{TWO\_FIRST\_ONE\_SECOND}, which as detailed in Table~\ref{tab:cadence_dict} asks for three observations: two in the first night separated by 4 hours and another in the second night. This is a different test cadence recently implemented to attempt to account for the fast-fading nature of \gls{grb} afterglows, and is an example of more complex cadences allowed by the \gls{gtecs} scheduler. For gamma-ray burst events the only distinction is made between events originating from \textit{Swift} and \textit{Fermi}. Typically \textit{Swift}'s \gls{bat} detections are much better localised than those from \textit{Fermi}'s \gls{gbm}, and so in cases where a source is detected by both the \textit{Swift} detection should be prioritised. Further division could be made based on if the burst is classified by \textit{Fermi} as Long or Short, but this is not currently implemented.
+
+Finally each strategy currently uses the same exposure sets as the all-sky survey: three sequential exposures using the L filter lasting 60 seconds. A similar set of exposures using the coloured filters instead is shown in Table~\ref{tab:exposuresets_dict} as a possible example of what could be defined, but is not currently used as part of any strategy.
 
 \end{colsection}
 
