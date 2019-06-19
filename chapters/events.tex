@@ -770,11 +770,15 @@ the GW170817 would have peaked above 19th magnitude out to a distance of \SI{100
 
 The only difference in strategy between ``close'' and ``far'' events is that they are assigned different initial ranks when inserted into the database. The rest of the strategy including cadence and constraints are identical, and therefore the division is completely academic except in the case where multiple events exist in the observing queue at the same time. Should this happen then the ranking system provides a quick method to prioritise events for observations, assuming tiles for both events were visible at the same time. Using the ranks given in Table~\ref{tab:strategy_dict} events from close neutron star mergers would be inserted at rank 2, while far mergers of the same type would be inserted at rank 13. As the rank of a pointing is increased by 10 every time it is observed this would prioritise two passes of the ``close'' skymap before the ``far'' skymap. The first observation would be at rank 2, the second at rank 12, and by the third it would be in the queue at rank 22. This however is lower than the initial rank of 13 for the ``far'' event, so that would then be higher in the queue. Any following observations would alternate between the two events: ``close'' pass 3 at rank 22, ``far'' pass 2 at rank 23, ``close'' pass 4 at rank 32 etc. The ranks for the other events are likewise carefully chosen: close \gls{bbh} events would be inserted at rank 24 and therefore fall behind the first three passes of a close NS or two passes of a far NS.\@ Far \gls{bbh} events are very unlikely to produce any visible optical counterparts, so although \gls{goto} will still consider them they are inserted at rank 105 well below several passes of any more promising \gls{gw} events.
 
+What is currently not considered by the strategy definition is a \textit{maximum} valid distance, beyond which there is no point in \gls{goto} taking any action. \gls{lvc} detections have already reached out to the gigaparsec scale, and at those distances the chance of there being any optical counterpart visible from Earth is very low. At the time of writing \gls{gw} events are rare enough that there is little reason for \gls{goto} to follow up everything reported by the \gls{lvc}, in the future if necessary it would be easy to put a cap on what events \gls{goto} follows up based on distance or any other parameter (for example false-alarm rate).
+
 Gravitational wave events from the LVC burst pipelines are hard to categorise as there is very little information to base any observation strategy on. As a compromise they use the same cadence strategy as neutron star events, but are inserted at rank 52 below any more promising events (aside from far \gls{bbh} events).
 
 Gamma-ray burst events are also processed by the sentinel and inserted into the observation database. These are inserted at ranks above 200, ensuring that \gls{goto} will always prioritise gravitational wave follow up. \gls{grb} events use a different cadence strategy of \code{TWO\_FIRST\_ONE\_SECOND}, which as detailed in Table~\ref{tab:cadence_dict} asks for three observations: two in the first night separated by 4 hours and another in the second night. This is a different test cadence recently implemented to attempt to account for the fast-fading nature of \gls{grb} afterglows, and is an example of more complex cadences allowed by the \gls{gtecs} scheduler. For gamma-ray burst events the only distinction is made between events originating from \textit{Swift} and \textit{Fermi}. Typically \textit{Swift}'s \gls{bat} detections are much better localised than those from \textit{Fermi}'s \gls{gbm}, and so in cases where a source is detected by both the \textit{Swift} detection should be prioritised. Further division could be made based on if the burst is classified by \textit{Fermi} as Long or Short, but this is not currently implemented.
 
 Finally each strategy currently uses the same exposure sets as the all-sky survey: three sequential exposures using the L filter lasting 60 seconds. A similar set of exposures using the coloured filters instead is shown in Table~\ref{tab:exposuresets_dict} as a possible example of what could be defined, but is not currently used as part of any strategy.
+
+It should be stressed that the strategies detailed in this sections are designed to just inform the default reaction of \gls{goto} to any incoming alert. It is not intended to be a perfect reaction in every case for the simple reason that there may well be later external input. For example the default strategy for a gravitational wave signal from a close neutron star source is to observe the tile inserted over and over until the three day limit has passed. In practice it should be clear after the first few passes if there is any counterpart candidate, in which case it is possible for a human to intervene and direct \gls{goto} to go take observations of particular tiles with promising candidates. Likewise after the first pass of a distant \gls{bbh} event no candidate is detected, and nothing has been reported from any other source, the decision could be made to not bother with the second pass the day after and just return to the all-sky survey. The strategies defined here are therefore designed to produce a reasonable default response from \gls{goto} but other human-guided are also an expected part of any follow-up campaign.
 
 \end{colsection}
 
@@ -784,13 +788,153 @@ Finally each strategy currently uses the same exposure sets as the all-sky surve
 \label{sec:db_insert}
 \begin{colsection}
 
-The most important job of the sentinel is to insert events into the observation database so they are visible to the scheduler (see Sections~\ref{sec:obsdb}~\&~\ref{sec:scheduler}). This is done within the event handler by the \code{db\_insert} function.
+Once the strategy has been defined then the sentinel needs to insert events into the observation database so they are visible to the scheduler (see Sections~\ref{sec:obsdb}~\&~\ref{sec:scheduler}).
 
-The first thing the \code{db\_insert} function does is check for existing records for this event in the observing database \code{Events} table. This is to account for updating events as revised VOEvent alerts are received. For example, \gls{lvc} events have several stages: first a ``Preliminary'' alert is released as soon as the signal is detected, then an ``Initial'' alert is issued when it has been human-vetted. From then future versions are marked as ``Update'' alert, unless the event itself is found to be non-physical or below certain thresholds in which case a ``Retraction'' alert is issued. At any of these stages the event sky map might be modified shifting the observing area, and \gls{goto} needs to update to these changes. Therefore if a previous entry for a new event is detected then all of the old pointings that are still pending in the queue are deleted before the new ones are added.
+% ---------
+\subsubsection{Previous records}
 
-Once previous event have been dealt with then the new entries in the database need to be created. All \gls{goto} pointings from the sentinel are defined \textit{on-grid}, meaning that they need to be mapped to the current GOTO-tile sky grid (see Section~\ref{sec:grids}). The database \code{Grids} table contains the field of view and overlap parameters of the current grid, allowing it to be reconstructed using GOTO-tile within the event handler. Once a GOTO-tile \code{SkyGrid} class has been created then a corresponding \code{SkyMap} is made based on the information in the event. If it was created from a gravitational wave alert then it should have a URL to download the \gls{lvc}-created sky map. If instead it just has a coordinate and error radius, i.e.\ a \gls{grb} alert, then a new Gaussian sky map is constructed as described in Section~\ref{sec:gaussian_skymaps}. Once both are ready then the sky map is mapped onto the grid simply using the attribute \code{SkyGrid.apply\_skymap(SkyMap)}, which returns a table of tiles and associated contained probabilities. %chktex 36
+The first task is to check for existing records for this event in the observing database \code{Events} table. This is to account for updating events as revised VOEvent alerts are received, or in order to process retraction events. \gls{lvc} events have several stages: first a ``Preliminary'' alert is released as soon as the signal is detected, then an ``Initial'' alert is issued when it has been human-vetted. From then future versions are marked as ``Update'' alert, unless the event itself is found to be non-physical or below certain thresholds in which case a ``Retraction'' alert is issued. At any of these stages the event sky map might be modified shifting the observing area, and \gls{goto} needs to update to these changes. Therefore if a previous entry for a new event is detected then all of the old pointings that are still pending in the queue are deleted before the new ones are added. Should the event be of type \code{GWRetractionEvent} then this is where the function exits, as once the previous pointings are deleted then there are no more to replace them.
 
-The tile probability table created by GOTO-tile contains entries for every tile within the all-sky grid, of which a vast majority will contain a very small amount of the overall probability for any reasonably-well located sky map. Therefore before adding anything to the database the tile table is masked to exclude all but the highest probability tiles. The limit is configurable depending on the event type. For gravitational wave events which are \gls{goto}'s highest priority all tiles which contain more than 1\% of the overall sky map probability. \gls{grb} events however, although still interesting, are a lower priority and therefore only the top 5 most probable tiles are inserted into the database and only if they contain more than 5\% of the overall probability. It is not uncommon to receive very poorly-localised \textit{Fermi} events where no tiles pass these criteria, in which case no pointings end up being inserted.
+% ---------
+\subsubsection{Mapping onto the all-sky grid}
+
+Once previous event have been dealt with then the new entries in the database need to be created. All \gls{goto} pointings from the sentinel are defined \textit{on-grid}, meaning that they need to be mapped to the current GOTO-tile sky grid (see Section~\ref{sec:grids}). The database \code{Grids} table contains the field of view and overlap parameters of the current grid as well as the algorithm used (see Section~\ref{sec:algorithms}), allowing it to be reconstructed using GOTO-tile within the event handler. Once a GOTO-tile \code{SkyGrid} class has been created then a corresponding \code{SkyMap} class is made based on the information in the event. If it was created from a gravitational wave alert then it should have a URL to download the \gls{lvc}-created sky map. If instead it just has a coordinate and error radius, i.e.\ a \gls{grb} alert, then a new Gaussian sky map is constructed as described in Section~\ref{sec:gaussian_skymaps}. Once both grid and map are ready then the sky map is mapped onto the grid simply using the class method \code{SkyGrid.apply\_skymap(SkyMap)}, which returns a table of tiles and associated contained probabilities (as described in Section~\ref{sec:mapping_skymaps}). %chktex 36
+
+% ---------
+\subsubsection{Selecting tiles}
+
+The tile probability table created by GOTO-tile contains entries for every tile within the all-sky grid, of which a vast majority will contain a very small amount of the overall probability for any reasonably-well located sky map. Adding an entry to for every tile would therefore be unnecessary, and even harmful as the scheduling system is designed to complete a full pass of the visible tiles before going on to re-observe those already completed. Therefore it is necessary to prune the tile table before inserting tiles into the database.
+
+There are multiple ways to chose the tiles to insert. Initially there was a simple cut-off in terms of each tile's contained probability: insert each tile that contains greater than $1\%$ of the total probability ($5\%$ for \glspl{grb}). This hard limit however proved to be unsuitable. \gls{gw} skymaps cover a large range in sky area, and for very well spread-out skymaps there might be few if any tiles that reach that limit. On the other hand for very well localised events adding tiles down to the $1\%$ level is redundant and would waste time if there are tiles that contain tens of percent. Therefore a new method of selecting tiles had to be found.
+
+The first choice was to keep a hard cut-off in terms of contained probability, but modify the limit for each skymap. Several different ways of calculating this was tried. One was to change the cut-off based on the highest tile probability. For example a well-localised event might result in the highest-probability tile containing $30\%$, so with a 10\% cut-off all tiles containing 3\% or above would be added. On the other hand a spread-out skymap might have a highest tile only containing 2\%, so then all tiles with 0.2\% or above would be added. Other possible values to base this off were the on-sky areas of the 90\% or 50\% contours. Ultimately all the methods that used a hard contained probability cut-off proved to be not very responsive to the geographic spread of the skymap, and determining the precise proportionality constant (e.g. 10\% in the above example) was hard to balance between large and small maps.
+
+One alternative method is to start with the highest probability tile and then add on subsequent tiles until the total probability covered reaches some target value, e.g. 90\% of the skymap. This method was originally used by GOTO-tile, but is relatively complicated to calculate when considering grids with overlap between the tiles. Just selecting tiles based on their contained skymap probability risks over-counting the regions within the overlap between tiles, and so the final selected tiles which nominally contain 90\% of the probability will actually contain less. The solution to this is to re-generate the skymap after selecting each tile with the already-selected pixels set to 0, but this then becomes a non-trivial optimisation problem that is computationally intensive for limited gain compared to other possibilities.
+
+The ultimately preferred alternative is to instead select tiles based on their position in the sky contours. Each HEALPix pixel within the skymap has an associated probability, and the probability within a tile is the sum of the probabilities of each pixel contained within it. GOTO-tile also calculates the skymap contours by sorting the pixels by probability and replacing the value of each with the cumulative probability of all pixels higher than it. \rtxt{should be in GOTO-tile section}. Therefore finding which contour each tile falls within is not as easy to calculate. The most complete way is to find the minimum contour pixel value of all the values within each tile and set that as the tile contour value. Selecting tiles using this, for example asking for all tiles within the 90\% contour region, will find every tile covering that region --- even if only the smallest fraction of the tile's area is within that region. The alternative is to find the mean contour value within the tile and select based off of that, which is less susceptible to small fluctuations. This is the chosen method used within GOTO-alert: selecting all tiles which have a mean contour value within 90\%.
+
+\clearpage
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+\begin{tabular}{cc}
+\multicolumn{2}{c}{Prefered probability skymap for superevent S190521r:}
+\\
+\multicolumn{2}{c}{\includegraphics[width=0.6\linewidth]{images/tiling/1_0.png}}
+\\
+Tiles within 50\% contour: &
+Tiles within 90\% contour:
+\\
+47 tiles, covering 86\% &
+86 tiles, covering 98\%
+\\
+\includegraphics[width=0.25\linewidth]{images/tiling/1_c.png} &
+\includegraphics[width=0.25\linewidth]{images/tiling/1_d.png}
+\\
+Tiles with probability > 1\%: &
+Tiles with mean contour within 90\%:
+\\
+41 tiles, covering 90\% &
+42 tiles, covering 91\%
+\\
+\includegraphics[width=0.25\linewidth]{images/tiling/1_a.png} &
+\includegraphics[width=0.25\linewidth]{images/tiling/1_b.png}
+\\
+
+\end{tabular}
+\end{center}
+\caption[Different tile selection methods for S190521r]{Different tile selection methods applied to the skymap for \gls{lvc} event S190521r.
+}
+\label{fig:tiling_S190521r}
+\end{figure}
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+\begin{tabular}{cc}
+\multicolumn{2}{c}{Final probability skymap for event GW170817:}
+\\
+\multicolumn{2}{c}{\includegraphics[width=0.6\linewidth]{images/tiling/2_0.png}}
+\\
+Tiles within 50\% contour: &
+Tiles within 90\% contour:
+\\
+6 tiles, covering 88\% &
+11 tiles, covering 96\%
+\\
+\includegraphics[width=0.25\linewidth]{images/tiling/2_c.png} &
+\includegraphics[width=0.25\linewidth]{images/tiling/2_d.png}
+\\
+Tiles with probability > 1\%: &
+Tiles with mean contour within 90\%:
+\\
+10 tiles, covering 98\% &
+3 tiles, covering 88\%
+\\
+\includegraphics[width=0.25\linewidth]{images/tiling/2_a.png} &
+\includegraphics[width=0.25\linewidth]{images/tiling/2_b.png}
+\\
+
+\end{tabular}
+\end{center}
+\caption[Different tile selection methods for GW170817]{Different tile selection methods applied to the skymap for \gls{lvc} event GW170817.
+}
+\label{fig:tiling_GW170817}
+\end{figure}
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+\begin{tabular}{cc}
+\multicolumn{2}{c}{Prefered probability skymap for superevent S190425z:}
+\\
+\multicolumn{2}{c}{\includegraphics[width=0.6\linewidth]{images/tiling/3_0.png}}
+\\
+Tiles within 50\% contour: &
+Tiles within 90\% contour:
+\\
+207 tiles, covering 67\% &
+753 tiles, covering 95\%
+\\
+\includegraphics[width=0.25\linewidth]{images/tiling/3_c.png} &
+\includegraphics[width=0.25\linewidth]{images/tiling/3_d.png}
+\\
+Tiles with probability > 1\%: &
+Tiles with mean contour within 90\%:
+\\
+10 tiles, covering 11\% &
+548 tiles, covering 91\%
+\\
+\includegraphics[width=0.25\linewidth]{images/tiling/3_a.png} &
+\includegraphics[width=0.25\linewidth]{images/tiling/3_b.png}
+\\
+
+\end{tabular}
+\end{center}
+\caption[Different tile selection methods for S190425z]{Different tile selection methods applied to the skymap for \gls{lvc} event S190425z.
+}
+\label{fig:tiling_S190425z}
+\end{figure}
+
+% -----
+
+
+
+
+
+
+
+
+
+
+
+
+
+Therefore before adding anything to the database the tile table is masked to exclude all but the highest probability tiles. The limit is configurable depending on the event type. For gravitational wave events which are \gls{goto}'s highest priority all tiles which contain more than 1\% of the overall sky map probability. \gls{grb} events however, although still interesting, are a lower priority and therefore only the top 5 most probable tiles are inserted into the database and only if they contain more than 5\% of the overall probability. It is not uncommon to receive very poorly-localised \textit{Fermi} events where no tiles pass these criteria, in which case no pointings end up being inserted.
 
 Once the tile list has been trimmed down to only the ones worth observing, then entries can be inserted into the database. First a new entry in the \code{Events} table is added for this event, containing the source, type, ID and \gls{ivorn}. Then an entry in the \code{Surveys} table is also created in order to group together all the pointings from this particular event. Although it is currently not used, the database is defined to allow multiple surveys per event. For example, there could be a quick initial survey in a wide-passband filter that prioritises possible host galaxies followed by a slower survey using the colour filters and longer exposure times that focuses on covering the sky map. But at the time of writing each event only has a single survey defined.
 
