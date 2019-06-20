@@ -803,15 +803,11 @@ Once previous event have been dealt with then the new entries in the database ne
 % ---------
 \subsubsection{Selecting tiles}
 
-The tile probability table created by GOTO-tile contains entries for every tile within the all-sky grid, of which a vast majority will contain a very small amount of the overall probability for any reasonably-well located sky map. Adding an entry to for every tile would therefore be unnecessary, and even harmful as the scheduling system is designed to complete a full pass of the visible tiles before going on to re-observe those already completed. Therefore it is necessary to prune the tile table before inserting tiles into the database.
+The tile probability table created by GOTO-tile contains entries for every one of the thousands of tiles within the all-sky grid, of which a vast majority will contain a very small amount of the overall probability for any reasonably-well located sky map. Adding an entry to the database for every tile would therefore be unnecessary, and even harmful as the scheduling system is designed to complete a full pass of the visible tiles before going on to re-observe those already completed. On the other hand it's still important to add in enough tiles covering enough of the probability area to maximise the chance of detecting the source. Therefore there is a balance required between adding too many or too few tiles into the database.
 
-There are multiple ways to chose the tiles to insert. Initially there was a simple cut-off in terms of each tile's contained probability: insert each tile that contains greater than $1\%$ of the total probability ($5\%$ for \glspl{grb}). This hard limit however proved to be unsuitable. \gls{gw} skymaps cover a large range in sky area, and for very well spread-out skymaps there might be few if any tiles that reach that limit. On the other hand for very well localised events adding tiles down to the $1\%$ level is redundant and would waste time if there are tiles that contain tens of percent. Therefore a new method of selecting tiles had to be found.
+There are multiple ways to chose the tiles to insert. Four different algorithms applied to real \gls{lvc} skymaps are shown below in Figures~\ref{fig:tiling_S190521r},~\ref{fig:tiling_GW170817}~\&~\ref{fig:tiling_S190425z}. The upper plot in each shows the probability skymap as received from the \gls{lvc}, with lines showing the 50\% (inner) and 90\% (outer) probability contours \rtxt{see GOTO-tile section}. The green and red tile selections in the centre-left and centre-right plots show simply selecting all tiles with at least some portion located within the 50\% and 90\% contour areas respectively. The lower-left plot shows tiles containing more than 1\% of the total probability in blue, and the lower-right plot shows the compromise solution of the tiles with a mean pixel contour value of 90\% or less in yellow. These four methods are described in more detail below.
 
-The first choice was to keep a hard cut-off in terms of contained probability, but modify the limit for each skymap. Several different ways of calculating this was tried. One was to change the cut-off based on the highest tile probability. For example a well-localised event might result in the highest-probability tile containing $30\%$, so with a 10\% cut-off all tiles containing 3\% or above would be added. On the other hand a spread-out skymap might have a highest tile only containing 2\%, so then all tiles with 0.2\% or above would be added. Other possible values to base this off were the on-sky areas of the 90\% or 50\% contours. Ultimately all the methods that used a hard contained probability cut-off proved to be not very responsive to the geographic spread of the skymap, and determining the precise proportionality constant (e.g. 10\% in the above example) was hard to balance between large and small maps.
-
-One alternative method is to start with the highest probability tile and then add on subsequent tiles until the total probability covered reaches some target value, e.g. 90\% of the skymap. This method was originally used by GOTO-tile, but is relatively complicated to calculate when considering grids with overlap between the tiles. Just selecting tiles based on their contained skymap probability risks over-counting the regions within the overlap between tiles, and so the final selected tiles which nominally contain 90\% of the probability will actually contain less. The solution to this is to re-generate the skymap after selecting each tile with the already-selected pixels set to 0, but this then becomes a non-trivial optimisation problem that is computationally intensive for limited gain compared to other possibilities.
-
-The ultimately preferred alternative is to instead select tiles based on their position in the sky contours. Each HEALPix pixel within the skymap has an associated probability, and the probability within a tile is the sum of the probabilities of each pixel contained within it. GOTO-tile also calculates the skymap contours by sorting the pixels by probability and replacing the value of each with the cumulative probability of all pixels higher than it. \rtxt{should be in GOTO-tile section}. Therefore finding which contour each tile falls within is not as easy to calculate. The most complete way is to find the minimum contour pixel value of all the values within each tile and set that as the tile contour value. Selecting tiles using this, for example asking for all tiles within the 90\% contour region, will find every tile covering that region --- even if only the smallest fraction of the tile's area is within that region. The alternative is to find the mean contour value within the tile and select based off of that, which is less susceptible to small fluctuations. This is the chosen method used within GOTO-alert: selecting all tiles which have a mean contour value within 90\%.
+Initially there was a simple cut-off in terms of each tile's contained probability: insert each tile that contains greater than $1\%$ of the total probability. This hard limit however quickly proved to be unsuitable. \gls{gw} skymaps cover a large range in sky area, and for very well spread-out skymaps (such as S190425z shown in Figure~\ref{fig:tiling_S190425z}) there might be few if any tiles that reach that limit. On the other hand for very well localised events (such as GW170817 shown in Figure~\ref{fig:tiling_GW170817}) adding tiles down to the $1\%$ level is redundant and would waste time observing them compared to revisiting higher probability tiles. Therefore a new method of selecting tiles was sought.
 
 \clearpage
 
@@ -822,7 +818,7 @@ The ultimately preferred alternative is to instead select tiles based on their p
 \begin{tabular}{cc}
 \multicolumn{2}{c}{Prefered probability skymap for superevent S190521r:}
 \\
-\multicolumn{2}{c}{\includegraphics[width=0.6\linewidth]{images/tiling/1_0.png}}
+\multicolumn{2}{c}{\includegraphics[width=0.5\linewidth]{images/tiling/1_0.png}}
 \\
 Tiles within 50\% contour: &
 Tiles within 90\% contour:
@@ -845,7 +841,8 @@ Tiles with mean contour within 90\%:
 
 \end{tabular}
 \end{center}
-\caption[Different tile selection methods for S190521r]{Different tile selection methods applied to the skymap for \gls{lvc} event S190521r.
+\caption[Different tile selection methods for S190521r]{Different tile selection methods applied to the skymap for \gls{lvc} event S190521r.\\
+This is a very typical \gls{gw} skymap, and one for which the basic method of choosing tiles with a contained probability of greater than 1\% (lower-left, in blue) works well and produces almost the same set of tiles as the improved mean contour method (lower-right, in yellow). Note the inefficiencies of covering the full contours, the 50\% contour (centre-left, in green) covers less probability with more tiles than either of the lower two methods.
 }
 \label{fig:tiling_S190521r}
 \end{figure}
@@ -857,7 +854,7 @@ Tiles with mean contour within 90\%:
 \begin{tabular}{cc}
 \multicolumn{2}{c}{Final probability skymap for event GW170817:}
 \\
-\multicolumn{2}{c}{\includegraphics[width=0.6\linewidth]{images/tiling/2_0.png}}
+\multicolumn{2}{c}{\includegraphics[width=0.5\linewidth]{images/tiling/2_0.png}}
 \\
 Tiles within 50\% contour: &
 Tiles within 90\% contour:
@@ -880,7 +877,8 @@ Tiles with mean contour within 90\%:
 
 \end{tabular}
 \end{center}
-\caption[Different tile selection methods for GW170817]{Different tile selection methods applied to the skymap for \gls{lvc} event GW170817.
+\caption[Different tile selection methods for GW170817]{Different tile selection methods applied to the skymap for \gls{lvc} event GW170817.\\
+This skymap is atypically well localised. In this case the simple 1\% limit (lower-left, in blue) selects a large number of redundant tiles. The inefficiencies of the contour methods are also visible, the 50\% selection limit (centre-left, in green) covers the same total probability as the mean contour method (lower-right, in yellow) but with twice the number of tiles. Note the location of the actual counterpart (as shown in Figure~\ref{fig:170817_gw}) was selected by all of these methods.
 }
 \label{fig:tiling_GW170817}
 \end{figure}
@@ -892,7 +890,7 @@ Tiles with mean contour within 90\%:
 \begin{tabular}{cc}
 \multicolumn{2}{c}{Prefered probability skymap for superevent S190425z:}
 \\
-\multicolumn{2}{c}{\includegraphics[width=0.6\linewidth]{images/tiling/3_0.png}}
+\multicolumn{2}{c}{\includegraphics[width=0.5\linewidth]{images/tiling/3_0.png}}
 \\
 Tiles within 50\% contour: &
 Tiles within 90\% contour:
@@ -915,14 +913,25 @@ Tiles with mean contour within 90\%:
 
 \end{tabular}
 \end{center}
-\caption[Different tile selection methods for S190425z]{Different tile selection methods applied to the skymap for \gls{lvc} event S190425z.
+\caption[Different tile selection methods for S190425z]{Different tile selection methods applied to the skymap for \gls{lvc} event S190425z.\\
+This is an atypically large skymap. The fixed 1\% limit (lower-left, in blue) is clearly unsuitable to be used in this case. The mean contour method (lower-right, in yellow) is a reasonable compromise between the two centre contour methods, covering just 4\% less than the full 90\% contour selection but with 205 fewer tiles. Note 548 tiles would still be too many to easily observe for the 4-UT system, so they would be limited to the top 200 sorted by probability.
 }
 \label{fig:tiling_S190425z}
 \end{figure}
 
 % -----
 
+\clearpage
 
+The first choice was to keep a hard cut-off in terms of contained probability, but modify the limit for each skymap. Several different ways of calculating this was tried. One was to change the cut-off based on the highest tile probability. For example a well-localised event might result in the highest-probability tile containing $30\%$, so with a 10\% cut-off all tiles containing 3\% or above would be added. On the other hand a spread-out skymap might have a highest tile only containing 2\%, so then all tiles with 0.2\% or above would be added. Other possible values to base this off were the on-sky areas of the 90\% or 50\% contours. Ultimately all the methods that used a hard contained probability cut-off proved to be not very responsive to the geographic spread of the skymap, and determining the precise proportionality constant (e.g. 10\% in the above example) was hard to balance between large and small maps.
+
+One alternative method is to start with the highest probability tile and then add on subsequent tiles until the total probability covered reaches some target value, e.g. 90\% of the skymap. This method was originally used by GOTO-tile, but is relatively complicated to calculate when considering grids with overlap between the tiles. Just selecting tiles based on their contained skymap probability risks over-counting the regions within the overlap between tiles, and so the final selected tiles which nominally contain 90\% of the probability will actually contain less. The solution to this is to re-generate the skymap after selecting each tile with the already-selected pixels set to 0, but this then becomes a non-trivial optimisation problem that is computationally intensive for limited gain compared to other possibilities.
+
+The ultimately preferred alternative is to instead select tiles based on their position in the sky contours. Each HEALPix pixel within the skymap has an associated probability, and the probability within a tile is the sum of the probabilities of each pixel contained within it. GOTO-tile also calculates the skymap contours by sorting the pixels by probability and replacing the value of each with the cumulative probability of all pixels higher than it. \rtxt{should be in GOTO-tile section}. Therefore finding which contour each tile falls within is not as easy to calculate. You could, for example, say a tile is only within a given contour (e.g. 90\%) if every pixel contained within the tile is within that contour. However \gls{goto}'s large tile areas are often wider than the long, stretched out probability areas typical of \gls{lvc} skymaps, so few if any tiles would meet this strict criteria. Instead you could consider the opposite to be true, that any tile containing a single pixel or more within a contour region should be considered within that contour.
+
+The most complete way is to find the minimum contour pixel value of all the values within each tile and set that as the tile contour value. Selecting tiles using this, for example asking for all tiles within the 90\% contour region, will find every tile covering that region --- even if only the smallest fraction of the tile's area is within that region. The alternative is to find the mean contour value within the tile and select based off of that, which is less susceptible to small fluctuations. This is the chosen method used within GOTO-alert: selecting all tiles which have a mean contour value within 90\%.
+
+\newpage
 
 
 
