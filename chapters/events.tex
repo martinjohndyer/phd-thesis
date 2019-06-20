@@ -934,6 +934,70 @@ The most complete way is to find the minimum contour pixel value of all the valu
 \newpage
 
 
+\clearpage
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+
+\includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_probs.pdf}
+
+\end{center}
+
+\caption[An example 2D probability skymap]{A cartoon 2-dimensional skymap. Each pixel (represented by one of the 81 squares) has an assigned probability, and together they all sum to 100\%. The inner blue thick contour line contains 50\% of the probability, while the outer green contour line contains 90\% of the probability. These contours are created based on the values shown in Figure~\ref{fig:sim_skymap_conts}.
+}
+\label{fig:sim_skymap_probs}
+\end{figure}
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+
+\includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf}
+
+\end{center}
+
+\caption[An example 2D skymap with pixel contour values]{The same cartoon skymap as in Figure~\ref{fig:sim_skymap_probs}, but now each pixel contains its contour value. These are calculated for each pixel by sorting by probability and assigning each the value of the cumulative sum. This means pixel E5, which has the highest single probability, keeps the same value while the second highest (F5) has the sum of both E5 and F5 and so on.\\
+The thick blue line is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\% (so pixel G6 is just within the 50\% area but pixel B4 is just outside). The green line is the 90\% contour area and likewise encloses all pixels with a contour value of less than 90\%.
+}
+\label{fig:sim_skymap_conts}
+\end{figure}
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+\begin{tabular}{cccccc}
+\multicolumn{3}{c}{Pixel probabilities (from Figure~\ref{fig:sim_skymap_probs}):} &
+\multicolumn{3}{c}{Pixel contours (from Figure~\ref{fig:sim_skymap_conts}):}
+\\
+\multicolumn{3}{c}{\includegraphics[width=0.46\linewidth]{images/sim/sim_skymap_pix_probs.pdf}} &
+\multicolumn{3}{c}{\includegraphics[width=0.46\linewidth]{images/sim/sim_skymap_pix_conts.pdf}}
+\\
+\multicolumn{2}{c}{Tile contained probabilities:} &
+\multicolumn{2}{c}{Tile minimum contours:} &
+\multicolumn{2}{c}{Tile mean contours:}
+\\
+\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_probs.pdf}} &
+\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_minconts.pdf}} &
+\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_meanconts.pdf}}
+\\
+\end{tabular}
+\end{center}
+\caption[Calculating tile contained probabilities and contours]{Tiling the same cartoon 2D skymap as Figures~\ref{fig:sim_skymap_probs}~\&~\ref{fig:sim_skymap_conts}.\\
+\textbf{Top}: These plots show the pixel probabilities and contour values, coloured with the pixels within the 50\% contour in green and the pixels within the 90\% contour in green or red. The 81 total pixels are divided into 9 tiles, with no overlap for simplicity.\\
+\textbf{Lower-right}: The contained probability within each tile is the sum of the pixel probabilities, in this case each tile contains the sum of the 9 pixels contained within. Overlapping tiles would mean a single pixel might fall within multiple tiles and therefore contribute probability to each.\\
+\textbf{Lower-centre}: One way of finding which contour area each tile is within is to find the minimum contour value of the (in this example 9) pixels contained within it. This corresponds to the contour value of the pixel with the highest probability within each tile.\\
+\textbf{Lower-right:} An alternative method is to instead calculate the mean contour value of the pixels within each tile.
+}
+\label{fig:tiling_S190425z}
+\end{figure}
+
+% -----
+
+\clearpage
 
 
 
