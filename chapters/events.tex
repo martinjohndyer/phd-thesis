@@ -960,7 +960,7 @@ The most complete way is to find the minimum contour pixel value of all the valu
 \end{center}
 
 \caption[An example 2D skymap with pixel contour values]{The same cartoon skymap as in Figure~\ref{fig:sim_skymap_probs}, but now each pixel contains its contour value. These are calculated for each pixel by sorting by probability and assigning each the value of the cumulative sum. This means pixel E5, which has the highest single probability, keeps the same value while the second highest (F5) has the sum of both E5 and F5 and so on.\\
-The thick blue line is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\% (so pixel G6 is just within the 50\% area but pixel B4 is just outside). The green line is the 90\% contour area and likewise encloses all pixels with a contour value of less than 90\%.
+The thick blue line is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\% (so pixel G3 is just within the 50\% area but pixel B4 is outside). The green line is the 90\% contour area and likewise encloses all pixels with a contour value of less than 90\%.
 }
 \label{fig:sim_skymap_conts}
 \end{figure}
@@ -986,13 +986,55 @@ The thick blue line is the 50\% probability contour, which encloses all pixels w
 \\
 \end{tabular}
 \end{center}
-\caption[Calculating tile contained probabilities and contours]{Tiling the same cartoon 2D skymap as Figures~\ref{fig:sim_skymap_probs}~\&~\ref{fig:sim_skymap_conts}.\\
+
+\caption[Calculating tile probabilities and contours for a 2D skymap]{Tiling the same cartoon 2D skymap as Figures~\ref{fig:sim_skymap_probs}~\&~\ref{fig:sim_skymap_conts}.\\
 \textbf{Top}: These plots show the pixel probabilities and contour values, coloured with the pixels within the 50\% contour in green and the pixels within the 90\% contour in green or red. The 81 total pixels are divided into 9 tiles, with no overlap for simplicity.\\
 \textbf{Lower-right}: The contained probability within each tile is the sum of the pixel probabilities, in this case each tile contains the sum of the 9 pixels contained within. Overlapping tiles would mean a single pixel might fall within multiple tiles and therefore contribute probability to each.\\
-\textbf{Lower-centre}: One way of finding which contour area each tile is within is to find the minimum contour value of the (in this example 9) pixels contained within it. This corresponds to the contour value of the pixel with the highest probability within each tile.\\
-\textbf{Lower-right:} An alternative method is to instead calculate the mean contour value of the pixels within each tile.
+\textbf{Lower-centre}: One way of finding which contour area each tile is within is to find the minimum contour value of the 9 pixels contained within it. This corresponds to the contour value of the pixel with the highest probability within each tile.\\
+\textbf{Lower-right:} An alternative method is to calculate the mean contour value of the pixels within each tile and use that as the tile contour value. This is less susceptible to single pixels affecting the value than taking the minimum.
 }
-\label{fig:tiling_S190425z}
+\label{fig:sim_skymap_tiles}
+\end{figure}
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+\begin{tabular}{ccc}
+Tile minimum contours &
+Tiles within the &
+Tiles within the
+\\
+(from Figure~\ref{fig:sim_skymap_tiles}): &
+50\% contour: &
+90\% contour:
+\\
+\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_minconts.pdf} &
+\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_a.pdf} &
+\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_b.pdf}
+\\
+\\
+Tile mean contours &
+Tiles with &
+Tiles with
+\\
+(from Figure~\ref{fig:sim_skymap_tiles}): &
+mean contour value < 50\%: &
+mean contour value < 90\%:
+\\
+\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_meanconts.pdf} &
+\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_c.pdf} &
+\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_d.pdf}
+\\
+\end{tabular}
+\end{center}
+
+\caption[Selecting tiles based on contour levels for a 2D skymap]{Selecting tiles for the same cartoon skymap as in Figure~\ref{fig:sim_skymap_tiles}.\\
+\textbf{Top}: These three plots show selecting tiles based on calculating the tile contour value by selecting the minimum contour value of the 9 pixels within the tile. This method can lead to a single pixel having a disproportionate influence: for example the top right tile is included within the green 50\% contour based on the presence of a single pixel that only just makes the cut-off. With real high-resolution skymaps a single tile will contain a much higher number of pixels, and yet using this method the tile could still be selected based on a single outlier pixel.\\
+\textbf{Bottom}: These three plots instead show selecting tiles based on calculating the tile contour value by taking the \textit{mean} contour value of the 9 contained pixels. This is a more selective method that results in tiles being affected less by single outliers.
+
+}
+\label{fig:sim_skymap_tiling}
 \end{figure}
 
 % -----
