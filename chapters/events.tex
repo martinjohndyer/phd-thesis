@@ -309,6 +309,8 @@ and therefore the area of each HEALPix pixel is
 
 Figure~\ref{fig:healpix} shows only the first four orders of HEALPix pixelisation, up to $N_\text{side} = 8$ where the sphere is split into 768 pixels each with an area (which can be considered the resolution of the grid) of 53.7~sq deg. An initial, low-resolution \gls{lvc} skymap might use a grid with $N_\text{side} = 64$ (49 thousand pixels) and resolution (pixel area) of 0.84~sq~deg, where as a final output skymap will have $N_\text{side} = 1024$, 12.5 million pixels and a resolution of $3.27 \times 10^{-3}$~sq~deg (11.7 square arcminutes).
 
+% ---------
+
 \begin{figure}[t]
 \begin{center}
 \includegraphics[width=0.7\linewidth]{images/healpix.pdf}
@@ -318,18 +320,98 @@ Figure~\ref{fig:healpix} shows only the first four orders of HEALPix pixelisatio
 \label{fig:healpix}
 \end{figure}
 
-In addition to being a way to divide the sphere, each HEALPix pixel has a unique index from one of two different numbering schemes: either the ring (counting around each ring from the north to the south) or nested (based on the sub-pixel tree) system. Each scheme has its own advantages, ring-indexed grids are easier to apply spherical harmonics to while nested grids are easier to enter into hierarchical databases. Ultimately for astronomical sky maps the harmonics are less relevant and so nested grids are usually used, but conversion between the two is fairly straightforward.
+% ---------
 
-HEALPix is used to provide localisation of sky probabilities for transient astronomical events, in the form of sky maps. Each point on the HEALPix grid is assigned a probability between 0 and 1 that the counterpart object is located within that pixel, and the whole sphere should sum to unity. Figure~\ref{fig:example_skymap} shows an example \gls{lvc} skymap, produced as part of the ``First Two Years'' simulations \citep{First2Years}.
+In addition to being a way to divide the sphere, each HEALPix pixel has a unique index from one of two different numbering schemes: either the ring (counting around each ring from the north to the south) or nested (based on the sub-pixel tree) system.
+
+HEALPix is used to provide localisation of sky probabilities for transient astronomical events, in the form of sky maps. Each point on the HEALPix grid is assigned a probability between 0 and 1 that the counterpart object is located within that pixel, and the whole sphere should sum to unity. Figure~\ref{fig:skymap_regrade} shows an example \gls{lvc} sky map, for the gravitational wave event S190521r, at various HEALPix $N_\text{side}$ parameters.
+
+% ---------
 
 \begin{figure}[p]
 \begin{center}
-\includegraphics[width=\linewidth]{images/skymap_plot.pdf}
+
+\begin{tabular}{cc}
+
+$N_\text{side} = 1$: &
+$N_\text{side} = 2$:
+\\
+
+\includegraphics[width=0.45\linewidth]{images/regrade/1.png} &
+\includegraphics[width=0.45\linewidth]{images/regrade/2.png}
+\\
+\\
+
+$N_\text{side} = 4$: &
+$N_\text{side} = 8$:
+\\
+
+\includegraphics[width=0.45\linewidth]{images/regrade/4.png} &
+\includegraphics[width=0.45\linewidth]{images/regrade/8.png}
+\\
+\\
+
+$N_\text{side} = 16$: &
+$N_\text{side} = 32$:
+\\
+
+\includegraphics[width=0.45\linewidth]{images/regrade/16.png} &
+\includegraphics[width=0.45\linewidth]{images/regrade/32.png}
+\\
+\\
+
+$N_\text{side} = 64$: &
+$N_\text{side} = 128$:
+\\
+
+\includegraphics[width=0.45\linewidth]{images/regrade/64.png} &
+\includegraphics[width=0.45\linewidth]{images/regrade/128.png}
+\\
+
+\end{tabular}
+
 \end{center}
-\caption[An example low-resolution skymap]{An example low-resolution gravitational wave skymap. The original skymap has been deliberately downgraded from $N_\text{side} = 256$ to $N_\text{side} = 32$ ($N_\text{pix} = 12288$) so that individual HEALPix pixels are visible. Each point is assigned a probability value as shown by the colour scale, which indicates the contained probability within that pixel.
+
+\caption[Regrading a gravitational wave skymap]{Changing the HEALPix resolution of a gravitational wave skymap (also known as regrading). At every stage each pixel is assigned a probability value as shown by the colour scale, which indicates the probability the source is located within that pixel. At lower $N_\text{side}$ individual pixels are visible, but as the resolution increases the structure is less visible.
 }
-\label{fig:example_skymap}
+\label{fig:skymap_regrade}
 \end{figure}
+
+% ---------
+
+\clearpage
+
+As well as the individual probabilities assigned to each pixel, it is also useful to consider the overall spread of the probability. This is done by considering the probability contour areas, typically at the 50\% and 90\% levels. The 50\% contour area of a sky map is defined by encircling the smallest number of pixels so that the total probability within the area is 50\% of the overall sky map probability. When a sky map is defined using GOTO-tile as well as the individual probability values each pixel also has a contour value. This is calculated by sorting all the pixels by probability from highest to lowest, the contour value for each pixel is then cumulative sum of the probability within the pixels above it. This contour value can be considered as the lowest contour area that each pixel is within, meaning the pixels that are contained within the 50\% contour area are those with contour values of less than 50\%. Figures~\ref{fig:sim_skymap_probs}~\&~\ref{fig:sim_skymap_conts} illustrate how the contours are calculated for an cartoon 2-dimensional sky map.
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+
+\includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_probs.pdf}
+
+\end{center}
+
+\caption[An example 2D probability skymap]{A cartoon 2-dimensional skymap. Each pixel (represented by one of the 81 squares) has an assigned probability, and together they all sum to 100\%. The inner blue thick contour line contains 50\% of the probability, while the outer green contour line contains 90\% of the probability. These contours are created based on the values shown in Figure~\ref{fig:sim_skymap_conts}.
+}
+\label{fig:sim_skymap_probs}
+\end{figure}
+
+% -----
+
+\begin{figure}[p]
+\begin{center}
+
+\includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf}
+
+\end{center}
+
+\caption[An example 2D skymap with pixel contour values]{The same cartoon skymap as in Figure~\ref{fig:sim_skymap_probs}, but now each pixel contains its contour value. These are calculated by sorting the pixels by probability and assigning each the value of the cumulative sum. The pixel with the highest probability (E5) has the same contour value as its probability value, the second highest (F5) has the sum of the probability values of both E5 and F5, and this continues to the pixel with the lowest probability value (A9) which has a contour value of 100\%. The thick blue line is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\%. The green line likewise encloses all pixels with a contour value of less than 90\%.
+}
+\label{fig:sim_skymap_conts}
+\end{figure}
+
+% -----
 
 \end{colsection}
 
@@ -339,9 +421,45 @@ HEALPix is used to provide localisation of sky probabilities for transient astro
 \label{sec:mapping_skymaps}
 \begin{colsection}
 
-When gravitational wave signals are detected the \gls{lvc} analysis pipelines create HEALPix sky maps to describe the sky localisation, and these are then distributed with the public VOEvent (see Section~\ref{sec:voevents}). GOTO-tile uses these skymaps to produce follow-up targets for \gls{goto}. This is done by mapping the sky maps onto the previously-defined all-sky grid used for the all-sky survey. As described previously in Section~\ref{sec:grids}, these grids are defined by a series of tiles covering the celestial sphere. GOTO-tile's task is to find all of the HEALPix points that fall within each tile, and then summing the probability values for each of these points gives the contained probability within the tile.
+When gravitational wave signals are detected the \gls{lvc} analysis pipelines create HEALPix sky maps to describe the sky localisation, and these are then distributed with the public VOEvent (see Section~\ref{sec:voevents}). GOTO-tile is used to map the sky maps onto the previously-defined sky grid used for the all-sky survey. This requires finding which HEALPix pixels fall within each tile, which is done by defining polygons that match the projected tile areas and using the \pkg{healpy} \code{query\_polygon} function. Then it is simple to sum the probability of these pixels for each tile to give the total probability contained within it. As sky grids might contain overlapping tiles a given pixel may fall within multiple tiles, and therefore contribute to the total probability of more than one tile.
 
-The first step to finding the probability contained within a tile is to define the edges of the tile in terms of celestial coordinates. This is done using the \code{get\_tile\_vertices} function within \pkg{gototile} written by Evert Rol. After that a polygon is defined that matches the tile area, and then using the \pkg{healpy} \code{query\_polygon} function the indices of the HEALPix points within each tile are found. This of course differs depending on the resolution required, and so is only calculated when applying a sky map with a defined $N_\text{side}$ to the previously-generated grid. Once it's found which HEALPix points are within a given tile it's easy to mask the skymap HEALPix array and sum the probability of these points, which gives the total contained probability within each tile.
+Finding which contour each tile is in is not as simple, and there are multiple ways to define the contour value for the tiles. Figure~\ref{fig:sim_skymap_tiles} shows calculating the contained probabilities for tiles using the previous 2D sky map, as well as two methods to calculate the contour values: taking the minimum or the mean of the contained pixel contour values. Using the mean is preferred as it is less susceptible to single outlier pixels.
+
+% -----
+
+\begin{figure}[p]
+
+\begin{center}
+\begin{tabular}{cccccc}
+\multicolumn{3}{c}{Pixel probabilities (from Figure~\ref{fig:sim_skymap_probs}):} &
+\multicolumn{3}{c}{Pixel contours (from Figure~\ref{fig:sim_skymap_conts}):}
+\\
+\multicolumn{3}{c}{\includegraphics[width=0.46\linewidth]{images/sim/sim_skymap_pix_probs.pdf}} &
+\multicolumn{3}{c}{\includegraphics[width=0.46\linewidth]{images/sim/sim_skymap_pix_conts.pdf}}
+\\
+\multicolumn{2}{c}{Tile contained probabilities:} &
+\multicolumn{2}{c}{Tile minimum contours:} &
+\multicolumn{2}{c}{Tile mean contours:}
+\\
+\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_probs.pdf}} &
+\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_minconts.pdf}} &
+\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_meanconts.pdf}}
+\\
+\end{tabular}
+\end{center}
+
+\caption[Calculating tile probabilities and contours for a 2D skymap]{Tiling the same cartoon 2D skymap as Figures~\ref{fig:sim_skymap_probs}~\&~\ref{fig:sim_skymap_conts}.\\
+\textbf{Top}: These plots show the pixel probabilities and contour values, coloured with the pixels within the 50\% contour in green and the pixels within the 90\% contour in green or red. The 81 total pixels are divided into 9 tiles, with no overlap for simplicity.\\
+\textbf{Lower-right}: The contained probability within each tile is the sum of the pixel probabilities, in this case each tile contains the sum of the 9 pixels contained within. Overlapping tiles would mean a single pixel might fall within multiple tiles and therefore contribute probability to each.\\
+\textbf{Lower-centre}: One way of finding which contour area each tile is within is to find the minimum contour value of the 9 pixels contained within it. This corresponds to the contour value of the pixel with the highest probability within each tile.\\
+\textbf{Lower-right:} An alternative method is to calculate the mean contour value of the pixels within each tile and use that as the tile contour value. This is less susceptible to single pixels affecting the value than taking the minimum.
+}
+\label{fig:sim_skymap_tiles}
+\end{figure}
+
+% -----
+
+\clearpage
 
 Figure~\ref{fig:170817_gw} shows an example of GOTO-tile applied to the sky map for the GW170817 event (\cite{GW170817}). The points within each tile were identified and summed in order to find the total contained probability within each tile. There is some redundancy due to the overlap between tiles, however this is typically negligible (the final GW170817 sky map used was notably smaller than usual LVC sky maps due to the coincident \textit{Fermi} localisation, which makes the overlaps more pronounced).
 
@@ -354,7 +472,7 @@ Figure~\ref{fig:170817_gw} shows an example of GOTO-tile applied to the sky map 
 \label{fig:170817_gw}
 \end{figure}
 
-\newpage
+\clearpage
 
 \end{colsection}
 
@@ -798,18 +916,22 @@ The first task is to check for existing records for this event in the observing 
 % ---------
 \subsubsection{Mapping onto the all-sky grid}
 
-Once previous event have been dealt with then the new entries in the database need to be created. All \gls{goto} pointings from the sentinel are defined \textit{on-grid}, meaning that they need to be mapped to the current GOTO-tile sky grid (see Section~\ref{sec:grids}). The database \code{Grids} table contains the field of view and overlap parameters of the current grid as well as the algorithm used (see Section~\ref{sec:algorithms}), allowing it to be reconstructed using GOTO-tile within the event handler. Once a GOTO-tile \code{SkyGrid} class has been created then a corresponding \code{SkyMap} class is made based on the information in the event. If it was created from a gravitational wave alert then it should have a URL to download the \gls{lvc}-created sky map. If instead it just has a coordinate and error radius, i.e.\ a \gls{grb} alert, then a new Gaussian sky map is constructed as described in Section~\ref{sec:gaussian_skymaps}. Once both grid and map are ready then the sky map is mapped onto the grid simply using the class method \code{SkyGrid.apply\_skymap(SkyMap)}, which returns a table of tiles and associated contained probabilities (as described in Section~\ref{sec:mapping_skymaps}). %chktex 36
+Once previous event have been dealt with then the new entries in the database need to be created. All \gls{goto} pointings from the sentinel are defined \textit{on-grid}, meaning that they need to be mapped to the current GOTO-tile sky grid (see Section~\ref{sec:grids}). The database \code{Grids} table contains the field of view and overlap parameters of the current grid as well as the algorithm used (see Section~\ref{sec:algorithms}), allowing it to be reconstructed using GOTO-tile within the event handler. Once a GOTO-tile \code{SkyGrid} class has been created then a corresponding \code{SkyMap} class is made based on the information in the event. If it was created from a gravitational wave alert then it should have a URL to download the \gls{lvc}-created sky map. If instead it just has a coordinate and error radius, i.e.\ a \gls{grb} alert, then a new Gaussian sky map is constructed as described in Section~\ref{sec:gaussian_skymaps}. Once both grid and map are ready then the sky map is mapped onto the grid simply using the class method \code{SkyGrid.apply\_skymap(SkyMap)}, which returns a table of tiles and associated contained probabilities (calculated as described in Section~\ref{sec:mapping_skymaps}). %chktex 36
 
 % ---------
 \subsubsection{Selecting tiles}
 
 The tile probability table created by GOTO-tile contains entries for every one of the thousands of tiles within the all-sky grid, of which a vast majority will contain a very small amount of the overall probability for any reasonably-well located sky map. Adding an entry to the database for every tile would therefore be unnecessary, and even harmful as the scheduling system is designed to complete a full pass of the visible tiles before going on to re-observe those already completed. On the other hand it's still important to add in enough tiles covering enough of the probability area to maximise the chance of detecting the source. Therefore there is a balance required between adding too many or too few tiles into the database.
 
-There are multiple ways to chose the tiles to insert. Four different algorithms applied to real \gls{lvc} skymaps are shown below in Figures~\ref{fig:tiling_S190521r},~\ref{fig:tiling_GW170817}~\&~\ref{fig:tiling_S190425z}. The upper plot in each shows the probability skymap as received from the \gls{lvc}, with lines showing the 50\% (inner) and 90\% (outer) probability contours \rtxt{see GOTO-tile section}. The green and red tile selections in the centre-left and centre-right plots show simply selecting all tiles with at least some portion located within the 50\% and 90\% contour areas respectively. The lower-left plot shows tiles containing more than 1\% of the total probability in blue, and the lower-right plot shows the compromise solution of the tiles with a mean pixel contour value of 90\% or less in yellow. These four methods are described in more detail below.
+There are multiple ways to chose which tiles to select. Initially GOTO-alert used a simple cut-off in terms of each tile's contained probability, chose each tile that contains greater than (for example)$1\%$ of the total probability. This hard limit however quickly proved to be unsuitable: spread-out skymaps might have few if any tiles which reach the limit, while for well-localised events adding tiles down to the $1\%$ level is redundant and would waste time observing them compared to revisiting higher probability tiles.
 
-Initially there was a simple cut-off in terms of each tile's contained probability: insert each tile that contains greater than $1\%$ of the total probability. This hard limit however quickly proved to be unsuitable. \gls{gw} skymaps cover a large range in sky area, and for very well spread-out skymaps (such as S190425z shown in Figure~\ref{fig:tiling_S190425z}) there might be few if any tiles that reach that limit. On the other hand for very well localised events (such as GW170817 shown in Figure~\ref{fig:tiling_GW170817}) adding tiles down to the $1\%$ level is redundant and would waste time observing them compared to revisiting higher probability tiles. Therefore a new method of selecting tiles was sought.
+A different option was to keep the hard cut-off in terms of contained probability, but modify the limit for each skymap. One way of calculating thi was making the cut-off a function of the highest tile probability. For example a well-localised event might result in the highest-probability tile containing $30\%$ of the probability, so with a 10\% cut-off all tiles containing 3\% or above would be added. On the other hand a spread-out skymap might have a highest tile only containing 2\%, so then all tiles with 0.2\% or above would be added. Other possible values to base this off were the on-sky areas of the 90\% or 50\% contours. Ultimately all the methods that used a hard contained probability cut-off proved to be not very responsive to the geographic spread of the skymap, and determining the precise proportionality constant (e.g. 10\% in the above example) was hard to balance between large and small maps.
 
-\clearpage
+Another alternative method was to start with the highest probability tile and then add on subsequent tiles until the total probability covered reaches some target value, e.g. 90\% of the skymap. This method was originally used by GOTO-tile, but is relatively complicated to calculate when considering grids with overlap between the tiles. Just selecting tiles based on their contained probability will over-count overlapping regions, and so the final selected tiles which nominally contain 90\% of the probability will actually contain less. The solution to this is to re-generate the skymap after selecting each tile with the already-selected pixels set to 0, but this then becomes a non-trivial optimisation problem that is computationally intensive for limited gain compared to other possibilities.
+
+The ultimately preferred alternative is to instead select tiles based on their position in the sky contours. As discussed in Section~\ref{sec:mapping_skymaps} finding which contour each tile falls within is not easy to calculate. You could, for example, say a tile is only within a given contour area if \textit{every} pixel contained within the tile is within that contour. However \gls{goto}'s large tile areas are often wider than the long, stretched out probability areas typical of \gls{lvc} skymaps, so few if any tiles would meet this strict criteria. The mirror to this is to say a tile is within a contour if \textit{any} of its contained pixels are within the contour, which is the same as using the minimum of the contained contour values. This will find every tile covering the contour area even if only the smallest fraction of the tile's area is within that region, which leads to over-selecting tiles. The balanced alternative is to find the \textit{mean} contour value within the tile, which is the chosen method used within GOTO-alert: selecting all tiles which have a mean contour value within 90\%.
+
+Four different algorithms applied to real \gls{lvc} skymaps are shown below in Figures~\ref{fig:tiling_S190521r},~\ref{fig:tiling_GW170817}~\&~\ref{fig:tiling_S190425z}. The upper plot in each shows the probability skymap as received from the \gls{lvc}. The green and red tile selections in the centre-left and centre-right plots show selecting all tiles based on their minimum contour value, with at least some portion located within the 50\% and 90\% contour areas respectively. The lower-left plot shows tiles containing more than 1\% of the total probability in blue, and the lower-right plot shows the compromise solution of the tiles with a mean pixel contour value of 90\% or less in yellow.
 
 % -----
 
@@ -923,139 +1045,11 @@ This is an atypically large skymap. The fixed 1\% limit (lower-left, in blue) is
 
 \clearpage
 
-The first choice was to keep a hard cut-off in terms of contained probability, but modify the limit for each skymap. Several different ways of calculating this was tried. One was to change the cut-off based on the highest tile probability. For example a well-localised event might result in the highest-probability tile containing $30\%$, so with a 10\% cut-off all tiles containing 3\% or above would be added. On the other hand a spread-out skymap might have a highest tile only containing 2\%, so then all tiles with 0.2\% or above would be added. Other possible values to base this off were the on-sky areas of the 90\% or 50\% contours. Ultimately all the methods that used a hard contained probability cut-off proved to be not very responsive to the geographic spread of the skymap, and determining the precise proportionality constant (e.g. 10\% in the above example) was hard to balance between large and small maps.
+Once the chosen tiles have been selected then entries can be inserted into the database. First a new entry in the \code{Events} table is added for this event, containing the source, type, ID and \gls{ivorn}. Then an entry in the \code{Surveys} table is also created in order to group together all the pointings from this particular event. Although it is currently not used, the database is defined to allow multiple surveys per event. For example, there could be a quick initial survey in a wide-passband filter that prioritises possible host galaxies followed by a slower survey using the colour filters and longer exposure times that focuses on covering the sky map. But at the time of writing each event only has a single survey defined.
 
-One alternative method is to start with the highest probability tile and then add on subsequent tiles until the total probability covered reaches some target value, e.g. 90\% of the skymap. This method was originally used by GOTO-tile, but is relatively complicated to calculate when considering grids with overlap between the tiles. Just selecting tiles based on their contained skymap probability risks over-counting the regions within the overlap between tiles, and so the final selected tiles which nominally contain 90\% of the probability will actually contain less. The solution to this is to re-generate the skymap after selecting each tile with the already-selected pixels set to 0, but this then becomes a non-trivial optimisation problem that is computationally intensive for limited gain compared to other possibilities.
+Finally the individual tiles are inserted as entries in the \code{Mpointings} table. Each is connected to an entry in the \code{GridTiles} table for this particular grid, and the tile probabilities are stored as corresponding entries in the \code{SurveyTiles} table. The most important entries for the mpointings are the rank, target constraint values (minimum altitude, moon phase etc), the time block parameters (the time between pointings being valid) and the actual exposure settings (exposure time, filter, number in a set). These are found from the event strategy as described in Section~\ref{sec:event_strategy}. Once the mpointings are defined the first pointings are also created and added to the database \code{Pointings} table, to insure they become immediately valid in the queue without having to wait for the caretaker to create them.
 
-The ultimately preferred alternative is to instead select tiles based on their position in the sky contours. Each HEALPix pixel within the skymap has an associated probability, and the probability within a tile is the sum of the probabilities of each pixel contained within it. GOTO-tile also calculates the skymap contours by sorting the pixels by probability and replacing the value of each with the cumulative probability of all pixels higher than it. \rtxt{should be in GOTO-tile section}. Therefore finding which contour each tile falls within is not as easy to calculate. You could, for example, say a tile is only within a given contour (e.g. 90\%) if every pixel contained within the tile is within that contour. However \gls{goto}'s large tile areas are often wider than the long, stretched out probability areas typical of \gls{lvc} skymaps, so few if any tiles would meet this strict criteria. Instead you could consider the opposite to be true, that any tile containing a single pixel or more within a contour region should be considered within that contour.
-
-The most complete way is to find the minimum contour pixel value of all the values within each tile and set that as the tile contour value. Selecting tiles using this, for example asking for all tiles within the 90\% contour region, will find every tile covering that region --- even if only the smallest fraction of the tile's area is within that region. The alternative is to find the mean contour value within the tile and select based off of that, which is less susceptible to small fluctuations. This is the chosen method used within GOTO-alert: selecting all tiles which have a mean contour value within 90\%.
-
-\newpage
-
-
-\clearpage
-
-% -----
-
-\begin{figure}[p]
-\begin{center}
-
-\includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_probs.pdf}
-
-\end{center}
-
-\caption[An example 2D probability skymap]{A cartoon 2-dimensional skymap. Each pixel (represented by one of the 81 squares) has an assigned probability, and together they all sum to 100\%. The inner blue thick contour line contains 50\% of the probability, while the outer green contour line contains 90\% of the probability. These contours are created based on the values shown in Figure~\ref{fig:sim_skymap_conts}.
-}
-\label{fig:sim_skymap_probs}
-\end{figure}
-
-% -----
-
-\begin{figure}[p]
-\begin{center}
-
-\includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf}
-
-\end{center}
-
-\caption[An example 2D skymap with pixel contour values]{The same cartoon skymap as in Figure~\ref{fig:sim_skymap_probs}, but now each pixel contains its contour value. These are calculated for each pixel by sorting by probability and assigning each the value of the cumulative sum. This means pixel E5, which has the highest single probability, keeps the same value while the second highest (F5) has the sum of both E5 and F5 and so on.\\
-The thick blue line is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\% (so pixel G3 is just within the 50\% area but pixel B4 is outside). The green line is the 90\% contour area and likewise encloses all pixels with a contour value of less than 90\%.
-}
-\label{fig:sim_skymap_conts}
-\end{figure}
-
-% -----
-
-\begin{figure}[p]
-\begin{center}
-\begin{tabular}{cccccc}
-\multicolumn{3}{c}{Pixel probabilities (from Figure~\ref{fig:sim_skymap_probs}):} &
-\multicolumn{3}{c}{Pixel contours (from Figure~\ref{fig:sim_skymap_conts}):}
-\\
-\multicolumn{3}{c}{\includegraphics[width=0.46\linewidth]{images/sim/sim_skymap_pix_probs.pdf}} &
-\multicolumn{3}{c}{\includegraphics[width=0.46\linewidth]{images/sim/sim_skymap_pix_conts.pdf}}
-\\
-\multicolumn{2}{c}{Tile contained probabilities:} &
-\multicolumn{2}{c}{Tile minimum contours:} &
-\multicolumn{2}{c}{Tile mean contours:}
-\\
-\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_probs.pdf}} &
-\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_minconts.pdf}} &
-\multicolumn{2}{c}{\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_meanconts.pdf}}
-\\
-\end{tabular}
-\end{center}
-
-\caption[Calculating tile probabilities and contours for a 2D skymap]{Tiling the same cartoon 2D skymap as Figures~\ref{fig:sim_skymap_probs}~\&~\ref{fig:sim_skymap_conts}.\\
-\textbf{Top}: These plots show the pixel probabilities and contour values, coloured with the pixels within the 50\% contour in green and the pixels within the 90\% contour in green or red. The 81 total pixels are divided into 9 tiles, with no overlap for simplicity.\\
-\textbf{Lower-right}: The contained probability within each tile is the sum of the pixel probabilities, in this case each tile contains the sum of the 9 pixels contained within. Overlapping tiles would mean a single pixel might fall within multiple tiles and therefore contribute probability to each.\\
-\textbf{Lower-centre}: One way of finding which contour area each tile is within is to find the minimum contour value of the 9 pixels contained within it. This corresponds to the contour value of the pixel with the highest probability within each tile.\\
-\textbf{Lower-right:} An alternative method is to calculate the mean contour value of the pixels within each tile and use that as the tile contour value. This is less susceptible to single pixels affecting the value than taking the minimum.
-}
-\label{fig:sim_skymap_tiles}
-\end{figure}
-
-% -----
-
-\begin{figure}[p]
-\begin{center}
-\begin{tabular}{ccc}
-Tile minimum contours &
-Tiles within the &
-Tiles within the
-\\
-(from Figure~\ref{fig:sim_skymap_tiles}): &
-50\% contour: &
-90\% contour:
-\\
-\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_minconts.pdf} &
-\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_a.pdf} &
-\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_b.pdf}
-\\
-\\
-Tile mean contours &
-Tiles with &
-Tiles with
-\\
-(from Figure~\ref{fig:sim_skymap_tiles}): &
-mean contour value < 50\%: &
-mean contour value < 90\%:
-\\
-\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tile_meanconts.pdf} &
-\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_c.pdf} &
-\includegraphics[width=0.3\linewidth]{images/sim/sim_skymap_tiles_d.pdf}
-\\
-\end{tabular}
-\end{center}
-
-\caption[Selecting tiles based on contour levels for a 2D skymap]{Selecting tiles for the same cartoon skymap as in Figure~\ref{fig:sim_skymap_tiles}.\\
-\textbf{Top}: These three plots show selecting tiles based on calculating the tile contour value by selecting the minimum contour value of the 9 pixels within the tile. This method can lead to a single pixel having a disproportionate influence: for example the top right tile is included within the green 50\% contour based on the presence of a single pixel that only just makes the cut-off. With real high-resolution skymaps a single tile will contain a much higher number of pixels, and yet using this method the tile could still be selected based on a single outlier pixel.\\
-\textbf{Bottom}: These three plots instead show selecting tiles based on calculating the tile contour value by taking the \textit{mean} contour value of the 9 contained pixels. This is a more selective method that results in tiles being affected less by single outliers.
-
-}
-\label{fig:sim_skymap_tiling}
-\end{figure}
-
-% -----
-
-\clearpage
-
-
-
-
-
-
-
-
-
-Therefore before adding anything to the database the tile table is masked to exclude all but the highest probability tiles. The limit is configurable depending on the event type. For gravitational wave events which are \gls{goto}'s highest priority all tiles which contain more than 1\% of the overall sky map probability. \gls{grb} events however, although still interesting, are a lower priority and therefore only the top 5 most probable tiles are inserted into the database and only if they contain more than 5\% of the overall probability. It is not uncommon to receive very poorly-localised \textit{Fermi} events where no tiles pass these criteria, in which case no pointings end up being inserted.
-
-Once the tile list has been trimmed down to only the ones worth observing, then entries can be inserted into the database. First a new entry in the \code{Events} table is added for this event, containing the source, type, ID and \gls{ivorn}. Then an entry in the \code{Surveys} table is also created in order to group together all the pointings from this particular event. Although it is currently not used, the database is defined to allow multiple surveys per event. For example, there could be a quick initial survey in a wide-passband filter that prioritises possible host galaxies followed by a slower survey using the colour filters and longer exposure times that focuses on covering the sky map. But at the time of writing each event only has a single survey defined.
-
-Finally the individual tiles are inserted as entries in the \code{Mpointings} table. Each is connected to an entry in the \code{GridTiles} table for this particular grid, and the tile probabilities are stored as corresponding entries in the \code{SurveyTiles} table. The most important entries for the mpointings are the rank, target constraint values (minimum altitude, moon phase etc), the time block parameters (the time between pointings being valid) and the actual exposure settings (exposure time, filter, number in a set). These can also be varied depending on the type of event, with \gls{gw} events being inserted at the highest ranks and with the most lenient constraints. Then once the mpointings are defined the first pointings are also created and added to the database \code{Pointings} table, to insure they become immediately valid in the queue without having to wait for the caretaker to create them.
-
-Once all those entries are added to the database then the event has been successfully handled. The only other thing the sentinel will do is send out a \software{Slack} message to the \gls{goto} channel, to register that is has processed an alert and report which tiles have been triggered for observation. When the scheduler next fetches the queue the pointings should be there ready to observe, and if they are valid they will be sent to the pilot to begin follow-up observations.
+After all of these entries are added to the database then the event has been successfully handled. When the scheduler next fetches the queue the pointings should be there ready to observe, and if they are valid the highest priority will be sent to the pilot to begin follow-up observations.
 
 \end{colsection}
 
