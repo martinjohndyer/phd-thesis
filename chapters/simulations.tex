@@ -13,7 +13,17 @@
 
 \begin{colsection}
 
-In this chapter I outline \rtxt{<blah><blah><blah>}
+In this chapter I outline my work creating simulations of the GOTO observatory. Section~\ref{sec:scheduler_sims} describes simulations carried out in order to find the optimal ``tie-break'' parameters for the \gls{gtecs} scheduler, while Section~\ref{sec:multitel_sims} describes simulations of the combined response of multiple GOTO telescopes observing gravitational wave skymaps and the all-sky survey. All work described in this chapter is my own and has not been published before anywhere else.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Simulating GOTO}
+\label{sec:goto_sims}
+\begin{colsection}
+
+WIP
 
 \end{colsection}
 
@@ -32,7 +42,22 @@ In this chapter I outline \rtxt{<blah><blah><blah>}
 
 \begin{colsection}
 
-WIP
+The scheduler is described in in Section~\ref{sec:scheduler}.
+
+Why do we need a tie-break? (described previously a bit, but worth reminding)
+
+The different tie-break parameters:
+\begin{itemize}
+    \item Airmass, obviously
+    \item Weight, also obviously
+    \item Time to set / time valid?
+\end{itemize}
+
+Simulations
+
+Output: plot airmass vs time observed
+
+\rtxt{still work to do}
 
 \end{colsection}
 
@@ -42,94 +67,87 @@ WIP
 % ########################################
 
 \newpage
-\section{All-sky survey simulations}
-\label{sec:allsky_sims}
+\section{Multi-telescope simulations}
+\label{sec:multitel_sims}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-WIP
+GOTO will have multiple telescopes. Also Australia. Should be described in the intro I guess, or future work.
+
+These simulations were carried out to provide some predictions for what benefit multiple telescopes and sites will provide.
+
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{A single GOTO telescope}
-\label{sec:allsky_onetel}
+\subsection{Simulating multiple telescopes and sites}
+\label{sec:multi_site}
 \begin{colsection}
 
-WIP
+Multi telescopes are easy, just take top X.
+
+Multi sites are harder. Luckily night times don't overlap.
+
+But what if they did?
+
+They need to be on the same grid.
+
+BUT, can combine different grids at different sites.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Multiple GOTO telescopes}
-\label{sec:allsky_multitel}
-\begin{colsection}
-
-WIP
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Multiple observing sites}
-\label{sec:allsky_multisite}
-\begin{colsection}
-
-WIP
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
-% ########################################
-
-\newpage
-\section{Gravitational wave follow-up simulations}
+\subsection{Gravitational wave follow-up simulations}
 \label{sec:gw_sims}
 \begin{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
+First 2 years (could be in prev \autoref{sec:scheduler_sims})
 
-\begin{colsection}
+Timing and positions are pretty evenly spread (check paper).
 
-WIP
+Visibility: depends on sites, position of the Sun etc.
+
+Selection is a small issue, some are just so far from the contours. Differs depending on the grid. See \autoref{sec:db_insert}.
+
+How the simulations worked: real GOTO-alert commands, real database, real scheduler, fake pilot.
+
+Results.
+
+Analysis:
+\begin{itemize}
+    \item Different grids are different.
+    \item Small gain from additional telescopes at the same site.
+    \item Huge gain from multiple sites.
+\end{itemize}
+
+Still to do:
+\begin{itemize}
+    \item weather
+    \item SA?\@ Chile?
+\end{itemize}
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{A single GOTO telescope}
-\label{sec:gw_onetel}
+\subsection{All-sky survey simulations}
+\label{sec:allsky_sims}
 \begin{colsection}
 
-WIP
+Simulate over a whole year.
 
-\end{colsection}
+Using the real scheduler takes a long time.
 
-% ~~~~~~~~~~~~~~~~~~~~
+Light version is much easer, just selects based on altitude.
 
-\subsection{Multiple GOTO telescopes}
-\label{sec:gw_multitel}
-\begin{colsection}
+Get results for cadence, coverage, airmass?
 
-WIP
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Multiple observing sites}
-\label{sec:gw_multisite}
-\begin{colsection}
-
-WIP
+Compare to real results over first 5 months, Feb-Jul (shame not 6 months).
 
 \end{colsection}
 
