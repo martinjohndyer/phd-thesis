@@ -80,6 +80,15 @@
     \end{singlespacing}
     }
 
+% reference functions containing the type, also name
+\AtBeginDocument{%
+    \renewcommand\chapterautorefname{Chapter}%
+    \renewcommand\sectionautorefname{Section}%
+    \renewcommand\subsectionautorefname{Section}%
+}
+\newcommand\aref[1]{\autoref{#1}}
+\newcommand\nref[1]{\autoref{#1} (\nameref{#1})}
+
 % bibliography
 \addbibresource{bibliography.bib}
 \renewbibmacro{in:}{}
