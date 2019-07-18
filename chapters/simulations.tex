@@ -153,7 +153,7 @@ For the proposed \gls{goto} system with near-identical \gls{goto}-8 units around
 As the primary mission of the \gls{goto} project is to follow up gravitational wave detections, it is important to consider what benefit additional telescopes will bring to the project. In order to do this, simulations were run on the LIGO First Two Years mock skymaps \citep{First2Years}. The sample contained 1105 events, each based on simulating a binary neutron star coalescence at a particular sky position and distance. Each event had two skymaps generated: the first using the rapid \code{BAYESTAR} pipeline, which is typically available minutes after the event, and the second using the \code{LALInference} code which can take hours or days to complete. For these simulations therefore only the \code{BAYESTAR} skymaps were considered in order to focus on \gls{goto}'s initial follow-up, although an extension to the simulations could include the effects of the second updated skymap being processed and added to the database some hours after the event time.
 
 % ---------
-\subsubsection{Event visability}
+\subsubsection{Event visibility}
 
 The simulations were designed to begin at the time of the event, and then simulate the next 24 hours of observations. This therefore guaranteed one night's worth of observing at each site, although split into two halves if the event occurred during the night. The time each event occurred was taken from the simulated skymaps, as the \citet{First2Years} simulations considered factors such as the duty cycle of each detector maintaining the time was important. Events were uniformly distributed in time of occurrence (at what time during the day), while in date they all occur over a two month period spanning either side of the 2010 September equinox, as shown in \aref{fig:f2y_times}. It is not clear why this range of dates was selected, although surrounding one of the equinoxes might have been an attempt to reduce bias towards observers from either hemisphere. Detailed analysis shows the events are not entirely equally distributed either side of the equinox (03:09 on 2010--09--23), with the first occurring 33 days before and the second 27 days after. Overall 64\% of events occur before the September equinox and 36\% after, this leads to a slight bias in terms of visibility towards the southern sites as they will experience longer nights before the equinox (in the southern winter).
 
@@ -169,26 +169,127 @@ The simulations were designed to begin at the time of the event, and then simula
 
 Events were uniformly distributed across the sky, and are uniform in distance cubed. Although each source included distance information this was not taken into account in the simulations aside from determining the event strategy to use (all were well within the \SI{400}{\mega\parsec} definition for close neutron star events defined for GOTO-alert in \aref{sec:event_strategy}). Future simulations could use the distance to the event to estimate a light curve based on that of GW170817 and use it to predict how long each event would be visible for. As GW170817 only faded below \gls{goto}'s 20 mag limit after 2.5 days a 24 hour period is a reasonable amount of time to simulate.
 
-The first stage of the simulations was to determine if the event source was going to be physically visible from the considered sites in the 24 hours after the event occurred. In order to save time it decided to not spend time running full fake pilot simulations for events which would never be observed, and therefore the simulation for that event was aborted early if no tiles that the source was located within were going to be visible. Each event was classified into four categories:
+The first stage of the simulations was to determine if the event source was going to be physically visible from the considered sites in the 24 hours after the event occurred. In order to save time it decided to not spend time running full fake pilot simulations for events which would never be observed, and therefore the simulation for that event was aborted early if no tiles that the source was located within were going to be visible. Each event was classified into one of four categories:
 
 \begin{itemize}
     \item \textbf{Not visible --- too close to the Sun}. These events had sources that were too close to the Sun within the 24 hour period to observe. This was defined as being within \SI{42}{\degree} of the Sun at any point over the 24 hours (\SI{12}{\degree} from the definition of night time plus \SI{30}{\degree} from the horizon limit). This region corresponded to an area of the sky that would not be visible from any site on Earth using these observing parameters. This is a fixed fraction of the sky: 5280 sq deg or 13\% of the celestial sphere\footnote{The area of a circle with radius $r$ on the surface of a sphere with radius $R$ is $2\pi R^2(1-\cos(r))$. The radius of the celestial sphere $R=\SI{360}{\degree}/2\pi \approx \SI{57.3}{\degree}$.}.
-    \item
-    \item \textbf{Not visible --- below declination limit}. These event sources fall within the region of the sky that are never visible form a given site due to the limited declination range. For example, using the standard \SI{30}{\degree} horizon limit over the course of a year sa telescope on La Palma (latitude \SI{28}{\degree} N) can see a band of sky between \SI{+88}{\degree} and \SI{-32}{\degree} declination. Sources outside of this region (that are not already excluded due to being too close to the Sun) would therefore never be observable from the given site, but could be observed from other locations. At the equator this band covers 87\% of the sky, at latitudes of $\pm \SI{30}{\degree}$ 75\% of the sky is visible, falling to just 25\% at the poles\footnote{The area of a segment on a sphere between angles $\theta$ and $\phi$ is $2 \pi R^2 (\cos(\theta)-\cos(\phi))$}.
-    \item
-    \item \textbf{Not visible --- event time}. These event sources are outside of the hard Sun limit and within the visible declination range, but are still not observable during the given 24 hour period.
 
+    \item \textbf{Not visible --- below declination limit}. These event sources fall within the region of the sky that are never visible form a given site due to the limited declination range. For example, using the standard \SI{30}{\degree} horizon limit over the course of a year sa telescope on La Palma (latitude \SI{28}{\degree} N) can see a band of sky between \SI{+88}{\degree} and \SI{-32}{\degree} declination. Sources outside of this region (that are not already excluded due to being too close to the Sun) would therefore never be observable from the given site, but could be observed from other locations. At the equator this band covers 87\% of the sky, at latitudes of $\pm \SI{30}{\degree}$ 75\% of the sky is visible, falling to just 25\% at the poles\footnote{The area of a segment on a sphere between angles $\theta$ and $\phi$ is $2 \pi R^2 (\cos(\theta)-\cos(\phi))$}.
+
+    \item \textbf{Not visible --- event time}. These event sources are outside of the hard Sun limit and within the visible declination range, but are still not observable during the given 24 hour period as they have set by the time the night begins. Like sources below the declination limit, sources located within this region would be visible from other sites at different latitudes.
+
+    \item \textbf{Visible}. The source for this event falls outside of either of the above three areas, and therefore is nominally above the horizon limit at some point during night time within 24 hours after the event. The portion of the sky that is visible in one night from a given site depends on the latitude fo the site and the time of year.
 \end{itemize}
 
+\begin{table}[t]
+\begin{center}
+\begin{tabular}{c|ccc} % chktex 44
 
-Timing and positions are pretty evenly spread (check paper).
+\multirow{3}{*}{Night} & \multicolumn{3}{c}{Site} \\
+          & La Palma             & Siding Spring  & Mt Kent \\
+          & (\SI{28}{\degree} N) &  (\SI{31}{\degree} S) &  (\SI{27}{\degree} S) \\
+          \midrule
+          \\
+March     & \textcolor{Green}{57.1\% visible}
+          & \textcolor{Green}{56.3\% visible}
+          & \textcolor{Green}{59.6\% visible}
+          \\
+equinox   & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{23.4\%} $\cdot$
+                         \textcolor{Blue}{6.7\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{24.6\%} $\cdot$
+                         \textcolor{Blue}{6.2\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{22.5\%} $\cdot$
+                         \textcolor{Blue}{5.0\%})}
+          \\[0.5cm]
+June      & \textcolor{Green}{50.4\% visible}
+          & \textcolor{Green}{61.9\% visible}
+          & \textcolor{Green}{62.7\% visible}
+          \\
+solstice  & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{24.2\%} $\cdot$
+                         \textcolor{Blue}{12.4\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{20.9\%} $\cdot$
+                         \textcolor{Blue}{4.3\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{19.0\%} $\cdot$
+                         \textcolor{Blue}{5.4\%})}
+          \\[0.5cm]
+September & \textcolor{Green}{57.0\% visible}
+          & \textcolor{Green}{56.4\% visible}
+          & \textcolor{Green}{57.7\% visible}
+          \\
+equinox   & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{23.4\%} $\cdot$
+                         \textcolor{Blue}{6.7\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{24.5\%} $\cdot$
+                         \textcolor{Blue}{6.2\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{22.4\%} $\cdot$
+                         \textcolor{Blue}{7.0\%})}
+          \\[0.5cm]
+December  & \textcolor{Green}{62.5\% visible}
+          & \textcolor{Green}{48.9\% visible}
+          & \textcolor{Green}{51.0\% visible}
+          \\
+solstice  & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{19.7\%} $\cdot$
+                         \textcolor{Blue}{4.8\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{25.8\%} $\cdot$
+                         \textcolor{Blue}{12.4\%})}
+          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                         \textcolor{NavyBlue}{23.2\%} $\cdot$
+                         \textcolor{Blue}{12.9\%})}
+          \\
 
-Visibility: depends on sites, position of the Sun etc.
+\end{tabular}
+\end{center}
+\caption[Sky visibility over a year]{Sky visibility over a year from the three different \gls{goto} sites. The upper value shows the fraction of the sky that is \textcolor{Green}{visible} within the night. The lower values break down the remaining fraction of the sky into the three non-visible categories (\textcolor{BurntOrange}{too close to the Sun}, \textcolor{NavyBlue}{below declination limit} and \textcolor{Blue}{event time}).}
+\label{tab:visibility}
+\end{table}
+
+The region of the sky visible during the night for a given site change over the course of the year. \aref{tab:visibility} shows the fractions of the sky in each of the four categories above at the four solstices and equinoxes during the year. \aref{fig:visibility} plots the regions on the celestial sphere, in order to better visualise how they change depending on observing site and time of year.
+
+\begin{figure}[p]
+
+\begin{center}
+\includegraphics[width=\linewidth]{images/visibility.pdf}
+\end{center}
+
+\caption[Plotting sky visibility regions over a year]{Changing sky visibility regions over a year, plotted on the celestial sphere. The left column shows visibility for a theoretical observer located on the Earth's equator, the right-hand column shows visibility from the latitude of La Palma (\SI{28}{\degree} N). Visibility is plotted for four different nights, at the equinoxes and solstices. Regions in \textcolor{Green}{green} are visible during the night, with the visible portion of the sky at sunrise and sunset denoted by the white dashed lines. Regions in \textcolor{NavyBlue}{light blue} are out of the visible declination range of the site and so are never visible, regions in \textcolor{Blue}{dark blue} would be visible but not during the given night. Finally the \textcolor{BurntOrange}{yellow} area shows the \SI{42}{\degree} region around the Sun that is excluded from any site on Earth. The black line shows the ecliptic, with the black star marking the position of the Sun (the Sun does move slightly along this path during the night but it is not visible at this scale, the star marks the position at local midnight).
+}
+\label{fig:visibility}
+\end{figure}
+
+\clearpage
 
 % ---------
+
 \subsubsection{Selecting event tiles}
 
-Selection is a small issue, some are just so far from the contours. Differs depending on the grid. See \autoref{sec:db_insert}.
+Even if an event source is visible within the 24 hours from a given site (or combination of sites) there is one further criteria that would prevent observations of the source, that being whether the source is located within any of the tiles added to the database. The issue of determining which tiles to add to the database is detailed in \aref{sec:db_insert}, but is ultimately a matter of probability. If the telescope covered the 90\% confidence region for every event then it would be expected to observe 90\% of the event sources. Two particular examples are shown in \aref{fig:poor_selection}.
+
+GOTO-alert uses the mean contour level method to select tiles as described in \aref{sec:db_insert}, which itself requites further simulations to find an optimal level to use. The level will also need modification based on the tile shape. For these simulations a mean contour selection value of $0.9$ was used for the GOTO-4 grid and $0.95$ for the GOTO-8 grid. Using these values 92\% of events had sources within at least one of the selected tiles for the GOTO-4 grid, and 95\% for the GOTO-8 grid. In the following simulation results the tile selection was considered \textit{after} the visibility restrictions in the previous section, as it is an operational value decided for \gls{goto} while the visibility is true for any and all telescopes at the relevant sites.
+
+Future simulations should be run using the same sample of skymaps but altering the selection level, and comparing the number of selected sources to the number of tiles selected for each event. As discussed in \aref{sec:db_insert} there is a trade-off between adding two few tiles and missing the source and adding too many and increasing the time to cover them all. As additional telescopes are added the limit can also be relaxed further, as they will pass through observing the selected tiles faster.
+
+\begin{figure}[p]
+
+\begin{center}
+\includegraphics[width=\linewidth]{images/non_selected.pdf}
+\end{center}
+
+\caption[Examples of mock GW event sources falling outside of the selected tiles]{Two examples of mock GW event sources (marked by the blue star) falling outside of the selected tiles (blue highlighted tiles). In the upper case (trigger ID 13630) the tiles the source fell within (highlighted in red) were only just below the mean contour limit, while in the lower example (trigger ID 930001) the source was completely outside of the skymap probability regions.
+}
+\label{fig:poor_selection}
+\end{figure}
+
+\clearpage
 
 % ---------
 \subsubsection{Results of full pilot simulations}
