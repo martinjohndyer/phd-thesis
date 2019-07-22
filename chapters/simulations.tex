@@ -730,15 +730,63 @@ Another factor to emerge from these simulations is the difference between two in
 
 \begin{colsection}
 
-Simulate over a whole year.
+Almost as critical to the \gls{goto} project as the gravitational wave follow-up operations is carrying out the all-sky survey. Therefore in parallel to the gravitational wave simulations further simulations were carried out in order to quantify what benefit additional telescopes and sites will have on the survey. It was also an opportunity to consider different survey methods before implementing them in the real scheduling system. Unlike the gravitational wave simulations it is also possible to compare the simulated results for a single GOTO-4 system on La Palma to the actual observations the live system has taken over its first 5 months operating.
 
-Using the real scheduler takes a long time.
+\end{colsection}
 
-Light version is much easer, just selects based on altitude.
+% ~~~~~~~~~~~~~~~~~~~~
 
-Get results for cadence, coverage, airmass?
+\subsection{Simulating survey observations}
+\label{sec:allsky_sim_methods}
+\begin{colsection}
 
-Compare to real results over first 5 months, Feb-Jul (shame not 6 months).
+Simulating the all-sky survey is more straightforward than the gravitational wave simulations, as there isn't the added complication of processing the \gls{lvc} skymap or checking the visibility of the source coordinates. Instead the only set up that is needed is to fill the observing database with the all-sky survey Mpointings and run the fake pilot calling the usual scheduler commands.
+
+The only drawback to this method is the time taken. Unlike the gravitational wave simulations the simulation can't be finished early if the source is not visible, or stopped once the source has been observed. Instead the fake pilot needs to simulate the full 24 hours of observations, for however many days the simulation is run for. The same simplifications detailed in \aref{sec:multi_site} still apply, so each loop still skips approximately 4 minutes of simulation time until the observation has completed. A full simulation of a year of observations including both sites (therefore observing for approximately to 20 hours each day) requires 1.1 million steps, and with each simulation loop taking approximately 2 seconds (the scheduler check takes the majority of the time) the full simulation takes approximately 60 hours. This compares to at most 16 hours for the multi-site gravitational wave simulations.
+
+Due to the full simulations requiring a large time investment only a few of these were carried out. Instead, a simplified version of the simulation code was developed that could produce the same results much faster. This `lite' script did away with the scheduler and database code, and instead at each step just finds the highest altitude tiles that have been observed the least times and takes them as the return pointings from the scheduler. This is a great simplification of the scheduling functions, however the result is effectively the same and the same simulations are 15--20 times faster to run. Therefore a majority of the simulations discussed in this section use this much faster `lite' script. The other benefit of this method was making it much easier to modify the ``scheduling'' function to test different methods, as discussed in \aref{sec:allsky_sim_meridian}, without yet needing the rewrite the actual \gls{gtecs} scheduler.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Comparison of simulations to the first 150 days}
+\label{sec:allsky_sim_existing}
+\begin{colsection}
+
+Run through the 150 days.
+
+Compare to the real results.
+
+Reasons it's less: GW interfering, slew time etc needs adjusting.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Observing the all-sky survey with multiple telescopes}
+\label{sec:allsky_sim_multiscope}
+\begin{colsection}
+
+Mainly looking at cadence as number of telescopes increases.
+
+Need to do the full year? Maybe just the key months?
+
+Results: cadence decreases with more telescopes. Shock!
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{An alternative survey method: meridian scanning}
+\label{sec:allsky_sim_meridian}
+\begin{colsection}
+
+Compare 150 days again.
+
+Airmass is much better, but covers less of the sky.
+
+Meridian would need to expand for more telescopes.
 
 \end{colsection}
 
