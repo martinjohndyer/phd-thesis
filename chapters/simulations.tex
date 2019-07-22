@@ -13,7 +13,7 @@
 
 \begin{colsection}
 
-In this chapter I outline my work creating simulations of the GOTO observatory. Section~\ref{sec:scheduler_sims} describes simulations carried out in order to find the optimal ``tie-break'' parameters for the \gls{gtecs} scheduler, while Section~\ref{sec:multitel_sims} describes simulations of the combined response of multiple GOTO telescopes observing gravitational wave skymaps and the all-sky survey. All work described in this chapter is my own and has not been published before anywhere else.
+In this chapter I outline my work creating simulations of the GOTO observatory. Section~\ref{sec:scheduler_sims} describes early simulations carried out in order to find the optimal ``tie-break'' parameters for the \gls{gtecs} scheduler, Section~\ref{sec:multi_site} details how this simulation code could be modified to simulate multiple observing sites and Sections~\ref{sec:gw_sims} and~\ref{sec:allsky_sims} apply this to multi-site simulations of gravitational wave events and the all-sky survey respectively. All work described in this chapter is my own and has not been published before anywhere else.
 
 \end{colsection}
 
@@ -23,7 +23,13 @@ In this chapter I outline my work creating simulations of the GOTO observatory. 
 \label{sec:goto_sims}
 \begin{colsection}
 
-WIP
+\rtxt{Describe the fake pilot here, it's common to all 3 sims}.
+
+Below is taken from the old multi-site sim section, needs improvement.
+
+As described in Section~\ref{sec:goto_expansion}, the ultimate aim of the \gls{goto} project is to have multiple nodes around the world. Specifically, the plan calls for two full GOTO-8 systems on La Palma and another two at a second site in Australia (the exact site is not yet determined, but it will most likely either be either Siding Spring in New South Wales or Mt Kent in Queensland).
+
+In order to better quantify the benefit multiple telescopes and sites will provide, a series of simulations were carried out. These simulations focused on two main areas: the all-sky survey coverage and cadence, and the combined system's response to gravitational wave alerts.
 
 \end{colsection}
 
@@ -67,30 +73,23 @@ Output: plot airmass vs time observed
 % ########################################
 
 \newpage
-\section{Multi-telescope and multi-site simulations}
-\label{sec:multitel_sims}
+\section{Simulating multiple telescopes and sites}
+\label{sec:multi_site}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-As described in Section~\ref{sec:goto_expansion}, the ultimate aim of the \gls{goto} project is to have multiple nodes around the world. Specifically, the plan calls for two full GOTO-8 systems on La Palma and another two at a second site in Australia (the exact site is not yet determined, but it will most likely either be either Siding Spring in New South Wales or Mt Kent in Queensland).
-
-In order to better quantify the benefit multiple telescopes and sites will provide, a series of simulations were carried out. These simulations focused on two main areas: the all-sky survey coverage and cadence, and the combined system's response to gravitational wave alerts.
+As outlined in Section~\ref{sec:gtecs_multisite} it is envisioned that, as GOTO expands to multiple telescopes and sites, the \gls{gtecs} scheduling system will be extended so that all the telescopes query a single observation database and a master scheduler decides what each telescope should be observing at a given time. This will require a large amount of work to modify both the database structure and the scheduling functions, and as it is not currently implemented into the existing scheduler several workarounds needed to be used in order to create realistic multi-telescope simulations.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Simulating multiple telescopes and sites}
-\label{sec:multi_site}
+\subsection{Scheduling for multiple observing telescopes}
+\label{sec:multi_tel_scheduling}
 \begin{colsection}
-
-As outlined in Section~\ref{sec:gtecs_multisite} it is envisioned that, as GOTO expands to multiple telescopes and sites, the \gls{gtecs} scheduling system will be extended so that all the telescopes query a single observation database and a master scheduler decides what each telescope should be observing at a given time. This will require a large amount of work to modify both the database structure and the scheduling functions, and as it is not currently implemented into the existing scheduler several workarounds needed to be used in order to create realistic multi-telescope simulations.
-
-% ---------
-\subsubsection{Scheduling for multiple observing telescopes}
 
 One of the current restrictions in the scheduling functions (as described in Section~\ref{sec:scheduler}) is that they only ever expect a single Pointing in the observing database to be marked as \code{running} at any one time. It is explicitly coded into the scheduler that detecting multiple running pointings should raise a critical error, as certain bugs early in development could lead to this undesired state to occur. Obviously once the system is to be expanded to multiple telescopes this restriction will have to be lifted, but for these simulations a simplification was required to work around this restriction.
 
@@ -100,41 +99,51 @@ As none of the above was implemented into the existing code a simplified system 
 
 The second simplification was to ensure the telescopes always stayed in sync when observing. The was doable because for either scenario (all-sky survey or \gls{gw} follow-up) each of the pointing would have identical exposure times and therefore take the same amount of time to observe. As there is no need to include simulation steps while the cameras would be exposing the simulation simply increased the time until the observations would be completed. In practice each telescope would take a different amount of time to slew to its target and so quickly get out of sync. Slew time is included in the fake pilot code, from each telescope to its new target. However in order to remain synchronised the code waits the required amount of time for both telescopes to slew and finish their observations. This also accounts for the multiple-running-pointings issue, as by modifying the simulation steps to skip over the actual observing time the pointings never actually need to be marked as \code{running} in the database --- simply going from \code{pending} to \code{completed}. The real observing database would also need a way to record which pointing was observed by which telescope, but that is stored within the fake pilot so there was no need to modify the database schema.
 
-% ---------
-\subsubsection{Scheduling for multiple observing sites}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Scheduling for multiple observing sites}
+\label{sec:multi_site_scheduling}
+\begin{colsection}
 
 The above system provides a good approximation of the response of an arbitrary number of telescopes observing at one site. However expanding the code further to simulate observations from multiple sites adds further complexity.
 
 The scheduler needs to know which site observations are being made from, because it takes into account horizon visibility and airmass. That's simple to include if you have only one site observing at once, but once there are telescopes at multiple sites querying the scheduler at the same time then the responses will need to take that into account. For example, with two telescopes at two sites observing at once the scheduler would need to return the top two pointings at each site, as discussed above. However if the visible portions of the sky from both sites overlap then it's very possible that the same pointing could be the highest priority from both sites. The scheduler would have to chose which of the four telescopes to assign that pointing to, most likely based on the airmass at each site or the slew time from the current target. But then the site that didn't get that pointing assigned now only has the one remaining target to share between its two telescopes. In practice this would mean when querying the scheduler it would have to return the top $X$ pointings, where $X = N_\text{site1} + N_\text{site2} + \cdots$ is the total number of telescopes across the globe (for this example $X=4$).
 
 \begin{figure}[t]
-\begin{center}
-\includegraphics[width=\linewidth]{images/nights.pdf}
-\end{center}
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/nights.pdf}
+    \end{center}
 
-\caption[Night times throughout the year for GOTO sites]{Night times throughout the year for GOTO sites. Night here is defined as when the Sun is \SI{12}{\degree} below the local horizon.
-}
-\label{fig:nights}
+    \caption[Night times throughout the year for GOTO sites]{
+        Night times throughout the year for GOTO sites. Night here is defined as when the Sun is \SI{12}{\degree} below the local horizon.
+    }\label{fig:nights}
 \end{figure}
 
 The above system would be possible to implement in the simulations, but there is a lucky simplification that can be made for the specific cases that are being considered. Saying the scheduler needs to find the top $X$ pointings, where $X$ is the total number of telescopes at all sites, is not strictly true --- it actually only needs to return enough pointings to satisfy the telescopes at the sites that are currently observing. In other words it there are two sites but one is shut down, due to weather or because it is daytime there, the scheduler doesn't need to worry about choosing which site pointings are assigned to as only the one is currently active. Conveniently for simulating the proposed GOTO network this is always true: using a horizon of \SI{-12}{\degree} the periods of darkness between La Palma and either of the Australian sites never overlap. This is shown in Figure~\ref{fig:nights}, where there is a constant ``buffer zone'' between night ending at one site and beginning at the other. This case only applies for a very limited number of combinations of sites. As shown in Figure~\ref{fig:site_nights} there is a tear-drop-shaped area on the Earth's surface which contain the locations where the local night will never overlap with night on La Palma, comprising only of eastern Australia, New Zealand and Melanesia. For a horizon of \SI{-12}{\degree} this area contains just $6.6 \%$ of the Earth's surface.
 
-\begin{figure}[p]
-\begin{center}
-\includegraphics[width=\linewidth]{images/sites.pdf}
-\end{center}
+The convenient location of the Australian sites means implementing them into the simulation code was fairly simple. Should simulations for other sites on the Earth be included that aren't within the small non-overlapping area, for example other backup GOTO-South sites in South Africa or Chile, the code would need to be expanded as described above. In principle the simulations can be run for any one site on the Earth as a stand-alone observatory, and then this could be combined afterwards with the results from other, stand-alone simulations. This however removes the benefit of the sites acting together and using a common observing database. Section~\ref{sec:gw_sims} considers this in more detail for sites with different grids.
 
-\caption[Locations on the Earth with non-overlapping night times]{Finding locations on the Earth with non-overlapping night times. On the upper plot the filled areas show the locations on the Earth where local night never overlaps with night on La Palma, at any point in the year. The different colours denote different horizon definitions, with the \SI{-12}{\degree} horizon also being surrounded by a white dashed line. The location of the GOTO sites considered (\textcolor{blue}{La Palma}, \textcolor{ForestGreen}{Siding Spring} and \textcolor{red}{Mt Kent}) are marked with stars and their antipodes are marked with hollow circles. The equivalent areas for Siding Spring and Mt Kent are also shown by the coloured dashed lines surrounding their antipodes, for a \SI{-12}{\degree} horizon only. The lower plots shows how the region varies over a year, from the solstices via the equinox (the plot is identical for the March and September equinoxes and therefore is only shown once).
-}
-\label{fig:site_nights}
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/sites.pdf}
+    \end{center}
+
+    \caption[Locations on the Earth with non-overlapping night times]{
+        Finding locations on the Earth with non-overlapping night times. On the upper plot the filled areas show the locations on the Earth where local night never overlaps with night on La Palma, at any point in the year. The different colours denote different horizon definitions, with the \SI{-12}{\degree} horizon also being surrounded by a white dashed line. The location of the GOTO sites considered (\textcolor{blue}{La Palma}, \textcolor{ForestGreen}{Siding Spring} and \textcolor{red}{Mt Kent}) are marked with stars and their antipodes are marked with hollow circles. The equivalent areas for Siding Spring and Mt Kent are also shown by the coloured dashed lines surrounding their antipodes, for a \SI{-12}{\degree} horizon only. The lower plots shows how the region varies over a year, from the solstices via the equinox (the plot is identical for the March and September equinoxes and therefore is only shown once).
+    }\label{fig:site_nights}
 \end{figure}
 
 \clearpage
 
-The convenient location of the Australian sites means implementing them into the simulation code was fairly simple. Should simulations for other sites on the Earth be included that aren't within the small non-overlapping area, for example other backup GOTO-South sites in South Africa or Chile, the code would need to be expanded as described above. In principle the simulations can be run for any one site on the Earth as a stand-alone observatory, and then this could be combined afterwards with the results from other, stand-alone simulations. This however removes the benefit of the sites acting together and using a common observing database. The method is however used in Section~\ref{sec:gw_sims} below for sites with different grids, where the consequences are examined in more detail.
+\end{colsection}
 
-% ---------
-\subsubsection{Simulating different grids}
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Simulating different grids}
+\label{sec:multi_grid_scheduling}
+\begin{colsection}
 
 One fundamental feature of the existing \gls{goto} code is that observations are carried out on an all-sky grid, as defined in Section~\ref{sec:gototile}. When considering multiple telescopes this is both useful in some ways and limiting in others. Having a fixed grid that is common to all telescopes is vital for the \gls{goto} image subtraction systems, which is why it is anticipated to form the base of the global system. By sharing tiles each telescope can contribute to the same all-sky survey grid, as well as coordinate mapping out a gravitational wave skymap.
 
@@ -146,25 +155,39 @@ For the proposed \gls{goto} system with near-identical \gls{goto}-8 units around
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Gravitational wave follow-up simulations}
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Gravitational wave follow-up simulations}
 \label{sec:gw_sims}
+\begin{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 As the primary mission of the \gls{goto} project is to follow up gravitational wave detections, it is important to consider what benefit additional telescopes will bring to the project. In order to do this, simulations were run on the LIGO First Two Years mock skymaps \citep{First2Years}. The sample contained 1105 events, each based on simulating a binary neutron star coalescence at a particular sky position and distance. Each event had two skymaps generated: the first using the rapid \code{BAYESTAR} pipeline, which is typically available minutes after the event, and the second using the \code{LALInference} code which can take hours or days to complete. For these simulations therefore only the \code{BAYESTAR} skymaps were considered in order to focus on \gls{goto}'s initial follow-up, although an extension to the simulations could include the effects of the second updated skymap being processed and added to the database some hours after the event time.
 
-% ---------
-\subsubsection{Event visibility}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Event visibility}
+\label{sec:gw_visability}
+\begin{colsection}
 
 The simulations were designed to begin at the time of the event, and then simulate the next 24 hours of observations. This therefore guaranteed one night's worth of observing at each site, although split into two halves if the event occurred during the night. The time each event occurred was taken from the simulated skymaps, as the \citet{First2Years} simulations considered factors such as the duty cycle of each detector maintaining the time was important. Events were uniformly distributed in time of occurrence (at what time during the day), while in date they all occur over a two month period spanning either side of the 2010 September equinox, as shown in \aref{fig:f2y_times}. It is not clear why this range of dates was selected, although surrounding one of the equinoxes might have been an attempt to reduce bias towards observers from either hemisphere. Detailed analysis shows the events are not entirely equally distributed either side of the equinox (03:09 on 2010--09--23), with the first occurring 33 days before and the second 27 days after. Overall 64\% of events occur before the September equinox and 36\% after, this leads to a slight bias in terms of visibility towards the southern sites as they will experience longer nights before the equinox (in the southern winter).
 
 \begin{figure}[t]
-\begin{center}
-\includegraphics[width=\linewidth]{images/f2y_times.png}
-\end{center}
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/f2y_times.png}
+    \end{center}
 
-\caption[Date and time distribution of events in the First Two Years sample]{Date and time distribution of events in the First Two Years sample \citep{First2Years}. The night periods are shown for La Palma and Siding Spring. The equinox is shown by the red dashed line. \rtxt{TODO --- Inkscapify}
-}
-\label{fig:f2y_times}
+    \caption[Date and time distribution of events in the First Two Years sample]{
+        Date and time distribution of events in the First Two Years sample \citep{First2Years}. The night periods are shown for La Palma and Siding Spring. The equinox is shown by the red dashed line. \rtxt{TODO --- Inkscapify}
+    }\label{fig:f2y_times}
 \end{figure}
 
 Events were uniformly distributed across the sky, and are uniform in distance cubed. Although each source included distance information this was not taken into account in the simulations aside from determining the event strategy to use (all were well within the \SI{400}{\mega\parsec} definition for close neutron star events defined for GOTO-alert in \aref{sec:event_strategy}). Future simulations could use the distance to the event to estimate a light curve based on that of GW170817 and use it to predict how long each event would be visible for. As GW170817 only faded below \gls{goto}'s 20 mag limit after 2.5 days a 24 hour period is a reasonable amount of time to simulate.
@@ -172,105 +195,107 @@ Events were uniformly distributed across the sky, and are uniform in distance cu
 The first stage of the simulations was to determine if the event source was going to be physically visible from the considered sites in the 24 hours after the event occurred. In order to save time it decided to not spend time running full fake pilot simulations for events which would never be observed, and therefore the simulation for that event was aborted early if no tiles that the source was located within were going to be visible. Each event was classified into one of four categories:
 
 \begin{itemize}
-    \item \textbf{Not visible --- too close to the Sun}. These events had sources that were too close to the Sun within the 24 hour period to observe. This was defined as being within \SI{42}{\degree} of the Sun at any point over the 24 hours (\SI{12}{\degree} from the definition of night time plus \SI{30}{\degree} from the horizon limit). This region corresponded to an area of the sky that would not be visible from any site on Earth using these observing parameters. This is a fixed fraction of the sky: 5280 sq deg or 13\% of the celestial sphere\footnote{The area of a circle with radius $r$ on the surface of a sphere with radius $R$ is $2\pi R^2(1-\cos(r))$. The radius of the celestial sphere $R=\SI{360}{\degree}/2\pi \approx \SI{57.3}{\degree}$.}.
+    \item \textbf{Not visible --- too close to the Sun}. These events had sources that were too close to the Sun within the 24 hour period to observe. This was defined as being within \SI{42}{\degree} of the Sun at any point over the 24 hours (\SI{12}{\degree} from the definition of night time plus \SI{30}{\degree} from the horizon limit). This region corresponds to an area of the sky that is not visible from any site on Earth using these observing parameters. It is a fixed fraction of the sky: 5280 sq deg or 13\% of the celestial sphere\footnote{The area of a circle with radius $r$ on the surface of a sphere with radius $R$ is $2\pi R^2(1-\cos(r))$. The radius of the celestial sphere $R=\SI{360}{\degree}/2\pi \approx \SI{57.3}{\degree}$.}.
 
     \item \textbf{Not visible --- below declination limit}. These event sources fall within the region of the sky that are never visible form a given site due to the limited declination range. For example, using the standard \SI{30}{\degree} horizon limit over the course of a year sa telescope on La Palma (latitude \SI{28}{\degree} N) can see a band of sky between \SI{+88}{\degree} and \SI{-32}{\degree} declination. Sources outside of this region (that are not already excluded due to being too close to the Sun) would therefore never be observable from the given site, but could be observed from other locations. At the equator this band covers 87\% of the sky, at latitudes of $\pm \SI{30}{\degree}$ 75\% of the sky is visible, falling to just 25\% at the poles\footnote{The area of a segment on a sphere between angles $\theta$ and $\phi$ is $2 \pi R^2 (\cos(\theta)-\cos(\phi))$}.
 
     \item \textbf{Not visible --- event time}. These event sources are outside of the hard Sun limit and within the visible declination range, but are still not observable during the given 24 hour period as they have set by the time the night begins. Like sources below the declination limit, sources located within this region would be visible from other sites at different latitudes.
 
-    \item \textbf{Visible}. The source for this event falls outside of either of the above three areas, and therefore is nominally above the horizon limit at some point during night time within 24 hours after the event. The portion of the sky that is visible in one night from a given site depends on the latitude fo the site and the time of year.
+    \item \textbf{Visible}. The source for this event falls outside of either of the above three areas, and therefore is nominally above the horizon limit at some point during night time within 24 hours after the event. The portion of the sky that is visible in one night from a given site depends on the latitude of the site and the time of year.
 \end{itemize}
 
 \begin{table}[t]
-\begin{center}
-\begin{tabular}{c|ccc} % chktex 44
+    \begin{center}
+        \begin{tabular}{c|ccc} % chktex 44
+            \multirow{3}{*}{Night} & \multicolumn{3}{c}{Site} \\
+                      & La Palma             & Siding Spring  & Mt Kent \\
+                      & (\SI{28}{\degree} N) &  (\SI{31}{\degree} S) &  (\SI{27}{\degree} S) \\
+                      \midrule
+                      \\
+            March     & \textcolor{Green}{57.1\% visible}
+                      & \textcolor{Green}{56.3\% visible}
+                      & \textcolor{Green}{59.6\% visible}
+                      \\
+            equinox   & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{23.4\%} $\cdot$
+                                     \textcolor{Blue}{6.7\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{24.6\%} $\cdot$
+                                     \textcolor{Blue}{6.2\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{22.5\%} $\cdot$
+                                     \textcolor{Blue}{5.0\%})}
+                      \\[0.5cm]
+            June      & \textcolor{Green}{50.4\% visible}
+                      & \textcolor{Green}{61.9\% visible}
+                      & \textcolor{Green}{62.7\% visible}
+                      \\
+            solstice  & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{24.2\%} $\cdot$
+                                     \textcolor{Blue}{12.4\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{20.9\%} $\cdot$
+                                     \textcolor{Blue}{4.3\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{19.0\%} $\cdot$
+                                     \textcolor{Blue}{5.4\%})}
+                      \\[0.5cm]
+            September & \textcolor{Green}{57.0\% visible}
+                      & \textcolor{Green}{56.4\% visible}
+                      & \textcolor{Green}{57.7\% visible}
+                      \\
+            equinox   & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{23.4\%} $\cdot$
+                                     \textcolor{Blue}{6.7\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{24.5\%} $\cdot$
+                                     \textcolor{Blue}{6.2\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{22.4\%} $\cdot$
+                                     \textcolor{Blue}{7.0\%})}
+                      \\[0.5cm]
+            December  & \textcolor{Green}{62.5\% visible}
+                      & \textcolor{Green}{48.9\% visible}
+                      & \textcolor{Green}{51.0\% visible}
+                      \\
+            solstice  & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{19.7\%} $\cdot$
+                                     \textcolor{Blue}{4.8\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{25.8\%} $\cdot$
+                                     \textcolor{Blue}{12.4\%})}
+                      & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
+                                     \textcolor{NavyBlue}{23.2\%} $\cdot$
+                                     \textcolor{Blue}{12.9\%})}
+                      \\
+        \end{tabular}
+    \end{center}
 
-\multirow{3}{*}{Night} & \multicolumn{3}{c}{Site} \\
-          & La Palma             & Siding Spring  & Mt Kent \\
-          & (\SI{28}{\degree} N) &  (\SI{31}{\degree} S) &  (\SI{27}{\degree} S) \\
-          \midrule
-          \\
-March     & \textcolor{Green}{57.1\% visible}
-          & \textcolor{Green}{56.3\% visible}
-          & \textcolor{Green}{59.6\% visible}
-          \\
-equinox   & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{23.4\%} $\cdot$
-                         \textcolor{Blue}{6.7\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{24.6\%} $\cdot$
-                         \textcolor{Blue}{6.2\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{22.5\%} $\cdot$
-                         \textcolor{Blue}{5.0\%})}
-          \\[0.5cm]
-June      & \textcolor{Green}{50.4\% visible}
-          & \textcolor{Green}{61.9\% visible}
-          & \textcolor{Green}{62.7\% visible}
-          \\
-solstice  & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{24.2\%} $\cdot$
-                         \textcolor{Blue}{12.4\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{20.9\%} $\cdot$
-                         \textcolor{Blue}{4.3\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{19.0\%} $\cdot$
-                         \textcolor{Blue}{5.4\%})}
-          \\[0.5cm]
-September & \textcolor{Green}{57.0\% visible}
-          & \textcolor{Green}{56.4\% visible}
-          & \textcolor{Green}{57.7\% visible}
-          \\
-equinox   & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{23.4\%} $\cdot$
-                         \textcolor{Blue}{6.7\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{24.5\%} $\cdot$
-                         \textcolor{Blue}{6.2\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{22.4\%} $\cdot$
-                         \textcolor{Blue}{7.0\%})}
-          \\[0.5cm]
-December  & \textcolor{Green}{62.5\% visible}
-          & \textcolor{Green}{48.9\% visible}
-          & \textcolor{Green}{51.0\% visible}
-          \\
-solstice  & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{19.7\%} $\cdot$
-                         \textcolor{Blue}{4.8\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{25.8\%} $\cdot$
-                         \textcolor{Blue}{12.4\%})}
-          & {\scriptsize(\textcolor{BurntOrange}{12.9\%} $\cdot$
-                         \textcolor{NavyBlue}{23.2\%} $\cdot$
-                         \textcolor{Blue}{12.9\%})}
-          \\
-
-\end{tabular}
-\end{center}
-\caption[Sky visibility over a year]{Sky visibility over a year from the three different \gls{goto} sites. The upper value shows the fraction of the sky that is \textcolor{Green}{visible} within the night. The lower values break down the remaining fraction of the sky into the three non-visible categories (\textcolor{BurntOrange}{too close to the Sun}, \textcolor{NavyBlue}{below declination limit} and \textcolor{Blue}{event time}).}
-\label{tab:visibility}
+    \caption[Sky visibility over a year]{
+        Sky visibility over a year from the three different \gls{goto} sites. The upper value shows the fraction of the sky that is \textcolor{Green}{visible} within the night. The lower values break down the remaining fraction of the sky into the three non-visible categories (\textcolor{BurntOrange}{too close to the Sun}, \textcolor{NavyBlue}{below declination limit} and \textcolor{Blue}{event time}).
+    }\label{tab:visibility}
 \end{table}
 
 The region of the sky visible during the night for a given site change over the course of the year. \aref{tab:visibility} shows the fractions of the sky in each of the four categories above at the four solstices and equinoxes during the year. \aref{fig:visibility} plots the regions on the celestial sphere, in order to better visualise how they change depending on observing site and time of year.
 
 \begin{figure}[p]
-
-\begin{center}
-\includegraphics[width=\linewidth]{images/visibility.pdf}
-\end{center}
-
-\caption[Plotting sky visibility regions over a year]{Changing sky visibility regions over a year, plotted on the celestial sphere. The left column shows visibility for a theoretical observer located on the Earth's equator, the right-hand column shows visibility from the latitude of La Palma (\SI{28}{\degree} N). Visibility is plotted for four different nights, at the equinoxes and solstices. Regions in \textcolor{Green}{green} are visible during the night, with the visible portion of the sky at sunrise and sunset denoted by the white dashed lines. Regions in \textcolor{NavyBlue}{light blue} are out of the visible declination range of the site and so are never visible, regions in \textcolor{Blue}{dark blue} would be visible but not during the given night. Finally the \textcolor{BurntOrange}{yellow} area shows the \SI{42}{\degree} region around the Sun that is excluded from any site on Earth. The black line shows the ecliptic, with the black star marking the position of the Sun (the Sun does move slightly along this path during the night but it is not visible at this scale, the star marks the position at local midnight).
-}
-\label{fig:visibility}
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/visibility.pdf}
+    \end{center}
+    \caption[Plotting sky visibility regions over a year]{
+        Changing sky visibility regions over a year, plotted on the celestial sphere. The left column shows visibility for a theoretical observer located on the Earth's equator, the right-hand column shows visibility from the latitude of La Palma (\SI{28}{\degree} N). Visibility is plotted for four different nights, at the equinoxes and solstices. Regions in \textcolor{Green}{green} are visible during the night, with the visible portion of the sky at sunrise and sunset denoted by the white dashed lines. Regions in \textcolor{NavyBlue}{light blue} are out of the visible declination range of the site and so are never visible, regions in \textcolor{Blue}{dark blue} would be visible but not during the given night. Finally the \textcolor{BurntOrange}{yellow} area shows the \SI{42}{\degree} region around the Sun that is excluded from any site on Earth. The black line shows the ecliptic, with the black star marking the position of the Sun (the Sun does move slightly along this path during the night but it is not visible at this scale, the star marks the position at local midnight).
+    }\label{fig:visibility}
 \end{figure}
 
 \clearpage
 
-% ---------
+\end{colsection}
 
-\subsubsection{Selecting event tiles}
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Selecting event tiles}
+\label{sec:gw_selecting}
+\begin{colsection}
 
 Even if an event source is visible within the 24 hours from a given site (or combination of sites) there is one further criteria that would prevent observations of the source, that being whether the source is located within any of the tiles added to the database. The issue of determining which tiles to add to the database is detailed in \aref{sec:db_insert}, but is ultimately a matter of probability. If the telescope covered the 90\% confidence region for every event then it would be expected to observe 90\% of the event sources. Two particular examples are shown in \aref{fig:poor_selection}.
 
@@ -279,20 +304,23 @@ GOTO-alert uses the mean contour level method to select tiles as described in \a
 Future simulations should be run using the same sample of skymaps but altering the selection level, and comparing the number of selected sources to the number of tiles selected for each event. As discussed in \aref{sec:db_insert} there is a trade-off between adding two few tiles and missing the source and adding too many and increasing the time to cover them all. As additional telescopes are added the limit can also be relaxed further, as they will pass through observing the selected tiles faster.
 
 \begin{figure}[p]
-
-\begin{center}
-\includegraphics[width=\linewidth]{images/non_selected.pdf}
-\end{center}
-
-\caption[Examples of mock GW event sources falling outside of the selected tiles]{Two examples of mock GW event sources (marked by the blue star) falling outside of the selected tiles (blue highlighted tiles). In the upper case (trigger ID 13630) the tiles the source fell within (highlighted in red) were only just below the mean contour limit, while in the lower example (trigger ID 930001) the source was completely outside of the skymap probability regions.
-}
-\label{fig:poor_selection}
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/non_selected.pdf}
+    \end{center}
+    \caption[Examples of mock GW event sources falling outside of the selected tiles]{
+        Two examples of mock GW event sources (marked by the blue star) falling outside of the selected tiles (blue highlighted tiles). In the upper case (trigger ID 13630) the tiles the source fell within (highlighted in red) were only just below the mean contour limit, while in the lower example (trigger ID 930001) the source was completely outside of the skymap probability regions.
+    }\label{fig:poor_selection}
 \end{figure}
 
 \clearpage
 
-% ---------
-\subsubsection{Results of full pilot simulations}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Results of full pilot simulations}
+\label{sec:gw_sim_results}
+\begin{colsection}
 
 In order to simulate the response of different \gls{goto} systems each of the 1105 First Two Years skymaps were simulated using a script \code{sim\_skymaps.py}. The object of the simulations was to find how quickly the event source would be observed. For events that fell into one of the exceptions described above, either the source was not visible within 24 hours or the source tile was not selected to be added in to the database, the simulation was aborted early and the result recorded. The remaining events were classified as ``observable'', and for these the full fake pilot simulation was run for up to 24 hours after the time the event occurred. The fake pilot knew which tiles the event source fell within, and once any of those tiles were recorded as being observed the simulation ended. The time of the observation, as well as the position and time the tile was observable was recorded. Any events which were simulated for the full 24 hours without the source being observed were counted as failures and were classed as ``not observed''.
 
@@ -658,41 +686,48 @@ airmass
 \label{tab:sim_results}
 \end{table}
 
-% ---------
-\subsubsection{Analysis of simulaiton results}
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Analysis of simulation results}
+\label{sec:gw_sim_analysis}
+\begin{colsection}
 
 The results of the gravitational wave follow-up simulations support two conclusions: the addition of the southern site provides a huge benefit to the number of sources that can be observed, while adding further telescopes at a single site provides a much more modest benefit. \aref{fig:sim_results} summarises the simulated post-event delay times for different expected stages of \gls{goto} deployment.
 
 \begin{figure}[t]
-\begin{center}
-\includegraphics[width=\linewidth]{images/gw_sims/results.png}
-\end{center}
-\caption[Simulation delay time for different GOTO systems]{Post-event delay in observing gravitational wave event sources for six deployment stages of the GOTO system.
-}
-\label{fig:sim_results}
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/gw_sims/results.png}
+    \end{center}
+    \caption[Simulation delay time for different GOTO systems]{
+        Post-event delay in observing gravitational wave event sources for six deployment stages of the GOTO system.
+    }\label{fig:sim_results}
 \end{figure}
 
-The reason for the first conclusion is obvious: adding a site in the southern hemisphere opens up a large number of sources that are physically incapable of being observed from La Palma. The second comes about essentially because the efficiency of a single GOTO system is already very high. \aref{fig:sim_1n8} shows the 1N8 system already observes 93.1\% of all sources visible from La Palma, and a majority of those not observed were outside of the selected tiles (29 events) compared to just not being observed (12 events). The addition of the second GOTO-8 system as shown in \aref{fig:sim_2n8} moves just 4 events from not observed to observed, and can't make any changes to any of the other categories. The delay time before the source is observed does increase, but again it is only a limited benefit.
+The reason for the first conclusion is obvious: adding a site in the southern hemisphere opens up a large number of sources that are physically incapable of being observed from La Palma. The second comes about essentially because the efficiency of a single GOTO system is already very high. \aref{fig:sim_1n8} shows the 1N8 system already observes 93.1\% of all sources visible from La Palma, and a majority of those not observed were outside of the selected tiles (29 events) compared to just not being observed (12 events). The addition of the second GOTO-8 system as shown in \aref{fig:sim_2n8} moves just 4 events from ``not observed'' to ``observed'', and can't make any changes to any of the other categories. The delay time does decrease, but again only be a small amount.
 
-The above conclusions are perhaps most visible by comparing the results in \aref{tab:sim_results} for the 2N8 system to the 1N8+1S8 system, where there is a clear gain in the number of sources observed within the 24 hours (50.4\% to 74.8\%). Therefore, on these metrics alone, it would be far better to prioritise deploying a second mount in Australia before adding another on La Palma. There are numerous practical reasons why this is not the priority of the collaboration, and \aref{sec:allsky_sims} below better illustrates that the benefits of multiple telescopes at a single site are more visible in the benefit to the all-sky survey cadence.
+The above conclusions are perhaps most visible by comparing the results in \aref{tab:sim_results} for the 2N8 system to the 1N8+1S8 system, where there is a clear gain in the number of sources observed within the 24 hours (50.4\% to 74.8\%). Therefore, on these metrics alone, it would be far better to prioritise deploying a second mount in Australia before adding another on La Palma. There are numerous practical reasons why this is not the priority of the collaboration, and \aref{sec:allsky_sims} below illustrates that multiple telescopes at a single site are much more important to the all-sky survey cadence.
 
 Regarding the choice of southern site, there is very little difference between results from Siding Spring and from Mt Kent. Comparing the 2S8 and 2K8 simulation results in \aref{tab:sim_results} show Mt Kent has a small advantage in terms of number of events observed, but Siding Spring has a lower mean delay time. Overall the difference was deemed small enough to negate the difference between the two sites, and in most cases the ``S'' simulations are considered as representative of either site.
 
 Another factor to emerge from these simulations is the difference between two independent systems in either hemisphere vs one combined system that uses a common database. This emerged as important as it was desired to simulate the 2N8+1S4 system, as a plausible future stage of GOTO's deployment while the southern site is being commissioned similar to the current situation on La Palma. As mentioned previously the simulations require all telescopes to be observing using the same grid, as otherwise it is impossible at this time to map the common tiles between them. However it is possible to consider the two cases, 2N8 and 1S4, separately as independent simulations and then combine the results. For the event counts the logic is fairly straightforward: if an event is observed by either site it counts as being observed. To get the delay times it was necessary to consider which site observed it first, and then use the delay times and airmass of that observation. Using this method the results shown in \aref{fig:sim_2n8+1s4} were derived. The same method could also be used in situations where the two sites could be simulated together. For example comparing the 2N8+2S8 simulation to the combined result of the 2N8 and 2S8 simulations, given as 2N8+2S8* in \aref{tab:sim_results}. The exact same events fell into the same categories as shown in \aref{fig:sim_2n8+2s8}, and the only difference is a small hit to the delay time when the sites are not simulated together. This is due to some individual cases where the difference can be quite pronounced. For large skymaps with lots of tiles within the shared area of the sky visible form both sites (roughly $\pm$\SI{30}{\degree}) one site can complete observations of this region even if it can't see the source, meaning once the other telescope opens and starts observing a large area of the skymap that doesn't contain the source has already been excluded. This is only the case when both sites are observing using a shared database, as the second site needs to know what the first site has already observed.
 
-% ---------
-\subsubsection{Future simulation additions}
-
-Weather
-
-Other sites (SA, Chile?)
-
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
+\end{colsection}
+
+% ########################################
+
 \newpage
-\subsection{All-sky survey simulations}
+\section{All-sky survey simulations}
 \label{sec:allsky_sims}
+\begin{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 Simulate over a whole year.
