@@ -754,11 +754,51 @@ Due to the full simulations requiring a large time investment only a few of thes
 \label{sec:allsky_sim_existing}
 \begin{colsection}
 
-Run through the 150 days.
+The current phase of the \gls{goto} project began on the night of the 21st of February 2019. This was the first night observing fully robotically with the complete set of four unit telescopes, and marks the start of the ongoing all-sky survey. The first 5 months of observations neatly spans exactly 150 days, from the night beginning on the 21st of February to the night ending on the 21st of July, and this provides the benchmark to compare with simulations over the same period.
 
-Compare to the real results.
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/150.pdf}
+    \end{center}
 
-Reasons it's less: GW interfering, slew time etc needs adjusting.
+    \caption[Observations carried out in the first 150 days of the 4-UT all-sky survey]{
+        Observations carried out in the first 150 days of the 4-UT all-sky survey. The count of survey observations is shown in the upper plot, with the number of survey tiles observed each night shown in \textcolor{Blue}{blue}, and any extra observations (of gravitational wave events, GRB triggers or manually-inserted pointings) shown in \textcolor{BurntOrange}{orange}. The background \textcolor{Gray}{grey} bars show the number of tiles observed on the same nights by the 1N4 survey simulation. The lower ``barcode'' plot shows the periods when the conditions flags were recorded as bad, either due to weather (\textcolor{Red}{red}) or hardware errors (\textcolor{Purple}{purple}).
+    }\label{fig:150}
+\end{figure}
+
+A corresponding simulation was run with the ``1N4'' system over this time period. \aref{fig:150} shows the number of tiles observed each night by the real \gls{goto} on La Palma and the simulation. Over the entire period 16,146 on-grid observations were carried out by the telescope on La Palma, of which 85\% were survey pointings. In comparison the simulation produced 21,300 observations over the same period. The simulated observations be considered the idealised case, and the real observations differ from this target in three major ways:
+
+\begin{itemize}
+    \item Firstly the real system on La Palma is affected by periods of bad weather conditions, shown by the red and purple bars below the main plot. The conditions being bad stops observations and reduces the number carried out each night, and there was one bad period of weather in late-March/early-April where the dome couldn't open for over a week. The simulations don't include and weather factors, although future simulations could include the real weather profile over the same period. On some nights there will also be other reasons for observations to be paused that weren't reflected in the conditions logs, for example switching to manual mode to carry out calibration tests.
+    \item Secondly the real system had to deal with multiple distractions. The orange bars show the non survey observations, which take up a significant amount of time (15\% of all observations). Some nights are almost entirely orange, these correspond to LVC gravitational wave triggers with particularly large skymaps visible from La Palma such as S190425z and S190426c in late April, multiple events during May and S190720a just before the end of the period in mid-July. Other orange patches represent observations of smaller \gls{gw} skymaps, \gls{grb} triggers or other manually-inserted targets.
+    \item Finally there is still a visible offset between the number of real observations taken in nights with clear conditions and the number predicted by the simulations. This discrepancy will be due to the values used within the simulation for camera readout and slew time not matching up precisely with the actual times, and future simulations will be able to be calibrated more accurately against real data.
+\end{itemize}
+
+\aref{fig:allsky_coverage_real} shows the coverage map for the real observations in the first 150 days, while \aref{fig:allsky_coverage_1n4} shows the same for the 1N4 simulation. The physical sky coverage is very similar, the real observations cover 2,135 of the 2,913 GOTO-4 grid tiles at least once while the simulation covers 2,187. The reason for the discrepancy is that initially the real system used an altitude limit of \SI{35}{\degree} for the all-sky survey, which was lowered to \SI{30}{\degree} in May. This is visible in the bottom row of tiles in \aref{fig:allsky_coverage_real}. The simulations all assume a constant \SI{30}{\degree} limit.
+
+The major difference in the coverage between the real and simulated results is in the number of times each tile as observed. \aref{fig:allsky_coverage_real} shows the most a single tile was observed was nine times, meaning the database was on the 9th pass over the visible sky at the end of the period. \aref{fig:allsky_coverage_1n4} shows the simulated results reach the 13th pass. This is entirely due to the combination of factors above meaning that all-sky simulations overestimate the number of observations taken during the 150 days. The mean tile cadence of the real observations is $14\pm4$, compared to $10\pm2$ from the simulation. It is clear that future simulations need to take into account time lost to weather and other observations in order to accurately predict the output of the real system. Overall though, aside from the constant offset visible in \aref{fig:150}, the simulations do seem to provide a reasonable approximation of what \gls{goto} could observe in this idealised case.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/allsky_sims/real.png}
+    \end{center}
+
+    \caption[Real all-sky survey coverage map of observations over the first 150 days]{
+        Real all-sky survey coverage map of observations over the first 150 days, from 21st February to 21st July. Each tile is coloured according to the number of times it was observed.
+    }\label{fig:allsky_coverage_real}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/allsky_sims/150_1N4_lite.png}
+    \end{center}
+
+    \caption[1N4 all-sky survey simulation coverage map of observations over the first 150 days]{
+        1N4 all-sky survey simulation coverage map over the first 150 days.
+    }\label{fig:allsky_coverage_1n4}
+\end{figure}
+
+\clearpage
 
 \end{colsection}
 
