@@ -857,6 +857,8 @@ Again including Mt Kent gives effectively the same results as using Siding Sprin
 
 Unlike the gravitational wave simulations, the results of the survey simulations can be compared to the real observations carried out by the existing telescope on La Palma. The current phase of the \gls{goto} project began on the night of the 21st of February 2019. This was the first night observing fully robotically with the complete set of four unit telescopes, and marks the start of the ongoing all-sky survey. The first 5 months of observations spans exactly 150 days, from the night beginning on the 21st of February to the night ending on the 21st of July, and this provides the benchmark to compare with simulations over the same period.
 
+All the all-sky survey simulations described in the previous section were started on the 21st of February. \aref{fig:150} shows the number of tiles observed each night by the real \gls{goto} on La Palma and the corresponding 1N4 simulation, restricted to the first 150 days. Over the entire period 16,146 on-grid observations were carried out by the telescope on La Palma, of which 85\% were survey pointings. In comparison the simulation produced 21,300 observations over the same period.
+
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=\linewidth]{images/150.pdf}
@@ -867,11 +869,13 @@ Unlike the gravitational wave simulations, the results of the survey simulations
     }\label{fig:150}
 \end{figure}
 
-All the all-sky survey simulations described in the previous section were started on the 21st of February. \aref{fig:150} shows the number of tiles observed each night by the real \gls{goto} on La Palma and the corresponding 1N4 simulation, restricted to the first 150 days. Over the entire period 16,146 on-grid observations were carried out by the telescope on La Palma, of which 85\% were survey pointings. In comparison the simulation produced 21,300 observations over the same period. The simulated observations be considered the idealised case, and the real observations differ from this target in three major ways:
+The simulated observations can be considered the idealised case, and the real observations carried out differ from the target provided by the simulation in three ways:
 
 \begin{itemize}
-    \item Firstly the real system on La Palma is affected by periods of bad weather conditions, shown by the red and purple bars below the main plot. The conditions being bad stops observations and reduces the number carried out each night, and there was one bad period of weather in late-March/early-April where the dome couldn't open for over a week. The simulations don't include and weather factors, although future simulations could include the real weather profile over the same period. On some nights there will also be other reasons for observations to be paused that weren't reflected in the conditions logs, for example switching to manual mode to carry out calibration tests or on-site work.
-    \item Secondly the real system had to deal with multiple distractions. The orange bars show the non survey observations, which take up a significant amount of time (15\% of all observations). Some nights are almost entirely orange, these correspond to LVC gravitational wave triggers with particularly large skymaps visible from La Palma such as S190425z and S190426c in late April, multiple events during May and S190720a just before the end of the period in mid-July. Other orange patches represent observations of smaller \gls{gw} skymaps, \gls{grb} triggers or other manually-inserted targets.
+    \item Firstly the real system on La Palma is affected by periods of bad weather conditions, shown by the red and purple bars below the main plot. The conditions being bad stops observations and reduces the number carried out each night, notably there was one bad period of weather in late March and early April when the dome couldn't open for over a week. The simulations don't include any consideration of the weather factors, although the code exists to simulate periods of bad conditions and future simulations could include the real weather profile over the same period. On some nights there will also be other reasons for observations to be paused that weren't reflected in the conditions logs, for example switching to manual mode to carry out calibration tests or on-site work.
+
+    \item Secondly the real system had to deal with multiple distractions from observing the all-sky survey. The orange bars show the non-survey observations, which take up a significant amount of time (15\% of all observations). Some nights are almost entirely orange, these correspond to LVC gravitational wave triggers with particularly large skymaps visible from La Palma such as S190425z and S190426c in late April, multiple events during May and S190720a just before the end of the period in mid-July. Other orange patches represent observations of smaller \gls{gw} skymaps, \gls{grb} triggers or other manually-inserted targets. These likewise are nto considered in the simulations.
+
     \item Finally there is still a visible offset between the number of real observations taken in nights with clear conditions and the number predicted by the simulations. This discrepancy will be due to the values used within the simulation for camera readout and slew time not matching up precisely with the actual times, and future simulations will be able to be calibrated more accurately against real data.
 \end{itemize}
 
@@ -881,10 +885,11 @@ The major difference in the coverage between the real and simulated results is i
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[height=190pt]{images/survey_sims/150_real.png}
+        \includegraphics[height=190pt]{images/survey_sims/150_1N4_real.png}
     \end{center}
 
-    \caption[Real survey observations over 150 days]{Real all-sky survey coverage map of observations over the first 150 days, from 21st February to 21st July. Tiles are coloured by the number of times they were observed during that period, and tiles in white were not observed.
+    \caption[Real survey observations over 150 days]{
+        Real all-sky survey coverage map of observations over the first 150 days, from 21st February to 21st July. Tiles are coloured by the number of times they were observed during that period, and tiles in white were not observed.
     }\label{fig:survey_real_150}
 \end{figure}
 
@@ -904,15 +909,87 @@ The major difference in the coverage between the real and simulated results is i
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{An alternative survey method: meridian scanning}
+\subsection{An alternative, meridian limited survey method}
 \label{sec:survey_sim_meridian}
 \begin{colsection}
 
-Compare 150 days again.
+One of the problems with the current scheduling system for the all-sky survey is that it leads to observations being carried out at low airmasses. Due to how the scheduler ranks tiles, discussed in \aref{sec:scheduler}, when all the visible survey tiles have been observed the same number of times then the scheduler will chose between them based on the airmass tiebreak parameter (unlike tiles linked to skymaps all survey tiles have equal weights, so the tiebreaking algorithm examined in \aref{sec:scheduler_sims} is simplified). This results in the scheduler always selecting tiles as soon as they rise if they have been observed fewer times than any others currently visible, and this means survey tiles are often observed at low airmasses leading to poor data quality. In practice images with poor data quality will be rejected by the analysis pipelines anyway, so arguably it is wasting the telescope's time to observe them.
 
-Airmass is much better, but covers less of the sky.
+One possible method to fix this problem and improve the data quality  is to implement an cut-off when observing survey tiles. This would not be a limit based on altitude or airmass, because that would exclude tiles close to the site declination limits (such as near the north pole from La Palma) which could never rise above the limit. Instead observations could be limited based on distance from the meridian, which in practice is limiting target's right ascension compared to the current \gls{lst}. By limiting to the current \gls{lst} $\pm$ a certain limit this is defining a strip surrounding the meridian within which survey tiles are valid and outside of which they are not.
 
-Meridian would need to expand for more telescopes.
+In order to see the consequences of this method several simulations were carried out by modifying the all-sky survey `lite' script to limit based on the \gls{lst} at each step of the simulation. Each was run using the 1N4 system. The results of these simulations are given in \aref{tab:survey_sim_meridian}, for different meridian limits and the unlimited case for comparison. \aref{fig:survey_sim_airmass_365} shows the change in distribution of airmasses between the existing unlimited method and when restricting observations to a \SI{20}{\degree} wide strip ($\pm\SI{10}{\degree}$) at the meridian. \aref{fig:survey_sim_airmass_normal} shows the mean airmass each tile was observed in the first month using the existing method, while \aref{fig:survey_sim_airmass_meridian} shows the same using the limit.
+
+\begin{figure}[p]
+    \begin{center}
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[height=140pt]{images/survey_sims/365_1N4_lite_airmass3.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[height=140pt]{images/survey_sims/365_1N4_meridian_airmass3.png}
+        \end{minipage}
+    \end{center}
+
+    \caption[Airmass distribution over a year of observations]{
+        Airmass distribution over a year of observations with the 1N4 system, for the normal unlimited case (left) and the meridian $\pm\SI{10}{\degree}$ case (right).
+    }\label{fig:survey_sim_airmass_365}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.7\linewidth]{images/survey_sims/30_1N4_lite_airmass.png}
+    \end{center}
+
+    \caption[Mean observation airmasses for the 1N4 survey simulation]{
+        Mean observation airmasses for the first month of the 1N4 survey simulation with no meridian limit. The plot shows the mean airmass of observations of each tile.
+    }\label{fig:survey_sim_airmass_normal}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.7\linewidth]{images/survey_sims/30_1N4_meridian_airmass.png}
+    \end{center}
+
+    \caption[Mean observation airmasses using the meridian scanning method]{
+        Mean observation airmasses for the first month of a survey using the meridian scanning method, restricting observations to tiles within $\pm\SI{10}{\degree}$ of the meridian. With the limit the airmass of observations might be optimised, but the coverage of the survey is reduced.
+    }\label{fig:survey_sim_airmass_meridian}
+\end{figure}
+
+\clearpage
+
+\begin{table}[t]
+    \begin{center}
+    \begin{tabular}{c|cc|c|c|c} % chktex 44
+
+    Survey &
+    \multicolumn{2}{c|}{Fraction of sky observed} &
+    Mean cadence &
+    Mean observed
+    \\
+    method &
+    1st month &
+    whole year &
+    (days) &
+    airmass
+    \\
+    \midrule
+    Meridian \SI{\pm5}{\degree}  & 39.4\% & 76.5\% &  $6.2\pm0.5$ & $1.2\pm0.2$ \\
+    Meridian \SI{\pm10}{\degree} & 41.3\% & 76.5\% &  $6.6\pm0.7$ & $1.2\pm0.3$ \\
+    Meridian \SI{\pm30}{\degree} & 48.5\% & 76.5\% &  $7.9\pm0.8$ & $1.3\pm0.3$ \\
+    Meridian \SI{\pm45}{\degree} & 53.3\% & 76.5\% &  $8.8\pm0.9$ & $1.3\pm0.3$ \\
+    No limit                     & 57.0\% & 76.5\% & $10.1\pm1.8$ & $1.6\pm0.3$ \\
+
+    \end{tabular}
+    \end{center}
+    \caption[Comparison of survey simulations using a meridian limit]{
+        Comparison of 1N4 survey simulations using different meridian limits.
+    }\label{tab:survey_sim_meridian}
+\end{table}
+
+As intended by restricting observations to be closer to the meridian the mean airmass of the observations is decreased. This is shown by the mean airmasses in \aref{tab:survey_sim_meridian} but is even clearer in the distributions shown in \aref{fig:survey_sim_airmass_365}. The optimal value of the meridian limit will depend on several factors, including what the number of telescopes being used (as the instantaneous field of view increases the tiles within the strip will be observed faster, and so the meridian limit should be increased).
+
+A side effect of this method is that as the width of the meridian strip is decreased and the effective visible sky is reduced each tile within the strip is observed more often, and therefore the mean cadence decreases. However it also leads to fewer unique tiles being observed, as shown by the fraction of sky observed within a single month reducing from near to 60\% using the previous method to almost to 40\% with a strict limit. This has a knock-on effect on the effectiveness of the project, as while optimal data quality is a good intention recent observations of tiles are still required for the difference imaging process. In practice it might be necessary to have two concurrent surveys, one optimised for quality by being limited to the meridian strip and the other optimised for coverage with no such limit.
+
+Overall while more work is required these simulations are a good test to show that more advanced scheduling strategies could be developed in the future, in order to further optimise the \gls{gtecs} scheduling system for the all-sky survey.
 
 \end{colsection}
 
