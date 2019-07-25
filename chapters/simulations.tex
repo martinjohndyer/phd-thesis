@@ -13,7 +13,7 @@
 
 \begin{colsection}
 
-In this chapter I outline my work creating simulations of the GOTO observatory. Section~\ref{sec:scheduler_sims} describes early simulations carried out in order to find the optimal ``tie-break'' parameters for the \gls{gtecs} scheduler, Section~\ref{sec:multi_site} details how this simulation code could be modified to simulate multiple observing sites and Sections~\ref{sec:gw_sims} and~\ref{sec:allsky_sims} apply this to multi-site simulations of gravitational wave events and the all-sky survey respectively. All work described in this chapter is my own and has not been published before anywhere else.
+In this chapter I outline my work creating simulations of the GOTO observatory. Section~\ref{sec:scheduler_sims} describes early simulations carried out in order to find the optimal ``tie-break'' parameters for the \gls{gtecs} scheduler, Section~\ref{sec:multi_site} details how this simulation code could be modified to simulate multiple observing sites and Sections~\ref{sec:gw_sims} and~\ref{sec:survey_sims} apply this to multi-site simulations of gravitational wave events and the all-sky survey respectively. All work described in this chapter is my own and has not been published before anywhere else.
 
 \end{colsection}
 
@@ -318,7 +318,7 @@ Future simulations should be run using the same sample of skymaps but altering t
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Results of full pilot simulations}
+\subsection{Multi-telescope simulation results}
 \label{sec:gw_sim_results}
 \begin{colsection}
 
@@ -326,7 +326,7 @@ In order to simulate the response of different \gls{goto} systems each of the 11
 
 Simulations were carried out for a variety of possible \gls{goto} systems. Each simulation was assigned a code based on now many telescopes were located at each site. \textbf{1N4} refers to one GOTO-4 mount in La Palma, \textbf{2N8+1S4} is two GOTO-8 telescopes on La Palma and one GOTO-4 in Siding Spring, \textbf{2N8+1K4} would be the same but the southern telescope is at Mt Kent.
 
-Breakdowns of the results of simulations for six key scenarios are given in the following pages; Figures~\ref{fig:sim_1n4},~\ref{fig:sim_1n8}~\&~\ref{fig:sim_2n8} show the evolution of the site on La Palma while Figures~\ref{fig:sim_2n8+1s4},~\ref{fig:sim_2n8+2s8}~\&~\ref{fig:sim_2n8+2k8} show the addition of three different southern cases. A summary of key results from all simulations carried out are given in \aref{tab:sim_results}.
+Breakdowns of the results of simulations for six key scenarios are given in the following pages; Figures~\ref{fig:gw_sim_1n4},~\ref{fig:gw_sim_1n8}~\&~\ref{fig:gw_sim_2n8} show the evolution of the site on La Palma while Figures~\ref{fig:gw_sim_2n8+1s4},~\ref{fig:gw_sim_2n8+2s8}~\&~\ref{fig:gw_sim_2n8+2k8} show the addition of three different southern cases. A summary of key results from all simulations carried out are given in \aref{tab:gw_sim_results}.
 
 \newpage
 
@@ -375,264 +375,264 @@ Mean airmass         & 1.64 \\
 \end{minipage}
 
 \end{center}
-\caption[Simulation results: 1N4 system]{Simulation results for a 1N4 system. This is the prototype system with 4 unit telescopes on a single mount currently deployed on La Palma.
+\caption[GW simulation results: 1N4 system]{Simulation results for a 1N4 system. This is the prototype system with 4 unit telescopes on a single mount currently deployed on La Palma.
 }
-\label{fig:sim_1n4}
+\label{fig:gw_sim_1n4}
 \end{figure}
 
 % ---------
 
 \begin{figure}[p]
-\begin{center}
+    \begin{center}
 
-\begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-\includegraphics[width=\linewidth]{images/gw_sims/1n8_pie.png}
-\end{minipage}
-%
-\begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-\begin{tabular}{lrr}
-\multicolumn{3}{c}{\textbf{Simulation results}} \\
-\midrule
-%% PASTE BELOW \/\/
-\textcolor{Green}{Observed} & 553 & 50.0\% \\
-\textcolor{Red}{Not observed} & 12 & 1.1\% \\
-\textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
-\textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
-\textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
-\textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-\midrule
-Visible events & 594 &  53.8\% \\
-%% PASTE ABOVE /\/\
-\end{tabular}
-\end{minipage}
-%
-\begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-\begin{tabular}{lr}
-\multicolumn{2}{c}{\textbf{System: 1N8}} \\
-\midrule
-%% PASTE BELOW \/\/
-Observing efficiency & 93.1\% \\
-\midrule
-Mean delay after     & \multirow{2}{*}{10.06 h} \\
-event time           & \\
-Mean delay after     & \multirow{2}{*}{1.60 h} \\
-becoming visible     & \\
-\midrule
-Mean airmass         & 1.66 \\
-%% PASTE ABOVE /\/\
-& \\
-\end{tabular}
-\vfill
-\end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+    \includegraphics[width=\linewidth]{images/gw_sims/1n8_pie.png}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+    \begin{tabular}{lrr}
+    \multicolumn{3}{c}{\textbf{Simulation results}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    \textcolor{Green}{Observed} & 553 & 50.0\% \\
+    \textcolor{Red}{Not observed} & 12 & 1.1\% \\
+    \textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
+    \textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
+    \textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
+    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+    \midrule
+    Visible events & 594 &  53.8\% \\
+    %% PASTE ABOVE /\/\
+    \end{tabular}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+    \begin{tabular}{lr}
+    \multicolumn{2}{c}{\textbf{System: 1N8}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    Observing efficiency & 93.1\% \\
+    \midrule
+    Mean delay after     & \multirow{2}{*}{10.06 h} \\
+    event time           & \\
+    Mean delay after     & \multirow{2}{*}{1.60 h} \\
+    becoming visible     & \\
+    \midrule
+    Mean airmass         & 1.66 \\
+    %% PASTE ABOVE /\/\
+    & \\
+    \end{tabular}
+    \vfill
+    \end{minipage}
 
-\end{center}
-\caption[Simulation results: 1N8 system]{Simulation results for a 1N8 system. Note the distribution of events changes due to the different grid used, and the biggest gain in events observed is from the decreased number with sources not included in the selected tiles.
-}
-\label{fig:sim_1n8}
+    \end{center}
+    \caption[GW simulation results: 1N8 system]{
+        Simulation results for a 1N8 system. Note the distribution of events changes due to the different grid used, and the biggest gain in events observed is from the decreased number with sources not included in the selected tiles.
+    }\label{fig:gw_sim_1n8}
 \end{figure}
 
 % ---------
 
 \begin{figure}[p]
-\begin{center}
+    \begin{center}
 
-\begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-\includegraphics[width=\linewidth]{images/gw_sims/2n8_pie.png}
-\end{minipage}
-%
-\begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-\begin{tabular}{lrr}
-\multicolumn{3}{c}{\textbf{Simulation results}} \\
-\midrule
-%% PASTE BELOW \/\/
-\textcolor{Green}{Observed} & 557 & 50.4\% \\
-\textcolor{Red}{Not observed} & 8 & 0.7\% \\
-\textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
-\textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
-\textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
-\textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-\midrule
-Visible events & 594 &  53.8\% \\
-%% PASTE ABOVE /\/\
-\end{tabular}
-\end{minipage}
-%
-\begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-\begin{tabular}{lr}
-\multicolumn{2}{c}{\textbf{System: 2N8}} \\
-\midrule
-%% PASTE BELOW \/\/
-Observing efficiency & 93.8\% \\
-\midrule
-Mean delay after     & \multirow{2}{*}{9.89 h} \\
-event time           & \\
-Mean delay after     & \multirow{2}{*}{1.53 h} \\
-becoming visible     & \\
-\midrule
-Mean airmass         & 1.67 \\
-%% PASTE ABOVE /\/\
-& \\
-\end{tabular}
-\vfill
-\end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+    \includegraphics[width=\linewidth]{images/gw_sims/2n8_pie.png}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+    \begin{tabular}{lrr}
+    \multicolumn{3}{c}{\textbf{Simulation results}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    \textcolor{Green}{Observed} & 557 & 50.4\% \\
+    \textcolor{Red}{Not observed} & 8 & 0.7\% \\
+    \textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
+    \textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
+    \textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
+    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+    \midrule
+    Visible events & 594 &  53.8\% \\
+    %% PASTE ABOVE /\/\
+    \end{tabular}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+    \begin{tabular}{lr}
+    \multicolumn{2}{c}{\textbf{System: 2N8}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    Observing efficiency & 93.8\% \\
+    \midrule
+    Mean delay after     & \multirow{2}{*}{9.89 h} \\
+    event time           & \\
+    Mean delay after     & \multirow{2}{*}{1.53 h} \\
+    becoming visible     & \\
+    \midrule
+    Mean airmass         & 1.67 \\
+    %% PASTE ABOVE /\/\
+    & \\
+    \end{tabular}
+    \vfill
+    \end{minipage}
 
-\end{center}
-\caption[Simulation results: 2N8 system]{Simulation results for a 2N8 system. The improvements over the 1N8 system are a small gain in efficiency and decrease in mean delay time.
-}
-\label{fig:sim_2n8}
+    \end{center}
+    \caption[GW simulation results: 2N8 system]{
+        Simulation results for a 2N8 system. The improvements over the 1N8 system are a small gain in efficiency and decrease in mean delay time.
+    }\label{fig:gw_sim_2n8}
 \end{figure}
 
 % ---------
 
 \begin{figure}[p]
-\begin{center}
+    \begin{center}
 
-\begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-\includegraphics[width=\linewidth]{images/gw_sims/2n8&1s4_pie.png}
-\end{minipage}
-%
-\begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-\begin{tabular}{lrr}
-\multicolumn{3}{c}{\textbf{Simulation results}} \\
-\midrule
-%% PASTE BELOW \/\/
-\textcolor{Green}{Observed} & 822 & 74.4\% \\
-\textcolor{Red}{Not observed} & 17 & 1.5\% \\
-\textcolor{darkgray}{Not selected} & 71 & 6.4\% \\
-\textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
-\textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
-\textcolor{BurntOrange}{Too close to Sun} & 125 & 11.3\% \\
-\midrule
-Visible events & 910 &  82.4\% \\
-%% PASTE ABOVE /\/\
-\end{tabular}
-\end{minipage}
-%
-\begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-\begin{tabular}{lr}
-\multicolumn{2}{c}{\textbf{System: 2N8\+1S4}} \\
-\midrule
-%% PASTE BELOW \/\/
-Observing efficiency & 90.3\% \\
-\midrule
-Mean delay after     & \multirow{2}{*}{8.16 h} \\
-event time           & \\
-Mean delay after     & \multirow{2}{*}{1.66 h} \\
-becoming visible     & \\
-\midrule
-Mean airmass         & 1.63 \\
-%% PASTE ABOVE /\/\
-& \\
-\end{tabular}
-\vfill
-\end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+    \includegraphics[width=\linewidth]{images/gw_sims/2n8&1s4_pie.png}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+    \begin{tabular}{lrr}
+    \multicolumn{3}{c}{\textbf{Simulation results}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    \textcolor{Green}{Observed} & 822 & 74.4\% \\
+    \textcolor{Red}{Not observed} & 17 & 1.5\% \\
+    \textcolor{darkgray}{Not selected} & 71 & 6.4\% \\
+    \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
+    \textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
+    \textcolor{BurntOrange}{Too close to Sun} & 125 & 11.3\% \\
+    \midrule
+    Visible events & 910 &  82.4\% \\
+    %% PASTE ABOVE /\/\
+    \end{tabular}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+    \begin{tabular}{lr}
+    \multicolumn{2}{c}{\textbf{System: 2N8\+1S4}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    Observing efficiency & 90.3\% \\
+    \midrule
+    Mean delay after     & \multirow{2}{*}{8.16 h} \\
+    event time           & \\
+    Mean delay after     & \multirow{2}{*}{1.66 h} \\
+    becoming visible     & \\
+    \midrule
+    Mean airmass         & 1.63 \\
+    %% PASTE ABOVE /\/\
+    & \\
+    \end{tabular}
+    \vfill
+    \end{minipage}
 
-\end{center}
-\caption[Simulation results: 2N8+1S4 system]{Simulation results for a 2N8+1S4 system. Note as these sites use different grids they were simulated independently and the results combined.
-}
-\label{fig:sim_2n8+1s4}
+    \end{center}
+    \caption[GW simulation results: 2N8+1S4 system]{
+        Simulation results for a 2N8+1S4 system. Note as these sites use different grids they were simulated independently and the results combined.
+    }\label{fig:gw_sim_2n8+1s4}
 \end{figure}
 
 % ---------
 
 \begin{figure}[p]
-\begin{center}
+    \begin{center}
 
-\begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-\includegraphics[width=\linewidth]{images/gw_sims/2n8+2s8_pie.png}
-\end{minipage}
-%
-\begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-\begin{tabular}{lrr}
-\multicolumn{3}{c}{\textbf{Simulation results}} \\
-\midrule
-%% PASTE BELOW \/\/
-\textcolor{Green}{Observed} & 839 & 75.9\% \\
-\textcolor{Red}{Not observed} & 8 & 0.7\% \\
-\textcolor{darkgray}{Not selected} & 47 & 4.3\% \\
-\textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
-\textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
-\textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-\midrule
-Visible events & 894 &  80.9\% \\
-%% PASTE ABOVE /\/\
-\end{tabular}
-\end{minipage}
-%
-\begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-\begin{tabular}{lr}
-\multicolumn{2}{c}{\textbf{System: 2N8+2S8}} \\
-\midrule
-%% PASTE BELOW \/\/
-Observing efficiency & 93.8\% \\
-\midrule
-Mean delay after     & \multirow{2}{*}{7.69 h} \\
-event time           & \\
-Mean delay after     & \multirow{2}{*}{1.57 h} \\
-becoming visible     & \\
-\midrule
-Mean airmass         & 1.64 \\
-%% PASTE ABOVE /\/\
-& \\
-\end{tabular}
-\vfill
-\end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+    \includegraphics[width=\linewidth]{images/gw_sims/2n8+2s8_pie.png}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+    \begin{tabular}{lrr}
+    \multicolumn{3}{c}{\textbf{Simulation results}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    \textcolor{Green}{Observed} & 839 & 75.9\% \\
+    \textcolor{Red}{Not observed} & 8 & 0.7\% \\
+    \textcolor{darkgray}{Not selected} & 47 & 4.3\% \\
+    \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
+    \textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
+    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+    \midrule
+    Visible events & 894 &  80.9\% \\
+    %% PASTE ABOVE /\/\
+    \end{tabular}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+    \begin{tabular}{lr}
+    \multicolumn{2}{c}{\textbf{System: 2N8+2S8}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    Observing efficiency & 93.8\% \\
+    \midrule
+    Mean delay after     & \multirow{2}{*}{7.69 h} \\
+    event time           & \\
+    Mean delay after     & \multirow{2}{*}{1.57 h} \\
+    becoming visible     & \\
+    \midrule
+    Mean airmass         & 1.64 \\
+    %% PASTE ABOVE /\/\
+    & \\
+    \end{tabular}
+    \vfill
+    \end{minipage}
 
-\end{center}
-\caption[Simulation results: 2N8+2S8 system]{Simulation results for a 2N8+2S8 system. The largest gain over the northern hemisphere-only system is the removal of the declination limited events, meaning more event sources are visible. The efficiency remains the same but there is a notable improvement in the post-event delay times.
-}
-\label{fig:sim_2n8+2s8}
+    \end{center}
+    \caption[GW simulation results: 2N8+2S8 system]{
+        Simulation results for a 2N8+2S8 system. The largest gain over the northern hemisphere-only system is the removal of the declination limited events, meaning more event sources are visible. The efficiency remains the same but there is a notable improvement in the post-event delay times.
+    }\label{fig:gw_sim_2n8+2s8}
 \end{figure}
 
 % ---------
 
 \begin{figure}[p]
-\begin{center}
+    \begin{center}
 
-\begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-\includegraphics[width=\linewidth]{images/gw_sims/2n8+2k8_pie.png}
-\end{minipage}
-%
-\begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-\begin{tabular}{lrr}
-\multicolumn{3}{c}{\textbf{Simulation results}} \\
-\midrule
-%% PASTE BELOW \/\/
-\textcolor{Green}{Observed} & 828 & 74.9\% \\
-\textcolor{Red}{Not observed} & 11 & 1.0\% \\
-\textcolor{darkgray}{Not selected} & 48 & 4.3\% \\
-\textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
-\textcolor{Blue}{Bad event time} & 77 & 7.0\% \\
-\textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-\midrule
-Visible events & 887 &  80.3\% \\
-%% PASTE ABOVE /\/\
-\end{tabular}
-\end{minipage}
-%
-\begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-\begin{tabular}{lr}
-\multicolumn{2}{c}{\textbf{System: 2N8+2K8}} \\
-\midrule
-%% PASTE BELOW \/\/
-Observing efficiency & 93.3\% \\
-\midrule
-Mean delay after     & \multirow{2}{*}{7.69 h} \\
-event time           & \\
-Mean delay after     & \multirow{2}{*}{1.55 h} \\
-becoming visible     & \\
-\midrule
-Mean airmass         & 1.64 \\
-%% PASTE ABOVE /\/\
-& \\
-\end{tabular}
-\vfill
-\end{minipage}
+    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+    \includegraphics[width=\linewidth]{images/gw_sims/2n8+2k8_pie.png}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+    \begin{tabular}{lrr}
+    \multicolumn{3}{c}{\textbf{Simulation results}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    \textcolor{Green}{Observed} & 828 & 74.9\% \\
+    \textcolor{Red}{Not observed} & 11 & 1.0\% \\
+    \textcolor{darkgray}{Not selected} & 48 & 4.3\% \\
+    \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
+    \textcolor{Blue}{Bad event time} & 77 & 7.0\% \\
+    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+    \midrule
+    Visible events & 887 &  80.3\% \\
+    %% PASTE ABOVE /\/\
+    \end{tabular}
+    \end{minipage}
+    %
+    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+    \begin{tabular}{lr}
+    \multicolumn{2}{c}{\textbf{System: 2N8+2K8}} \\
+    \midrule
+    %% PASTE BELOW \/\/
+    Observing efficiency & 93.3\% \\
+    \midrule
+    Mean delay after     & \multirow{2}{*}{7.69 h} \\
+    event time           & \\
+    Mean delay after     & \multirow{2}{*}{1.55 h} \\
+    becoming visible     & \\
+    \midrule
+    Mean airmass         & 1.64 \\
+    %% PASTE ABOVE /\/\
+    & \\
+    \end{tabular}
+    \vfill
+    \end{minipage}
 
-\end{center}
-\caption[Simulation results: 2N8+2K8 system]{Simulation results for a 2N8+2K8 system. Note it makes very little difference to the results if the southern site is at Siding Spring or Mt Kent, compared to the huge gain from either compared to just La Palma.
-}
-\label{fig:sim_2n8+2k8}
+    \end{center}
+    \caption[GW simulation results: 2N8+2K8 system]{
+        Simulation results for a 2N8+2K8 system. Note it makes very little difference to the results if the southern site is at Siding Spring or Mt Kent, compared to the huge gain from either compared to just La Palma.
+    }\label{fig:gw_sim_2n8+2k8}
 \end{figure}
 
 % ---------
@@ -640,51 +640,52 @@ Mean airmass         & 1.64 \\
 \clearpage
 
 \begin{table}[t]
-\begin{center}
-\begin{tabular}{c|cccc|c|cc|c} % chktex 44
+    \begin{center}
+    \begin{tabular}{c|cccc|c|cc|c} % chktex 44
 
-\multirow{2}{*}{System} &
-\multicolumn{4}{c|}{Observed within \ldots} &
-Observing &
-\multicolumn{2}{c|}{Mean delay time \ldots} &
-Mean
-\\
-&
-1h &
-6h &
-12h &
-24h &
-efficiency&
-event &
-visible &
-airmass
-\\
-\midrule
-1N4 & 5.9\% & 16.5\% & 26.2\% & 48.1\% & 89.7\% & 9.96 h & 1.58 h & 1.64 \\
-1N8 & 6.8\% & 16.9\% & 27.1\% & 50.0\% & 93.1\% & 10.06 h & 1.60 h & 1.66 \\
-2N8 & 7.2\% & 17.3\% & 27.9\% & 50.4\% & 93.8\% & 9.89 h & 1.53 h & 1.67 \\
-&&&&&&&&\\
-1S4 & 8.8\% & 18.8\% & 27.9\% & 47.1\% & 87.7\% & 9.39 h & 1.64 h & 1.61 \\
-1S8 & 10.3\% & 20.6\% & 31.1\% & 49.2\% & 91.0\% & 8.81 h & 1.52 h & 1.63 \\
-2S8 & 11.1\% & 21.2\% & 31.8\% & 49.9\% & 92.1\% & 8.67 h & 1.47 h & 1.64 \\
-&&&&&&&&\\
-2K8 & 10.8\% & 20.9\% & 31.3\% & 50.9\% & 92.3\% & 9.02 h & 1.46 h & 1.65 \\
-&&&&&&&&\\
-2N8+1S8 & 17.6\% & 37.2\% & 52.9\% & 75.2\% & 93.0\% & 7.75 h & 1.59 h & 1.64 \\
-2N8+2S8 & 18.4\% & 37.7\% & 53.8\% & 75.9\% & 93.8\% & 7.69 h & 1.57 h & 1.64 \\
-&&&&&&&&\\
-2N8+2K8 & 18.2\% & 38.0\% & 52.8\% & 74.9\% & 93.3\% & 7.69 h & 1.55 h & 1.64 \\
-&&&&&&&&\\
-1N8+1S8* & 17.1\% & 36.8\% & 52.5\% & 74.8\% & 92.5\% & 7.82 h & 1.63 h & 1.63 \\
-2N8+1S4* & 16.0\% & 35.7\% & 50.3\% & 74.4\% & 90.3\% & 8.16 h & 1.66 h & 1.63 \\
-2N8+1S8* & 17.6\% & 37.2\% & 53.0\% & 75.2\% & 93.0\% & 7.76 h & 1.60 h & 1.64 \\
-2N8+2S8* & 18.4\% & 37.7\% & 53.7\% & 75.9\% & 93.8\% & 7.70 h & 1.58 h & 1.64 \\
+    \multirow{2}{*}{System} &
+    \multicolumn{4}{c|}{Observed within \ldots} &
+    Observing &
+    \multicolumn{2}{c|}{Mean delay time \ldots} &
+    Mean
+    \\
+    &
+    1h &
+    6h &
+    12h &
+    24h &
+    efficiency&
+    event &
+    visible &
+    airmass
+    \\
+    \midrule
+    1N4 & 5.9\% & 16.5\% & 26.2\% & 48.1\% & 89.7\% & 9.96 h & 1.58 h & 1.64 \\
+    1N8 & 6.8\% & 16.9\% & 27.1\% & 50.0\% & 93.1\% & 10.06 h & 1.60 h & 1.66 \\
+    2N8 & 7.2\% & 17.3\% & 27.9\% & 50.4\% & 93.8\% & 9.89 h & 1.53 h & 1.67 \\
+    &&&&&&&&\\
+    1S4 & 8.8\% & 18.8\% & 27.9\% & 47.1\% & 87.7\% & 9.39 h & 1.64 h & 1.61 \\
+    1S8 & 10.3\% & 20.6\% & 31.1\% & 49.2\% & 91.0\% & 8.81 h & 1.52 h & 1.63 \\
+    2S8 & 11.1\% & 21.2\% & 31.8\% & 49.9\% & 92.1\% & 8.67 h & 1.47 h & 1.64 \\
+    &&&&&&&&\\
+    2K8 & 10.8\% & 20.9\% & 31.3\% & 50.9\% & 92.3\% & 9.02 h & 1.46 h & 1.65 \\
+    &&&&&&&&\\
+    1N8+1S8 & 17.1\% & 36.8\% & 52.5\% & 74.8\% & 92.5\% & 7.82 h & 1.63 h & 1.63 \\
+    2N8+1S8 & 17.6\% & 37.2\% & 52.9\% & 75.2\% & 93.0\% & 7.75 h & 1.59 h & 1.64 \\
+    2N8+2S8 & 18.4\% & 37.7\% & 53.8\% & 75.9\% & 93.8\% & 7.69 h & 1.57 h & 1.64 \\
+    &&&&&&&&\\
+    2N8+2K8 & 18.2\% & 38.0\% & 52.8\% & 74.9\% & 93.3\% & 7.69 h & 1.55 h & 1.64 \\
+    &&&&&&&&\\
+    2N8+1S4* & 16.0\% & 35.7\% & 50.3\% & 74.4\% & 90.3\% & 8.16 h & 1.66 h & 1.63 \\
+    2N8+1S8* & 17.6\% & 37.2\% & 53.0\% & 75.2\% & 93.0\% & 7.76 h & 1.60 h & 1.64 \\
+    2N8+2S8* & 18.4\% & 37.7\% & 53.7\% & 75.9\% & 93.8\% & 7.70 h & 1.58 h & 1.64 \\
 
-\end{tabular}
-\end{center}
-\caption[Simulation results summary]{Summary of simulation results. Systems marked with an asterisk (*) were not simulated together, but were instead combined from the individual simulations for each site.}
-\label{tab:sim_results}
-\end{table}
+    \end{tabular}
+    \end{center}
+    \caption[GW simulation results summary table]{
+        Summary of simulation results. Systems marked with an asterisk (*) were not simulated together, but were instead combined from the individual simulations for each site.
+    }\label{tab:gw_sim_results}
+    \end{table}
 
 \end{colsection}
 
@@ -694,7 +695,7 @@ airmass
 \label{sec:gw_sim_analysis}
 \begin{colsection}
 
-The results of the gravitational wave follow-up simulations support two conclusions: the addition of the southern site provides a huge benefit to the number of sources that can be observed, while adding further telescopes at a single site provides a much more modest benefit. \aref{fig:sim_results} summarises the simulated post-event delay times for different expected stages of \gls{goto} deployment.
+The results of the gravitational wave follow-up simulations support two conclusions: the addition of the southern site provides a huge benefit to the number of sources that can be observed, while adding further telescopes at a single site provides a much more modest benefit. \aref{fig:gw_sim_results} summarises the simulated post-event delay times for different expected stages of \gls{goto} deployment.
 
 \begin{figure}[t]
     \begin{center}
@@ -702,16 +703,16 @@ The results of the gravitational wave follow-up simulations support two conclusi
     \end{center}
     \caption[Simulation delay time for different GOTO systems]{
         Post-event delay in observing gravitational wave event sources for six deployment stages of the GOTO system.
-    }\label{fig:sim_results}
+    }\label{fig:gw_sim_results}
 \end{figure}
 
-The reason for the first conclusion is obvious: adding a site in the southern hemisphere opens up a large number of sources that are physically incapable of being observed from La Palma. The second comes about essentially because the efficiency of a single GOTO system is already very high. \aref{fig:sim_1n8} shows the 1N8 system already observes 93.1\% of all sources visible from La Palma, and a majority of those not observed were outside of the selected tiles (29 events) compared to just not being observed (12 events). The addition of the second GOTO-8 system as shown in \aref{fig:sim_2n8} moves just 4 events from ``not observed'' to ``observed'', and can't make any changes to any of the other categories. The delay time does decrease, but again only be a small amount.
+The reason for the first conclusion is obvious: adding a site in the southern hemisphere opens up a large number of sources that are physically incapable of being observed from La Palma. The second comes about essentially because the efficiency of a single GOTO system is already very high. \aref{fig:gw_sim_1n8} shows the 1N8 system already observes 93.1\% of all sources visible from La Palma, and a majority of those not observed were outside of the selected tiles (29 events) compared to just not being observed (12 events). The addition of the second GOTO-8 system as shown in \aref{fig:gw_sim_2n8} moves just 4 events from ``not observed'' to ``observed'', and can't make any changes to any of the other categories. The delay time does decrease, but again only be a small amount.
 
-The above conclusions are perhaps most visible by comparing the results in \aref{tab:sim_results} for the 2N8 system to the 1N8+1S8 system, where there is a clear gain in the number of sources observed within the 24 hours (50.4\% to 74.8\%). Therefore, on these metrics alone, it would be far better to prioritise deploying a second mount in Australia before adding another on La Palma. There are numerous practical reasons why this is not the priority of the collaboration, and \aref{sec:allsky_sims} below illustrates that multiple telescopes at a single site are much more important to the all-sky survey cadence.
+The above conclusions are perhaps most visible by comparing the results in \aref{tab:gw_sim_results} for the 2N8 system to the 1N8+1S8 system, where there is a clear gain in the number of sources observed within the 24 hours (50.4\% to 74.8\%). Therefore, on these metrics alone, it would be far better to prioritise deploying a second mount in Australia before adding another on La Palma. There are numerous practical reasons why this is not the priority of the collaboration, and \aref{sec:survey_sims} below illustrates that multiple telescopes at a single site are much more important to the all-sky survey cadence.
 
-Regarding the choice of southern site, there is very little difference between results from Siding Spring and from Mt Kent. Comparing the 2S8 and 2K8 simulation results in \aref{tab:sim_results} show Mt Kent has a small advantage in terms of number of events observed, but Siding Spring has a lower mean delay time. Overall the difference was deemed small enough to negate the difference between the two sites, and in most cases the ``S'' simulations are considered as representative of either site.
+Regarding the choice of southern site, there is very little difference between results from Siding Spring and from Mt Kent. Comparing the 2S8 and 2K8 simulation results in \aref{tab:gw_sim_results} show Mt Kent has a small advantage in terms of number of events observed, but Siding Spring has a lower mean delay time. Overall the difference was deemed small enough to negate the difference between the two sites, and in most cases the ``S'' simulations are considered as representative of either site.
 
-Another factor to emerge from these simulations is the difference between two independent systems in either hemisphere vs one combined system that uses a common database. This emerged as important as it was desired to simulate the 2N8+1S4 system, as a plausible future stage of GOTO's deployment while the southern site is being commissioned similar to the current situation on La Palma. As mentioned previously the simulations require all telescopes to be observing using the same grid, as otherwise it is impossible at this time to map the common tiles between them. However it is possible to consider the two cases, 2N8 and 1S4, separately as independent simulations and then combine the results. For the event counts the logic is fairly straightforward: if an event is observed by either site it counts as being observed. To get the delay times it was necessary to consider which site observed it first, and then use the delay times and airmass of that observation. Using this method the results shown in \aref{fig:sim_2n8+1s4} were derived. The same method could also be used in situations where the two sites could be simulated together. For example comparing the 2N8+2S8 simulation to the combined result of the 2N8 and 2S8 simulations, given as 2N8+2S8* in \aref{tab:sim_results}. The exact same events fell into the same categories as shown in \aref{fig:sim_2n8+2s8}, and the only difference is a small hit to the delay time when the sites are not simulated together. This is due to some individual cases where the difference can be quite pronounced. For large skymaps with lots of tiles within the shared area of the sky visible form both sites (roughly $\pm$\SI{30}{\degree}) one site can complete observations of this region even if it can't see the source, meaning once the other telescope opens and starts observing a large area of the skymap that doesn't contain the source has already been excluded. This is only the case when both sites are observing using a shared database, as the second site needs to know what the first site has already observed.
+Another factor to emerge from these simulations is the difference between two independent systems in either hemisphere vs one combined system that uses a common database. This emerged as important as it was desired to simulate the 2N8+1S4 system, as a plausible future stage of GOTO's deployment while the southern site is being commissioned similar to the current situation on La Palma. As mentioned previously the simulations require all telescopes to be observing using the same grid, as otherwise it is impossible at this time to map the common tiles between them. However it is possible to consider the two cases, 2N8 and 1S4, separately as independent simulations and then combine the results. For the event counts the logic is fairly straightforward: if an event is observed by either site it counts as being observed. To get the delay times it was necessary to consider which site observed it first, and then use the delay times and airmass of that observation. Using this method the results shown in \aref{fig:gw_sim_2n8+1s4} were derived. The same method could also be used in situations where the two sites could be simulated together. For example comparing the 2N8+2S8 simulation to the combined result of the 2N8 and 2S8 simulations, given as 2N8+2S8* in \aref{tab:gw_sim_results}. The exact same events fell into the same categories as shown in \aref{fig:gw_sim_2n8+2s8}, and the only difference is a small hit to the delay time when the sites are not simulated together. This is due to some individual cases where the difference can be quite pronounced. For large skymaps with lots of tiles within the shared area of the sky visible form both sites (roughly $\pm$\SI{30}{\degree}) one site can complete observations of this region even if it can't see the source, meaning once the other telescope opens and starts observing a large area of the skymap that doesn't contain the source has already been excluded. This is only the case when both sites are observing using a shared database, as the second site needs to know what the first site has already observed.
 
 \end{colsection}
 
@@ -723,7 +724,7 @@ Another factor to emerge from these simulations is the difference between two in
 
 \newpage
 \section{All-sky survey simulations}
-\label{sec:allsky_sims}
+\label{sec:survey_sims}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -737,24 +738,124 @@ Almost as critical to the \gls{goto} project as the gravitational wave follow-up
 % ~~~~~~~~~~~~~~~~~~~~
 
 \subsection{Simulating survey observations}
-\label{sec:allsky_sim_methods}
+\label{sec:survey_sim_methods}
 \begin{colsection}
 
 Simulating the all-sky survey is more straightforward than the gravitational wave simulations, as there isn't the added complication of processing the \gls{lvc} skymap or checking the visibility of the source coordinates. Instead the only set up that is needed is to fill the observing database with the all-sky survey Mpointings and run the fake pilot calling the usual scheduler commands.
 
 The only drawback to this method is the time taken. Unlike the gravitational wave simulations the simulation can't be finished early if the source is not visible, or stopped once the source has been observed. Instead the fake pilot needs to simulate the full 24 hours of observations, for however many days the simulation is run for. The same simplifications detailed in \aref{sec:multi_site} still apply, so each loop still skips approximately 4 minutes of simulation time until the observation has completed. A full simulation of a year of observations including both sites (therefore observing for approximately to 20 hours each day) requires 1.1 million steps, and with each simulation loop taking approximately 2 seconds (the scheduler check takes the majority of the time) the full simulation takes approximately 60 hours. This compares to at most 16 hours for the multi-site gravitational wave simulations.
 
-Due to the full simulations requiring a large time investment only a few of these were carried out. Instead, a simplified version of the simulation code was developed that could produce the same results much faster. This `lite' script did away with the scheduler and database code, and instead at each step just finds the highest altitude tiles that have been observed the least times and takes them as the return pointings from the scheduler. This is a great simplification of the scheduling functions, however the result is effectively the same and the same simulations are 15--20 times faster to run. Therefore a majority of the simulations discussed in this section use this much faster `lite' script. The other benefit of this method was making it much easier to modify the ``scheduling'' function to test different methods, as discussed in \aref{sec:allsky_sim_meridian}, without yet needing the rewrite the actual \gls{gtecs} scheduler.
+Due to the full simulations requiring a large time investment only a few of these were carried out. Instead, a simplified version of the simulation code was developed that could produce the same results much faster. This `lite' script did away with the scheduler and database code, and instead at each step just finds the highest altitude tiles that have been observed the least times and takes them as the return pointings from the scheduler. This is a massive simplification of the scheduling functions, however the result is effectively the same and the same simulations are 15--20 times faster to run. Therefore a majority of the simulations discussed in this section use this much faster `lite' script. The other benefit of this method was making it much easier to modify the ``scheduling'' function to test different methods, as discussed in \aref{sec:survey_sim_meridian}, without yet needing the rewrite the actual \gls{gtecs} scheduler.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Comparison of simulations to the first 150 days}
-\label{sec:allsky_sim_existing}
+\subsection{Multi-telescope simulation results}
+\label{sec:survey_sim_results}
 \begin{colsection}
 
-The current phase of the \gls{goto} project began on the night of the 21st of February 2019. This was the first night observing fully robotically with the complete set of four unit telescopes, and marks the start of the ongoing all-sky survey. The first 5 months of observations neatly spans exactly 150 days, from the night beginning on the 21st of February to the night ending on the 21st of July, and this provides the benchmark to compare with simulations over the same period.
+Simulations were carried out for different combinations of \gls{goto} telescopes and sites, similar to the gravitational wave response simulations detailed in \aref{sec:gw_sims}. Simulations were run for 365 days starting semi-arbitrarily on the 21st of February 2019, which was the date the current ongoing survey started on La Palma.
+
+Fewer simulations were carried out when compared to the gravitational wave simulations. This is partially due to them taking longer to run, but also as unlike the GW simulations there is no practical way or reason to combine the results from different sites. It is also not possible to combine the results of telescopes observing on different grids: unlike the GW simulations, where the grid was the means to observe the event source location, for these simulations the grid is the target being observed and the results are directly tied to the grid used.
+
+The results of each simulation are given in \aref{tab:survey_sim_results}. \aref{fig:survey_sim_1n4} shows the final tile coverage map for the 1N4 system, in which each tile in the GOTO-4 grid is coloured by the number of times it was observed. \aref{fig:survey_sim_2n8+2s8} gives the same for the final 2N8+2S8 system.
+
+% ---------
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[height=190pt]{images/survey_sims/365_1N4_lite.png}
+    \end{center}
+    \caption[All-sky survey simulation results: 1N4 system]{
+        All-sky survey simulation coverage map for a 1N4 system, as currently deployed on La Palma. Tiles are coloured by the number of times they were observed over the 365 simulated nights. Tiles in white are those not visible from the northern site.
+    }\label{fig:survey_sim_1n4}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[height=190pt]{images/survey_sims/365_2N8+2S8_lite.png}
+    \end{center}
+    \caption[All-sky survey simulation results: 2N8+2S8 system]{
+        All-sky survey simulation coverage map for a 2N8+2S8 system, the ultimate design goal of the \gls{goto} collaboration. Note the colour scale has changed from \aref{fig:survey_sim_1n4}, the grid has changed to the GOTO-8 tiles and the region which was previously not visible from just the north has been filled in.
+    }\label{fig:survey_sim_2n8+2s8}
+\end{figure}
+
+% ---------
+
+\clearpage
+
+\begin{table}[t]
+    \begin{center}
+    \begin{tabular}{c|cc|c|c|c} % chktex 44
+
+    \multirow{2}{*}{System} &
+    \multicolumn{2}{c|}{Fraction of sky observed} &
+    No.\ times &
+    Mean cadence &
+    Mean observed
+    \\
+    &
+    each night &
+    over 1y &
+    tiles observed &
+    (days) &
+    airmass
+    \\
+    \midrule
+    1N4* & 4.3\%--6.5\% & 76.5\% & 26 (13--28) & $10.0\pm1.8$ & $1.6\pm0.4$ \\
+    &&&&&\\
+    1N4 & 4.3\%--6.4\% & 76.5\% & 26 (13--28) & $10.1\pm1.8$ & $1.6\pm0.3$ \\
+    1N8 & 9.5\%--14.0\% & 74.2\% & 58 (34--62) & $4.6\pm0.7$ & $1.6\pm0.4$ \\
+    2N8 & 19.0\%--28.1\% & 74.2\% & 117 (68--123) & $2.3\pm0.4$ & $1.6\pm0.4$ \\
+    &&&&&\\
+    1N8+1S8 & 23.2\%--24.1\% & 99.9\% & 87 (67--91) & $3.4\pm0.3$ & $1.5\pm0.4$ \\
+    2N8+1S8 & 33.0\%--37.3\% & 99.9\% & 130 (98--138) & $2.3\pm0.2$ & $1.6\pm0.4$ \\
+    2N8+2S8 & 46.3\%--48.1\% & 99.9\% & 173 (134--180) & $1.7\pm0.1$ & $1.5\pm0.4$ \\
+    &&&&&\\
+    2N8+2K8 & 46.8\%--48.3\% & 99.8\% & 174 (134--181) & $1.7\pm0.1$ & $1.6\pm0.4$ \\
+
+    \end{tabular}
+    \end{center}
+    \caption[All-sky survey simulation results summary table]{
+        Summary of all-sky survey simulation results. The first 1N4 simulation, marked with an asterisk (*), was the only one carried out using the full scheduler and database system. All the other simulations used the `lite' script. The fraction of the sky observed each night is given as a range over the course of a year, and the number of times each tile was observed gives the mean of all tiles as well as the the minimum and maximum.
+    }\label{tab:survey_sim_results}
+\end{table}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Analysis of simulation results}
+\label{sec:survey_sim_analysis}
+\begin{colsection}
+
+The results of the all-sky survey simulations show, as expected, that the greatest benefit to the survey cadence comes from increasing the number of telescopes at each site. \aref{fig:survey_sim_results} plots the change in mean cadence and fraction of the sky observed each night for different expected stages of \gls{goto} deployment.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/survey_sims/results.png}
+    \end{center}
+    \caption[Tile cadence and nightly sky observation for different GOTO systems]{
+        Mean tile cadence and fraction of the sky observed each night for five deployment stages of the GOTO system. Error bars on the cadence show the standard deviation for all the tiles observed across the sky, while error bars on the observed fraction show the minimum and maximum nightly observed fraction arising from differing night lengths throughout the year.
+    }\label{fig:survey_sim_results}
+\end{figure}
+
+The improvement in tile observation cadence roughly follows the expected trend that doubling the instantaneous field of view would double the number of observations carried out in one night and therefore halve the time between observations. With the current GOTO-4 system (1N4) the simulations predict approximately 10 days between tile observations, reduced to approximately 5 days with the upgrade to the full GOTO-8 system (1N8) and then halving again to 2.5 days with the addition of the second GOTO-8 telescope (2N8). Adding a single GOTO-8 telescope in Australia will leave the tile cadence effectively unchanged, which is simply a matter of geometry. Adding a site in Australia increases the total amount of the sky that is visible over the year from roughly 75\% to practically 100\% (from La Palma the single tile over the north pole is not visible, as discussed in \aref{sec:algorithms}), an increase of one third in the area needed to cover. Adding just one GOTO-8 telescope in the south corresponds to a one third increase in the amount of sky that can be observed during the year, and therefore the efficiency (and cadence) remains the same. Adding the second telescope in Australia correspondingly decreases the further, although as this is only increasing the overall instantaneous field of view by one third the cadence is only reduced by a third from 2.5 to 1.66 days.
+
+The increase of the fraction of the sky observed each night is fairly linear, from both the increased instantaneous field of view and the opening of the lower declination sky with the southern site. The variation over the course of the year comes from seasonal variation in the length of then night, it increases as more telescopes are added in the north and is reduced to effectively nil with equal number of telescopes in both hemispheres.
+
+Again including Mt Kent gives effectively the same results as using Siding Spring, which is why the `S' simulations were taken as representative of either southern site. The only slight notable difference is the reduction in the amount of sky visible over the whole year, as like La Palma Mt Kent can't see the single tile over the southern pole.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Comparison of simulations to real observations}
+\label{sec:survey_sim_150}
+\begin{colsection}
+
+Unlike the gravitational wave simulations, the results of the survey simulations can be compared to the real observations carried out by the existing telescope on La Palma. The current phase of the \gls{goto} project began on the night of the 21st of February 2019. This was the first night observing fully robotically with the complete set of four unit telescopes, and marks the start of the ongoing all-sky survey. The first 5 months of observations spans exactly 150 days, from the night beginning on the 21st of February to the night ending on the 21st of July, and this provides the benchmark to compare with simulations over the same period.
 
 \begin{figure}[t]
     \begin{center}
@@ -766,36 +867,35 @@ The current phase of the \gls{goto} project began on the night of the 21st of Fe
     }\label{fig:150}
 \end{figure}
 
-A corresponding simulation was run with the ``1N4'' system over this time period. \aref{fig:150} shows the number of tiles observed each night by the real \gls{goto} on La Palma and the simulation. Over the entire period 16,146 on-grid observations were carried out by the telescope on La Palma, of which 85\% were survey pointings. In comparison the simulation produced 21,300 observations over the same period. The simulated observations be considered the idealised case, and the real observations differ from this target in three major ways:
+All the all-sky survey simulations described in the previous section were started on the 21st of February. \aref{fig:150} shows the number of tiles observed each night by the real \gls{goto} on La Palma and the corresponding 1N4 simulation, restricted to the first 150 days. Over the entire period 16,146 on-grid observations were carried out by the telescope on La Palma, of which 85\% were survey pointings. In comparison the simulation produced 21,300 observations over the same period. The simulated observations be considered the idealised case, and the real observations differ from this target in three major ways:
 
 \begin{itemize}
-    \item Firstly the real system on La Palma is affected by periods of bad weather conditions, shown by the red and purple bars below the main plot. The conditions being bad stops observations and reduces the number carried out each night, and there was one bad period of weather in late-March/early-April where the dome couldn't open for over a week. The simulations don't include and weather factors, although future simulations could include the real weather profile over the same period. On some nights there will also be other reasons for observations to be paused that weren't reflected in the conditions logs, for example switching to manual mode to carry out calibration tests.
+    \item Firstly the real system on La Palma is affected by periods of bad weather conditions, shown by the red and purple bars below the main plot. The conditions being bad stops observations and reduces the number carried out each night, and there was one bad period of weather in late-March/early-April where the dome couldn't open for over a week. The simulations don't include and weather factors, although future simulations could include the real weather profile over the same period. On some nights there will also be other reasons for observations to be paused that weren't reflected in the conditions logs, for example switching to manual mode to carry out calibration tests or on-site work.
     \item Secondly the real system had to deal with multiple distractions. The orange bars show the non survey observations, which take up a significant amount of time (15\% of all observations). Some nights are almost entirely orange, these correspond to LVC gravitational wave triggers with particularly large skymaps visible from La Palma such as S190425z and S190426c in late April, multiple events during May and S190720a just before the end of the period in mid-July. Other orange patches represent observations of smaller \gls{gw} skymaps, \gls{grb} triggers or other manually-inserted targets.
     \item Finally there is still a visible offset between the number of real observations taken in nights with clear conditions and the number predicted by the simulations. This discrepancy will be due to the values used within the simulation for camera readout and slew time not matching up precisely with the actual times, and future simulations will be able to be calibrated more accurately against real data.
 \end{itemize}
 
-\aref{fig:allsky_coverage_real} shows the coverage map for the real observations in the first 150 days, while \aref{fig:allsky_coverage_1n4} shows the same for the 1N4 simulation. The physical sky coverage is very similar, the real observations cover 2,135 of the 2,913 GOTO-4 grid tiles at least once while the simulation covers 2,187. The reason for the discrepancy is that initially the real system used an altitude limit of \SI{35}{\degree} for the all-sky survey, which was lowered to \SI{30}{\degree} in May. This is visible in the bottom row of tiles in \aref{fig:allsky_coverage_real}. The simulations all assume a constant \SI{30}{\degree} limit.
+\aref{fig:survey_real_150} shows the coverage map for the real observations in the first 150 days, while \aref{fig:survey_sim_1n4_150} shows the same for the 1N4 simulation. The physical sky coverage is very similar, the real observations cover 2,135 of the 2,913 GOTO-4 grid tiles at least once while the simulation covers 2,187. The reason for the discrepancy is that initially the real system used an altitude limit of \SI{35}{\degree} for the all-sky survey, which was lowered to \SI{30}{\degree} in May. This is visible in the bottom row of tiles in \aref{fig:survey_real_150}. The simulations all assume a constant \SI{30}{\degree} limit.
 
-The major difference in the coverage between the real and simulated results is in the number of times each tile as observed. \aref{fig:allsky_coverage_real} shows the most a single tile was observed was nine times, meaning the database was on the 9th pass over the visible sky at the end of the period. \aref{fig:allsky_coverage_1n4} shows the simulated results reach the 13th pass. This is entirely due to the combination of factors above meaning that all-sky simulations overestimate the number of observations taken during the 150 days. The mean tile cadence of the real observations is $14\pm4$, compared to $10\pm2$ from the simulation. It is clear that future simulations need to take into account time lost to weather and other observations in order to accurately predict the output of the real system. Overall though, aside from the constant offset visible in \aref{fig:150}, the simulations do seem to provide a reasonable approximation of what \gls{goto} could observe in this idealised case.
+The major difference in the coverage between the real and simulated results is in the number of times each tile as observed. \aref{fig:survey_real_150} shows the most a single tile was observed was nine times, meaning the database was on the 9th pass over the visible sky at the end of the period. \aref{fig:survey_sim_1n4_150} shows the simulated results reach the 13th pass. This is entirely due to the combination of factors above meaning that all-sky simulations overestimate the number of observations taken during the 150 days. The mean tile cadence of the real observations is $14\pm4$, compared to $10\pm2$ from the simulation. It is clear that future simulations need to take into account time lost to weather and other observations in order to accurately predict the output of the real system. Overall though, aside from the constant offset visible in \aref{fig:150}, the simulations do seem to provide a reasonable approximation of what \gls{goto} could observe in this idealised case.
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/allsky_sims/real.png}
+        \includegraphics[height=190pt]{images/survey_sims/150_real.png}
     \end{center}
 
-    \caption[Real all-sky survey coverage map of observations over the first 150 days]{
-        Real all-sky survey coverage map of observations over the first 150 days, from 21st February to 21st July. Each tile is coloured according to the number of times it was observed.
-    }\label{fig:allsky_coverage_real}
+    \caption[Real survey observations over 150 days]{Real all-sky survey coverage map of observations over the first 150 days, from 21st February to 21st July. Tiles are coloured by the number of times they were observed during that period, and tiles in white were not observed.
+    }\label{fig:survey_real_150}
 \end{figure}
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/allsky_sims/150_1N4_lite.png}
+        \includegraphics[height=190pt]{images/survey_sims/150_1N4_lite.png}
     \end{center}
 
-    \caption[1N4 all-sky survey simulation coverage map of observations over the first 150 days]{
-        1N4 all-sky survey simulation coverage map over the first 150 days.
-    }\label{fig:allsky_coverage_1n4}
+    \caption[1N4 survey simulation observations over 150 days]{
+        1N4 all-sky survey simulation coverage map over the first 150 days. Compare to \aref{fig:survey_sim_1n4} for the coverage over the entire 1-year simulation.
+    }\label{fig:survey_sim_1n4_150}
 \end{figure}
 
 \clearpage
@@ -804,22 +904,8 @@ The major difference in the coverage between the real and simulated results is i
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Observing the all-sky survey with multiple telescopes}
-\label{sec:allsky_sim_multiscope}
-\begin{colsection}
-
-Mainly looking at cadence as number of telescopes increases.
-
-Need to do the full year? Maybe just the key months?
-
-Results: cadence decreases with more telescopes. Shock!
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
 \subsection{An alternative survey method: meridian scanning}
-\label{sec:allsky_sim_meridian}
+\label{sec:survey_sim_meridian}
 \begin{colsection}
 
 Compare 150 days again.
