@@ -48,7 +48,73 @@ In order to better quantify the benefit multiple telescopes and sites will provi
 
 \begin{colsection}
 
-The scheduler is described in in Section~\ref{sec:scheduler}.
+The first simulations of the \gls{gtecs} system were carried out in 2016 when the target scheduling code was being written. The scheduler needs a way to distinguish equally-ranked pointings, as described below, and the choice of weightings for this `tiebreaker' needed to be decided on. Therefore a series of simulations were carried out in order to find which weightings gave the best performance when observing gravitational wave skymaps.
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{The scheduler tiebreaker}
+\label{sec:scheduler_tiebreaker}
+\begin{colsection}
+
+The workings of the scheduler functions are described in detail in Section~\ref{sec:scheduler}. The scheduler weights pointings in the current queue by several parameters: the assigned rank, the number of times it was previously observed, if it is a \gls{too} or not. But in practice most of the time the queue will contain a large number of pointings where these values are all the same. For example, when a new gravitational wave event is processed by the sentinel GOTO-alert adds in a large number of tiles from the skymap (see \aref{sec:db_insert}). On the next scheduler check the queue will be populated by a large number of pointings each with the same rank and \gls{too} flag and having never been observed. Likewise when observing the all-sky survey the queue will be filled with tiles that have all been observed the same number of times. This is why the scheduler then needs a further way to distinguish pointings, which is known as the tiebreaker.
+
+The pre-existing \gls{pt5m} scheduling code (see \aref{sec:pt5m}) used only a single parameter to decide between equally-ranked pointings: the airmass each target would be at at the midpoint of the observation (The scheduler constraints are applied at both the start and stop times of the observation, to ensure that the target remains visible throughout (unlike GOTO, which only observes targets for a few minutes, \gls{pt5m} often observes the same target for several hours at a time). For the tiebreaker the airmass is calculated at the midpoint of this observation period.). This works well to prioritise getting the best data quality, assuming the two targets are otherwise identical.
+
+% ---------
+\subsubsection{Tile weighting}
+
+When adapting the \gls{pt5m} system for GOTO it was clear there was the need for an additional parameter in the scheduling functions, to encode the relative weights of a set of pointings. All the pointings added from a gravitational wave skymap (or similar event such as a gamma-ray burst) will have the same rank, but they will have different weights from the amount of skymap probability they each contain. It makes sense that, of all the tiles from a given event, the ones with higher probability should be the ones to prioritise and observe first. However unlike an integer parameter such as the rank or the \gls{too} flag the tile weights cover a wide range and often there will only be a small amount of difference between the values for neighbouring tiles. Prioritising a tile that contains 2.71\% of the skymap over another that contains 2.70\% in all cases is not the best strategy, especially if the latter is close to zenith while the former is very low down. Observing a high-airmass tile over a low-airmass one for a gain of only 0.01\% probability is a poor choice, especially if the former tile is currently rising and will be at a better altitude in a few hours. For these reasons it was decided that the skymap probability weighting should be considered at the same level as the airmass tiebreaker, meaning a lower-airmass tile with only a slightly power probability will be prioritised over one further from zenith. This should only be true up to a reasonable limit however, in the case of two tiles where one contains 95\% and the other 3\% it should always be true that observing the latter is the better choice, even if it has a slightly worse airmass.
+
+It should be noted that probability is not necessarily the only way for a group of tiles to be weighted. In the past GOTO has carried out more focused surveys: in the galaxy survey for example tiles were weighted by the total flux of all galaxies within each tile, which is not strictly a probability. As this section deals exclusively with gravitational wave skymaps the term `probability' rather than `weight' will be used to describe the relative measure of each tile to the others added from the same event, even though the latter is used in the \gls{gtecs} scheduler code. This also avoids confusion when later discussing the relative weighting between probability and airmass in the tiebreaker ratio.
+
+% ---------
+\subsubsection{Airmass vs time-to-set}
+
+Airmass is usually modelled using a plane-parallel atmosphere as $X=\sec{z}$, where $X$ is airmass and $z$ is the zenith angle ($z=90-h$ where $h$ is the altitude of the target). This makes it by definition an entirely symmetric parameter around the zenith, with no consideration for is a target is rising or setting. This was identified as a problem for similar reasons given above. Consider the scenario where there are two tiles with equal or similar contained probabilities, but one is \SI{5}{\degree} above the horizon in the west and the other is \SI{10}{\degree} above the horizon in in the east. The one in the west will be setting while the one in the east wil lbe rising, and that naturally means that the system should prioritise the one in the west as unless it is observed quickly it will pass below the horizon and no longer be visible for the remainder of the night.
+
+In order to correct this problem, it was required that the airmass value be replaced by a different parameter that will prioritise targets that are about to set. This new parameter is called `time-to-set', and is simply the time until the target sets below the defined horizon. The units are arbitrary, but as it will repeat with a period of 24 hours the time-to-set value is normalised between 0 and 1 so that 0 is when the target is at the horizon, 0.5 is when it is 12 hours from setting and 1 is 24 hours from setting (and there is therefore a degeneracy at 0 and 1). \aref{fig:airmass_tts} shows how altitude, airmass and time-to-set are defined for any non-circumpolar target. Circumpolar targets are ones that never set below the horizon, and therefore the time-to-set is an illogical value. However as from La Palma the North Pole is just below the \SI{30}{\degree} horizon limit this is not a concern for GOTO and is therefore not considered.
+
+Purely replacing airmass with the time-to-set would not produce good results, as the telescope would be prioritised to constantly be observing the western horizon. As with probability, a weighted combination of the two would be best in order to take both parameters into account. However exactly how to combine the two is not a simple problem. \aref{fig:at_ratio} shows how combining airmass and time-to-set, both normalised to between 0 and 1, produces a new distribution. As the ratio the two are combined with is increased in favour of time-to-set the peak of the distribution shifts to favour targets that are setting over those at the zenith.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/airmass-tts.png}
+    \end{center}
+    \caption[Defining airmass and time-to-set for a given target]{
+        Defining airmass and time-to-set for a particular, arbitrary target. The altitude of the target is shown in \textcolor{Blue}{blue} over the course of one day and the corresponding airmass in \textcolor{BurntOrange}{orange}. The time-to-set is shown in \textcolor{Green}{green}, decreasing to 0 at the time the target passes below the \SI{30}{\degree} horizon (shown in red) and then resetting to the maximum. The grey regions are the times when the target is below the horizon.
+    }\label{fig:airmass_tts}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/at_ratio.png}
+    \end{center}
+    \caption[Combining airmass and time-to-set with different ratios]{
+        Combining airmass and time-to-set with different ratios. Increasing the relative weighting towards time-to-set shifts the peak of the overall distribution to the right.
+    }\label{fig:at_ratio}
+\end{figure}
+
+\clearpage
+
+% ---------
+\subsubsection{The PAT ratio}
+
+The previous sections detail three different parameters to be considered as part of the scheduler tiebreak parameter: the contained tile probability ($P$), the airmass ($X$) and time-to-set ($T$). Combining these parameters will provide a single, weighted value for each tile at the scheduler check time as
+
+\begin{equation}
+    \text{Tiebreak parameter} = \frac{p}{p+a+t} P + \frac{a}{p+a+t} X + \frac{t}{p+a+t} T.
+    \label{eq:pat}
+\end{equation}
+
+where $p$, $a$ and $t$ are the weightings for the probability, airmass and time-to-set respectively. These are written as $p$:$a$:$t$, called the PAT ratio.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+
+
+
 
 Why do we need a tie-break? (described previously a bit, but worth reminding)
 
@@ -61,9 +127,18 @@ The different tie-break parameters:
 
 Simulations
 
-Output: plot airmass vs time observed
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/scheduler_sim.png}
+    \end{center}
+    \caption[Airmass vs fraction of skymap covered for different scheduler weightings]{
+        Mean observation airmass vs fraction of the event skymap covered for different scheduler weightings. The full coloured lines join simulations with common airmass:time-to-set ratios, while the dashed lines join simulations with the same probability weighting. The region formed by the 1:0:0, 0:1:0 and 0:0:1 points contains all possible ratios between the three parameters.
+    }\label{fig:scheduler_sim_results}
+\end{figure}
 
 \rtxt{still work to do}
+
+\clearpage
 
 \end{colsection}
 
