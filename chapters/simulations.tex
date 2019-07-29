@@ -50,6 +50,8 @@ In order to better quantify the benefit multiple telescopes and sites will provi
 
 The first simulations of the \gls{gtecs} system were carried out in 2016 when the target scheduling code was being written. The scheduler needs a way to distinguish equally-ranked pointings, as described below, and the choice of weightings for this `tiebreaker' needed to be decided on. Therefore a series of simulations were carried out in order to find which weightings gave the best performance when observing gravitational wave skymaps.
 
+\end{colsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
 
 \subsection{The scheduler tiebreaker}
@@ -106,43 +108,56 @@ The previous sections detail three different parameters to be considered as part
     \label{eq:pat}
 \end{equation}
 
-where $p$, $a$ and $t$ are the weightings for the probability, airmass and time-to-set respectively. These are written as $p$:$a$:$t$, called the PAT ratio.
+where $p$, $a$ and $t$ are the weightings for the probability, airmass and time-to-set respectively. Together these are called the PAT ratio, and are usually written in the form $p$:$a$:$t$. So a PAT ratio of 1:1:1 means all three are weighted equally, where as 2:1:1 means probability is weighted twice as much as airmass or time-to-set.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 
+\subsection{Simulation results}
+\label{sec:scheduler_sim_results}
+\begin{colsection}
 
+A series of simulations were carried out in order to find optimal values for the PAT ratio, and see how the telescope response changes depending on the ratio used. The fake pilot and scheduler code \rtxt{described in the previous section} was run with a selection of skymaps from the LIGO First Two Years project \citep{First2Years}. The PAT ratio was set within the scheduler code, and the skymaps were then added to the observation database and the fake pilot ran through one night of simulated observations for each.
 
-
-Why do we need a tie-break? (described previously a bit, but worth reminding)
-
-The different tie-break parameters:
-\begin{itemize}
-    \item Airmass, obviously
-    \item Weight, also obviously
-    \item Time to set / time valid?
-\end{itemize}
-
-Simulations
+Two primary metrics were used to judge the effectiveness of the simulations. The first was the fraction of the skymap probability covered during the simulated night of observations, the total contained probability within all the tiles that were observed. The second was the mean airmass of each tile when observed. The average of these two values across all the skymaps for the different PAT ratios simulated are plotted in \aref{fig:scheduler_sim_results}.
 
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=\linewidth]{images/scheduler_sim.png}
     \end{center}
     \caption[Airmass vs fraction of skymap covered for different scheduler weightings]{
-        Mean observation airmass vs fraction of the event skymap covered for different scheduler weightings. The full coloured lines join simulations with common airmass:time-to-set ratios, while the dashed lines join simulations with the same probability weighting. The region formed by the 1:0:0, 0:1:0 and 0:0:1 points contains all possible ratios between the three parameters.
+        Mean observation airmass vs fraction of the event skymap covered for different scheduler weightings. The full coloured lines join simulations with common airmass:time-to-set ratios, while the dashed lines show some simulations with the same probability weighting relative to the other two parameters. The region formed by the 1:0:0, 0:1:0 and 0:0:1 points contains all possible ratios. The optimal target is low airmass and high fraction covered, corresponding to the top-right of these axes.
     }\label{fig:scheduler_sim_results}
 \end{figure}
-
-\rtxt{still work to do}
-
-\clearpage
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Analysis of simulation results}
+\label{sec:scheduler_sim_analysis}
+\begin{colsection}
+
+\aref{fig:scheduler_sim_results} shows several clear trends that emerge from modifying the PAT ratios. Increasing the relative weighting of probability compared to the other two parameters (from 0:X:X, 1:X:X, 5:X:X up to 1:0:0 which is effectively $\infty$:X:X) increases the mean probability covered by up to a third, from 24\% to 33\%. This however typically comes at a cost to the mean airmass of the observations.
+
+Changing the relative ratios of airmass to time-to-set (from Y:1:0 to Y:0:1) shows an unexpected result. It is true the observed airmasses would be lower as less weight is put on the airmass parameter, however it was intended that introducing the time-to-set parameter would compensate by catching more setting tiles that would be missed purely looking around the zenith. This is the result if probability is not included as a factor, as seen by the 0:0:1--1:0:0 line at the bottom of \aref{fig:scheduler_sim_results}. When only airmass is considered (in the 0:1:0 case) the results produce the best average airmass per observation but the worse skymap coverage. On the other hand only considering time-to-set (0:0:1) results in worse airmasses but better coverage. But having the explicit probability parameter counteracts this trend. Looking at the 10:0:1--10:1:0 line changing the airmass to time-to-set ratio only reduces the mean airmass with no corresponding gain in probability covered. In the case where the airmass parameter is ignored (the green time-to-set line on the left of \aref{fig:scheduler_sim_results}) the inclusion of the time-to-set value is just actively suppressing the amount of probability observed while making almost no difference to the mean airmass.
+
+Based on these results, it is clear that the optimal solution is to ignore time-to-set and chose a tiebreaker PAT ratio of around 5:1:0 to 10:1:0, to get the best airmass while limiting the coverage lost. The final scheduler has been operating with a ratio of 10:1:0, as compared to 5:1:0 this gives a gain in mean airmass only 0.02 airmass while increasing the skymap coverage by 1\%. This is only restricting the options to the ratios simulated however, and further simulations would be able to explore the parameter space further.
+
+The results plotted in \aref{fig:scheduler_sim_results} show remarkably smooth trends. The three coloured lines with fixed airmass:time-to-set ratio all curve and trend towards the 1:0:0 point, aside from the slightly outlying 50:0:1 point. The points with a fixed probability weight compared to the other two also seem to form straight lines, as shown by the 10:0:1 to 10:1:0 line. As only the relative values of the ratios matter the 20:1:1 point could be considered to be 10:\sfrac{1}{2}:\sfrac{1}{2}, likewise 40:1:3 and 40:3:1 are 10:\sfrac{1}{4}:\sfrac{3}{4} and 10:\sfrac{3}{4}:\sfrac{1}{4}, from this it is clear that any ratio of airmass to time-to-set will fall on this line if together they add to one-tenth of the probability weighting. However the results shown in \aref{fig:scheduler_sim_results} should be taken with caution. As each point is based on the means over multiply skymaps there is a wide range of variation, and in fact were error bars be included they would have spread off the page in both axes.
+
+The conclusions on the PAT ratio made above are not unreasonable if all that is needed is a one-size-fits-all set of values that are hard-coded into the scheduler, as the current system does use. However when these simulations are revisited it would be a good idea to look more in detail at other trends that might be hidden in the averages. For example if one ratio might be better suited for large skymaps vs smaller ones, or in cases where the whole skymap is visible at once compared to it slowly rising up during the night. These simulations also only considered visibility from La Palma and observed for just the first night, rather than the full 24 hours as used by simulations described later.
+
+These simulations were carried out as the scheduler was still being designed, and long before any of the sentinel or GOTO-alert functions described in \aref{sec:gotoalert} were written. The simulations used the original GOTO-tile code written by Evert Rol to split the skymaps up into the grid, and the individual pointings then had to be added separately into the database. The process in general was a lot slower and required manual intervention to reset the database and ratio values, which is why it took longer to run and fewer simulations were run compared to those described later in this chapter. This was also before GOTO construction began on La Palma, and so properties like the field of view and horizon had to be assumed. Repeating these simulations with the newer code is needed to see if the conclusion that 10:1:0 is still the best case, and at the same time examine the possibility of modifying the ratio based on properties such as the extent of the skymap and time of the event.
+
+Finally, other possible values could be considered for inclusion in the ``PAT'' ratio. One suggestion is to modify time-to-set into time-visible, by including not only the time when the target sets below the horizon but also the time that the Sun rises. The existing time-to-set ratio prioritises observing targets later in the night when they are about to set, where as airmass prioritises tiles near the zenith. Neither however considers the time remaining in the night, and while this is obviously the same for every target it would be better for the time-to-set distribution to peak before sunset instead of after to best prioritise observations in the limted time available.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \end{colsection}
 
 % ########################################
