@@ -13,7 +13,7 @@
 \newcommand{\nth}{\ensuremath{^{\rm th}}}
 
 % code (see JSS style - https://www.jstatsoft.org/pages/view/style)
-% programmes (Word, IRAF, VSCode...)
+% programs (Word, IRAF, VSCode...)
 %\newcommand{\software}{\textsc}
 \newcommand{\software}{\textsf}
 % names of programming languages (C, Python...)
@@ -71,7 +71,9 @@
     \vspace{-1.4cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     \vspace{-0.7cm}
+    {\hypersetup{linkcolor=black}
     \minitoc{}
+    }
     \vspace{-0.2cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     \begin{center}
@@ -88,6 +90,41 @@
 }
 \newcommand\aref[1]{\autoref{#1}}
 \newcommand\nref[1]{\autoref{#1} (\nameref{#1})}
+
+% Cite functions linking the name as well as the year
+% https://tex.stackexchange.com/questions/15951/hyperlink-name-with-biblatex-authoryear-biblatex-1-4b
+\DeclareFieldFormat{citehyperref}{%
+  \DeclareFieldAlias{bibhyperref}{noformat}% Avoid nested links
+  \bibhyperref{#1}}
+\DeclareFieldFormat{textcitehyperref}{%
+  \DeclareFieldAlias{bibhyperref}{noformat}% Avoid nested links
+  \bibhyperref{%
+    #1%
+    \ifbool{cbx:parens}
+      {\bibcloseparen\global\boolfalse{cbx:parens}}
+      {}}}
+\savebibmacro{cite}
+\savebibmacro{textcite}
+\renewbibmacro*{cite}{%
+  \printtext[citehyperref]{%
+    \restorebibmacro{cite}%
+    \usebibmacro{cite}}}
+\renewbibmacro*{textcite}{%
+  \ifboolexpr{
+    (not test {\iffieldundef{prenote}} and
+      test {\ifnumequal{\value{citecount}}{1}})
+    or
+    (not test {\iffieldundef{postnote}} and
+      test {\ifnumequal{\value{citecount}}{\value{citetotal}}})
+  }
+    {\DeclareFieldAlias{textcitehyperref}{noformat}}
+    {}%
+  \printtext[textcitehyperref]{%
+    \restorebibmacro{textcite}%
+    \usebibmacro{textcite}}}
+
+% Remove comma inline citations
+\renewcommand*{\nameyeardelim}{\addspace}
 
 % bibliography
 \addbibresource{bibliography.bib}
