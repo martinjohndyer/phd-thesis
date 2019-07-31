@@ -13,7 +13,7 @@
 
 \begin{colsection}
 
-In this chapter I outline my work creating a control system for the GOTO telescope. Sections~\ref{sec:gtecs},~\ref{sec:hardware_control} and~\ref{sec:autonomous} are expanded from my SPIE conference paper \citealt{Dyer}. The GOTO Telescope Control System is based on the pt5m control system (\citealt{pt5m}), written primarily by Tim Butterly at Durham and Stu Littlefair and Vik Dhillon at Sheffield. This provided the foundation that the GOTO system builds upon, but has been heavily modified and rewritten to meet the requirements of the GOTO project. All work described in this chapter is my own, incorporating advice and feedback from members of the GOTO collaboration.
+In this chapter I outline my work creating a control system for the GOTO telescope. \aref{sec:gtecs}, \aref{sec:hardware_control} and \aref{sec:autonomous} are expanded from my SPIE conference paper \citealt{Dyer}. The GOTO Telescope Control System is based on the pt5m control system (\citealt{pt5m}), written primarily by Tim Butterly at Durham and Stu Littlefair and Vik Dhillon at Sheffield. This provided the foundation that the GOTO system builds upon, but has been heavily modified and rewritten to meet the requirements of the GOTO project. All work described in this chapter is my own, incorporating advice and feedback from members of the GOTO collaboration.
 
 \end{colsection}
 
@@ -47,7 +47,7 @@ There were also practical details to consider when choosing the control software
 \label{sec:control_options}
 \begin{colsection}
 
-Four possible options for the GOTO control system were considered: the existing software packages \software{ACP Expert}, \software{Talon} and \software{RTS2}, or a custom system based on the code written for the \gls{pt5m}. At the July 2015 GOTO meeting at Warwick University I gave a talk outlining the control system requirements and presenting the four options, and the decision taken was to adapt the \gls{pt5m} system for use by GOTO.\@ The three rejected systems are described below, while the \gls{pt5m} system is described in more detail in Section~\ref{sec:pt5m}.
+Four possible options for the GOTO control system were considered: the existing software packages \software{ACP Expert}, \software{Talon} and \software{RTS2}, or a custom system based on the code written for the \gls{pt5m}. At the July 2015 GOTO meeting at Warwick University I gave a talk outlining the control system requirements and presenting the four options, and the decision taken was to adapt the \gls{pt5m} system for use by GOTO.\@ The three rejected systems are described below, while the \gls{pt5m} system is described in more detail in \aref{sec:pt5m}.
 
 \subsubsection{\software{ACP Expert}}
 \software{ACP Expert}\footnote{\url{http://acp.dc3.com}} is a commercial observatory control software system by DC3-Dreams. It is used by some advanced amateur astronomers and a few scientific and university telescopes, such as the Open University's \gls{pirate} \citep{PIRATE}. As a complete Windows software package with a web interface it is marketed as being straightforward to use, in either remote or fully robotic modes. It uses the \software{ASCOM} standard library and DC3-Dreams also provide professional support and updates. This however came at a cost: \$2495 for the base software, plus an additional \$599 for Maxim DL camera control and \$650 per year for continued support. At the time, \gls{goto} was anticipated to be deployed in a matter of months, so the quick and simple pre-existing commercial solution was tempting. However it was unclear if the \software{ACP} software would be able to cope with \gls{goto}'s unusual design, and its closed-source model would restrict our ability to make modifications.
@@ -78,7 +78,7 @@ The basic framework of the pt5m control system was adopted for \gls{goto}, but w
 \begin{center}
 \includegraphics[width=\linewidth]{images/pt5m_software.png}
 \end{center}
-\caption[The pt5m control system architecture]{The \gls{pt5m} control system architecture, taken from \citet{pt5m}. The hardware daemons are shown on the right; they communicate with the pilot which receives information from the observation scheduler and the conditions monitor. This basic framework was adapted for the GOTO control system, c.f. Figure~\ref{fig:flow}.}
+\caption[The pt5m control system architecture]{The \gls{pt5m} control system architecture, taken from \citet{pt5m}. The hardware daemons are shown on the right; they communicate with the pilot which receives information from the observation scheduler and the conditions monitor. This basic framework was adapted for the GOTO control system, c.f. \aref{fig:flow}.}
 \label{fig:pt5m_software}
 \end{figure}
 
@@ -101,13 +101,13 @@ The basic framework of the pt5m control system was adopted for \gls{goto}, but w
 
 The \gls{gtecs} is the name given to the collection of programs that have been developed to fulfil the requirements of the GOTO project given in \aref{sec:control_requirements}. The \gls{pt5m} control system as described in the previous section formed the basis for \gls{gtecs}. Its structure of multiple independent daemons was developed into the core system architecture of G-TeCS, shown in \aref{fig:flow}. This section gives an overview of the system and its implementation, and the following sections discuss in detail the two core branches of G-TeCS:\@ the base hardware control programs (\aref{sec:hardware_control}) and the autonomous systems built on top of them (\aref{sec:autonomous}).
 
-
 \begin{figure}[p]
-\begin{center}
-\includegraphics[width=\linewidth]{images/flow.pdf}
-\end{center}
-\caption[The G-TeCS system architecture]{The \gls{gtecs} system architecture as deployed on La Palma. The observation database as well as the sentinel, scheduler and conditions daemons shown to the left run on an observatory-wide master server, while the pilot and hardware daemons are located on the telescope control computer within the dome. Control for the unit telescope hardware (focuser, filter wheel and camera) is sent via an interface daemon for each pair of UTs, running on computers attached to the mount. Only the system for the prototype instrument (one mount with four unit telescopes) is shown.}
-\label{fig:flow}
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/flow.pdf}
+    \end{center}
+    \caption[The G-TeCS system architecture]{
+        The \gls{gtecs} system architecture as deployed on La Palma. The observation database as well as the sentinel, scheduler and conditions daemons shown to the left run on a central observatory-wide server located in the SuperWASP building next to the GOTO domes, while the pilot and hardware daemons are located on the telescope control computer within the dome. Control for the unit telescope hardware (focuser, filter wheel and camera) is sent via an interface daemon for each pair of UTs, running on computers attached to the mount. Only the system for the prototype instrument (one mount with four unit telescopes) is shown.
+    }\label{fig:flow}
 \end{figure}
 
 \end{colsection}
@@ -118,7 +118,7 @@ The \gls{gtecs} is the name given to the collection of programs that have been d
 \label{sec:implementation}
 \begin{colsection}
 
-The core \gls{gtecs} code is written as a \proglang{Python} package, \pkg{gtecs}. This includes all of the daemons, scripts, associated modules and functions. One core component, the code and functions to interact with the observation database (see Section~\ref{sec:obsdb}), has been split off into a separate \proglang{Python} package ObsDB (\pkg{obsdb}); this was to allow other users to interact with the database without the need to install the entire \pkg{gtecs} package. In addition, the code for alert processing within the sentinel (see Section~\ref{sec:sentinel}) is in a separate module, GOTO-alert (\pkg{gotoalert}). This is because it originated as a separate coding project developed by Alex Obradovic at Monash, that I then took over and integrated with the \gls{gtecs} sentinel. GOTO-alert is described in more detail in Section~\ref{sec:gotoalert}.
+The core \gls{gtecs} code is written as a \proglang{Python} package, \pkg{gtecs}. This includes all of the daemons, scripts, associated modules and functions. One core component, the code and functions to interact with the observation database (see \aref{sec:obsdb}), has been split off into a separate \proglang{Python} package ObsDB (\pkg{obsdb}); this was to allow other users to interact with the database without the need to install the entire \pkg{gtecs} package. In addition, the code for alert processing within the sentinel (see \aref{sec:sentinel}) is in a separate module, GOTO-alert (\pkg{gotoalert}). This is because it originated as a separate coding project developed by Alex Obradovic at Monash, that I then took over and integrated with the \gls{gtecs} sentinel. GOTO-alert is described in more detail in \aref{sec:gotoalert}.
 
 G-TeCS and the associated packages are written almost entirely in \proglang{Python}, specifically \proglang{Python3}. \proglang{Python} is a versatile programming language that is increasingly common in astronomy, helped by the popular open-source Astropy Project \citep{astropy}. \proglang{Python} version 3.0 was released in 2008 and is infamously not backwards-compatible with \proglang{Python2}. The code for \gls{pt5m} was written in \proglang{Python2}, and therefore initially so was G-TeCS.\@ Over the subsequent years the G-TeCS code was re-written to be compatible with both \proglang{Python2} and \proglang{Python3}, which was possible due to the inbuilt \code{\_\_future\_\_} module in \proglang{Python2} and the \code{six} package. Eventually, the addition of new features added to \proglang{Python3}, such as the \pkg{asyncio} package (used heavily by the pilot) in version 3.5, and the imminent end-of-life of \proglang{Python2} in 2020 led to the dropping of \proglang{Python2} support. This is in line with most other scientific \proglang{Python} packages including \pkg{astropy}, which is no longer developed for \proglang{Python2}. % chktex 21
 
@@ -134,7 +134,7 @@ The \pkg{gtecs} and associated packages have multiple dependencies. Some of the 
 
 The core elements of the control system are the daemons. A \emph{daemon} is a type of computer program that runs as a background process, continually cycling and awaiting any input from the user. This is in contrast to a \emph{script} which is run once (either by the system or a user), carries out a series of tasks in the foreground and then exits once it is completed. Common examples of daemons on a Unix-based system are \software{sshd}, which listens for and creates \gls{ssh} connections, and \software{cron}, which runs commands at predefined times. Incidentally both are used by G-TeCS:\@ \gls{ssh} commands are used to execute commands on remote machines and \software{cron} is used to run scripts like the pilot at a set time of day.
 
-Daemons are the ideal form of software for hardware control. Once started each daemon runs continually as a background process, with a main control loop that repeats on a regular timescale (for the G-TeCS hardware daemons this is usually every \SI{0.1}{\second}). There are two primary tasks that are carried out within the loop by every daemon: monitoring the status of the hardware, and listening for and carrying out input commands. The former is typically not carried out every time the loop runs, because attempting to request and process the hardware status every \SI{0.1}{\second} would overwhelm the daemon and delay the loop. Instead the status checks are typically carried out every \SI{2}{\second}, or sooner if requested. By continually requesting the status of the hardware the daemon will detect very quickly if there are any problems, and should they be unable to reach their hardware they will enter an error state. However the daemons themselves will not attempt to self-diagnose and fix any problems that are detected, with the notable exception of the dome daemon (Section~\ref{sec:dome}). Instead that is the job of the hardware monitors (see Section~\ref{sec:pilot}); the daemons themselves will just report any problems to the pilot or user. The second reason for a control loop within the daemons is to listen for and carry out any commands issued to them. As these commands are dealt with within the loop it ensures only one command is carried out at a time; the alternative of user input going directly to the hardware could cause problems with overlapping commands. These commands can be as simple as querying the cameras for how long left until an exposure finishes, or the mount for the current position, to opening the dome, taking and saving an image, or calculating the current highest priority pointing to observe.
+Daemons are the ideal form of software for hardware control. Once started each daemon runs continually as a background process, with a main control loop that repeats on a regular timescale (for the G-TeCS hardware daemons this is usually every \SI{0.1}{\second}). There are two primary tasks that are carried out within the loop by every daemon: monitoring the status of the hardware, and listening for and carrying out input commands. The former is typically not carried out every time the loop runs, because attempting to request and process the hardware status every \SI{0.1}{\second} would overwhelm the daemon and delay the loop. Instead the status checks are typically carried out every \SI{2}{\second}, or sooner if requested. By continually requesting the status of the hardware the daemon will detect very quickly if there are any problems, and should they be unable to reach their hardware they will enter an error state. However the daemons themselves will not attempt to self-diagnose and fix any problems that are detected, with the notable exception of the dome daemon (\aref{sec:dome}). Instead that is the job of the hardware monitors (see \aref{sec:pilot}); the daemons themselves will just report any problems to the pilot or user. The second reason for a control loop within the daemons is to listen for and carry out any commands issued to them. As these commands are dealt with within the loop it ensures only one command is carried out at a time; the alternative of user input going directly to the hardware could cause problems with overlapping commands. These commands can be as simple as querying the cameras for how long left until an exposure finishes, or the mount for the current position, to opening the dome, taking and saving an image, or calculating the current highest priority pointing to observe.
 
 Within G-TeCS each category of hardware has a dedicated control daemon that acts as an interface to the hardware. For example, the mount daemon communicates with the SiTech mount controller, sending commands and reading the current status, while the camera daemon does the same for every camera attached to the telescope. Therefore there is not necessarily a one-to-one correspondence between daemons and pieces of hardware. Having separate daemons for each hardware type allows them to operate independently and allow the pilot, or a human operator, to send commands to each in turn without needing the other one to complete. It also means that a failure in one daemon or its hardware is isolated from the others, should the mount develop a fault for example the dome daemon will still be able to communicate with and close the dome. Not every daemon within G-TeCS falls interacts with hardware: there is the scheduler daemon which is the interface to the observation database, and the sentinel daemon which monitors alert channels.
 
@@ -150,7 +150,7 @@ Functionally, each daemon is built around a \proglang{Python} class which contai
 
 As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, called from within other scripts like the pilot or run automatically with utilities like \software{cron}.
 
-In order to send commands to the daemons each has an associated control script that can be called by a user from a terminal, or by the pilot in robotic mode (see Sec~\ref{sec:pilot}). The commands follow a simple format which was inherited from \gls{pt5m}, first the short name of the daemon, then the command and finally any arguments. There are several commands that are common to all daemons: \code{start}, \code{shutdown} and \code{restart} to control if the daemon is running; \code{ping} to see the current status of the daemon; \code{info} to see the current status of the hardware; \code{log} to print the daemon output log. Examples of daemon-specific commands include ``\code{dome~close}'' to close the dome, ``\code{mnt~slew~30.54~+62}'' to slew the mount to the given coordinates, ``\texttt{cam~image~60}'' to take a \SI{60}{\second} exposure with all connected cameras and ``\texttt{cam~image~2~60}'' to take a \SI{60}{\second} exposure with camera 2 only.
+In order to send commands to the daemons each has an associated control script that can be called by a user from a terminal, or by the pilot in robotic mode (see \aref{sec:pilot}). The commands follow a simple format which was inherited from \gls{pt5m}, first the short name of the daemon, then the command and finally any arguments. There are several commands that are common to all daemons: \code{start}, \code{shutdown} and \code{restart} to control if the daemon is running; \code{ping} to see the current status of the daemon; \code{info} to see the current status of the hardware; \code{log} to print the daemon output log. Examples of daemon-specific commands include ``\code{dome~close}'' to close the dome, ``\code{mnt~slew~30.54~+62}'' to slew the mount to the given coordinates, ``\texttt{cam~image~60}'' to take a \SI{60}{\second} exposure with all connected cameras and ``\texttt{cam~image~2~60}'' to take a \SI{60}{\second} exposure with camera 2 only.
 
 Every daemon can also be controlled in ``interactive mode'', which is a user-friendly way to save time sending multiple commands to the same daemon. Interactive mode is entered with \code{i} and exited with \code{q}.
 
@@ -212,7 +212,7 @@ The most important script to the robotic operation of the telescope is the pilot
         }\label{tab:modes}
 \end{table}
 
-\gls{gtecs} deals with manual operation by having an overall system mode flag stored in a datafile which is checked by the automated systems before activating. There are three possible modes, outlined below and summarised in Table~\ref{tab:modes}.
+\gls{gtecs} deals with manual operation by having an overall system mode flag stored in a datafile which is checked by the automated systems before activating. There are three possible modes, outlined below and summarised in \aref{tab:modes}.
 
 \begin{itemize}
     \item \code{robotic} mode is the default mode for the telescope. In this case it is assumed that the system is completely automated and therefore could move at any time. In this mode during the night the pilot will be in complete control of the telescope, and the dome will automatically close in bad weather. The dome hatch being open is also treated as a critical conditions flag (see \aref{sec:conditions}).
@@ -251,11 +251,11 @@ The core programs of \gls{gtecs} are the hardware daemons. There are seven prima
 % "meta-daemons"??
 \begin{colsection}
 
-\rtxt{As described in the hardware chapter}, \gls{goto} uses off-the-shelf camera, focuser and filter-wheel hardware from \gls{fli}. Each \gls{goto} unit telescope has a MicroLine ML50100 camera, an Atlas focuser and a CFW9--5 filter wheel connected to a small Intel \gls{nuc} attached to the boom arm. On these \glspl{nuc} run very basic daemons called the \gls{fli} interfaces. Barely daemons by the definition given in Section~\ref{sec:daemons}, these interfaces have no control loop and exist only as a way to expose the serial connection of the hardware to the wider \gls{pyro} network. By using these interface daemons, the primary control daemons for the \gls{fli} hardware can run on the main control computer without being physically connected to the hardware (aside from via ethernet).
+\rtxt{As described in the hardware chapter}, \gls{goto} uses off-the-shelf camera, focuser and filter-wheel hardware from \gls{fli}. Each \gls{goto} unit telescope has a MicroLine ML50100 camera, an Atlas focuser and a CFW9--5 filter wheel connected to a small Intel \gls{nuc} attached to the boom arm. On these \glspl{nuc} run very basic daemons called the \gls{fli} interfaces. Barely daemons by the definition given in \aref{sec:daemons}, these interfaces have no control loop and exist only as a way to expose the serial connection of the hardware to the wider \gls{pyro} network. By using these interface daemons, the primary control daemons for the \gls{fli} hardware can run on the main control computer without being physically connected to the hardware (aside from via ethernet).
 
 Communicating with the hardware has to be done using the \gls{sdk} provided by \gls{fli}, which is written in \proglang{C}. In order to use this \gls{sdk} with the control system written in \software{Python} a separate wrapper package \pkg{fli-api} was written in \software{Cython}, a programming language that provides a way for \proglang{C} code to be imported and run in \proglang{Python}.
 
-The interfaces and the \gls{pyro} network allows a single daemon to interact with multiple pieces of hardware across multiple computers. This means that the single camera daemon running on the primary control computer can interface with all of the cameras attached to the mount, and instead of sending commands to each camera individually the user can speak to all of them together through the daemon. As an example, the command \code{cam~image~60} will take a 60 second exposure on every attached camera simultaneously. Including a specific number \code{cam~image~2~60} will only start the exposure on the camera attached to UT2. Multiple selections can also be made using a simple comma-separated syntax, such as \texttt{cam~image~1,2,4~60}. This notation and functionality is one of the major differences between \gls{gtecs} and the \gls{pt5m} control system, and in fact all of the other control systems considered in Section~\ref{sec:control_options}, which typically can only communicate with a single telescope at a time.
+The interfaces and the \gls{pyro} network allows a single daemon to interact with multiple pieces of hardware across multiple computers. This means that the single camera daemon running on the primary control computer can interface with all of the cameras attached to the mount, and instead of sending commands to each camera individually the user can speak to all of them together through the daemon. As an example, the command \code{cam~image~60} will take a 60 second exposure on every attached camera simultaneously. Including a specific number \code{cam~image~2~60} will only start the exposure on the camera attached to UT2. Multiple selections can also be made using a simple comma-separated syntax, such as \texttt{cam~image~1,2,4~60}. This notation and functionality is one of the major differences between \gls{gtecs} and the \gls{pt5m} control system, and in fact all of the other control systems considered in \aref{sec:control_options}, which typically can only communicate with a single telescope at a time.
 
 There are three control daemons that interact with the \gls{fli} interfaces: the camera, filter wheel and focuser daemons. There is also a fourth, the exposure queue daemon, which coordinates sets of exposures and communicates with both the cameras and filter wheels through their daemons, not the interfaces directly. Each of these four daemons are described in the following sections.
 
@@ -337,9 +337,9 @@ When a set of exposures is defined and passed to the exposure queue daemon they 
 
 As shown in \aref{fig:exq_file}, extra meta-data can be written for each exposure. The \gls{ut} mask is simply a binary representation of the unit telescopes to use for this exposure, so \code{0101} would be exposing on UTs 1 and 3 only (counting from the right), while \code{1111} will be on all four. The frame type is a variable used within \pkg{fli-api}, it is either \code{normal} or \code{dark} depending on if the shutter will open or not. Exposures taken through the exposure queue can also have a target name (e.g.\ the galaxy M101 in \aref{fig:exq_file}) and an image type (used to define the type of image, either SCIENCE, FOCUS, FLAT, DARK or BIAS). The glance flag is a boolean value, set to \code{1} (True) if the exposure is a glance or \code{0} (False) otherwise.
 
-When multiple exposures are defined using the \code{exq} commands, as in the previous \code{mimage} example, they are grouped into a ``set''. The set position and set total values shown in \aref{fig:exq_file} denote those exposures as 1 of (a set of) 3, 2 of 3 and 3 of 3. Including this information in the exposure metadata is necessary so the image pipeline knows if an exposure is part of a set and, if they are all in the same filter, whether they should be co-added to produce reference frames. Exposure sets are defined in the observing database (see \aref{sec:obsdb}), with each pointing having at least one or more sets to be added to the exposure queue by the pilot when that pointing is observed.
+When multiple exposures are defined using the \code{exq} commands, as in the previous \code{mimage} example, they are grouped into a ``set''. The set position and set total values shown in \aref{fig:exq_file} denote those exposures as 1 of (a set of) 3, 2 of 3 and 3 of 3. Including this information in the exposure metadata is necessary so the image pipeline knows if an exposure is part of a set and, if they are all in the same filter, whether they should be co-added to produce reference frames. Exposure sets are defined in the observation database (see \aref{sec:obsdb}), with each pointing having at least one or more sets to be added to the exposure queue by the pilot when that pointing is observed.
 
-Similar to the camera daemon, the timing of code and functions within the exposure queue daemon has been optimised to minimise the ``dead time'' between exposures. However the commands sent also need to be timed correctly to ensure that, for example, the exposure does not start while the filter wheel is still moving. This was one of the major reasons for having a separate exposure queue daemon to handle these timing concerns while the camera and filter wheel daemons dealt only with individual commands. Incidentally \gls{pt5m} uses a QSI camera with an integrated filter wheel \citep{pt5m}, so the \gls{gtecs} camera, filter wheel and exposure queue daemons are combined into a single ``CCD'' daemon in Figure~\ref{fig:pt5m_software}.
+Similar to the camera daemon, the timing of code and functions within the exposure queue daemon has been optimised to minimise the ``dead time'' between exposures. However the commands sent also need to be timed correctly to ensure that, for example, the exposure does not start while the filter wheel is still moving. This was one of the major reasons for having a separate exposure queue daemon to handle these timing concerns while the camera and filter wheel daemons dealt only with individual commands. Incidentally \gls{pt5m} uses a QSI camera with an integrated filter wheel \citep{pt5m}, so the \gls{gtecs} camera, filter wheel and exposure queue daemons are combined into a single ``CCD'' daemon in \aref{fig:pt5m_software}.
 
 \end{colsection}
 
@@ -353,7 +353,7 @@ Similar to the camera daemon, the timing of code and functions within the exposu
 %   limit switches needed adjustment
 \begin{colsection}
 
-The dome daemon is the primary interface to the Astrohaven clamshell dome. It is in effect the most critical of all of the hardware control systems, because a failure in the software resulting in the dome opening in bad weather could be catastrophic to the hardware inside. As such, it is the most complicated single hardware daemon requiring multiple levels of internal checks and backup systems. It is also the only daemon with a small amount of autonomy built in, and therefore blurs the line between a pure hardware control daemon and the more complicated autonomous systems described in Section~\ref{sec:autonomous}.
+The dome daemon is the primary interface to the Astrohaven clamshell dome. It is in effect the most critical of all of the hardware control systems, because a failure in the software resulting in the dome opening in bad weather could be catastrophic to the hardware inside. As such, it is the most complicated single hardware daemon requiring multiple levels of internal checks and backup systems. It is also the only daemon with a small amount of autonomy built in, and therefore blurs the line between a pure hardware control daemon and the more complicated autonomous systems described in \aref{sec:autonomous}.
 
 The dome daemon communicates with the \gls{plc} that comes as part of the Astrohaven dome through a simple serial (RS-232) connection. Moving the dome is achieved by sending a single character to the \gls{plc}: \code{a} to open the south shutter, \code{A} to close it, \code{b}/\code{B} for the north shutter. The \gls{plc} will respond with another character: either returning the input while the dome is moving, \code{x}/\code{X}when the south shutter is fully open/closed and \code{y}/\code{Y} for the north shutter. This is a simplistic and quite limited interface. For example, while one shutter is moving there is no way to know the status of the other. Therefore when commissioning it was decided to add additional independent limit switches, described in \aref{sec:arduino}. The Arduino system detailed in that section adds four additional inputs: one at the intersection of the two shutters to confirm the dome is fully closed, two on either side to confirm if either shutter is fully open and one on the dome entrance hatch. Using all of these sensors and the feedback from the dome \gls{plc} it is possible to build up a complete picture of the current dome status. Inside the dome daemon each shutter has five independent statuses: \code{closed}, \code{part\_open}, \code{full\_open}, \code{opening} and \code{closing}. The dome as a whole is only considered confirmed closed if both shutters report \code{closed}.
 
@@ -421,7 +421,7 @@ The rack \glspl{pdu} and \glspl{ups} are manufactured by Schneider Electric (pre
 
 \begin{colsection}
 
-The hardware control systems described in Section~\ref{sec:hardware_control} provide the basic methods to control and operate the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount to a given target, take exposures once there, and then repeat with other targets for the rest of the night. There is a limited autonomy provided by the dome daemon, so the dome will close in bad weather without the delay from a human sending the command, but even that can be disabled if desired. Fundamentally the software described in Section~\ref{sec:hardware_control} provides a perfectly usable human-operated telescope control system. \gls{goto}, however, was always designed as a fully robotic installation, as described in Section~\ref{sec:control_requirements}. Therefore an additional level of software is required, to take the place of the observer as the source of the commands to the daemons.
+The hardware control systems described in \aref{sec:hardware_control} provide the basic methods to control and operate the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount to a given target, take exposures once there, and then repeat with other targets for the rest of the night. There is a limited autonomy provided by the dome daemon, so the dome will close in bad weather without the delay from a human sending the command, but even that can be disabled if desired. Fundamentally the software described in \aref{sec:hardware_control} provides a perfectly usable human-operated telescope control system. \gls{goto}, however, was always designed as a fully robotic installation, as described in \aref{sec:control_requirements}. Therefore an additional level of software is required, to take the place of the observer as the source of the commands to the daemons.
 
 In \gls{gtecs}, as in the \gls{pt5m} system before it, the role of the observer is filled by a master control program called the pilot. The pilot decides what to observe, sends commands to the daemons, monitors the hardware and attempts to fix problems that may arise. The intention is that the pilot will fully replicate anything a trained on-site observer would be required to do. In order to manage this there are several auxiliary systems and additional support daemons that the pilot confers with. The conditions daemon monitors weather and other system conditions, the sentinel daemon listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
 
@@ -438,7 +438,7 @@ The pilot is a \proglang{Python} script, \code{pilot.py}, not a daemon. It is ru
 % ---------
 \subsubsection{Asynchronous code}
 
-The pilot is written as an \textit{asynchronous} program, using the standard Python \pkg{asyncio} module. An asynchronous program is one where its code runs in separate parallel routines, which are switched between as required, and should not be confused with programs that are written utilising multiple processes or threads that run in parallel. See Figure~\ref{fig:async} for a graphical comparison between the two methods.
+The pilot is written as an \textit{asynchronous} program, using the standard Python \pkg{asyncio} module. An asynchronous program is one where its code runs in separate parallel routines, which are switched between as required, and should not be confused with programs that are written utilising multiple processes or threads that run in parallel. See \aref{fig:async} for a graphical comparison between the two methods.
 
 An example of a simple task might be monitoring a particular source of data, like a weather station. It would contain a function to download the current weather information from the external mast, and then a \code{sleep} command to wait for 10 seconds, which when put inside a loop will ensure that the weather information is queried and updated every 10 seconds. If this loop was called in a multi-threaded program then the thread will be held up for a majority of the time not doing anything between checks. If there were multiple threads, for example checking different masts, then there could be no coordination between them and the whole program would end up being very inefficient. There are also other issues with multi-threaded programs, including input/output and sharing data between threads.
 
@@ -501,7 +501,7 @@ The above check routines are support tasks for the primary routine, which is cal
 
 \item FOCUS, run once the Sun reaches \SI{-11}{\degree}. This executes the \texttt{autoFocus} script, which finds the best focus position for each of the unit telescopes. See \aref{sec:autofocus} for details of the autofocus routine. If the routine fails for any reason the previous nights' focus positions are restored.
 
-\item OBS (short for ``observing''), begun once the Sun reaches \SI{-15}{\degree} and continuing for the majority of the night until the Sun reaches \SI{-15}{\degree} again in the morning. When a database ID is received from the scheduler via the \texttt{check\_schedule} routine the \texttt{observe} script is executed. The script queries the observation database (see Section~\ref{sec:obsdb}) to get the coordinates and exposure settings for that pointing and then sends the commands to the mount and exposure queue daemons. Once a job is finished, either through completing all of its exposures or being interrupted, the entry in the database is updated and the routine starts observing the next job from the scheduler.
+\item OBS (short for ``observing''), begun once the Sun reaches \SI{-15}{\degree} and continuing for the majority of the night until the Sun reaches \SI{-15}{\degree} again in the morning. When a database ID is received from the scheduler via the \texttt{check\_schedule} routine the \texttt{observe} script is executed. The script queries the observation database (see \aref{sec:obsdb}) to get the coordinates and exposure settings for that pointing and then sends the commands to the mount and exposure queue daemons. Once a job is finished, either through completing all of its exposures or being interrupted, the entry in the database is updated and the routine starts observing the next job from the scheduler.
 
 \item FLATS is repeated once the Sun reaches \SI{-10}{\degree} in the morning, using the same script but this time increasing the exposure times as the sky brightens.
 
@@ -537,47 +537,144 @@ Although the pilot is a completely robotic system it is still important that it 
 
 % ~~~~~~~~~~~~~~~~~~~~
 
+\newpage
 \subsection{Conditions monitoring}
 \label{sec:conditions}
 \begin{colsection}
 
-The conditions daemon is a support daemon that runs on the central observatory server (see Figure~\ref{fig:flow}). It takes in readings from the three local weather stations next to the GOTO dome on La Palma, as well as other sources such as internal sensors, every 10 seconds. The daemon processes these inputs into a series of output flags, which have a value of \code{0} (good), \code{1} (bad) or \code{2} (error). If any of the flags are marked as not good (i.e.\ the sum of all flags is $>0$) then the overall conditions are bad: the dome will close (Section~\ref{sec:dome}) and the pilot \code{check\_flags} routine will trigger the pilot to pause (Section~\ref{sec:pilot}). The conditions daemon is run centrally on the main server because it deals with site-wide values, so when the second instrument is built it is envisioned that they will both share the same conditions daemon (see Section~\ref{sec:gtecs_multisite}).
+The conditions daemon is a support daemon that runs on the central observatory server in the SuperWASP building on La Palma (see \aref{fig:flow}). It takes in readings from the three local weather stations next to the GOTO dome on La Palma, as well as other sources such as internal sensors, every 10 seconds. The daemon processes these inputs into a series of output flags, which have a value of \code{0} (good), \code{1} (bad) or \code{2} (error). If any of the flags are marked as not good (i.e.\ the sum of all flags is $>0$) then the overall conditions are bad: the dome will enter lockdown and automatically close if it is open (see \aref{sec:dome}) and the pilot \code{check\_flags} routine will trigger the pilot to pause observations (see \aref{sec:pilot}). The conditions daemon is run on the central server because it deals with site-wide values, so when the second GOTO telescope on La Palma is built it is envisioned that they will both share the same conditions daemon (see \aref{sec:gtecs_multisite}).
 
-Each conditions flag has a limit below or above which the flag will turn from good to bad. For categories with multiple sources (for example each of the three weather stations gives an independent external temperature reading) then the limit will be applied to each and if \textit{any} are found to be bad then the flag is set. If follows therefore that \textit{all} the sources must be good for the flag to overall be set to good. Each category also has two parameters, the bad delay and the good delay. These are the time the conditions daemon waits between an input going bad/good and setting the flag accordingly, which has the effect of smoothing out any sudden spikes in a value and ensures the dome will not be opening and closing too often.
+Each conditions flag has a limit below or above which the flag will turn from good to bad. For categories with multiple sources (for example there are three local weather stations, located at GOTO, SuperWASP and W1m, and each gives an independent external temperature reading) then the limit will be applied to each and if \textit{any} are found to be bad then the flag is set. If follows therefore that \textit{all} the conditions sources must be good for the flag to be set to good. Each category also has two parameters, the bad delay and the good delay. These are the time the conditions daemon waits between an input going bad/good and setting the flag accordingly, which has the effect of smoothing out any sudden spikes in a value and ensures the dome will not be opening and closing too often.
 
-The conditions flags can in practice be grouped into three different categories, divided by severity.
+The conditions flags can be grouped into three categories, divided according to severity. The latest version of G-TeCS contains 13 flags, listed in \aref{tab:conditions_flags}. An explanation of the different categories, and the flags within each, is given below.
+
+\begin{table}[p]
+    \begin{center}
+        \begin{tabular}{c|cccc} % chktex 44
+        Flag name           & Criteria measured & Bad criteria      & Good criteria     & Category    \\
+        \midrule
+        \code{dark}         & Sun altitude
+                            & > \SI{0}{\degree}
+                            & < \SI{0}{\degree}
+                            & information
+                            \\[20pt]
+
+        \code{clouds}       & IR opacity
+                            & > 40\%
+                            & < 40\%
+                            & information
+                            \\[20pt]
+
+        \code{rain}         & Rain detectors
+                            & \makecell{\code{True} \\ for \SI{30}{\second}}
+                            & \makecell{\code{False} \\ for \SI{10}{\minute}}
+                            & normal
+                            \\[20pt]
+
+        \code{windspeed}    & Wind speed
+                            & \makecell{> \SI{35}{\kilo\metre\per\hour} \\ for \SI{2}{\minute}}
+                            & \makecell{< \SI{35}{\kilo\metre\per\hour} \\ for \SI{10}{\minute}}
+                            & normal
+                            \\[20pt]
+
+        \code{humidity}     & Humidity
+                            & \makecell{> 75\% \\ for \SI{2}{\minute}}
+                            & \makecell{< 75\% \\ for \SI{10}{\minute}}
+                            & normal
+                            \\[20pt]
+
+        \code{dew\_point}   & Dew point
+                            & \makecell{< +\SI{4}{\degree} \\ for \SI{2}{\minute}}
+                            & \makecell{> +\SI{4}{\degree} \\ for \SI{10}{\minute}}
+                            & normal
+                            \\[20pt]
+
+        \code{temperature}  & Temperature
+                            & \makecell{< \SI{-2}{\degree} \\ for \SI{2}{\minute}}
+                            & \makecell{> \SI{-2}{\degree} \\ for \SI{10}{\minute}}
+                            & normal
+                            \\[20pt]
+
+        \code{ice}          & Temperature
+                            & \makecell{< \SI{0}{\degree} \\ for \SI{12}{\hour}}
+                            & \makecell{> \SI{0}{\degree} \\ for \SI{12}{\hour}}
+                            & critical
+                            \\[20pt]
+
+        \code{internal}     & \makecell{Internal \\ temperature \\ \& humidity}
+                            & \makecell{< \SI{-2}{\degree} or > 80\% \\ for \SI{1}{\minute}}
+                            & \makecell{> \SI{-2}{\degree} and < 80\% \\ for \SI{10}{\minute}}
+                            & critical
+                            \\[30pt]
+
+        \code{link}         & \makecell{Network \\ connection}
+                            & \makecell{ping fail \\ for \SI{10}{\minute}}
+                            & \makecell{ping okay \\ for \SI{1}{\minute}}
+                            & critical
+                            \\[20pt]
+
+        \code{diskspace}    & \makecell{Free space \\ remaining}
+                            & < 5\%
+                            & > 5\%
+                            & critical
+                            \\[20pt]
+
+        \code{ups}          & \makecell{Battery power \\ remaining}
+                            & < 99\%
+                            & > 99\%
+                            & critical
+                            \\[20pt]
+
+        \code{hatch}        & Hatch sensor
+                            & \makecell{\code{open} \\ for \SI{30}{\minute}}
+                            & \makecell{\code{closed} \\ for \SI{30}{\minute}}
+                            & critical
+                            \\
+
+        \end{tabular}
+    \end{center}
+    \caption[List of conditions flags and change criteria]{
+        A list of all the conditions flags, and the criteria for them to switch from good to bad and bad to good.
+        }\label{tab:conditions_flags}
+\end{table}
+
+\clearpage
+
+The first category are the `information' flags. These are assigned values like the other flags, however they are purely for information purposes and do not contribute to the overall decision of whether the conditions are bad or not. In other words, an information flag can be bad, but the overall system conditions still considered good because the flag is not included in the final calculation. The information flag being being bad is not a reason to send the dome into lockdown, however it is still useful information to record. The two current information flags are described below:
 
 \begin{itemize}
-    \item The first are the `information' flags. These are calculated like the other flags however they are purely for informational purposes and do not contribute to the overall decision as to the conditions are bad or not. In other words an information flag can be bad, but the overall system conditions are still considered good because the flag is not included in the final calculation. The only two information flags currently in the system are the \code{dark} and \code{clouds} flag. Either being bad is not reason to send the dome into lockdown, however it is still useful information to record.
-    \item The second category is for `normal' flags, and makes up the bulk of the conditions flags. The flags in this category typically relate to the weather conditions, such as the \code{temperature} and \code{windspeed} flags. These flags going bad are valid grounds to close the dome, however as they relate to natural events they are not in any way unusual and the pilot can happily remain paused and wait for the flags to clear.
-    \item The final category are the `critical' flags. These flags are for more serious situations that might arise, such as the internet link being down, the \glspl{ups} discharging or a risk of ice forming on the dome. In previous versions of the system any of these flags turning bad was enough to trigger an emergency shutdown and stop the pilot for the night. However that proved to be too much of an overreaction and there was no issues with having the pilot continue, although remain paused while the flag was bad. The only difference now between the `critical' flags and the `normal' ones above is that when a critical flag turns bad a Slack alert is sent out to ensure is is highlighted to the human monitors.
+    \item \code{dark}: A simple information flag that is bad when the Sun is above the \SI{0}{\degree} horizon and good when it is below. This has no effect on the robotic system, but is useful for human observers.
+
+    \item \code{clouds}: This information flag uses free IR satellite images downloaded from the \url{sat24.com} website to measure a rough cloud coverage value, based on the methods of \citet{clouds}. Although initially trialled as a normal flag, meaning the dome would close when high cloud was detected, the results were not consistent enough and the presence of clouds was more reliably calculated by the zero point measured by the data processing pipeline. The flag remains a useful information source however, and the satellite cloud opacity is added to the image headers to assist in later data quality control checks.
 \end{itemize}
 
-An run-through and explanation of all the different conditions flags is given below.
+The second category contains the `normal' flags, and makes up the conditions flags relating to the external weather conditions. These flags going bad are valid grounds to close the dome, however as they relate to natural events they are not in any way unusual and the pilot can happily remain paused and wait for the flags to clear. The normal flags are described below:
 
 \begin{itemize}
-\item \code{dark}: A simple information flag that is bad when the Sun is above the horizon and good when it is below. This has no effect on the robotic system, but is useful for human observers.
+    \item \code{rain}: This flag is set to bad if any of the weather stations report rain, and will only be cleared after 10 minutes of no more rain being reported. In practice rain usually coincides with high humidity, meaning the \code{rain} and \code{humidity} flags often overlap.
 
-\item \code{clouds}: The other information flag, this uses free IR satellite images downloaded from the \url{sat24.com} website to measure a rough cloud coverage value, based on the methods of~\cite{clouds}. Although initially trialled as a normal flag, meaning the dome would close when high cloud was detected, the results were not consistent enough and the quality of the data was better served being calculated by the processing pipeline. The flag remains as a useful information source however, and the satellite cloud opacity is aded to the image headers to assist in later quality assurance calculations.
+    \item \code{windspeed}: This flag gets set if the windspeed is above \SI{35}{\kilo\meter\per\hour}, with a bad delay of two minutes and a good delay of ten minutes. The wind limit was previously \SI{40}{\kilo\metre\per\hour} but when the full four unit telescope array was installed, with the addition of the light shields, the wind sensitivity of the mount was increased and the high wind limit had to be lowered.
 
-\item \code{rain}: A very simple flag, it is set to bad immediately if any of the weather stations report rain, and will only be cleared after 10 minutes of no more rain reported. In practice rain usually coincides with high humidity, meaning the \code{rain} and \code{humidity} flags often overlap.
+    \item \code{humidity} and \code{dew\_point}: The critical humidity limit is 75\%, with a bad delay of two minutes and a good delay of ten minutes. The dew point is a linked measurement, with a limit of \SI{4}{\celsius} above the ambient external temperature.
 
-\item \code{humidity} and \code{dew\_point}: The critical humidity limit is 75\%, with a bad delay of two minutes and a good delay of five minutes. The dew point is a linked measurement, with a limit of \SI{4}{\celsius} above the ambient temperature.
+    \item \code{temperature}: The \code{temperature} flag is set if the temperature drops below \SI{-2}{\celsius} for two minutes, and also has a good delay of ten minutes. The telescope can operate in below-freezing temperatures for short amounts of time, but for longer cold periods when ice build-up is a concern see the critical \code{ice} flag below.
 
-\item \code{temperature} and \code{ice}: The \code{temperature} flag is set if the temperature drops below \SI{1}{\celsius} for two minutes, and has a good delay of five minutes. The \code{ice} flag uses the same input but is set if the temperature is below \SI{0}{\celsius} for one hour and will only clear if the temperature is above freezing for 24 hours. The \code{ice} flag is a critical flag.
+\end{itemize}
 
-\item \code{windspeed}: Another simple flag that gets set if the windspeed is above \SI{30}{\kilo\meter\per\hour}, with the same two minute bad delay and five minutes good delay as the other external flags. The wind limit was previously \SI{40}{\kilo\metre\per\hour} but when the full four unit telescope array was completed, with the addition of the light shields, the wind sensitivity of the mount was increased and the high wind limit had to be lowered.
+The final category are the `critical' flags. These flags are for more serious situations that might arise, such as the internet link being down, the \glspl{ups} discharging or abnormal internal conditions inside the dome. In early versions of G-TeCS any of these flags turning bad was enough to trigger an emergency shutdown and stop the pilot for the night. However this proved to be an over-reaction and there were no issues with having the pilot continue, although remaining paused while the flag was bad. The only difference now between the `critical' flags and the `normal' flags described above is that when a critical flag turns bad a Slack alert is sent out to ensure it is brought to the attention of the human monitors. The critical flags are described below:
 
-\item \code{internal}: A combination flag for the two internal temperature and humidity sensors within the dome. These have very extreme limits, a humidity of above 90\% or a temperature of below \SI{-3}{\celsius}, which should never be reached under normal circumstances due to the internal dehumidifier. This flag therefore is a critical flag and a backup for an emergency case, when either the dehumidifier is not working or the dome has somehow opened in bad conditions.
+\begin{itemize}
+    \item \code{ice}: A critical flag which uses the same input as the \code{temperature} flag, but is set to bad if the temperature is below \SI{0}{\celsius} for 12 hours and will only clear if the temperature is constantly above freezing for another 12 hours. This prevents the dome opening until a manual inspection can be carried out to ensure it is free of ice and is safe to open.
 
-\item \code{link}: The conditions daemon also monitors the external internet link to the site, by pinging the Warwick server and other public internet sites. If these pings are unsuccessful after a minute then the \code{link} flag gets set to bad. It is technically possible for the system to observe without any internet link, and there is a backdoor into the system through the ING network, but it is an unnecessary risk as if anything went wrong alerts could not be sent out and any external users would not be able to monitor the system.
+    \item \code{internal}: A combination flag for the two internal temperature and humidity sensors within the dome. These have very extreme limits, a humidity of above 80\% or a temperature of below \SI{-2}{\celsius}, which should never be reached inside under normal circumstances due to the internal dehumidifier. This flag therefore is a backup for an emergency case, when either the dehumidifier is not working or the dome has somehow opened in bad conditions.
 
-\item \code{diskspace}: The amount of free disk space on the image data drive is also monitored, with the system shutting down and sending out an alert if there is less than 5\% space available.
+    \item \code{link}: The conditions daemon also monitors the external internet link to the site, by pinging the Warwick server and other public internet sites. After 10 minutes of unsuccessful pings the flag is set to bad. It is technically possible for the system to observe without an internet link, and there is a backdoor into the system through the SuperWASP network, but it is an unnecessary risk: in an emergency alerts could not be sent out and external users would not be able to log in.
 
-\item \code{ups}: The conditions daemon will set the \code{ups} flag if the observatory has lost power and the system UPSs are discharging. Brief power cuts do occur on La Palma, but rarely for more than a few minutes. This is also a critical flag.
+    \item \code{diskspace}: The amount of free disk space on the image data drive is also monitored, with the flag being set to bad if there is less than 5\% of free space available. As images are immediately sent to Warwick and then regularly cleared from the local disk this should never be an issue, but this is a critical conditions flag as if the local disk was full it would prevent any more data being taken.
 
-\item \code{hatch}: A critical flag to detect if the access hatch into the dome has been left open. This flag is unique in that is is only valid in robotic mode (see Section~\ref{sec:mode}); when in manual por engineering mode it is assumed that the hatch being opened is a result of someone operating the telescope. However once the system is observing robotically the hatch being open is a problem, as there is no way to close it remotely and in the case of bad weather damage could be caused to the telescope.
+    \item \code{ups}: The conditions daemon will set the \code{ups} flag if the observatory has lost power and the system UPSs are discharging (see \aref{sec:power}). Brief power cuts do occur on La Palma, but rarely for more than a few minutes as there are on-site backup generators that take over.
 
+    \item \code{hatch}: A critical flag to detect if the access hatch into the dome has been left open. This flag is unique in that is is only valid in robotic mode (see \aref{sec:mode}); when in manual or engineering mode it is assumed that the hatch being opened is a result of someone operating the telescope. But when the system is observing robotically the hatch being open is a problem, as there is no way to close it remotely and in bad weather damage could be caused to the telescope.
 \end{itemize}
 
 \end{colsection}
@@ -589,27 +686,30 @@ An run-through and explanation of all the different conditions flags is given be
 % Time Blocks??
 \begin{colsection}
 
+The scheduling system for \gls{gtecs} is based around a database known as the observation database or ``ObsDB''. This database is located on the central observatory server hosted by SuperWASP, which not only is a faster machine than the control computer in the dome but in the future will allow a single database to be shared between mounts (see \aref{sec:gtecs_multisite}). The database is implemented using the \software{MariaDB} database management system\footnote{\url{https://mariadb.com/}}, an open-source fork of the established \software{MySQL} system, and is queried and modified using \gls{sql} commands. In order to interact easily with the database within G-TeCS code a separate \software{Python} module, \pkg{obsdb}, was written as an \gls{orm} package utilising the existing \pkg{sqlalchemy} module\footnote{\url{https://sqlalchemy.org/}}.
+
+The primary table in the database is for individual \textit{pointings}. These each represent a single visit of the telescope, with defined RA and Dec coordinates and a valid time range for it to be observed within, as well as other observing constraints. Each pointing has a status value which is either \code{pending}, \code{running}, \code{completed} or some other terminal status (\code{aborted}, \code{interrupted}, \code{expired} or \code{deleted}). Ideally a pointing passes through three stages: it is created as \code{pending}, the scheduler selects it and the pilot marks it as \code{running}, then if all is well when it is finished it is marked as \code{completed}. If it stays in the database and never gets observed it will eventually pass its defined stop time (if it has one) and will be marked as \code{expired} by the database caretaker script. If the pointing is in the middle of being observed but is then cancelled before being completed it will be marked either \code{interrupted} (if the scheduler decided to observe another pointing of a higher priority) or \code{aborted} (in the case of a problem such as having to close for bad weather). The \code{deleted} status is reserved for pointings being removed from the queue before being observed, such as updated pointings being inserted by the sentinel and overwriting the previous ones (see \aref{sec:db_insert}). A representation of the relationship between the pointing statuses and how they progress is shown in \aref{fig:pointings}.
+
 \begin{figure}[p]
-\begin{center}
-\includegraphics[width=0.9\linewidth]{images/pointings.pdf}
-\end{center}
-\caption[Pointings]{A flowchart showing how the status of an entry in the pointings table can change.}
-\label{fig:pointings}
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{images/pointings_flowchart.pdf}
+    \end{center}
+    \caption[Pointing status progression flowchart]{
+        A flowchart showing how the status of an entry in the pointings table can change.
+        }\label{fig:pointings}
 \end{figure}
 
-The scheduling system for \gls{gtecs} is based around a \software{MariaDB} database, known as the observation database. This database is located on the central observatory server, which not only is a faster machine than the control computer in the dome but in the future will allow a single database to be shared between mounts (see Section~\ref{sec:gtecs_multisite}). As mentioned the database is implemented in \software{MariaDB}, an open-source fork of the established \software{MySQL} database management system. In order to interact easily within the wider control system code a separate \software{Python} module, \pkg{obsdb}, was written as an \gls{orm} package.
+\clearpage
 
-The primary table in the database is for individual \textit{pointings}. These each represent a single visit of the telescope, with defined RA and Dec coordinates and a valid time range for it to be observed (a start time and a stop time) as well as other constraint parameters. Each pointing has a status value which is either \code{pending}, \code{running}, \code{completed} or some other terminal status (\code{aborted}, \code{interrupted}, \code{expired} or \code{deleted}). Ideally a pointing passes through three stages: it is created as pending and sits around in the database, the scheduler eventually selects it and the pilot marks it as running, then if all is well when it is finished it is marked as completed. If it stays in the database and never gets observed it will eventually pass its defined stop time (if it has one) and will be marked from pending to expired by the database caretaker script. If the pointing is in the middle of being observed but is then cancelled before being completed it will be marked either interrupted (if the scheduler decided to observe another pointing of a higher priority) or aborted (in the case of a system problem such as having to close for bad weather). The deleted status is never set automatically, and is reserved for pointings being manually removed from the queue for whatever reason --- such as updated pointings being inserted by the sentinel and overwriting the previous ones. A representation of the relationship between the pointing status values and how they progress is shown in Figure~\ref{fig:pointings}.
+As well as the target information (RA, Dec, name) a pointing entry contains constraints on when they can be observed. Each pointing can have set start and stop times; the scheduler will only select pointings where the current time is within their valid range (and once the stop time has passed they will be marked as \code{expired}). Limits can also be set on minimum target altitude, minimum distance from the Moon, maximum Moon brightness (in terms of Bright/Grey/Dark time) and maximum Sun altitude. These constraints are applied by the scheduler to each pointing when deciding which to observe, and unless they all pass the pointing is deemed invalid (see \aref{sec:scheduler}). When created, a pointing is also assigned a rank, usually from 0--9, as well as a True/False flag marking it as a time-critical Target of Opportunity (ToO). These are used when calculating the priority of the pointing, to compare with others in order to determine which is the highest priority to observe.
 
-As well as the target information (RA, Dec, target name) a pointing entry contain limits and constraints about when they can be observed. Each pointing can have a start and stop times set as already mentioned; the scheduler will only select pointings where the current time is within their valid range (and once the stop time has passed they will be marked as expired). Limits can also be set on minimum target altitude, minimum distance from the Moon, maximum Moon brightness (in terms of Bright/Grey/Dark time) and maximum Sun altitude. These constraints are applied by the scheduler to each pointing when deciding which to observe, and unless they all pass the pointing is deemed invalid. When created a pointing is also assigned a rank, usually from 0--9, as well as a True/False flag marking it as a time-critical Target of Opportunity (ToO). These are used when calculating the priority for the pointing, see Section~\ref{sec:scheduler}.
-
-The commands to be executed once the telescope has slewed to a pointing are stored in a separate \code{exposure\_sets} table. An exposure set defines what commands the pilot will give to the exposure queue daemon. The table has columns for the number of exposures to take, the exposure time and the filter to use. For example, a typical GOTO observation involves taking three 120 second exposures in the L filter followed by one each in the R, G and B filters. This would take up four entries in the pointings table, the first with number of exposures as 3 and filter as L and the rest with number of exposures as 1 and the individual filters. When the pointing is observed by the pilot it will add all linked sets to the exposure queue where each is executed in turn (See Section~\ref{sec:fli}).
+The commands to be executed once the telescope has slewed to a pointing are stored in a separate \code{exposure\_sets} table. An exposure set defines what commands the pilot will give to the exposure queue daemon (see \aref{sec:exq}). The table has columns for the number of exposures to take, the exposure time and the filter to use. For example an observation requiring three \SI{60}{\second} exposures in the L filter followed by one each in the R, G and B filters would require four entries in the table: each with exposure time of \SI{60}{\second}, the first with number of exposures as 3 and filter as L and the rest with number of exposures as 1 and the individual filters. When the pointing is observed by the pilot will add the linked exposure sets to the queue, and each will then be observed in turn.
 
 Each entry in the pointings table can only be observed once. For observing a target more than once there also exists the \code{mpointings} table, which contains information to dynamically re-generate pointings for a given target. An mpointing entry is defined with three key values: the requested number of observations, the time each should be valid in the queue and the time to wait between each observation. Each time the database caretaker script is run it looks for any entries in the mpointing table that still have observations to do and it creates another entry in the pointings table for that target. Setting the time values allows a lot of control over when pointings can be valid, for example scheduling follow-up observations a set number of hours or days after an initial pointing is observed.
 
-The key contents of the database are the \code{pointings}, \code{exposure\_sets} and \code{mpointings} tables. However there also exist another series of tables, which are used to group pointings together and relate to \gls{goto}'s purpose as a survey instrument. As described in more detail in Section~\ref{sec:gototile}, \gls{goto} observes the sky divided into a fixed grid of individual tiles. The database therefore also contains a \code{grids}and \code{grid\_tiles} table, which can be used to map pointings to a fixed grid tile. This is achieved through two more tables, \code{surveys} and \code{survey\_tiles}. A \textit{survey} in this context is a group of tiles that are being observed for a specific reason. One example of a survey is the all-sky survey that \gls{goto} carries out nightly, another might be a more limited survey that still covers multiple tiles, which might prioritise tiles with distant galaxies or in the galactic plain. Furthermore events that are processed by the alert sentinel (see Section~\ref{sec:sentinel}) might have a skymap that covers multiple tiles, and therefore forms a limited survey within the database. The survey tiles that make up a survey are linked to a grid tile of the current grid. The additional field for a survey tile is a `weighting' column, which allows tiles within a survey to be weighted relative to each other. In the all-sky survey each tile is weighted equally, but in a survey coming from an event skymap the tiles will be weighted by the contained probability within that tile. The scheduler takes this weighting into account when deciding which pointing to observe, see Section~\ref{sec:scheduler}.
+The three tables described above (\code{pointings}, \code{exposure\_sets} and \code{mpointings}) are the core tables required for observation scheduling. However there are other tables defined in the database which are used to group pointings together and relate to GOTO's purpose as a survey instrument. As described in more detail in \aref{sec:gototile}, GOTO observes the sky divided into a fixed grid of individual tiles. The database therefore also contains a \code{grids} table and a \code{grid\_tiles} table, which define the current grid based on the field of view of the telescope. Mapping pointings to the grid is achieved through two more tables, \code{surveys} and \code{survey\_tiles}. A \textit{survey} in this context is a group of tiles that are being observed for a specific reason, one example are the pointings comprising the all-sky survey that \gls{goto} carries out every night. Events that are processed by the alert sentinel (see \aref{sec:sentinel}) might have a skymap that covers multiple tiles, and therefore the set of pointings required to cover it forms a survey within the database. Each pointing within the survey is linked to a survey tile, and each survey tile is linked to a grid tile of the current grid. The additional field added by the survey tile is a `weighting' column, which allows tiles within a survey to be weighted relative to each other. In the all-sky survey each tile is weighted equally, but in a survey coming from an event skymap the tiles will be weighted by the contained probability within that tile. The scheduler takes this weighting into account when deciding which pointing to observe (see \aref{sec:scheduler}, and \aref{sec:scheduler_sims} for more details).
 
-There are two additional tables that are used to contain supporting information. The first is the \code{events} table, which contains values such as the event type and source. This table is filled by the sentinel, and is used to link surveys to a specific astrophysical event. When the sentinel receives an updated alert for an event it can query the previous entries for that event in the database and replace the pointings linked to its survey. The second is the \code{users} table. Every pointing/mpointing inserted has to be related to a user who added it to the database. At the moment this is unused, and each pointing is linked to the single generic ``GOTO'' user. In the future however individuals might want to insert their own targets, and therefore would use this table.
+There are two additional tables that are used to contain supporting information: the \code{events} and \code{users} tables. The \code{events} table contains fields such as the event type and source, and is filled by the sentinel when events are processed (see \aref{sec:sentinel}). The \code{users} table connects each pointing to the user who added it to the database. At the moment this is unused, and each pointing is linked to the single generic ``GOTO'' user, but in the future individuals might wish to insert and keep track of their own targets.
 
 \end{colsection}
 
@@ -619,11 +719,11 @@ There are two additional tables that are used to contain supporting information.
 \label{sec:sentinel}
 \begin{colsection}
 
-In order for targets to be observed by GOTO in robotic mode they must have entries defined in the \code{pointings} table in the observation database (see Section~\ref{sec:obsdb}). These can be added manually, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in Figure~\ref{fig:flow}.
+In order for targets to be observed by GOTO in robotic mode they must have entries defined in the \code{pointings} table in the observation database (see \aref{sec:obsdb}). These can be added manually, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in \aref{fig:flow}.
 
-In addition the normal control loop, the sentinel daemon includes an independent alert listener loop that is continuously monitoring the transient alert stream outputted by the 4 Pi Sky event broker \citep{4pisky}, using functions from the \pkg{pygcn} \proglang{Python} package. Should the link to the 4 Pi Sky server fail then the daemon will automatically attempt to re-establish the connection every few seconds until it is restored. Pending alerts are appended to an internal queue before being processed, and the sentinel also has an additional manual \code{ingest} command which can be used to insert test events or other cases that want to bypass the alert listener. Otherwise the daemon has no other functions or features. The alert listener is a key part of the automated system but was not initially planned to be assigned to its own independent daemon. The \gls{pt5m} system uses the \software{Comet} software \citep{comet} in a separate script independent of any daemons. The advantages to including a dedicated alert listener daemon in \gls{gtecs}, which became known as the sentinel, come from it being integrated into the pilot monitoring systems like the other daemons. Should the sentinel daemon crash or not respond to checks the pilot will notice and restart it like any other daemon.
+In addition the normal control loop, the sentinel daemon includes an independent alert listener loop that is continuously monitoring the transient alert stream outputted by the 4 Pi Sky event broker \citep{4pisky}, using functions from the \pkg{pygcn} \proglang{Python} package\footnote{\url{https://pypi.org/project/pygcn/}}. Should the link to the 4 Pi Sky server fail then the daemon will automatically attempt to re-establish the connection every few seconds until it is restored. Alerts come in to the listener in the form of VOEvents \citep{voevent}, and pending alerts are appended to an internal queue before being processed using the event handler defined in the \proglang{Python} module GOTO-alert (\pkg{gotoalert}, see \aref{sec:event_handling}). The sentinel also has an additional \code{ingest} command which can be used to manually insert test events or bypass the alert listener. The details of how alerts are processed are described in \aref{chap:events}, which includes \aref{sec:gototile} discussing how HEALPix probability skymaps are mapped onto the GOTO all-sky grid and \aref{sec:gotoalert} detailing how VOEvents are processed and added to the database.
 
-Alerts come in to the listener in the form of VOEvents \citep{voevent}, and are processed using the \proglang{Python} module GOTO-alert (\pkg{gotoalert}). The details of how alerts are processed are described in Chapter~\ref{chap:events}, which includes Section~\ref{sec:gototile} discussing how HEALPix probability skymaps are mapped onto the GOTO all-sky grid and Section~\ref{sec:gotoalert} detailing how VOEvents are processed and added to the database.
+The alert listener is a key part of the automated system but was not initially planned to be assigned to its own independent daemon. The \gls{pt5m} system uses the \software{Comet} software \citep{comet} in a separate script independent of any daemons. The advantages to including a dedicated alert listener daemon in G-TeCS, which became known as the sentinel, come from it being integrated into the pilot monitoring systems like the other daemons (described in \aref{sec:pilot}). Should the sentinel daemon crash or not respond to checks the pilot will notice and restart it like any other daemon.
 
 \end{colsection}
 
@@ -633,92 +733,203 @@ Alerts come in to the listener in the form of VOEvents \citep{voevent}, and are 
 \label{sec:scheduler}
 \begin{colsection}
 
-In order for a target to be observed by the telescope in robotic mode an appropriate pointing must be added to the observation database (or an ``Mpointing'' entry that generates Pointings, as described in Section~\ref{sec:obsdb}). These can be added manually if desired, but in most cases they are either defined once when the database is created (for the constant all-sky survey tiles) or added by the sentinel daemon when a transient alert is received. All entries in the \code{pointings} table with status ``\code{pending}'' form the current \textit{queue}, and the task of selecting which of these pointings the system should observe is the role of the scheduler.
+In order for a target to be observed by the telescope in robotic mode an appropriate pointing must be added to the observation database (or an ``mpointing'' entry that generates pointings, as described in \aref{sec:obsdb}). These can be added manually if desired, but in most cases they are either defined once when the database is created (for the constant all-sky survey tiles) or added by the sentinel daemon when a transient alert is received. All entries in the \code{pointings} table with status ``\code{pending}'' form the current \textit{queue}, and the task of selecting which of these pointings the system should observe is the role of the scheduler.
 
 % ---------
 \subsubsection{The scheduler daemon}
 
-Within \gls{gtecs} the \textit{scheduler} can refer to two linked concepts: the scheduling functions or the scheduler daemon itself (which is often just called ``the'' scheduler, like the sentinel). In the \gls{pt5m} system there is no independent ``scheduler'' daemon, and when the pilot needs to know what to observe it simply calls the scheduling functions to read the current queue, rank the pointings and find the one with the highest priority. When expanding the system for \gls{goto} it was decided to farm these calculations off to a separate daemon, which the pilot instead queries just like the other hardware daemons. There are several advantages to this method. Firstly the scheduling commands can take a significant amount of time (several seconds), so splitting this out to a separate program saves time and frees up the pilot thread for other routines (recall the pilot is asynchronous but not multi-threaded). Secondly separating out the scheduling to an independent daemon allows it to be run on a different computer to the pilot. As shown in Figure~\ref{fig:flow} the scheduler daemon runs on the same master server that hosts the database, which improves the speed of the database queries. The master server is also simply a more powerful machine than the \gls{nuc} in the dome that runs the pilot and other hardware daemons, which also reduces the time to run the queries. Finally when \gls{goto} moves to a multi-telescope system it is anticipated that the scheduler will be one of the common systems shared between telescopes (see Section~\ref{sec:gtecs_multisite}), and so it makes sense to have the scheduler daemon on the master server alongside the other shared systems.
+Within \gls{gtecs} the \textit{scheduler} can refer to two linked concepts: the scheduling functions or the scheduler daemon itself (which is often just called ``the'' scheduler, like the sentinel). In the \gls{pt5m} system there is no independent ``scheduler'' daemon, and when the pilot needs to know what to observe it simply calls the scheduling functions to read the current queue, rank the pointings and find the one with the highest priority. When expanding the system for \gls{goto} it was decided to farm these calculations off to a separate daemon, which the pilot instead queries just like the other hardware daemons. There are several advantages to this method. Firstly the scheduling commands can take a significant amount of time (several seconds), so splitting this out to a separate program saves time and frees up the pilot thread for other routines (recall the pilot is asynchronous but not multi-threaded). Secondly separating out the scheduling to an independent daemon allows it to be run on a different computer to the pilot. As shown in \aref{fig:flow} the scheduler daemon runs on the same central server in SuperWASP that hosts the observing database (see \aref{sec:obsdb}), which improves the speed of the database queries. The central server is also simply a more powerful machine than the NUC in the dome that runs the pilot and other hardware daemons, which also reduces the time to run the queries. Finally, when GOTO moves to a multi-telescope system it is anticipated that the scheduler will be one of the common systems shared between telescopes (see \aref{sec:gtecs_multisite}), and so it makes sense to have the scheduler daemon on the central server alongside the other shared systems.
 
-The scheduler daemon itself is very simple, even more so than the sentinel. It contains just then normal control loop, but with no hardware to communicate with all it does is run the scheduling functions described below every loop and store the returned pointing. Then there is a single command the daemon exposes, \code{check\_queue}, which returns the ID of that pointing. The pilot \code{check\_schedule} coroutine queries the daemon every 10 seconds using this command, and the scheduler returns one of three results: carry on with the current observation, switch to a new observation, or park the telescope (in the case that there are no valid targets). Most of the time the pilot will be observing a pointing previously given by the scheduler, and on the next check the scheduler will return that the same pointing is still the highest priority --- in which case pilot will continue observing. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets in the middle of observing unless the new pointing has the \gls{too} flag set. Otherwise the pilot will wait until it has finished the current job, mark it as complete in the database and ask the scheduler for the next target to observe. A table describing the different cases is given as Table~\ref{tab:sched}.
+The scheduler daemon contains the usual control loop, which runs the scheduling functions described below and internally stores the returned highest-priority pointing. The daemon exposes a single command, \code{check\_queue}, which returns the ID of that pointing. The pilot \code{check\_schedule} coroutine queries the daemon every 10 seconds using this command, and the scheduler returns one of three results: carry on with the current observation, switch to a new observation, or park the telescope (in the case that there are no valid targets). Most of the time the pilot will be observing a pointing previously given by the scheduler, and on the next check the scheduler will return the same pointing as it is still the highest priority --- in which case pilot will continue observing it. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets whilst observing the current target, unless the new pointing has the \glsfirst{too} flag set. Otherwise the pilot will wait until it has finished the current job, mark it as complete in the database and ask the scheduler for the next target to observe. The different cases are summarised in \aref{tab:sched}.
 
 %\begin{landscape}
 %\begin{table}[p]
 
 \begin{sidewaystable}[p]
-\begin{center}
-\begin{tabular}{cc|cccc} % chktex 44
-&
-& \multicolumn{4}{c}{Highest priority pointing is\ldots}
-\\[0.5cm]
-&
-& \makecell{\ldots same as \\ current pointing}
-& \makecell{\ldots a new, \\ valid pointing}
-& \makecell{\ldots a new, \\ invalid pointing}
-& \ldots None
-\\[0.5cm]
-\midrule
-& & & & &
-\\
-\multirow{8}{*}{\rotatebox[origin=c]{90}{Current pointing is\ldots}}
-& \ldots valid
-& \makecell{\textcolor{ForestGreen}{Continue} \\ \textcolor{ForestGreen}{current pointing}}
-& \makecell{\textcolor{BlueGreen}{Interrupt and start new pointing} \\ \textcolor{BlueGreen}{if it is a ToO and the current pointing isn't,} \\ \textcolor{BlueGreen}{otherwise continue current pointing}}
-& \textcolor{red}{Park}
-& \textcolor{red}{Park}
-\\[1.5cm]
-& \ldots invalid
-& \textcolor{red}{Park}
-& \textcolor{NavyBlue}{Interrupt and start new pointing}
-& \textcolor{red}{Park}
-& \textcolor{red}{Park}
-\\[1.5cm]
-& \ldots N/A (parked)
-& \textcolor{red}{Remain parked}
-& \textcolor{NavyBlue}{Unpark and start new pointing}
-& \textcolor{red}{Remain parked}
-& \textcolor{red}{Remain parked}
-\\[0.5cm]
-\end{tabular}
-\end{center}
+    \begin{center}
+        \begin{tabular}{cc|cccc} % chktex 44
+            &
+            & \multicolumn{4}{c}{Highest priority pointing is\ldots}
+            \\[0.5cm]
 
-\caption[Actions to take based on scheduler results]{Actions the pilot will take based on the scheduler results. The scheduler can return one of three options as the highest priority pointing: the current pointing, a different pointing or \code{None} (meaning the current queue is empty). Each pointing can either be valid or invalid. The pilot will either continue with the current pointing (\textcolor{ForestGreen}{green}), switch to the new pointing depending on the ToO flag (\textcolor{NavyBlue}{blue}, \textcolor{BlueGreen}{blue-green}) or park the telescope (\textcolor{red}{red}).
-}
-\label{tab:sched}
+            &
+            & \makecell{\ldots same as \\ current pointing}
+            & \makecell{\ldots a new, \\ valid pointing}
+            & \makecell{\ldots a new, \\ invalid pointing}
+            & \ldots None
+            \\[0.5cm]
 
+            \midrule
+            & & & & &
+            \\
+
+            \multirow{8}{*}{\rotatebox[origin=c]{90}{Current pointing is\ldots}}
+            & \ldots valid
+            & \makecell{\textcolor{ForestGreen}{Continue} \\ \textcolor{ForestGreen}{current pointing}}
+            & \makecell{\textcolor{BlueGreen}{Interrupt and start new pointing} \\ \textcolor{BlueGreen}{if it is a ToO and the current pointing is not,} \\ \textcolor{BlueGreen}{otherwise continue current pointing}}
+            & \textcolor{red}{Park}
+            & \textcolor{red}{Park}
+            \\[1.5cm]
+
+            & \ldots invalid
+            & \textcolor{red}{Park}
+            & \textcolor{NavyBlue}{Interrupt and start new pointing}
+            & \textcolor{red}{Park}
+            & \textcolor{red}{Park}
+            \\[1.5cm]
+
+            & \ldots N/A (parked)
+            & \textcolor{red}{Remain parked}
+            & \textcolor{NavyBlue}{Unpark and start new pointing}
+            & \textcolor{red}{Remain parked}
+            & \textcolor{red}{Remain parked}
+            \\[0.5cm]
+
+        \end{tabular}
+    \end{center}
+    \caption[Actions to take based on scheduler results]{
+        Actions the pilot will take based on the scheduler results. The scheduler can return one of three options as the highest priority pointing: the current pointing, a different pointing or \code{None} (meaning the current queue is empty). Each pointing can either be valid or invalid. The pilot will either continue with the current pointing (\textcolor{ForestGreen}{green}), switch to the new pointing depending on the ToO flag (\textcolor{NavyBlue}{blue}, \textcolor{BlueGreen}{blue-green}) or park the telescope (\textcolor{red}{red}).
+    }\label{tab:sched}
 \end{sidewaystable}
 
 %\end{table}
 %\end{landscape}
 
-\clearpage
-
+\newpage
 % ---------
 \subsubsection{Determining the highest priority target}
 
-\gls{goto} operates under a ``just-in-time'' scheduling model. This means that rather than creating a fixed plan at the beginning of the night of what to observe at each point in time the scheduling is instead done on-the-fly. Each time the pilot queries the scheduler the current queue of pointings is imported and the highest priority is calculated, with no explicit consideration for the past or future (aside from the ``mintime'' constraints, as described below). This system is very reactive to any incoming alerts as higher-priority pointings will immediately get included naturally in the queue, and therefore observations can begin immediately. It also naturally adjusts to any delay in observations due to poor conditions. It can be less efficient for predefined targets than a night plan which can be deliberately optimised before the night starts (see for example \citet{ZTF_scheduler}). However the just-in-time system is perfectly reasonable for the all-sky survey GOTO is normally observing, and any other observations will be alerts entered by the sentinel daemon which could not be planned for.
+\gls{goto} operates under a ``just-in-time'' scheduling model \citep[see, for example,][]{LCO_scheduling}, rather than creating a fixed plan at the beginning of the night of what to observe \citep[see, for example,][]{ZTF_scheduler}. Each time the pilot queries the scheduler the current queue of pointings is imported and the priority of each is calculated, with no explicit consideration for the past or future (aside from the ``mintime'' constraints, as described below). The highest priority pointing is then returned to the pilot, as described above. This system is very reactive to any incoming alerts as the new pointings will immediately be included in the queue at the next check. This method also naturally works around any delay in observations due to poor conditions, which a fixed night plan can not do. The just-in-time method can be less efficient than a night plan when observing predefined targets which can be deliberately optimised before the night starts. However the just-in-time system is perfectly reasonable for the all-sky survey GOTO is normally observing, and any other observations will be alerts entered by the sentinel daemon which could not be planned for. Hence a ``just-in-time'' scheduler is the best option for GOTO.\@
 
-The first stage is to fetch the current queue from the observation database. This is done by querying the database pointings table for any entries that have the \code{pending} status. Additional filters are also applied in order to reduce the number of invalid pointings imported, restricting the query to only those within the visible region of the sky (based on time and the observatory location) and also only pointings who's start time has passed and stop time has not yet been reached. The query is then passed to the database and any entries in the pointings table that pass these filters make up the queue of pointings for the scheduler.
+Each time the scheduler is called several steps need to be carried out. The first of these is to fetch the current queue from the observation database. This is done by querying the database \code{pointings} table for any entries that have the \code{pending} status. Additional filters are also applied in order to reduce the number of invalid pointings imported: restricting the query to pointings within the visible region of the sky (based on the time and observatory location) and within the pointing's valid period (the start time has passed and stop time has not yet been reached). Any entries in the pointings table that pass these filters make up the queue of pointings passed to the scheduler.
 
-In order to find which pointing is the highest priority the queue is sorted on a variety of parameters, as outlined below:
+In order to find which pointing is the highest priority the queue is sorted using a variety of parameters, as outlined below:
 
 \begin{itemize}
 
-\item The first consideration is which pointings are currently valid. As described in Section~\ref{sec:obsdb} Pointings have limits defined for physical constraints (minimum altitude, minimum Moon separation, maximum Moon illumination, maximum Sun altitude). These constraints are calculated and applied to the pointings using the Constraints system in the \pkg{astroplan} \proglang{Python} module \citep{astroplan}. All depend on the current time and three of the four on the current position of the target in the sky (the Moon illumination is independent of the target). These constants are applied both at the current time and after each pointing's minimum time. This ensures that, for example, targets that are setting are visible throughout their observing period by checking the altitude is above the minimum both at the beginning and end of the observation. The minimum time constraints are not applied to the pointing currently being observed (if any), as the pointing will already be part way through. The validity of the pointings is a simple boolean flag, and invalid pointings are naturally sorted below valid ones.
+\item The first consideration is which pointings are currently valid. As described in \aref{sec:obsdb}, pointings have limits defined for physical constraints (minimum altitude, minimum Moon separation, maximum Moon illumination, maximum Sun altitude). These constraints are calculated and applied to the pointings using the \pkg{astroplan} \proglang{Python} module \citep{astroplan}. All of the constraints depend on the current time and three of the four on the current position of the target in the sky (the Moon illumination is independent of the target). These constants are applied both at the current time and after each pointing's minimum time. This ensures that, for example, targets that are setting are visible throughout their observing period by checking the altitude is above the minimum both at the beginning and end of the observation. The minimum time constraints are not applied to the pointing currently being observed (if any), as the pointing will already be part way through. The validity of the pointings is a simple boolean flag (True or False), and invalid pointings are sorted below valid ones.
 
-\item The next order pointings are sorted by is the effective rank of the pointing, which comprised of the initial rank of the pointing and the number of times it has been repeated. The base rank is fixed when the pointing was created. Every pointing is given a rank between 0 and 9, and are deliberately biased towards prioritising gravitational wave events. Ranks 1 to 5 are reserved for these events, with ranks 6 to 9 reserved for other targets, which ensures that any incoming gravitational wave pointings will always be prioritised. Rank 0 is intended to never be used under normal circumstances, but it is a valid value that if set would outrank even gravitational wave events. All-survey tiles all automatically have the lowest possible rank of 999, as they are the ever-present background and act as ``queue fillers'' in the system. An addition to the rank is the repeat number, which accounts for the number of times that a limited target has already been observed, up to 99 times. This ensures that newer pointings are prioritised over later ones. The rank ($R$) and repeat number ($n_r$) are added in the formula $R + 10\times n_r$, meaning that a rank-2 pointing that has been observed five times will have an effective rank of 52. Infinitely-repeating pointings like the all-sky survey tiles do not include the repeat humber at this stage, which is why the survey tile ranks are static at 999. The effective ranks are sorted in reverse order, meaning a rank-5 pointing that has been observed one time (with an effective rank of 15) will will be a higher priority than a rank-4 pointing that has been observed twice (and so has an effective rank of 24).
+\item The next order pointings are sorted by is the effective rank of the pointing, which is comprised of the initial rank of the pointing and the number of times it has been repeated. The base rank is fixed when the pointing is created: every pointing is given a rank between 0 and 9. Ranks 1 to 5 are reserved for gravitational wave events, with ranks 6 to 9 reserved for other targets; this ensures that any incoming gravitational wave pointings will always be the highest priority (see \aref{sec:event_strategy} for the details of determining the exact rank for different transient events). Rank 0 is not intended to be used under normal circumstances, but it is a valid value and a pointing with rank 0 would outrank even gravitational wave events. Rank 0 is therefore kept reserved for exceptional events, such as a local galactic supernova. All-sky survey tiles are given the lowest possible rank of 999, as they act as ``queue fillers'' in the system so there is always something for the telescope to observe. An addition to the rank is the repeat number, which accounts for the number of times that a target has already been observed. This ensures that newer pointings are prioritised over later ones. The rank ($R$) and repeat number ($n_r$) are added using the formula $R + 10\times n_r$, meaning that a rank-2 pointing that has been observed five times will have an effective rank of 52. The effective ranks are sorted in reverse order, meaning a rank-5 pointing that has been observed one time (with an effective rank of 15) will be a higher priority target than a rank-4 pointing that has been observed twice (and so has an effective rank of 24).
 
-\item The next sorting parameter is based on the \glsfirst{too} flag assigned to the pointing when it was inserted into the database. The flag is simply a boolean value that is true if the target is a \gls{too} and false if it is not, and pointings that have the flag as true are sorted higher than those that are not.
+\item The next sorting parameter is based on the \glsfirst{too} flag assigned to the pointing when it was inserted into the database. The flag is simply a boolean value that is true if the target is a ToO and false if it is not, and pointings that have the flag as true are sorted higher than those of the same rank that are not ToOs.
 
-\item The next parameter is once again the repeat number, the number of times the pointing has already been observed. The purpose of having the repeat number at this stage is to allow sorting of infinite pointings, i.e.\ those where the rank is fixed and the effective rank is not increased due to the number of observations.
-
-\item Finally, should all the above parameters still result in equally-weighted pointings then there is a final tie-break value that is calculated for each. The exact calculation of the tie-break parameter is detailed in Section~\ref{sec:scheduler_sims}, but the value is primarily based on the current airmass of the pointing and the weighting of the survey tile the pointing is linked to, if any.
+\item Finally, should all the above parameters still result in multiple pointings with the same priority, there is a final tie-break value that is calculated for each pointing. The the value is based on the current airmass of the pointing and the weighting of the survey tile the pointing is linked to, if any. Pointings at lower airmass (closer to the zenith) and higher tile weightings are given the higher priority. The exact calculation of the tie-break parameter, and how the relative weighting between airmass and tile weight was determined, is detailed in \aref{sec:scheduler_sims}.
 
 \end{itemize}
 
-Initially a single pointing value was calculated for every pointing based on the above effects, and then the pointings were sorted based on this single value. However this proved to be unnecessary, as within the \proglang{Pyhton} code it is just as easy to sort based on a series of parameters both boolean and numeric. Once the pointings are sorted by the above parameters the one at the top of the list is selected as the highest priority pointing to observe.
+The above schema allows for a natural filtering of targets. The calculation of the effective rank including the number of times the pointing has been observed means targets will move down the queue as they are observed, below targets of the same rank which have not yet been observed. For example, a survey of pointings from a gravitational wave event might be inserted into the database at rank 2, and all will appear in the queue with effective rank 2. The first pointing that is observed will reappear at effective rank 12, and therefore priority will be given to those tiles that have not yet been observed. Once every visible pointing in the queue has been observed once they will all have effective rank 12. The process then repeats, with each pointing falling to effective rank 22, 32 etc. As the increase is by 10 each time pointings from other events or which were manually inserted might also be in the queue and interweave between the event follow-up pointings.
 
-The above schema allows for a natural filtering of targets. For example, if the queue is filled with nothing but all-sky survey tiles then they will all have the same rank (999) and weighting (1). Therefore the decision will come down first to the number of times they have been observed. If a majority of tiles have been observed three times already, but some have only been observed twice then these will be a higher priority, to fill out coverage in the all-sky survey. If there are still multiple tiles to decide between then the final tie-breaker will come down to the airmass of the target at the current time, as well as potentially the time until the tile sets depending on the weightings used. If a single target gets inserted into the database at a higher rank, for example a manual observation of a particular galaxy at rank 6, then that will naturally take priority over the all-sky survey. If an event is inserted by the sentinel with a large survey of tiles then deciding between them will depend on their weighting and airmass. Once one of the pointings has been observed then the effective rank will increase by 10, so it will naturally fall down the priority rank behind the pointing in that survey that haven't been observed yet. For example a survey of tiles from a gravitational wave skymap will be inserted at rank 1, and as they get observed their effective rank will fall to 11, 21, 31 etc.
+\newpage
+
+%% Tiebreaker is calculated with
+%% =((2-<airmass>)*0.1+<prob>*0.9)
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|l|crc|ccc} % chktex 44
+            & Name & Valid & Rank & ToO & Airmass & Tile weight & Tiebreaker
+            \\
+            \midrule
+            1 &
+            GW 191202 P3 &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{0}\textcolor{Blue}{2} &
+            \textcolor{Green}{Y} &
+            1.1 &
+            0.10 &
+            0.180 \\
+
+            2 &
+            GW 191202 P4 &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{0}\textcolor{Blue}{2} &
+            \textcolor{Green}{Y} &
+            1.1 &
+            0.05 &
+            0.135 \\
+
+            3 &
+            M101 &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{0}\textcolor{Blue}{8} &
+            \textcolor{Red}{N} &
+            1.5 &
+            1 &
+            0.950 \\
+
+            4 &
+            GW 191202 P2 &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{1}\textcolor{Blue}{2} &
+            \textcolor{Green}{Y} &
+            1.1 &
+            0.30 &
+            0.360 \\
+
+            5 &
+            AT 2019bfg &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{2}\textcolor{Blue}{6} &
+            \textcolor{Green}{Y} &
+            1.2 &
+            1 &
+            0.980 \\
+
+            6 &
+            M31 &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{2}\textcolor{Blue}{6} &
+            \textcolor{Red}{N} &
+            1.2 &
+            1 &
+            0.980 \\
+
+            7 &
+            All-sky survey T0049 &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{0}\textcolor{Blue}{999} &
+            \textcolor{Red}{N} &
+            1.0 &
+            1 &
+            1.000 \\
+
+            8 &
+            All-sky survey T0050 &
+            \textcolor{Green}{Y} &
+            \textcolor{Orange}{0}\textcolor{Blue}{999} &
+            \textcolor{Red}{N} &
+            1.1 &
+            1 &
+            0.990 \\
+
+            \vdots & & & & & & \\
+
+            &
+            GW 191202 P1 &
+            \textcolor{Red}{N} &
+            \textcolor{Orange}{0}\textcolor{Blue}{2} &
+            \textcolor{Green}{Y} &
+            1.1 &
+            0.55 &
+            0.585 \\
+
+            &
+            All-sky survey T0123 &
+            \textcolor{Red}{N} &
+            \textcolor{Orange}{0}\textcolor{Blue}{999} &
+            \textcolor{Red}{N} &
+            1.9 &
+            1 &
+            0.910 \\
+
+        \end{tabular}
+    \end{center}
+    \caption[Examples of sorting pointings by priority]{
+        Some examples of a queue of pointings sorted by priority. Pointings are first sorted by validity, with invalid pointings shown at the bottom of the queue. Then pointings are sorted by effective rank, which is comprised of the repeat count (\textcolor{Orange}{orange}) and the base rank (\textcolor{Blue}{blue}) Pointings with the same effective rank are sorted based on if they are targets of opportunity or not, with ToOs being ranked higher. Finally pointings with all other factors being equal are ranked by the tiebreaker value, based on combining the current airmass of the target and any weighting from an event skymap.
+    }\label{tab:priority}
+\end{table}
+
+An example queue of pointings is shown in \aref{tab:priority} above. The current highest-priority pointing is one of four pointings from a fictional gravitational wave event. There are two such pointings that are both valid and have not been observed yet at the top of the queue, P3 and P4. Both are at the same airmass, but as P3 has a higher tile weighting (containing 10\% of the skymap probability compared to 5\% for P4) it is sorted higher. The pointing containing the highest probability, P1, is unfortunately not valid and is therefore at the bottom of the queue. The second highest, P2, has already been observed once and therefore has an effective rank of 12. This puts it below a non-ToO pointing of M101 which has a lower base rank, 8 compared to 2, but has not yet been observed and is therefore sorted higher. The other non-survey pointings in the queue are a pointing of transient AT 2018bfg and one of M31. Both are valid and have the same effective rank of 26 (base rank of 6 and have been observed twice), but the transient is a target of opportunity and therefore is sorted higher. Finally below those pointings are the first of the all-sky survey pointings, which will only ever be the highest priority if there are no other valid pointing above them.
 
 \end{colsection}
 
