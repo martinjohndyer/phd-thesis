@@ -826,7 +826,7 @@ This formula means a pointing with a starting rank of 2 that has been observed f
 
 For pointings with the same effective rank the next sorting parameter is the \glsfirst{too} flag assigned to the pointing when it was inserted into the database. The flag is simply a boolean value that is true if the target is a ToO and false if it is not, and pointings that have the flag as true are sorted higher than those of the same rank that are not ToOs. This ensures that time-sensitive targets come ahead of other targets at the same rank, although it is important to remember that the effective rank does still take priority (so a ToO at rank 4 will be a lower priority than a non-ToO at rank 3).
 
-Finally, should all the above parameters still result in multiple pointings with the same priority, a final tie-break value calculated for each pointing. This value is based on the current airmass of the pointing and the weighting of the survey tile the pointing is linked to, if any. Pointings at lower airmass (closer to the zenith) and higher tile weightings are given the higher priority. To calculate the tiebreak both parameters need to be scaled between 0 and 1. Tile weights are usually already in percent, while the airmass is inverted and scaled so airmasses 1 and 2 are set to 1 and 0 respectively (airmasses greater than 2 are set to zero). The weighting ($W$) and airmass ($X$) values are then combined to form the tiebreak value $T$ in a ratio 10:1, so the final tiebreak value is given by
+Finally, should all the above parameters still result in multiple pointings with the same priority, a final tie-break value is calculated for each pointing. This value is based on the current airmass of the pointing and the weighting of the survey tile the pointing is linked to, if any. Pointings at lower airmass (closer to the zenith) and higher tile weightings are given the higher priority. To calculate the tiebreak both parameters need to be scaled between 0 and 1. Tile weights are usually already in percent, while the airmass is inverted and scaled so airmasses 1 and 2 are set to 1 and 0 respectively (airmasses greater than 2 are set to zero). The weighting ($W$) and airmass ($X$) values are then combined to form the tiebreak value $T$ in a ratio 10:1, so the final tiebreak value is given by
 
 \begin{equation}
     T = \frac{10}{11} \times W + \frac{1}{11} \times (2 - X)
@@ -839,120 +839,25 @@ In the unlikely event that two pointings are still tied, all other parameters be
 
 \newpage
 
-%% Tiebreaker is calculated with
-%% =((2-<airmass>)*0.1+<prob>*0.9)
-
 \begin{table}[t]
     \begin{center}
-        \begin{tabular}{c|l|c|rrr|c|ccc} % chktex 44
-            & Name & Valid & $R_s$ & $n_\text{obs}$ & $R$ & ToO & Airmass & Tile weight & Tiebreaker
-            \\
+        \begin{tabular}{c|l|c|ccc|c|ccc} % chktex 44
+            & Name & Valid & $R_s$ & $n_\text{obs}$ & Eff.\ rank & ToO & $X$ & $W$ & Tiebreaker \\
             \midrule
-            1 &
-            GW 191202 P3 &
-            \textcolor{Green}{Y} &
-            \textcolor{Blue}{2} &
-            \textcolor{Orange}{0} &
-            2 &
-            \textcolor{Green}{Y} &
-            1.1 &
-            0.10 &
-            0.180 \\
-
-            2 &
-            GW 191202 P4 &
-            \textcolor{Green}{Y} &
-            \textcolor{Blue}{2} &
-            \textcolor{Orange}{0} &
-            2 &
-            \textcolor{Green}{Y} &
-            1.1 &
-            0.05 &
-            0.135 \\
-
-            3 &
-            M101 &
-            \textcolor{Green}{Y} &
-            \textcolor{Blue}{9} &
-            \textcolor{Orange}{0} &
-            9 &
-            \textcolor{Red}{N} &
-            1.5 &
-            1 &
-            0.950 \\
-
-            4 &
-            GW 191202 P2 &
-            \textcolor{Green}{Y} &
-            \textcolor{Blue}{2} &
-            \textcolor{Orange}{1} &
-            12 &
-            \textcolor{Green}{Y} &
-            1.1 &
-            0.30 &
-            0.360 \\
-
-            5 &
-            AT 2019bfg &
-            \textcolor{Green}{Y} &
-            \textcolor{Blue}{6} &
-            \textcolor{Orange}{2} &
-            26 &
-            \textcolor{Green}{Y} &
-            1.2 &
-            1 &
-            0.980 \\
-
-            6 &
-            M31 &
-            \textcolor{Green}{Y} &
-            \textcolor{Blue}{16} &
-            \textcolor{Orange}{1} &
-            26 &
-            \textcolor{Red}{N} &
-            1.2 &
-            1 &
-            0.980 \\
-
-            7 &
-            All-sky T0049 &
-            \textcolor{Green}{Y} &
-            \textcolor{Blue}{999} &
-            \textcolor{Orange}{0} &
-            999 &
-            \textcolor{Red}{N} &
-            1.0 &
-            1 &
-            1.000 \\
-
+            1 & GW 191202 P3  & \textcolor{Green}{Y} &  2  & 0 &   2 & \textcolor{Green}{Y} & 1.1 & 0.10 & 0.173 \\
+            2 & GW 191202 P4  & \textcolor{Green}{Y} &  2  & 0 &   2 & \textcolor{Green}{Y} & 1.1 & 0.05 & 0.127 \\
+            3 &         M101  & \textcolor{Green}{Y} &  9  & 0 &   9 &   \textcolor{Red}{N} & 1.5 &    1 & 0.955 \\
+            4 & GW 191202 P2  & \textcolor{Green}{Y} &  2  & 1 &  12 & \textcolor{Green}{Y} & 1.1 & 0.30 & 0.355 \\
+            5 &   AT 2019bfg  & \textcolor{Green}{Y} &  6  & 2 &  26 & \textcolor{Green}{Y} & 1.2 &    1 & 0.982 \\
+            6 &          M31  & \textcolor{Green}{Y} &  16 & 1 &  26 &   \textcolor{Red}{N} & 1.4 &    1 & 0.964 \\
+            7 & All-sky T0049 & \textcolor{Green}{Y} & 999 & 0 & 999 &   \textcolor{Red}{N} & 1.0 &    1 & 1.000 \\
             \vdots & & & & & & \\
-
-            &
-            GW 191202 P1 &
-            \textcolor{Red}{N} &
-            \textcolor{Blue}{2} &
-            \textcolor{Orange}{0} &
-            2 &
-            \textcolor{Green}{Y} &
-            1.1 &
-            0.55 &
-            0.585 \\
-
-            &
-            All-sky T0123 &
-            \textcolor{Red}{N} &
-            \textcolor{Blue}{999} &
-            \textcolor{Orange}{0} &
-            999 &
-            \textcolor{Red}{N} &
-            1.9 &
-            1 &
-            0.010 \\
-
+              &  GW 191202 P1 &   \textcolor{Red}{N} &   2 & 0 &   2 & \textcolor{Green}{Y} & 1.1 & 0.55 & 0.582 \\
+              & All-sky T0123 &   \textcolor{Red}{N} & 999 & 0 & 999 &   \textcolor{Red}{N} & 2.0 &    1 & 0.909 \\
         \end{tabular}
     \end{center}
     \caption[Examples of sorting pointings by priority]{
-        Some examples of a queue of pointings sorted by priority. Pointings are first sorted by validity, with invalid pointings shown at the bottom of the queue. Then pointings are sorted by effective rank $R$, which is comprised of the starting rank ($R_s$, \textcolor{Blue}{blue}) and the observation count ($n_\text{obs}$, \textcolor{Orange}{orange}). Pointings with the same effective rank are sorted based on if they are targets of opportunity or not, with ToOs being ranked higher. Finally pointings with all other factors being equal are ranked by the tiebreaker value, based on combining the current airmass of the target and any weighting from an event skymap (see \aref{sec:scheduler_sims}).
+        Some examples of a queue of pointings sorted by priority. Pointings are first sorted by validity, with invalid pointings shown at the bottom of the queue. Then pointings are sorted by effective rank, which is comprised of the starting rank ($R_s$) and the observation count ($n_\text{obs}$). Pointings with the same effective rank are sorted based on if they are targets of opportunity or not, with ToOs being ranked higher. Finally pointings with all other factors being equal are ranked by the tiebreaker value, based on combining the current airmass of the target ($X$) and any weighting from an event skymap ($W$).
     }\label{tab:priority}
 \end{table}
 
