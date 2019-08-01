@@ -849,10 +849,10 @@ Constraints    & Min Alt          & Max Sun Alt       & Min Moon Separation & Ma
 
 ExposureSets   & Set position & Number of exposures &    Exposure time & Filter \\
 \midrule
-\code{3x60L}   &          1/1 &                   3 & \SI{60}{\second} &      L \\ % chktex 29
-\code{3x60RGB} &          1/3 &                   1 & \SI{60}{\second} &      R \\ % chktex 29
-                &          2/3 &                   1 & \SI{60}{\second} &      G \\ % chktex 29
-                &          3/3 &                   1 & \SI{60}{\second} &      B \\ % chktex 29
+\code{3x60L}   &          1/1 &                   3 & \SI{60}{\second} &      \textit{L} \\ % chktex 29
+\code{3x60RGB} &          1/3 &                   1 & \SI{60}{\second} &      \textit{R} \\ % chktex 29
+               &          2/3 &                   1 & \SI{60}{\second} &      \textit{G} \\ % chktex 29
+               &          3/3 &                   1 & \SI{60}{\second} &      \textit{B} \\ % chktex 29
 
 \end{tabular}
 \end{center}
@@ -892,7 +892,7 @@ Gravitational wave events from the LVC burst pipelines are hard to categorise as
 
 Gamma-ray burst events are also processed by the sentinel and inserted into the observation database. These are inserted at ranks above 200, ensuring that \gls{goto} will always prioritise gravitational wave follow up. \gls{grb} events use a different cadence strategy of \code{TWO\_FIRST\_ONE\_SECOND}, which as detailed in \aref{tab:cadence_dict} asks for three observations: two in the first night separated by 4 hours and another in the second night. This is a different test cadence recently implemented to attempt to account for the fast-fading nature of \gls{grb} afterglows, and is an example of more complex cadences allowed by the \gls{gtecs} scheduler. For gamma-ray burst events the only distinction is made between events originating from \textit{Swift} and \textit{Fermi}. Typically \textit{Swift}'s \gls{bat} detections are much better localised than those from \textit{Fermi}'s \gls{gbm}, and so in cases where a source is detected by both the \textit{Swift} detection should be prioritised. Further division could be made based on if the burst is classified by \textit{Fermi} as Long or Short, but this is not currently implemented.
 
-Finally each strategy currently uses the same exposure sets as the all-sky survey: three sequential exposures using the L filter lasting 60 seconds. A similar set of exposures using the coloured filters instead is shown in \aref{tab:exposuresets_dict} as a possible example of what could be defined, but is not currently used as part of any strategy.
+Finally each strategy currently uses the same exposure sets as the all-sky survey: three sequential exposures using the \textit{L} filter lasting 60 seconds. A similar set of exposures using the coloured filters instead is shown in \aref{tab:exposuresets_dict} as a possible example of what could be defined, but is not currently used as part of any strategy.
 
 It should be stressed that the strategies detailed in this sections are designed to just inform the default reaction of \gls{goto} to any incoming alert. It is not intended to be a perfect reaction in every case for the simple reason that there may well be later external input. For example the default strategy for a gravitational wave signal from a close neutron star source is to observe the tile inserted over and over until the three day limit has passed. In practice it should be clear after the first few passes if there is any counterpart candidate, in which case it is possible for a human to intervene and direct \gls{goto} to go take observations of particular tiles with promising candidates. Likewise after the first pass of a distant \gls{bbh} event no candidate is detected, and nothing has been reported from any other source, the decision could be made to not bother with the second pass the day after and just return to the all-sky survey. The strategies defined here are therefore designed to produce a reasonable default response from \gls{goto} but other human-guided are also an expected part of any follow-up campaign.
 
