@@ -158,71 +158,55 @@ The results of the analysis were written up as a page on the GOTO wiki for easy 
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Bias and defects}
+\subsection{Bias level and pixel defects}
 \label{sec:bias}
-% REMOVE FLI
-% Masters are the average of 50 0-s frames
-% Then take median of statistics region, in the centre of the frame
-% I'm going to have to talk about overscan I fear
+% Overscan?
 \begin{colsection}
 
-\begin{table}[t]
-    \begin{center}
-        \begin{tabular}{c|rr|rr} %chktex 44
-             & \multicolumn{2}{c|}{Sheffield} & \multicolumn{2}{c}{FLI} \\
-             & \multicolumn{1}{c}{L} &
-               \multicolumn{1}{c|}{R} &
-               \multicolumn{1}{c}{L} &
-               \multicolumn{1}{c}{R} \\
-            \midrule
-            Camera 1 &  $971\pm4$ &  $969\pm4$ & $970.6$ &  $965.6$ \\
-            Camera 2 &  $989\pm3$ &  $989\pm3$ & $995.7$ &  $988.7$ \\
-            Camera 3 & $1004\pm3$ &  $991\pm3$ & $995.6$ &  $989.0$ \\
-            Camera 4 &  $974\pm3$ & $1008\pm4$ & $969.7$ & $1000.6$ \\
-            Camera 5 &  $994\pm3$ &  $986\pm3$ & $989.8$ &  $978.7$ \\
-            Camera 6 &  $984\pm3$ &  $991\pm3$ & $968.1$ &  $976.8$ \\
-            Camera 7 &  $992\pm3$ &  $981\pm3$ & $984.2$ &  $975.6$ \\
-            Camera 8 & $1008\pm3$ & $1012\pm3$ & $995.5$ &  $996.9$ \\
-        \end{tabular}
-    \end{center}
-    \caption[TODO]{
-        Bias levels (in ADU) measured in Sheffield and from the FLI test sheets.
-        }\label{tab:bias}
-\end{table}
+The bias level is a fixed offset in counts for each pixel. Setting a reasonable bias level in a CCD is important in order to ensure counts are never recorded as negative due to random noise. The bias level can change over time due to degradation of the pixel electronics, but in general the bias of each pixel can be considered as a fixed value. The bias should still be measured regularly to ensure it has not changed, as this might indicate a problem with the CCD hardware.
 
-\begin{table}[t]
-    \begin{center}
-        \begin{tabular}{c|rr|rr|rr} %chktex 44
-            &
-            \multicolumn{2}{c|}{1$\times$1 binning} &
-            \multicolumn{2}{c|}{2$\times$2 binning} &
-            \multicolumn{2}{c}{3$\times$3 binning}
-            \\
-             &
-            \multicolumn{1}{c}{L} &
-            \multicolumn{1}{c|}{R} &
-            \multicolumn{1}{c}{L} &
-            \multicolumn{1}{c|}{R} &
-            \multicolumn{1}{c}{L} &
-            \multicolumn{1}{c}{R}
-            \\
-            \midrule
-            Camera 1 &  $971\pm4$ &  $969\pm4$ & $1036\pm5$ & $1022\pm5$ & $1145\pm7$ & $1127\pm6$\\
-            Camera 2 &  $989\pm3$ &  $989\pm3$ & $1045\pm4$ & $1038\pm4$ & $1152\pm6$ & $1143\pm6$\\
-            Camera 3 & $1004\pm3$ &  $991\pm3$ & $1060\pm4$ & $1054\pm4$ & $1153\pm5$ & $1149\pm5$\\
-            Camera 4 &  $974\pm3$ & $1008\pm4$ & $1031\pm4$ & $1063\pm4$ & $1122\pm5$ & $1155\pm6$\\
-        \end{tabular}
-    \end{center}
-    \caption[TODO]{
-        Bias levels (in ADU) for different binning factors.
-        }\label{tab:bias_bins}
-\end{table}
+Pixel bias levels can be measured by taking a dark, zero-second exposure time image. This image will not include any electrons from a source, so the shot noise is zero, and as the dark current is proportional to the exposure time this will also be minimised. The image will however still include random read-out noise, so to account for this multiple bias frames are taken and then averaged to produce a master bias.
+
+For each of the eight cameras 50 bias images were taken, these were then combined to form a master bias frame by taking the median value in each pixel (to account for superfluous counts due to cosmic rays). The mean count in a 2000$\times$2000 pixel region in the centre of each of the two camera channels was measured, these values are given in \aref{tab:bias}.
+
+% hot pixels
+
+
+For each camera a defect mask was constructed using the ratio of two flat images of different exposures, and then detecting pixels outside of a given sigma limit. Each camera was found to have at least one stuck pixel, which produced a dead column travelling up the frame. In \aref{fig:frame} these are visible as two dark columns. The exact positions and details for every camera are shown in \aref{tab:frame}.
+
+The ONSemi chip specifications gives an allowed limit of less than 20 column defects per device, and none of the GOTO detectors had more than two.
+
 
 For a standard full-frame image there are two methods to correct for bias: using the overscan regions and using a master bias.
 
 The two 10-pixel wide dummy regions on either side of the image as shown in \aref{fig:chip} can be subtracted from the frame (independently for each channel) to correct for much of the bias level. These levels change for each image, but typical values for each camera and channel are given in \aref{tab:bias} --- they are usually between 960 and 990 counts.
 
-For each camera 50 dark, zero-exposure full-frame images were taken, overscan subtracted and stacked in order to construct a master bias frame. This can be used to correct for any structure in the bias level. The most obvious structure is a difference in bias levels between the two channels in each camera. The average remaining field bias values are also listed in \aref{tab:bias}.
+
+
+
+\newpage
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|rr} %chktex 44
+             & \multicolumn{2}{c}{Bias} \\
+             & \multicolumn{2}{c}{(ADU)} \\
+             & \multicolumn{1}{c}{L} & \multicolumn{1}{c}{R} \\
+            \midrule
+            Camera 1 & $971\pm4$ & $969\pm4$ \\
+            Camera 2 & $989\pm3$ & $983\pm3$ \\
+            Camera 3 & $1004\pm3$ & $991\pm3$ \\
+            Camera 4 & $974\pm3$ & $1008\pm4$ \\
+            Camera 5 & $994\pm3$ & $986\pm3$ \\
+            Camera 6 & $984\pm3$ & $991\pm3$ \\
+            Camera 7 & $992\pm3$ & $981\pm3$ \\
+            Camera 8 & $1008\pm3$ & $1012\pm3$ \\
+        \end{tabular}
+    \end{center}
+    \caption[TODO]{
+        Mean count levels in the master bias for each camera.
+        }\label{tab:bias}
+\end{table}
 
 \begin{table}[t]
     \begin{center}
@@ -242,15 +226,13 @@ For each camera 50 dark, zero-exposure full-frame images were taken, overscan su
     }\label{tab:frame}
 \end{table}
 
-For each camera a defect mask was constructed using the ratio of two flat images of different exposures, and then detecting pixels outside of a given sigma limit. Each camera was found to have at least one stuck pixel, which produced a dead column travelling up the frame. In \aref{fig:frame} these are visible as two dark columns. The exact positions and details for every camera are shown in \aref{tab:frame}.
-
-The ONSemi chip specifications gives an allowed limit of less than 20 column defects per device, and none of the GOTO detectors had more than two.
+\clearpage
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Photon transfer curves}
+\subsection{Gain, read-out noise and fixed-pattern noise}
 \label{sec:ptc}
 % https://harvestimaging.com/blog/?p=1034
 % https://www.couriertronics.com/docs/notes/cameras_application_notes/Photon_Transfer_Curve_Derivation.pdf
@@ -258,7 +240,7 @@ The ONSemi chip specifications gives an allowed limit of less than 20 column def
 % https://www-spiedigitallibrary-org.sheffield.idm.oclc.org/ebooks/PM/Scientific-Charge-Coupled-Devices/eISBN-9780819480392/10.1117/3.374903
 \begin{colsection}
 
-The \gls{ptc} is a method to determine the gain, read-out and fixed-pattern noise for a CCD camera \citep{CCDs, PTC}. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images the dark current noise is negligible, so once the images has the bias level subtracted the total number of electrons in each pixel, $N_\text{Total}$, will include a number of  photo-electrons from the source $N_O$ plus extra electrons from the readout electronics $R$:
+The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \gls{ptc} method \citep{CCDs, PTC}. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images the dark current noise is negligible, so once the images has the bias level subtracted the total number of electrons in each pixel, $N_\text{Total}$, will include a number of  photo-electrons from the source $N_O$ plus extra electrons from the readout electronics $R$:
 
 \begin{equation}
     N_\text{Total} = N_O + R.
