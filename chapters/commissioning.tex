@@ -65,25 +65,25 @@ There are multiple sources of noise in images taken with CCD cameras \citep{CCDs
     \item Bias count, a fixed level of output for each pixel.
 \end{itemize}
 
-The shot noise ($\sigma_\text{O}$) comes from photons arriving at the sensor at different times. The photon arrival time is a Poisson distribution, and if the number of electrons counted is $N_O$, for large numbers of photons this tends towards a Gaussian distribution with mean $N_O$ and standard deviation $\sigma_O = \sqrt{N_O}$. When carrying out on-sky astronomical observations the source noise is typically divided into noise from the target object and noise from the background sky, but this is not relevant for the in-lab tests described in this section.
+The shot noise ($\sigma_\text{O}$) comes from photons arriving at the sensor at different times. The photon arrival time is a Poisson distribution, and if the number of electrons counted is $N$, for large numbers of photons this tends towards a Gaussian distribution with mean $N$ and standard deviation $\sigma_O = \sqrt{N}$. When carrying out on-sky astronomical observations the source noise is typically divided into noise from the target object and noise from the background sky, but this is not relevant for the in-lab tests described in this section.
 
-Dark current noise ($\sigma_\text{D}$) is due to electrons produced by thermal excitations, these are indistinguishable from photo-electrons and will increase with exposure time. As this is also a photon counting measurement it also follows a Poisson distribution, so the noise $\sigma_O = \sqrt{D}$ where $D$ is the dark current per pixel. Cooling the cameras will reduce the thermal excitations and therefore reduce the dark current.
+Dark current noise ($\sigma_\text{D}$) is due to electrons produced by thermal excitations, these are indistinguishable from photo-electrons and will increase with exposure time. As this is also a photon counting measurement it also follows a Poisson distribution, so the noise $\sigma_D = \sqrt{D}$ where $D$ is the dark current per pixel. Cooling the cameras will reduce the thermal excitations and therefore reduce the dark current.
 
 Read-out noise ($\sigma_\text{RO}$) depends on the speed data is read out from the CCD.\ The FLI MicroLine cameras read out at a fixed \SI{8}{\mega\hertz}, but other astronomical cameras have variable read-out speeds. As a property of the output electronics the read-out noise is independent of signal or the exposure time used, and therefore it can be represented by a constant value, $\sigma_R = R$, measured in electrons. The MicroLine cameras have two channels with independent readouts, so each will have an independent read-out noise.
 
-Fixed-pattern noise ($\sigma_\text{FP}$) is due to the small differences in size and response between pixels, also known as the \gls{prnu}. Therefore the fixed-pattern noise remains constant between images, but unlike the bias level the fixed-pattern noise increases linearly with the input signal. It can therefore be parametrised as $\sigma_\text{FP} = k_\text{FP}N$ where $k_\text{FP}$ is a dimensionless constant of proportionality describing the fixed-pattern noise as a percentage of the full-well capacity. Scientific CCD cameras typically have very small PRNUs, so $k_\text{FP}$ is usually $<1\%$.
+Fixed-pattern noise ($\sigma_\text{FP}$) is due to the small differences in size and response between pixels. It it increases linearly with the electron count, including both source and dark electrons (the fixed-pattern noise can be further broken down into the \gls{prnu} and \gls{dsnu}, but we will consider it as a single noise source). Including both these effects the fixed-pattern noise can be parametrised as $\sigma_\text{FP} = k_\text{FP}(N+D)$ where $k_\text{FP}$ is a dimensionless constant of proportionality describing the fixed-pattern noise as a percentage of the full-well capacity. Scientific CCD cameras typically have very small non-uniformities between pixels, so $k_\text{FP}$ is usually $<1\%$, but this noise source can dominate when the signal count is high. It can however be removed by flat fielding, so the fixed-pattern noise is often not considered in astronomical contexts.
 
-The bias level is a fixed output of counts from each pixel, and is entirely independent of the input signal. It is therefore the easiest noise source to account for, as once a master bias frame has been constructed it can simply be subtracted from each frame. The MicroLine cameras also include an overscan region described previously, which gives an independent measurement of the bias level.
+Finally, the bias level is a fixed output of counts from each pixel, and is entirely independent of the input signal. It is therefore the easiest noise source to account for, as once a master bias frame has been constructed it can simply be subtracted from each frame. The MicroLine cameras also include an overscan region described previously, which gives an independent measurement of the bias level.
 
 The noises described above (aside from the bias) are all independent Gaussian random variables, and therefore are added in quadrature to get the total noise per pixel
 
 \begin{equation}
     \begin{split}
         \sigma_\text{Total}^2 & = \sigma_\text{O}^2 +
-                                \sigma_\text{DC}^2 +
-                                \sigma_\text{RO}^2 +
-                                \sigma_\text{FP}^2 \\
-                              & = N_O + D + R^2 + k_\text{FP}^2{(N_O + D + R)}^2.
+                                  \sigma_\text{DC}^2 +
+                                  \sigma_\text{RO}^2 +
+                                  \sigma_\text{FP}^2 \\
+                              & = N + D + R^2 + k_\text{FP}^2{(N+D)}^2.
     \end{split}
     \label{eq:noise}
 \end{equation}
@@ -240,10 +240,10 @@ The two 10-pixel wide dummy regions on either side of the image as shown in \are
 % https://www-spiedigitallibrary-org.sheffield.idm.oclc.org/ebooks/PM/Scientific-Charge-Coupled-Devices/eISBN-9780819480392/10.1117/3.374903
 \begin{colsection}
 
-The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \gls{ptc} method \citep{CCDs, PTC}. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images the dark current noise is negligible, so once the images has the bias level subtracted the total number of electrons in each pixel, $N_\text{Total}$, will include a number of  photo-electrons from the source $N_O$ plus extra electrons from the readout electronics $R$:
+The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \gls{ptc} method \citep{CCDs, PTC}. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images the dark current noise is negligible, so once the images has the bias level subtracted the total number of electrons in each pixel, $N_\text{Total}$, will include a number of photo-electrons from the source $N$ plus extra electrons from the readout electronics $R$:
 
 \begin{equation}
-    N_\text{Total} = N_O + R.
+    N_\text{Total} = N + R.
     \label{eq:total_count}
 \end{equation}
 
@@ -251,39 +251,39 @@ The noise per pixel, excluding dark current, is given by \aref{eq:noise} as
 
 \begin{equation}
     \begin{split}
-        \sigma_\text{Total}^2 & = N_O + R^2 + k_\text{FP}^2{(N_O + R)}^2 \\
-                              & = N_\text{Total} - R + R^2 + k_\text{FP}^2N_\text{Total}^2.
+        \sigma_\text{Total}^2 & = N + R^2 + k_\text{FP}^2 N^2 \\
+                              & = N_\text{Total} - R + R^2 + k_\text{FP}^2{(N_\text{Total} - R)}^2.
     \end{split}
     \label{eq:ptc_noise1}
 \end{equation}
 
-The counts and total noise here are all in electrons (\elec), however the output of the camera analog-to-digital converter is a digital signal, $S$, measured in \gls{adu}. This signal is linearly related to the actual number of electrons detected $N$ through the gain $g$, in \elec/ADU, as
+The counts and total noise here are all in electrons (\elec), however the output of the camera analog-to-digital converter is a digital signal, $S$, measured in \gls{adu}. This signal is linearly related to the actual number of electrons detected $N_\text{Total}$ through the gain $g$, in \elec/ADU, as
 
 \begin{equation}
-    N = g S.
+    N_\text{Total} = g S.
     \label{eq:gain}
 \end{equation}
 
 The gain is an important parameter of a CCD detector, and can be set to best utilise the dynamic range of the detector. The KAF-50100 detectors have a specification full well capacity of 40,300 electrons before they saturate, and the cameras have a 16-bit readout (meaning the signal from each pixel can vary from 0 to 65535 ($2^{16}$) ADU). Therefore if the gain was set to $1$ \elec/ADU a saturated pixel would produce a signal of 40300 ADU, which is only using two-thirds of the dynamic range. The ideal gain to utilise the full well capacity for these cameras would therefore be $0.62$ \elec/ADU.\@ However, a high gain introduces a quantisation error due to the random electrons produced by the read-out noise. Setting the gain therefore is a balance between these two effects.
 
-Since \aref{eq:gain} shows the signal $S$ is directly proportional to the number of electrons $N$, their errors are also directly proportional with the same constant. Therefore the noise in the signal, $\sigma_S$, is related to the noise in the electron count as
+Since \aref{eq:gain} shows the signal $S$ is directly proportional to the number of electrons $N$, their errors are also directly proportional with the same constant. Therefore the noise in the signal, $\sigma_S$, is related to the noise in the total electron count as
 
 \begin{equation}
-    \sigma_N = g \sigma_S.
+    \sigma_\text{Total} = g \sigma_S.
     \label{eq:noise_gain}
 \end{equation}
 
 Converting the total electron count and noise in \aref{eq:ptc_noise1} into ADU results in
 
 \begin{equation}
-    g^2\sigma_S^2 = gS - R + R^2 + k_\text{FP}^2 g^2 S^2,
+    g^2\sigma_S^2 = gS - R + R^2 + k_\text{FP}^2 {(gS - R)}^2,
     \label{eq:ptc_noise2}
 \end{equation}
 
 and rearranging this gives the final photon transfer curve equation
 
 \begin{equation}
-    \sigma_S^2 = \frac{R^2 - R}{g^2} + \frac{1}{g}S + k_\text{FP}^2 S^2.
+    \sigma_S^2 = \frac{R^2(1-k_\text{FP}^2) - R}{g^2} + \frac{1}{g}S + k_\text{FP}^2 S^2.
     \label{eq:ptc}
 \end{equation}
 
