@@ -238,34 +238,29 @@ The shot noise from the source object comes from counting photo-electrons, and t
     \label{eq:shot_noise}
 \end{equation}
 
-As described previously the read-out noise is a fixed property of the CCD electronics, and therefore does not vary between pixels or exposures. The fixed-pattern noise also comes from a physical aspect of the detector: the small differences in size and response between pixels known as the \glsfirst{prnu}. This noise is proportional to the number of electrons detected, so can be written as
+As described previously the read-out noise is a fixed property of the CCD electronics, and will not vary between pixels or exposures. Therefore it can be represented by a constant value, $\sigma_R = R$, measured in electrons.
+
+The fixed-pattern noise also comes from a physical aspect of the detector: the small differences in size and response between pixels known as the \glsfirst{prnu}. This noise is proportional to the number of electrons detected, so can be written as
 
 \begin{equation}
     \sigma_\text{FP} = k_\text{FP}N = k_\text{FP}gS,
     \label{eq:fp_noise}
 \end{equation}
 
-where $k_\text{FP}$ is a dimensionless constant of proportionality describing the fixed-pattern noise, and is given in percent. Scientific CCD cameras typically have very small PRNUs, of the order of $<1\%$.
+where $k_\text{FP}$ is a dimensionless constant of proportionality describing the fixed-pattern noise, and is given in percent. Scientific CCD cameras typically have very small PRNUs, so $k_\text{FP}$ is usually $<1\%$.
 
-Adding the above noise terms into \aref{eq:ptc_noise1} gives
-
-\begin{equation}
-    g^2\sigma_S^2 = g S + \sigma_\text{RO}^2 + k_{FP}^2 g^2 S^2,
-    \label{eq:ptc_noise2}
-\end{equation}
-
-which can be written in the form
+Adding the above noise terms into \aref{eq:ptc_noise1} and rearranging gives
 
 \begin{equation}
-    \sigma_S^2 = {\left(\frac{\sigma_\text{RO}}{g}\right)}^2 +
+    \sigma_S^2 = {\left(\frac{R}{g}\right)}^2 +
                  \frac{1}{g}S +
                  k_\text{FP}^2 S^2.
     \label{eq:ptc}
 \end{equation}
 
-This is a quadratic equation relating the measured signal $S$ to the variance in the signal $\sigma_S^2$, where $S$ and $\sigma_S$ are in ADU, $\sigma_\text{RO}$ is in \elec, $g$ is in \elec/ADU and $k_\text{FP}$ is dimensionless.
+This is a quadratic equation relating the measured signal $S$ to the variance in the signal $\sigma_S^2$, where $S$ and $\sigma_S$ are in ADU, $R$ is in \elec, $g$ is in \elec/ADU and $k_\text{FP}$ is dimensionless.
 
-A \glsfirst{ptc} is a log-log plot of signal $S$ vs standard deviation $\sigma$, and by fitting \aref{eq:ptc} to this data values for the gain, read-out noise and fixed-pattern noise can be determined. The key features of a photon transfer curve are common for all CCDs, and are shown in cartoon form in \aref{fig:ptc_cartoon}.
+A \glsfirst{ptc} is a log-log plot of signal $S$ vs standard deviation $\sigma_S$, and by fitting \aref{eq:ptc} to this data values for the gain, read-out noise and fixed-pattern noise can be determined. The key features of a photon transfer curve are common for all CCDs, and are shown in cartoon form in \aref{fig:ptc_cartoon}.
 
 \newpage
 
@@ -312,7 +307,7 @@ As it is impossible to know the exact number of incoming photons on each pixel, 
         }\label{tab:ptc}
 \end{table}
 
-\glspl{ptc} were constructed for all eight cameras, by taking flat images of varying exposure times. Twelve 50$\times$50 pixel regions were selected across the field, and the mean and standard deviation of the pixel values were plotted to form the \gls{ptc}. These are shown in \aref{fig:ptcs}. The curves were fitted to \aref{eq:ptc}, and the resulting values for the gain, read-out noise and fixed-pattern noise are given in \aref{tab:ptc}.
+\glspl{ptc} were constructed for all eight cameras, by taking flat images of varying exposure times. Twelve 50$\times$50 pixel regions were selected across the field, and the mean and standard deviation of the pixel values were plotted to form the \gls{ptc}. These are shown in \aref{fig:ptcs}. The curves were fitted to \aref{eq:ptc}, and the resulting values for the gain ($g$), read-out noise ($R$) and fixed-pattern noise ($k_\text{FP}$) are given in \aref{tab:ptc}.
 
 As expected, the gain values are all around 0.6 \elec/ADU, and would have been set as such to maximise the dynamic range. There is a clear difference in gain levels between the first set of cameras (1--4) and the second set (5--8), which is most likely due to changes made by FLI over the two years between their manufacture. The read-out noise values are all around 11--14 \elec, and match the FLI specifications which advertise a typical system noise of 12 \elec{} when reading out at \SI{8}{\mega\hertz}. The two channels on each camera are independent and therefore there is no correlation in read-out noise, unlike the gain which is always approximately the same in each amplifier. Finally the fixed-pattern noise is always below 0.5\% of the signal as expected. The fraction notably decreases from $\sim$0.45\% to $\sim$0.40\%; if this is related to improved chip manufacturing this might explain the reason FLI were able to set the gain higher for the later cameras. However, this test only includes a small sample of the 50 million pixels on each chip, and so might not be a perfect measure of the overall photo response non-uniformity.
 
