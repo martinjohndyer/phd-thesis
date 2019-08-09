@@ -539,6 +539,62 @@ The values for non-linearity measured vary greatly between each camera, and seve
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Defects}
+\label{sec:defects}
+\begin{colsection}
+
+There are several possible defects in CCD sensors \citep{CCDs}: hot pixels, which have atypically high dark currents, dead pixels, which produce zero counts, and trap pixels, which ``trap'' electrons and prevent read out from it and any pixels above it in the column. For targeted astronomical observations it is important to track any bad pixels, so whenever possible photons from the target object does not fall on any of them. GOTO's wide-field survey observations make this less of an issue, but the pipeline will track bad pixels and columns when calibrating images from each camera.
+
+Single hot or dead pixels are not a major problem, as they can be removed by subtracting bias frames and flat fielding. If necessary the value of the bad pixel can be interpolated from the surrounding pixels. Trap pixels are more of an issue, as they take out the entire column behind them. For each camera a defect mask was made by taking the ratio of two flat images with different exposure times, making any bad pixels or columns easy to pick out by comparing to the surrounding pixels. And example of a trap pixel is shown in \aref{fig:itsatrap}. The positions of trap pixels for each camera are given in \aref{tab:traps}. The KAF-50100 chip specification gives an allowed limit of less than 20 column defects per device, which the GOTO cameras are well within.
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|ccc} %chktex 44
+             & \multicolumn{2}{c}{Trap location} & Column lost \\
+             & x & y & \% \\
+            \midrule
+            Camera 1 & 7751 & 4361 & 30 \\
+            Camera 2 & 1658 & ~172 & 97 \\ %chktex 39
+            Camera 3 & 1224 & 1844 & 70 \\
+                     & 5058 & 5185 & 17 \\
+            Camera 4 & 5406 & 2607 & 58 \\
+            Camera 5 & 6293 & 1416 & 77 \\
+            Camera 6 & 5455 & 5036 & 19 \\
+        \end{tabular}
+        \hspace{0.5cm}
+        \begin{tabular}{c|ccc} %chktex 44
+            & \multicolumn{2}{c}{Trap location} & Column lost \\
+            & x & y & \% \\
+            \midrule
+            Camera 7 & 1344 & 3037 & 51 \\
+                     & 2326 & 2495 & 60 \\
+                     & 2610 & 5688 & ~9 \\ %chktex 39
+                     & 7491 & 5120 & 18 \\
+            Camera 8 & 1184 & 3043 & 51 \\
+                     & 5659 & 2778 & 55 \\
+            \multicolumn{4}{c}{} \\
+        \end{tabular}
+    \end{center}
+    \caption[Locations of trap pixels]{
+        Locations of trap pixels and fraction of the column lost for each camera.
+    }\label{tab:traps}
+\end{table}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/detectors/defect_plot.pdf}
+    \end{center}
+    \caption[An example of a trap pixel]{
+        A flat frame for Camera 1 showing an example of a trap pixel. The plot below of counts averaged in the y axis clearly shows the bad column, and the depth of the well beneath the field level is proportional to the height of the trap pixel in the column.
+        }\label{fig:itsatrap}
+\end{figure}
+
+\clearpage
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 
