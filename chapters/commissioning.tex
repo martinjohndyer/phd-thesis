@@ -182,6 +182,13 @@ The measured biases are all around the same level, 970--1010 counts, as would be
             Camera 2 & $989\pm3$ & $983\pm3$ \\
             Camera 3 & $1004\pm3$ & $991\pm3$ \\
             Camera 4 & $974\pm3$ & $1008\pm4$ \\
+        \end{tabular}
+        \hspace{0.5cm}
+        \begin{tabular}{c|rr} %chktex 44
+             & \multicolumn{2}{c}{Bias} \\
+             & \multicolumn{2}{c}{(ADU)} \\
+             & \multicolumn{1}{c}{L} & \multicolumn{1}{c}{R} \\
+            \midrule
             Camera 5 & $994\pm3$ & $986\pm3$ \\
             Camera 6 & $984\pm3$ & $991\pm3$ \\
             Camera 7 & $992\pm3$ & $981\pm3$ \\
@@ -339,8 +346,8 @@ Finally, as expected the fixed-pattern noise is a low fraction of the signal. It
             \includegraphics[width=\linewidth]{images/detectors/ptc_8.png}
         \end{minipage}
     \end{center}
-    \caption[Photon transfer curves for all 8 cameras]{
-        Photon transfer curves for all 8 cameras.
+    \caption[Photon transfer curve plots for all 8 cameras]{
+        Photon transfer curve plots for all 8 cameras.
         }\label{fig:ptcs}
 \end{figure}
 
@@ -441,8 +448,8 @@ The dark current was also examined as a function of time since power on, as in s
             \includegraphics[width=\linewidth]{images/detectors/dc_8.png}
         \end{minipage}
     \end{center}
-    \caption[Dark current curves for all 8 cameras]{
-        Dark current curves for all 8 cameras.
+    \caption[Dark current plots for all 8 cameras]{
+        Dark current plots for all 8 cameras.
         }\label{fig:dcs}
 \end{figure}
 
@@ -453,44 +460,79 @@ The dark current was also examined as a function of time since power on, as in s
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
 \subsection{Linearity}
-\label{sec:linearity}
+\label{sec:lin}
 \begin{colsection}
 
-Linearity was measured for all four cameras using a flat light source and increasing exposure times. Each camera had a turn off in the lower half of the dynamic range which needs further analysis, this experiment was hampered by the broken flat light source. Very short exposure times were studied in order to see any possible effect of the shutter speed. It was found that although the cameras allow exposure times as low as 1ms there is a consistent deviation from linearity below approximately 0.15 seconds. As such exposure times shorter than 0.2 seconds should be avoided.
+Linearity is a measure of the response of the CCD over its entire dynamic range. The output count should always be linearly related to the input photons, and for scientific imaging it is particularly important that the measured counts are directly proportional to the object signal.
 
-\end{colsection}
+The non-linearity of each camera was measured using the same images taken for the photon transfer curves in \aref{sec:ptc}, bright images of a flat source with increasing exposure times. The images were bias-subtracted, and the mean counts of a central 2000$\times$2000 pixel region in the centre of each channel was plotted against the exposure time, shown in \aref{fig:lin}. A linear relation was fitted to the central potion of the data, excluding the upper and lower 10\% of the dynamic range. Residuals from this fit as a percentage of the count are also plotted in \aref{fig:lin}, and the mean absolute deviation from the linear fit over the central region is given in \aref{tab:lin}.
 
-% ~~~~~~~~~~~~~~~~~~~~
-\newpage
-\subsection{Defects}
-\label{sec:defects}
-% hot pixels
-\begin{colsection}
-
-
-For each camera a defect mask was constructed using the ratio of two flat images of different exposures, and then detecting pixels outside of a given sigma limit. Each camera was found to have at least one stuck pixel, which produced a dead column travelling up the frame. In \aref{fig:frame} these are visible as two dark columns. The exact positions and details for every camera are shown in \aref{tab:frame}.
-
-The ONSemi chip specifications gives an allowed limit of less than 20 column defects per device, and none of the GOTO detectors had more than two.
-
-
+The values for non-linearity measured vary greatly between each camera, and several are over 1\%. If these values were true this would be a major problem when making accurate photometric measurements. However, the FLI specification advertises a non-linearity of <1\%, and FLI's own tests of the cameras consistently report non-linearity of 0.2\% or less. Accurately measuring the response of a CCD requires a perfectly uniform light source and an integrating sphere, which FLI would have access to. I had to make do with a LCD screen when carrying out the tests in the lab, which is a poor substitute. Therefore the values in \aref{tab:lin} should not be considered reliable measurements.
 
 \begin{table}[t]
     \begin{center}
-        \begin{tabular}{cc|lll} %chktex 44
-            Camera   & Serial    & \multicolumn{3}{c}{Dark Columns} \\
+        \begin{tabular}{c|cc} %chktex 44
+             & \multicolumn{2}{c}{Non-linearity} \\
+             & \multicolumn{2}{c}{(\%)} \\
+             & \multicolumn{1}{c}{L} & \multicolumn{1}{c}{R} \\
             \midrule
-            Camera 1 & ML0010316 & 1 dead column:  & x=7678, starting at y=4312 & (30\%) \\
-            Camera 2 & ML0330316 & 2 dead columns: & x=3583, starting at y=909  & (85\%) \\
-                     &           &                 & x=6386, starting at y=127  & (98\%) \\
-            Camera 3 & ML0420516 & 2 dead columns: & x=1800, starting at y=1151 & (81\%) \\
-                     &           &                 & x=5140, starting at y=4986 & (19\%) \\
-            Camera 4 & ML0430516 & 1 dead column:  & x=5333, starting at y=2561 & (58\%) \\
+            Camera 1 & 2.29 & 2.00 \\
+            Camera 2 & 0.76 & 0.65 \\
+            Camera 3 & 0.34 & 0.39 \\
+            Camera 4 & 0.18 & 0.22 \\
+        \end{tabular}
+        \hspace{0.5cm}
+        \begin{tabular}{c|cc} %chktex 44
+             & \multicolumn{2}{c}{Non-linearity} \\
+             & \multicolumn{2}{c}{(\%)} \\
+             & \multicolumn{1}{c}{L} & \multicolumn{1}{c}{R} \\
+            \midrule
+            Camera 5 & 1.25 & 1.20 \\
+            Camera 6 & 1.20 & 1.13 \\
+            Camera 7 & 0.70 & 0.68 \\
+            Camera 8 & 0.82 & 0.80 \\
         \end{tabular}
     \end{center}
     \caption[TODO]{
-        Locations of dead columns caused by stuck pixels. The percentages denote the amount of the column that is unusable.
-    }\label{tab:frame}
+        Mean deviation from linearity for each camera.
+        }\label{tab:lin}
 \end{table}
+
+
+\begin{figure}[p]
+    \begin{center}
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_1.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_2.png}
+        \end{minipage}
+
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_3.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_4.png}
+        \end{minipage}
+
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_5.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_6.png}
+        \end{minipage}
+
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_7.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/detectors/lin_8.png}
+        \end{minipage}
+    \end{center}
+    \caption[Linearity plots for all 8 cameras]{
+        Linearity plots for all 8 cameras.
+        }\label{fig:lin}
+\end{figure}
 
 \clearpage
 
