@@ -86,29 +86,26 @@ The noises described above (aside from the bias) are all independent Gaussian ra
 
 \begin{colsection}
 
-It was considered important to carry out a good analysis of the GOTO cameras: firstly to ensure they met the specification given by FLI and secondly to independently test the important characteristics that are unique to each detector.
+CCD cameras have a variety of characteristic parameters described above, including sources of noise, and analysing the in laboratory conditions is important to fully profile them before they are used to take scientific images.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
 \subsection{The FLI cameras}
 \label{sec:FLI}
 \begin{colsection}
 
-The KAF-50100 detectors used in the GOTO cameras consists of a $8304 \times 6220$ pixel CCD with $\SI{6}{\micro\metre} \times \SI{6}{\micro\metre}$ square pixels. It has two channels and either two or four outputs. In our case the two-output system is used, and reads out at 8 MHz. The layout of the sensor is shown below in \aref{fig:chip}, adapted from the ON Semi specification sheet.
+The cameras used by GOTO are MicroLine ML50100s, manufactured by \glsfirst{fli}\footnote{\url{http://www.flicamera.com/microline/}}, containing a KAF-50100 CCD sensor manufactured for FLI by ON Semiconductor\footnote{\url{https://www.onsemi.com/}}. The detectors consist of a $8304 \times 6220$ pixel CCD with $\SI{6}{\micro\metre} \times \SI{6}{\micro\metre}$ square pixels. It has two channels each with an independent output, and reads out at \SI{8}{\mega\hertz}. The layout of the sensor is shown in \aref{fig:chip}, adapted from the ON Semiconductor sensor specification sheet.
 
 The primary active region has an area of 8176 $\times$ 6132 pixels. This is the default frame that excludes any of the surrounding test regions.
 
-The full frame of the camera outputs an 8304 $\times$ 6220 array. Surrounding the active area on each edge are 16 active buffer pixels, which are light-sensitive but not considered part of the primary region. Around the edge of the active area is a border of light-shielded dark reference pixels: 29 dark rows at the start, 26 rows at the end and 28 columns on the sides leading each row. These pixels do not respond to light and therefore can be used as a dark reference. At the beginning and end of each row there is also a CTE test column with 4 blank columns either side, as well as a CTE test row at the end of each frame, included for test purposes. Finally there are 10 dummy pixels leading each row, as well as a final pixel used in the readout process. These dummy pixels form an overscan region which can be used to measure and correct for bias signal.
+The full frame of the camera outputs an 8304 $\times$ 6220 array. Surrounding the active area on each edge are 16 active buffer pixels, which are light-sensitive but not considered part of the primary region. Around the edge of the active area is a border of light-shielded dark reference pixels: 29 dark rows at the start, 26 rows at the end and 28 columns on the sides leading each row. These pixels do not respond to light and therefore can be used as a dark reference. At the beginning and end of each row there is also a test column with 4 blank columns either side, as well as a test row at the end of each frame. Finally there are 10 dummy pixels leading each row, as well as an initial test pixel used in the readout process. These dummy pixels form an overscan region which can be used to measure and correct for bias signal.
 
-The software allows for a large amount of overscan in either dimension. Overscan pixels in the vertical will appear at the top of the frame, and will appear to have a dark current level picked up as they are transferred down the frame. Horizontal overscan pixels will appear at the end of each channel, i.e.\ running down the centre of the frame, and will only contain values approximating the readout noise.
-
-A sample frame from Camera 2 is shown in \aref{fig:frame}. You can clearly see the extra regions around the frame, with the lower corner expanded in more detail.
+A sample frame from Camera 2 is shown in \aref{fig:frame} at high contrast. The extra regions around the frame are visible, including the dark reference and overscan regions.
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/chip}
+        \includegraphics[width=0.85\textwidth]{images/chip}
     \end{center}
     \caption[The layout of the CCD chips in the MicroLine cameras used by GOTO]{
         The layout of the CCD chips in the MicroLine cameras used by GOTO.\@ The central image area is not shown to scale, but the surrounding rows and columns are all in proportion.
@@ -117,42 +114,83 @@ A sample frame from Camera 2 is shown in \aref{fig:frame}. You can clearly see t
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/sample.png}
+        \includegraphics[width=0.7\textwidth]{images/sample.png}
     \end{center}
     \caption[\rtxt{TODO}]{
-        A sample bright frame from one of the GOTO cameras. The highlighted area in the corner shows some of the features described in \aref{fig:chip}. Also note the two bad columns.
+        A sample bright frame from one of the GOTO cameras. The highlighted area in the corner shows some of the features described in \aref{fig:chip}.
         }\label{fig:frame}
 \end{figure}
 
 \clearpage
 
-The first of the FLI cameras to be used on GOTO arrived in Warwick in February 2016, and in March it was moved to Sheffield to carry out a detailed study.
-The first camera was bought up to Sheffield on 8th March with a collection of other hardware, it was taken back when the other three were delivered on 10th May. These cameras were returned to Warwick on 8th June.
+\end{colsection}
 
-The results of the analysis were written up as a page on the GOTO wiki for easy access and reference, and are repeated below.
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{In-lab tests}
+\label{sec:camera_tests}
+\begin{colsection}
+
+The camera manufacturer \glsfirst{fli} and detector manufacturer ON Semiconductor both produce specification sheets advertising expected parameters, and FLI carried out a limited series of tests on the cameras before selling them. Carrying out our own tests ensures that the cameras meet the specification and also allowed independent measurements of the key parameters.
+
+The initial deployment of GOTO was delayed for several months, due to delays on-site at the observatory on La Palma and manufacturing the unit telescopes. The cameras however had already been purchased from FLI, and the delay gave time to test them in the lab in Sheffield. Having the cameras in Sheffield was also useful for developing the hardware control code, as described in \aref{sec:cam}. The second set of cameras were also purchased long before the second four unit telescopes were built, these were also bought to Sheffield so the same tests could be repeated.
+
+A list of the nine FLI cameras bought for GOTO is given in \aref{tab:cameras}. Each camera is given a name (Camera 1, Camera 2 etc.) based on the order of their serial numbers. These do not necessarily match which GOTO unit telescope they were assigned to, and the cameras on La Palma are sometimes swapped around to allow for repairs.
+
+The first set of four cameras arrived in Warwick in February 2016, and one (Camera 2) was bought to Sheffield in March with a collection of other hardware. The other three were delivered in May and Camera 2 was returned to Warwick, these three were returned in June. The second set cameras were delivered to Warwick in April 2018: four for the next four unit telescopes as well as a spare. The second four cameras (5--8) were brought to Sheffield in May, with Warwick keeping the spare for their own use, these were returned in June.
+
+\newpage
 
 \begin{table}[t]
     \begin{center}
         \begin{tabular}{cccc} %chktex 44
-            Name     & Serial number & Set & Tested     \\
+            Name     & Serial number & Set & Tested \\
             \midrule
-            Camera 1 & ML0010316     & 1   & June---??? 2016 \\
-            Camera 2 & ML0330316     & 1   & April---June 2016 \\
-            Camera 3 & ML0420516     & 1   & June--??? 2016 \\
-            Camera 4 & ML0430516     & 1   & June--??? 2016 \\
-            \\
-            Camera 5 & ML5644917     & 2   & May---June 2018 \\
-            Camera 6 & ML6054917     & 2   & May---June 2018 \\
-            Camera 7 & ML6094917     & 2   & May---June 2018 \\
-            Camera 8 & ML6304917     & 2   & May---June 2018 \\
-            \\
-            Camera 9 & ML6314917     & --- & --- \\
+            Camera 1 & ML0010316     &   1 & May---June 2016  \\
+            Camera 2 & ML0330316     &   1 & March---May 2016 \\
+            Camera 3 & ML0420516     &   1 & May---June 2016  \\
+            Camera 4 & ML0430516     &   1 & May---June 2016  \\
+            Camera 5 & ML5644917     &   2 & May---June 2018  \\
+            Camera 6 & ML6054917     &   2 & May---June 2018  \\
+            Camera 7 & ML6094917     &   2 & May---June 2018  \\
+            Camera 8 & ML6304917     &   2 & May---June 2018  \\
+            Camera 9 & ML6314917     &   2 & N/A              \\
         \end{tabular}
     \end{center}
     \caption[List of GOTO cameras]{
-        A list of the 9 GOTO cameras, with assigned names, serial numbers and when they were tested.
+        A list of the 9 GOTO cameras, with assigned names, serial numbers and when the tests were carried out.
         }\label{tab:cameras}
 \end{table}
+
+The characterisation tests consisted of taking a series of calibration frames with each camera. Three types of images were needed:
+
+\begin{itemize}
+    \item Zero-second dark exposures, to construct bias frames (see \aref{sec:bias}).
+    \item Long (30 minute) dark exposures at different temperatures, to measure the dark current (see \aref{sec:dc}).
+    \item Flat illuminated frames at different exposure times, to construct photon transfer curves (see \aref{sec:ptc}) and measure linearity (see \aref{sec:lin}).
+\end{itemize}
+
+The cameras were tested using two different test setups. \aref{fig:dark_photo} shows the setup for taking dark frames: the cameras are face down and covered. The long dark exposures were taken overnight to as much as possible reduce any excess light reaching the detectors. The flat frames were harder to take. A LCD monitor showing a dark screen was used, with sheets of paper between the camera and the monitor to reduce the illumination. This is shown in \aref{fig:flat_photo}.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{images/dark_photo.jpg}
+    \end{center}
+    \caption[The dark frame test setup]{
+        A photo of the dark frame test setup in the lab in Sheffield. Dark frames were taken at night with the cover down and the ambient light minimised as much as possible.
+        }\label{fig:dark_photo}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.75\textwidth]{images/flat_photo.jpg}
+    \end{center}
+    \caption[The flat frame test setup]{
+        A photo of the flat frame test setup. In the absence of a flat illuminated screen a spare computer monitor was used, with sheets of paper placed in front of the camera to reduce the illumination. The cover shown in \aref{fig:dark_photo} was also placed over the setup.
+        }\label{fig:flat_photo}
+\end{figure}
+
+\clearpage
 
 \end{colsection}
 
@@ -160,7 +198,6 @@ The results of the analysis were written up as a page on the GOTO wiki for easy 
 \newpage
 \subsection{Bias}
 \label{sec:bias}
-% OVERSCAN??
 \begin{colsection}
 
 The bias level is a fixed offset in counts for each pixel. Setting a reasonable bias level in a CCD is important in order to ensure counts are never recorded as negative due to random noise. In general the bias level of each pixel is considered a fixed value, although it can change over time due to degradation of the pixel electronics. Bias should therefore still be measured regularly, as any change might indicate a problem with the detector.
@@ -206,10 +243,6 @@ The measured biases are all around the same level, 970--1010 counts, as would be
 \newpage
 \subsection{Gain, read-out noise and fixed-pattern noise}
 \label{sec:ptc}
-% https://harvestimaging.com/blog/?p=1034
-% https://www.couriertronics.com/docs/notes/cameras_application_notes/Photon_Transfer_Curve_Derivation.pdf
-% http://slittlefair.staff.shef.ac.uk/teaching/phy217/lectures/instruments/L14/index.html
-% https://www-spiedigitallibrary-org.sheffield.idm.oclc.org/ebooks/PM/Scientific-Charge-Coupled-Devices/eISBN-9780819480392/10.1117/3.374903
 \begin{colsection}
 
 The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \gls{ptc} method \citep{CCDs, PTC}. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images the dark current noise is negligible, so once the images has the bias level subtracted the total number of electrons in each pixel, $N_\text{Total}$, will include a number of photo-electrons from the source $N$ plus extra electrons from the readout electronics $R$:
@@ -497,7 +530,6 @@ The values for non-linearity measured vary greatly between each camera, and seve
         Non-linearity values for each camera.
         }\label{tab:lin}
 \end{table}
-
 
 \begin{figure}[p]
     \begin{center}
