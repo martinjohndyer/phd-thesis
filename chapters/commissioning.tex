@@ -27,25 +27,6 @@ WIP
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
-% ########################################
-
-\newpage
-\section{Detector characterisation tests}
-\label{sec:detectors}
-\begin{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
-
-It was considered important to carry out a good analysis of the GOTO cameras: firstly to ensure they met the specification given by FLI and secondly to independently test the important characteristics that are unique to each detector.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 \newpage
 \subsection{Properties of a CCD}
 \label{sec:CCDs}
@@ -87,6 +68,25 @@ The noises described above (aside from the bias) are all independent Gaussian ra
     \end{split}
     \label{eq:noise}
 \end{equation}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Detector characterisation tests}
+\label{sec:detectors}
+\begin{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{colsection}
+
+It was considered important to carry out a good analysis of the GOTO cameras: firstly to ensure they met the specification given by FLI and secondly to independently test the important characteristics that are unique to each detector.
 
 \end{colsection}
 
@@ -158,9 +158,8 @@ The results of the analysis were written up as a page on the GOTO wiki for easy 
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Bias level and pixel defects}
+\subsection{Bias}
 \label{sec:bias}
-% Overscan?
 \begin{colsection}
 
 The bias level is a fixed offset in counts for each pixel. Setting a reasonable bias level in a CCD is important in order to ensure counts are never recorded as negative due to random noise. The bias level can change over time due to degradation of the pixel electronics, but in general the bias of each pixel can be considered as a fixed value. The bias should still be measured regularly to ensure it has not changed, as this might indicate a problem with the CCD hardware.
@@ -168,23 +167,6 @@ The bias level is a fixed offset in counts for each pixel. Setting a reasonable 
 Pixel bias levels can be measured by taking a dark, zero-second exposure time image. This image will not include any electrons from a source, so the shot noise is zero, and as the dark current is proportional to the exposure time this will also be minimised. The image will however still include random read-out noise, so to account for this multiple bias frames are taken and then averaged to produce a master bias.
 
 For each of the eight cameras 50 bias images were taken, these were then combined to form a master bias frame by taking the median value in each pixel (to account for superfluous counts due to cosmic rays). The mean count in a 2000$\times$2000 pixel region in the centre of each of the two camera channels was measured, these values are given in \aref{tab:bias}.
-
-% hot pixels
-
-
-For each camera a defect mask was constructed using the ratio of two flat images of different exposures, and then detecting pixels outside of a given sigma limit. Each camera was found to have at least one stuck pixel, which produced a dead column travelling up the frame. In \aref{fig:frame} these are visible as two dark columns. The exact positions and details for every camera are shown in \aref{tab:frame}.
-
-The ONSemi chip specifications gives an allowed limit of less than 20 column defects per device, and none of the GOTO detectors had more than two.
-
-
-For a standard full-frame image there are two methods to correct for bias: using the overscan regions and using a master bias.
-
-The two 10-pixel wide dummy regions on either side of the image as shown in \aref{fig:chip} can be subtracted from the frame (independently for each channel) to correct for much of the bias level. These levels change for each image, but typical values for each camera and channel are given in \aref{tab:bias} --- they are usually between 960 and 990 counts.
-
-
-
-
-\newpage
 
 \begin{table}[t]
     \begin{center}
@@ -208,25 +190,8 @@ The two 10-pixel wide dummy regions on either side of the image as shown in \are
         }\label{tab:bias}
 \end{table}
 
-\begin{table}[t]
-    \begin{center}
-        \begin{tabular}{cc|lll} %chktex 44
-            Camera   & Serial    & \multicolumn{3}{c}{Dark Columns} \\
-            \midrule
-            Camera 1 & ML0010316 & 1 dead column:  & x=7678, starting at y=4312 & (30\%) \\
-            Camera 2 & ML0330316 & 2 dead columns: & x=3583, starting at y=909  & (85\%) \\
-                     &           &                 & x=6386, starting at y=127  & (98\%) \\
-            Camera 3 & ML0420516 & 2 dead columns: & x=1800, starting at y=1151 & (81\%) \\
-                     &           &                 & x=5140, starting at y=4986 & (19\%) \\
-            Camera 4 & ML0430516 & 1 dead column:  & x=5333, starting at y=2561 & (58\%) \\
-        \end{tabular}
-    \end{center}
-    \caption[TODO]{
-        Locations of dead columns caused by stuck pixels. The percentages denote the amount of the column that is unusable.
-    }\label{tab:frame}
-\end{table}
-
-\clearpage
+\rtxt{OVERSCAN}
+The two 10-pixel wide dummy regions on either side of the image as shown in \aref{fig:chip} can be subtracted from the frame (independently for each channel) to correct for much of the bias level.
 
 \end{colsection}
 
@@ -488,6 +453,42 @@ The dark current was also examined as a function of time since power on, as in s
 \begin{colsection}
 
 Linearity was measured for all four cameras using a flat light source and increasing exposure times. Each camera had a turn off in the lower half of the dynamic range which needs further analysis, this experiment was hampered by the broken flat light source. Very short exposure times were studied in order to see any possible effect of the shutter speed. It was found that although the cameras allow exposure times as low as 1ms there is a consistent deviation from linearity below approximately 0.15 seconds. As such exposure times shorter than 0.2 seconds should be avoided.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Defects}
+\label{sec:defects}
+% hot pixels
+\begin{colsection}
+
+
+For each camera a defect mask was constructed using the ratio of two flat images of different exposures, and then detecting pixels outside of a given sigma limit. Each camera was found to have at least one stuck pixel, which produced a dead column travelling up the frame. In \aref{fig:frame} these are visible as two dark columns. The exact positions and details for every camera are shown in \aref{tab:frame}.
+
+The ONSemi chip specifications gives an allowed limit of less than 20 column defects per device, and none of the GOTO detectors had more than two.
+
+
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{cc|lll} %chktex 44
+            Camera   & Serial    & \multicolumn{3}{c}{Dark Columns} \\
+            \midrule
+            Camera 1 & ML0010316 & 1 dead column:  & x=7678, starting at y=4312 & (30\%) \\
+            Camera 2 & ML0330316 & 2 dead columns: & x=3583, starting at y=909  & (85\%) \\
+                     &           &                 & x=6386, starting at y=127  & (98\%) \\
+            Camera 3 & ML0420516 & 2 dead columns: & x=1800, starting at y=1151 & (81\%) \\
+                     &           &                 & x=5140, starting at y=4986 & (19\%) \\
+            Camera 4 & ML0430516 & 1 dead column:  & x=5333, starting at y=2561 & (58\%) \\
+        \end{tabular}
+    \end{center}
+    \caption[TODO]{
+        Locations of dead columns caused by stuck pixels. The percentages denote the amount of the column that is unusable.
+    }\label{tab:frame}
+\end{table}
+
+\clearpage
 
 \end{colsection}
 
