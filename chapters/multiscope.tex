@@ -1,187 +1,24 @@
-\chapter{Simulating GOTO Observations}
-\label{chap:sims}
+\chapter{Simulating a Multi-Telescope Observatory}
+\label{chap:multiscope}
 \chaptoc{}
 
 % ########################################
 
 \newpage
 \section{Introduction}
-\label{sec:sims_intro}
+\label{sec:multiscope_intro}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-In this chapter I outline my work creating simulations of the GOTO observatory. \aref{sec:scheduler_sims} describes early simulations carried out when developing the G-TeCS scheduler in order to find the optimal ``tiebreak'' parameters, \aref{sec:multi_site} details how this simulation code could be modified to simulate multiple observing sites and \aref{sec:gw_sims} and \aref{sec:survey_sims} apply this to multi-site simulations of gravitational wave events and the all-sky survey respectively. All work described in this chapter is my own and has not been published before anywhere else.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Simulating GOTO}
-\label{sec:goto_sims}
-\begin{colsection}
-
-The GOTO Telescope Control System (G-TeCS) described previously contains all the code used to operate the GOTO telescope. The intention of these simulations is to model the response of the real telescope using the real code as much as possible. The G-TeCS module contains test systems down to the level of the individual daemons and hardware units, meaning it is possible to simulate, for example, the camera daemon taking exposures using fake hardware code that waits in real time until the exposure time is completed (plus some readout time) and then creates a blank FITS image file with all the expected header information. On top of this the real pilot can run without knowing these daemons are fake, the real sentinel daemon can add real or simulated events into a copy of the observation database for the real scheduler to chose between. In this way the entire control system can be run without any of the real hardware.
-
-The fully-featured test code described above is not ideal for the simulations carried out in this chapter: ideally the simulations would run faster than real time, and it is not necessary to simulate the full system down to fake images being written out. In these simulations everything below the pilot is abstracted away, and the pilot itself is replaced by a new specialised script simply called the fake pilot. This contains a class \code{FakePilot} that mirrors the real \code{Pilot} in several ways, such as the scheduler checks and deciding what to observe. There are however several important simplifications:
-
-\begin{itemize}
-    \item Firstly the pilot does not call the scheduler daemon in order to find what pointing to observe, but instead just imports and runs the scheduling functions itself. This was the original way the pilot ran before the scheduler was split into a separate daemon, as described in \aref{sec:scheduler}.
-    \item Secondly the pilot does not bother with the full conditions checks and the conditions daemon. The \code{check\_conditions} routine still exists in order to ``close the dome'' (stop observations) when the Sun has risen, but is just a single function check. There was code written to simulate weather closing the dome with random Gaussian processes, however this was not used in any of the simulations as it would just distract from their purpose.
-    \item The night marshal and any observing tasks other than actually observing the scheduler target (e.g.\ autofocusing) have been removed. Observations start immediately after sunset and continue to sunrise, and then when the dome is closed the pilot loop continues until the simulation has completed. Related to this the fake pilot can be run for multiple nights, instead of exiting and needing to be restarted.
-    \item While the real pilot works using loops that sleep until a given time has passed, the fake pilot contains an internal time which is increased for each `step' in the simulation. At each step the script checks the scheduler using the normal commands. One important factor in speeding the simulations up is to increase this step size, up to the point that each observation takes a single step. This means that at each step the pilot will observe a new target, and increase the internal simulation time by the appropriate amount (for example if the target pointing asks for 3 60s \textit{L} exposures the simulations would increase by 3 minutes, plus extra time for readout and slewing to the target before the exposures start).
-    \item Finally the fake pilot can be modified to simulate multiple observing telescopes at different sites, each of which in reality would use their own pilot. This is described in detail in \aref{sec:multi_site}.
-\end{itemize}
-
-The fake pilot allows the response of the telescope to be simulated, based on the input pointings in the observation database. The database structure remains identical to the real thing, and pointings are defined either using the default all-sky survey settings (for \aref{sec:survey_sims}) or the GOTO-alert functions described in \aref{sec:gotoalert} for gravitational wave skymaps.
-
-The first set of simulations were carried out early on in the development of G-TeCS, when the GOTO telescope was still under construction in La Palma. These were used to find values for the scheduler tiebreaker algorithm to best optimise gravitational wave skymap coverage without compromising too much on data quality. These simulations are described in \aref{sec:scheduler_sims}.
-
-As described in \aref{sec:goto_expansion}, the ultimate aim of the \gls{goto} project is to have multiple nodes around the world. Specifically, the plan calls for two full GOTO-8 systems on La Palma and another two at a second site in Australia (the exact site is not yet determined, but it will most likely be either Siding Spring in New South Wales or Mt Kent in Queensland). In order to better quantify the benefit multiple telescopes and sites will provide, a series of simulations were carried out to model the combined system's response to gravitational wave alerts (in \aref{sec:gw_sims}) and the coverage and cadence of the all-sky survey (\aref{sec:survey_sims}).
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
-% ########################################
-
-\newpage
-\section{Scheduler simulations}
-\label{sec:scheduler_sims}
-\begin{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
-
-The first simulations of the \gls{gtecs} system were carried out in 2016 when the target scheduling code was being written. The scheduler needs a way to distinguish equally-ranked pointings, as described below, and the choice of weightings for this `tiebreaker' needed to be decided on. Therefore a series of simulations were carried out in order to find which weightings gave the best performance when observing gravitational wave skymaps.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{The scheduler tiebreaker}
-\label{sec:scheduler_tiebreaker}
-\begin{colsection}
-
-The workings of the scheduler functions are described in detail in \aref{sec:scheduler}. The scheduler weights pointings in the current queue by several parameters: the assigned rank, the number of times it was previously observed, if it is a \gls{too} or not. But in practice most of the time the queue will contain a large number of pointings where these values are all the same. For example, when a new gravitational wave event is processed by the sentinel GOTO-alert adds in a large number of tiles from the skymap (see \aref{sec:db_insert}). On the next scheduler check the queue will be populated by a large number of pointings each with the same rank and \gls{too} flag and having never been observed. Likewise when observing the all-sky survey the queue will be filled with tiles that have all been observed the same number of times. This is why the scheduler then needs a further way to distinguish pointings, which is known as the tiebreaker.
-
-The pre-existing \gls{pt5m} scheduling code (see \aref{sec:pt5m}) used only a single parameter to decide between equally-ranked pointings: the airmass each target would be at at the midpoint of the observation (The scheduler constraints are applied at both the start and stop times of the observation, to ensure that the target remains visible throughout (unlike GOTO, which only observes targets for a few minutes, \gls{pt5m} often observes the same target for several hours at a time). For the tiebreaker the airmass is calculated at the midpoint of this observation period.). This works well to prioritise getting the best data quality, assuming the two targets are otherwise identical.
-
-% ---------
-\subsubsection{Tile weighting}
-
-When adapting the \gls{pt5m} system for GOTO it was clear there was the need for an additional parameter in the scheduling functions, to encode the relative weights of a set of pointings. All the pointings added from a gravitational wave skymap (or similar event such as a gamma-ray burst) will have the same rank, but they will have different weights from the amount of skymap probability they each contain. It makes sense that, of all the tiles from a given event, the ones with higher probability should be the ones to prioritise and observe first. However unlike an integer parameter such as the rank or the \gls{too} flag the tile weights cover a wide range and often there will only be a small amount of difference between the values for neighbouring tiles. Prioritising a tile that contains 2.71\% of the skymap over another that contains 2.70\% in all cases is not the best strategy, especially if the latter is close to zenith while the former is very low down. Observing a high-airmass tile over a low-airmass one for a gain of only 0.01\% probability is a poor choice, especially if the former tile is currently rising and will be at a better altitude in a few hours. For these reasons it was decided that the skymap probability weighting should be considered at the same level as the airmass tiebreaker, meaning a lower-airmass tile with only a slightly power probability will be prioritised over one further from zenith. This should only be true up to a reasonable limit however, in the case of two tiles where one contains 95\% and the other 3\% it should always be true that observing the latter is the better choice, even if it has a slightly worse airmass.
-
-It should be noted that probability is not necessarily the only way for a group of tiles to be weighted. In the past GOTO has carried out more focused surveys: in the galaxy survey for example tiles were weighted by the total flux of all galaxies within each tile, which is not strictly a probability. As this section deals exclusively with gravitational wave skymaps the term `probability' rather than `weight' will be used to describe the relative measure of each tile to the others added from the same event, even though the latter is used in the \gls{gtecs} scheduler code. This also avoids confusion when later discussing the relative weighting between probability and airmass in the tiebreaker ratio.
-
-% ---------
-\subsubsection{Airmass vs time-to-set}
-
-Airmass is usually modelled using a plane-parallel atmosphere as $X=\sec{z}$, where $X$ is airmass and $z$ is the zenith angle ($z=90-h$ where $h$ is the altitude of the target). This makes it by definition an entirely symmetric parameter around the zenith, with no consideration for is a target is rising or setting. This was identified as a problem for similar reasons given above. Consider two tiles with equal or similar contained probabilities, but one is \SI{5}{\degree} above the horizon in the west and the other is \SI{5}{\degree} above the horizon in in the east. They have the same airmass value, but the one in the west will be setting while the one in the east is rising. The system should prioritise the one in the west as unless it is observed quickly it will pass below the horizon and no longer be visible for the remainder of the night.
-
-In order to correct this problem, a new parameter was required that will prioritise targets that are about to set. This new parameter is called `time-to-set', and is simply the time until the target sets below the defined horizon. The units are arbitrary, but as it will repeat with a period of 24 hours the time-to-set value is normalised between 0 and 1 so that 0 is when the target is at the horizon, 0.5 is when it is 12 hours from setting and 1 is 24 hours from setting (and there is therefore a degeneracy at 0 and 1). \aref{fig:airmass_tts} shows how altitude, airmass and time-to-set are defined for any non-circumpolar target. Circumpolar targets are ones that never set below the horizon, and therefore the time-to-set is an illogical value. However as from La Palma the North Pole is just below the \SI{30}{\degree} horizon limit this is not a concern for GOTO and is therefore not considered.
-
-Just replacing airmass with the time-to-set would not produce good results, as the telescope would be prioritised to constantly be observing the western horizon. As with probability, a weighted combination of the two would be best in order to take both parameters into account. \aref{fig:at_ratio} shows how combining airmass and time-to-set, both normalised to between 0 and 1, produces a new distribution. As the ratio the two are combined with is increased in favour of time-to-set the peak of the distribution shifts to favour targets that are setting over those at the zenith.
-
-\begin{figure}[p]
-    \begin{center}
-        \includegraphics[width=\linewidth]{images/airmass-tts.png}
-    \end{center}
-    \caption[Defining airmass and time-to-set for a given target]{
-        Defining airmass and time-to-set for a particular, arbitrary target. The altitude of the target is shown in \textcolor{Blue}{blue} over the course of one day and the corresponding airmass in \textcolor{BurntOrange}{orange}. The time-to-set is shown in \textcolor{Green}{green}, decreasing to 0 at the time the target passes below the \SI{30}{\degree} horizon (shown in red) and then resetting to the maximum. The grey regions are the times when the target is below the horizon.
-    }\label{fig:airmass_tts}
-\end{figure}
-
-\begin{figure}[p]
-    \begin{center}
-        \includegraphics[width=\linewidth]{images/at_ratio.png}
-    \end{center}
-    \caption[Combining airmass and time-to-set with different ratios]{
-        Combining airmass and time-to-set with different ratios. Increasing the relative weighting towards time-to-set shifts the peak of the overall distribution to the right.
-    }\label{fig:at_ratio}
-\end{figure}
-
-\clearpage
-
-% ---------
-\subsubsection{The PAT ratio}
-
-The previous sections detail three different parameters to be considered as part of the scheduler tiebreak parameter: the contained tile probability ($P$), the airmass ($X$) and time-to-set ($T$). Combining these parameters will provide a single, weighted value for each tile at the scheduler check time as
-
-\begin{equation}
-    \text{Tiebreak parameter} = \frac{p}{p+a+t} P + \frac{a}{p+a+t} X + \frac{t}{p+a+t} T.
-    \label{eq:pat}
-\end{equation}
-
-where $p$, $a$ and $t$ are the weightings for the probability, airmass and time-to-set respectively. Together these are called the PAT ratio, and are usually written in the form $p$:$a$:$t$. So a PAT ratio of 1:1:1 means all three are weighted equally, where as 2:1:1 means probability is weighted twice as much as airmass or time-to-set.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-
-\subsection{Simulation results}
-\label{sec:scheduler_sim_results}
-\begin{colsection}
-
-A series of simulations were carried out in order to find optimal values for the PAT ratio, and see how the telescope response changes depending on the ratio used. The fake pilot and scheduler code described in the previous section was run with a selection of skymaps from the LIGO First Two Years project \citep{First2Years}. The PAT ratio was set within the scheduler code, and the skymaps were then added to the observation database and the fake pilot ran through one night of simulated observations for each.
-
-Two primary metrics were used to judge the effectiveness of the simulations. The first was the fraction of the skymap probability covered during the simulated night of observations, the total contained probability within all the tiles that were observed. The second was the mean airmass of each tile when observed. The average of these two values across all the skymaps for the different PAT ratios simulated are plotted in \aref{fig:scheduler_sim_results}.
-
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=\linewidth]{images/scheduler_sim.png}
-    \end{center}
-    \caption[Airmass vs fraction of skymap covered for different scheduler weightings]{
-        Mean observation airmass vs fraction of the event skymap covered for different scheduler weightings. The full coloured lines join simulations with common airmass:time-to-set ratios, while the dashed lines show some simulations with the same probability weighting relative to the other two parameters. The region formed by the 1:0:0, 0:1:0 and 0:0:1 points contains all possible ratios. The optimal target is low airmass and high fraction covered, corresponding to the top-right of these axes.
-    }\label{fig:scheduler_sim_results}
-\end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Analysis of simulation results}
-\label{sec:scheduler_sim_analysis}
-\begin{colsection}
-
-\aref{fig:scheduler_sim_results} shows several clear trends that emerge from modifying the PAT ratios. Increasing the relative weighting of probability compared to the other two parameters (from 0:X:X, 1:X:X, 5:X:X up to 1:0:0 which is effectively $\infty$:X:X) increases the mean probability covered by up to a third, from 24\% to 33\%. This however typically comes at a cost to the mean airmass of the observations.
-
-Changing the relative ratios of airmass to time-to-set (from Y:1:0 to Y:0:1) shows an unexpected result. It is true the observed airmasses would be lower as less weight is put on the airmass parameter, however it was intended that introducing the time-to-set parameter would compensate by catching more setting tiles that would be missed purely looking around the zenith. This is the result if probability is not included as a factor, as seen by the 0:0:1--1:0:0 line at the bottom of \aref{fig:scheduler_sim_results}. When only airmass is considered (in the 0:1:0 case) the results produce the best average airmass per observation but the worse skymap coverage. On the other hand only considering time-to-set (0:0:1) results in worse airmasses but better coverage. But having the explicit probability parameter counteracts this trend. Looking at the 10:0:1--10:1:0 line changing the airmass to time-to-set ratio only reduces the mean airmass with no corresponding gain in probability covered. In the case where the airmass parameter is ignored (the green time-to-set line on the left of \aref{fig:scheduler_sim_results}) the inclusion of the time-to-set value is just actively suppressing the amount of probability observed while making almost no difference to the mean airmass.
-
-Based on these results, it is clear that the optimal solution is to ignore time-to-set and chose a tiebreaker PAT ratio of around 5:1:0 to 10:1:0, to get the best airmass while limiting the coverage lost. The final scheduler has been operating with a ratio of 10:1:0, as compared to 5:1:0 this gives a gain in mean airmass only 0.02 airmass while increasing the skymap coverage by 1\%. This is only restricting the options to the ratios simulated however, and further simulations would be able to explore the parameter space further.
-
-The results plotted in \aref{fig:scheduler_sim_results} show remarkably smooth trends. The three coloured lines with fixed airmass:time-to-set ratio all curve and trend towards the 1:0:0 point, aside from the slightly outlying 50:0:1 point. The points with a fixed probability weight compared to the other two also seem to form straight lines, as shown by the 10:0:1 to 10:1:0 line. As only the relative values of the ratios matter the 20:1:1 point could be considered to be 10:\sfrac{1}{2}:\sfrac{1}{2}, likewise 40:1:3 and 40:3:1 are 10:\sfrac{1}{4}:\sfrac{3}{4} and 10:\sfrac{3}{4}:\sfrac{1}{4}, from this it is clear that any ratio of airmass to time-to-set will fall on this line if together they add to one-tenth of the probability weighting. However the results shown in \aref{fig:scheduler_sim_results} should be taken with caution. As each point is based on the means over multiply skymaps there is a wide range of variation, and in fact were error bars be included they would have spread off the page in both axes.
-
-The conclusions on the PAT ratio made above are not unreasonable if all that is needed is a one-size-fits-all set of values that are hard-coded into the scheduler, as the current system does use. However when these simulations are revisited it would be a good idea to look more in detail at other trends that might be hidden in the averages. For example if one ratio might be better suited for large skymaps vs smaller ones, or in cases where the whole skymap is visible at once compared to it slowly rising up during the night. These simulations also only considered visibility from La Palma and observed for just the first night, rather than the full 24 hours as used by simulations described later.
-
-These simulations were carried out as the scheduler was still being designed, and long before any of the sentinel or GOTO-alert functions described in \aref{sec:gotoalert} were written. The simulations used the original GOTO-tile code written by Evert Rol to split the skymaps up into the grid, and the individual pointings then had to be added separately into the database. The process in general was a lot slower and required manual intervention to reset the database and ratio values, which is why it took longer to run and fewer simulations were run compared to those described later in this chapter. This was also before GOTO construction began on La Palma, and so properties like the field of view and horizon had to be assumed. Repeating these simulations with the newer code is needed to see if the conclusion that 10:1:0 is still the best case, and at the same time examine the possibility of modifying the ratio based on properties such as the extent of the skymap and time of the event.
-
-Finally, other possible values could be considered for inclusion in the ``PAT'' ratio. One suggestion is to modify time-to-set into time-visible, by including not only the time when the target sets below the horizon but also the time that the Sun rises. The existing time-to-set ratio prioritises observing targets later in the night when they are about to set, where as airmass prioritises tiles near the zenith. Neither however considers the time remaining in the night, and while this is obviously the same for every target it would be better for the time-to-set distribution to peak before sunset instead of after to best prioritise observations in the limited time available.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
-% ########################################
-
-\newpage
-\section{Simulating multiple telescopes and sites}
-\label{sec:multi_site}
-\begin{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
+\rtxt{rewrite so it's an independent introduction}
+\rtxt{link to future of G-TeCS?}
 
 As outlined in \aref{sec:gtecs_multisite} it is envisioned that, as GOTO expands to multiple telescopes and sites, the \gls{gtecs} scheduling system will be extended so that all the telescopes query a single observation database and a master scheduler decides what each telescope should be observing at a given time. This will require a large amount of work to modify both the database structure and the scheduling functions, and as it is not currently implemented into the existing scheduler several workarounds needed to be used in order to create realistic multi-telescope simulations.
+
+In this chapter I outline my work creating simulations of the GOTO observatory. \code{sec:scheduler\_sims} describes early simulations carried out when developing the G-TeCS scheduler in order to find the optimal ``tiebreak'' parameters, \code{sec:multi\_site} details how this simulation code could be modified to simulate multiple observing sites and \code{sec:gw\_sims} and \code{sec:survey\_sims} apply this to multi-site simulations of gravitational wave events and the all-sky survey respectively. All work described in this chapter is my own and has not been published before anywhere else.
 
 \end{colsection}
 
@@ -215,7 +52,6 @@ The scheduler needs to know which site observations are being made from, because
     \begin{center}
         \includegraphics[width=\linewidth]{images/nights.pdf}
     \end{center}
-
     \caption[Night times throughout the year for GOTO sites]{
         Night times throughout the year for GOTO sites. Night here is defined as when the Sun is \SI{12}{\degree} below the local horizon.
     }\label{fig:nights}
@@ -229,7 +65,6 @@ The convenient location of the Australian sites means implementing them into the
     \begin{center}
         \includegraphics[width=\linewidth]{images/sites.pdf}
     \end{center}
-
     \caption[Locations on the Earth with non-overlapping night times]{
         Finding locations on the Earth with non-overlapping night times. On the upper plot the filled areas show the locations on the Earth where local night never overlaps with night on La Palma, at any point in the year. The different colours denote different horizon definitions, with the \SI{-12}{\degree} horizon also being surrounded by a white dashed line. The location of the GOTO sites considered (\textcolor{blue}{La Palma}, \textcolor{ForestGreen}{Siding Spring} and \textcolor{red}{Mt Kent}) are marked with stars and their antipodes are marked with hollow circles. The equivalent areas for Siding Spring and Mt Kent are also shown by the coloured dashed lines surrounding their antipodes, for a \SI{-12}{\degree} horizon only. The lower plots shows how the region varies over a year, from the solstices via the equinox (the plot is identical for the March and September equinoxes and therefore is only shown once).
     }\label{fig:site_nights}
@@ -284,7 +119,6 @@ The simulations were designed to begin at the time of the event, and then simula
     \begin{center}
         \includegraphics[width=\linewidth]{images/f2y_times.png}
     \end{center}
-
     \caption[Date and time distribution of events in the First Two Years sample]{
         Date and time distribution of events in the First Two Years sample \citep{First2Years}. The night periods are shown for La Palma and Siding Spring. The equinox is shown by the red dashed line.
     }\label{fig:f2y_times}
@@ -370,7 +204,6 @@ The first stage of the simulations was to determine if the event source was goin
                       \\
         \end{tabular}
     \end{center}
-
     \caption[Sky visibility over a year]{
         Sky visibility over a year from the three different \gls{goto} sites. The upper value shows the fraction of the sky that is \textcolor{Green}{visible} within the night. The lower values break down the remaining fraction of the sky into the three non-visible categories (\textcolor{BurntOrange}{too close to the Sun}, \textcolor{NavyBlue}{below declination limit} and \textcolor{Blue}{event time}).
     }\label{tab:visibility}
@@ -397,11 +230,13 @@ The region of the sky visible during the night for a given site change over the 
 \label{sec:gw_selecting}
 \begin{colsection}
 
-Even if an event source is visible within the 24 hours from a given site (or combination of sites) there is one further criteria that would prevent observations of the source, that being whether the source is located within any of the tiles added to the database. The issue of determining which tiles to add to the database is detailed in \aref{sec:db_insert}, but is ultimately a matter of probability. If the telescope covered the 90\% confidence region for every event then it would be expected to observe 90\% of the event sources. Two particular examples are shown in \aref{fig:poor_selection}.
+\rtxt{link to scheduler section}
 
-GOTO-alert uses the mean contour level method to select tiles as described in \aref{sec:db_insert}, which itself requites further simulations to find an optimal level to use. The level will also need modification based on the tile shape. For these simulations a mean contour selection value of $0.9$ was used for the GOTO-4 grid and $0.95$ for the GOTO-8 grid. Using these values 92\% of events had sources within at least one of the selected tiles for the GOTO-4 grid, and 95\% for the GOTO-8 grid. In the following simulation results the tile selection was considered \textit{after} the visibility restrictions in the previous section, as it is an operational value decided for \gls{goto} while the visibility is true for any and all telescopes at the relevant sites.
+Even if an event source is visible within the 24 hours from a given site (or combination of sites) there is one further criteria that would prevent observations of the source, that being whether the source is located within any of the tiles added to the database. The issue of determining which tiles to add to the database is detailed in \aref{sec:event_insert}, but is ultimately a matter of probability. If the telescope covered the 90\% confidence region for every event then it would be expected to observe 90\% of the event sources. Two particular examples are shown in \aref{fig:poor_selection}.
 
-Future simulations should be run using the same sample of skymaps but altering the selection level, and comparing the number of selected sources to the number of tiles selected for each event. As discussed in \aref{sec:db_insert} there is a trade-off between adding two few tiles and missing the source and adding too many and increasing the time to cover them all. As additional telescopes are added the limit can also be relaxed further, as they will pass through observing the selected tiles faster.
+GOTO-alert uses the mean contour level method to select tiles as described in \aref{sec:event_insert}, which itself requites further simulations to find an optimal level to use. The level will also need modification based on the tile shape. For these simulations a mean contour selection value of $0.9$ was used for the GOTO-4 grid and $0.95$ for the GOTO-8 grid. Using these values 92\% of events had sources within at least one of the selected tiles for the GOTO-4 grid, and 95\% for the GOTO-8 grid. In the following simulation results the tile selection was considered \textit{after} the visibility restrictions in the previous section, as it is an operational value decided for \gls{goto} while the visibility is true for any and all telescopes at the relevant sites.
+
+Future simulations should be run using the same sample of skymaps but altering the selection level, and comparing the number of selected sources to the number of tiles selected for each event. As discussed in \aref{sec:event_insert} there is a trade-off between adding two few tiles and missing the source and adding too many and increasing the time to cover them all. As additional telescopes are added the limit can also be relaxed further, as they will pass through observing the selected tiles faster.
 
 \begin{figure}[p]
     \begin{center}
@@ -430,362 +265,308 @@ Breakdowns of the results of simulations for six key scenarios are given in the 
 
 \newpage
 
-% ---------
-
 \begin{figure}[p]
-\begin{center}
-
-\begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-\includegraphics[width=\linewidth]{images/gw_sims/1n4_pie.png}
-\end{minipage}
-%
-\begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-\begin{tabular}{lrr}
-\multicolumn{3}{c}{\textbf{Simulation results}} \\
-\midrule
-%% PASTE BELOW \/\/
-\textcolor{Green}{Observed} & 532 & 48.1\% \\
-\textcolor{Red}{Not observed} & 16 & 1.4\% \\
-\textcolor{darkgray}{Not selected} & 45 & 4.1\% \\
-\textcolor{NavyBlue}{Below dec limit} & 265 & 24.0\% \\
-\textcolor{Blue}{Bad event time} & 118 & 10.7\% \\
-\textcolor{BurntOrange}{Too close to Sun} & 129 & 11.7\% \\
-\midrule
-Visible events & 593 &  53.7\% \\
-%% PASTE ABOVE /\/\
-\end{tabular}
-\end{minipage}
-%
-\begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-\begin{tabular}{lr}
-\multicolumn{2}{c}{\textbf{System: 1N4}} \\
-\midrule
-%% PASTE BELOW \/\/
-Observing efficiency & 89.7\% \\
-\midrule
-Mean delay after     & \multirow{2}{*}{9.96 h} \\
-event time           & \\
-Mean delay after     & \multirow{2}{*}{1.58 h} \\
-becoming visible     & \\
-\midrule
-Mean airmass         & 1.64 \\
-%% PASTE ABOVE /\/\
-\end{tabular}
-\vfill
-\end{minipage}
-
-\end{center}
-\caption[GW simulation results: 1N4 system]{Simulation results for a 1N4 system. This is the prototype system with 4 unit telescopes on a single mount currently deployed on La Palma.
-}
-\label{fig:gw_sim_1n4}
+    \begin{center}
+        \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/gw_sims/1n4_pie.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+            \begin{tabular}{lrr}
+                \multicolumn{3}{c}{\textbf{Simulation results}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                \textcolor{Green}{Observed} & 532 & 48.1\% \\
+                \textcolor{Red}{Not observed} & 16 & 1.4\% \\
+                \textcolor{darkgray}{Not selected} & 45 & 4.1\% \\
+                \textcolor{NavyBlue}{Below dec limit} & 265 & 24.0\% \\
+                \textcolor{Blue}{Bad event time} & 118 & 10.7\% \\
+                \textcolor{BurntOrange}{Too close to Sun} & 129 & 11.7\% \\
+                \midrule
+                Visible events & 593 &  53.7\% \\
+                %% PASTE ABOVE /\/\
+            \end{tabular}
+        \end{minipage}
+        \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+            \begin{tabular}{lr}
+                \multicolumn{2}{c}{\textbf{System: 1N4}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                Observing efficiency & 89.7\% \\
+                \midrule
+                Mean delay after     & \multirow{2}{*}{9.96 h} \\
+                event time           & \\
+                Mean delay after     & \multirow{2}{*}{1.58 h} \\
+                becoming visible     & \\
+                \midrule
+                Mean airmass         & 1.64 \\
+                %% PASTE ABOVE /\/\
+            \end{tabular}
+        \end{minipage}
+    \end{center}
+    \caption[GW simulation results: 1N4 system]{
+        Simulation results for a 1N4 system. This is the prototype system with 4 unit telescopes on a single mount currently deployed on La Palma.
+    }\label{fig:gw_sim_1n4}
 \end{figure}
-
-% ---------
 
 \begin{figure}[p]
     \begin{center}
-
-    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-    \includegraphics[width=\linewidth]{images/gw_sims/1n8_pie.png}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-    \begin{tabular}{lrr}
-    \multicolumn{3}{c}{\textbf{Simulation results}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    \textcolor{Green}{Observed} & 553 & 50.0\% \\
-    \textcolor{Red}{Not observed} & 12 & 1.1\% \\
-    \textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
-    \textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
-    \textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
-    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-    \midrule
-    Visible events & 594 &  53.8\% \\
-    %% PASTE ABOVE /\/\
-    \end{tabular}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-    \begin{tabular}{lr}
-    \multicolumn{2}{c}{\textbf{System: 1N8}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    Observing efficiency & 93.1\% \\
-    \midrule
-    Mean delay after     & \multirow{2}{*}{10.06 h} \\
-    event time           & \\
-    Mean delay after     & \multirow{2}{*}{1.60 h} \\
-    becoming visible     & \\
-    \midrule
-    Mean airmass         & 1.66 \\
-    %% PASTE ABOVE /\/\
-    & \\
-    \end{tabular}
-    \vfill
-    \end{minipage}
-
+        \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/gw_sims/1n8_pie.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+            \begin{tabular}{lrr}
+                \multicolumn{3}{c}{\textbf{Simulation results}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                \textcolor{Green}{Observed} & 553 & 50.0\% \\
+                \textcolor{Red}{Not observed} & 12 & 1.1\% \\
+                \textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
+                \textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
+                \textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
+                \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+                \midrule
+                Visible events & 594 &  53.8\% \\
+                %% PASTE ABOVE /\/\
+            \end{tabular}
+        \end{minipage}
+        \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+            \begin{tabular}{lr}
+                \multicolumn{2}{c}{\textbf{System: 1N8}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                Observing efficiency & 93.1\% \\
+                \midrule
+                Mean delay after     & \multirow{2}{*}{10.06 h} \\
+                event time           & \\
+                Mean delay after     & \multirow{2}{*}{1.60 h} \\
+                becoming visible     & \\
+                \midrule
+                Mean airmass         & 1.66 \\
+                %% PASTE ABOVE /\/\
+                & \\
+            \end{tabular}
+        \end{minipage}
     \end{center}
     \caption[GW simulation results: 1N8 system]{
         Simulation results for a 1N8 system. Note the distribution of events changes due to the different grid used, and the biggest gain in events observed is from the decreased number with sources not included in the selected tiles.
     }\label{fig:gw_sim_1n8}
 \end{figure}
 
-% ---------
-
 \begin{figure}[p]
     \begin{center}
-
-    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-    \includegraphics[width=\linewidth]{images/gw_sims/2n8_pie.png}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-    \begin{tabular}{lrr}
-    \multicolumn{3}{c}{\textbf{Simulation results}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    \textcolor{Green}{Observed} & 557 & 50.4\% \\
-    \textcolor{Red}{Not observed} & 8 & 0.7\% \\
-    \textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
-    \textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
-    \textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
-    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-    \midrule
-    Visible events & 594 &  53.8\% \\
-    %% PASTE ABOVE /\/\
-    \end{tabular}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-    \begin{tabular}{lr}
-    \multicolumn{2}{c}{\textbf{System: 2N8}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    Observing efficiency & 93.8\% \\
-    \midrule
-    Mean delay after     & \multirow{2}{*}{9.89 h} \\
-    event time           & \\
-    Mean delay after     & \multirow{2}{*}{1.53 h} \\
-    becoming visible     & \\
-    \midrule
-    Mean airmass         & 1.67 \\
-    %% PASTE ABOVE /\/\
-    & \\
-    \end{tabular}
-    \vfill
-    \end{minipage}
-
+        \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/gw_sims/2n8_pie.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+            \begin{tabular}{lrr}
+                \multicolumn{3}{c}{\textbf{Simulation results}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                \textcolor{Green}{Observed} & 557 & 50.4\% \\
+                \textcolor{Red}{Not observed} & 8 & 0.7\% \\
+                \textcolor{darkgray}{Not selected} & 29 & 2.6\% \\
+                \textcolor{NavyBlue}{Below dec limit} & 285 & 25.8\% \\
+                \textcolor{Blue}{Bad event time} & 85 & 7.7\% \\
+                \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+                \midrule
+                Visible events & 594 &  53.8\% \\
+                %% PASTE ABOVE /\/\
+            \end{tabular}
+        \end{minipage}
+        \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+            \begin{tabular}{lr}
+                \multicolumn{2}{c}{\textbf{System: 2N8}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                Observing efficiency & 93.8\% \\
+                \midrule
+                Mean delay after     & \multirow{2}{*}{9.89 h} \\
+                event time           & \\
+                Mean delay after     & \multirow{2}{*}{1.53 h} \\
+                becoming visible     & \\
+                \midrule
+                Mean airmass         & 1.67 \\
+                %% PASTE ABOVE /\/\
+                & \\
+            \end{tabular}
+        \end{minipage}
     \end{center}
     \caption[GW simulation results: 2N8 system]{
         Simulation results for a 2N8 system. The improvements over the 1N8 system are a small gain in efficiency and decrease in mean delay time.
     }\label{fig:gw_sim_2n8}
 \end{figure}
 
-% ---------
+\newpage
 
 \begin{figure}[p]
     \begin{center}
-
-    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-    \includegraphics[width=\linewidth]{images/gw_sims/2n8&1s4_pie.png}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-    \begin{tabular}{lrr}
-    \multicolumn{3}{c}{\textbf{Simulation results}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    \textcolor{Green}{Observed} & 822 & 74.4\% \\
-    \textcolor{Red}{Not observed} & 17 & 1.5\% \\
-    \textcolor{darkgray}{Not selected} & 71 & 6.4\% \\
-    \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
-    \textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
-    \textcolor{BurntOrange}{Too close to Sun} & 125 & 11.3\% \\
-    \midrule
-    Visible events & 910 &  82.4\% \\
-    %% PASTE ABOVE /\/\
-    \end{tabular}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-    \begin{tabular}{lr}
-    \multicolumn{2}{c}{\textbf{System: 2N8\+1S4}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    Observing efficiency & 90.3\% \\
-    \midrule
-    Mean delay after     & \multirow{2}{*}{8.16 h} \\
-    event time           & \\
-    Mean delay after     & \multirow{2}{*}{1.66 h} \\
-    becoming visible     & \\
-    \midrule
-    Mean airmass         & 1.63 \\
-    %% PASTE ABOVE /\/\
-    & \\
-    \end{tabular}
-    \vfill
-    \end{minipage}
-
+        \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/gw_sims/2n8&1s4_pie.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+            \begin{tabular}{lrr}
+                \multicolumn{3}{c}{\textbf{Simulation results}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                \textcolor{Green}{Observed} & 822 & 74.4\% \\
+                \textcolor{Red}{Not observed} & 17 & 1.5\% \\
+                \textcolor{darkgray}{Not selected} & 71 & 6.4\% \\
+                \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
+                \textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
+                \textcolor{BurntOrange}{Too close to Sun} & 125 & 11.3\% \\
+                \midrule
+                Visible events & 910 &  82.4\% \\
+                %% PASTE ABOVE /\/\
+            \end{tabular}
+        \end{minipage}
+        \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+            \begin{tabular}{lr}
+                \multicolumn{2}{c}{\textbf{System: 2N8\+1S4}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                Observing efficiency & 90.3\% \\
+                \midrule
+                Mean delay after     & \multirow{2}{*}{8.16 h} \\
+                event time           & \\
+                Mean delay after     & \multirow{2}{*}{1.66 h} \\
+                becoming visible     & \\
+                \midrule
+                Mean airmass         & 1.63 \\
+                %% PASTE ABOVE /\/\
+                & \\
+            \end{tabular}
+        \end{minipage}
     \end{center}
     \caption[GW simulation results: 2N8+1S4 system]{
         Simulation results for a 2N8+1S4 system. Note as these sites use different grids they were simulated independently and the results combined.
     }\label{fig:gw_sim_2n8+1s4}
 \end{figure}
 
-% ---------
-
 \begin{figure}[p]
     \begin{center}
-
-    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-    \includegraphics[width=\linewidth]{images/gw_sims/2n8+2s8_pie.png}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-    \begin{tabular}{lrr}
-    \multicolumn{3}{c}{\textbf{Simulation results}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    \textcolor{Green}{Observed} & 839 & 75.9\% \\
-    \textcolor{Red}{Not observed} & 8 & 0.7\% \\
-    \textcolor{darkgray}{Not selected} & 47 & 4.3\% \\
-    \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
-    \textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
-    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-    \midrule
-    Visible events & 894 &  80.9\% \\
-    %% PASTE ABOVE /\/\
-    \end{tabular}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-    \begin{tabular}{lr}
-    \multicolumn{2}{c}{\textbf{System: 2N8+2S8}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    Observing efficiency & 93.8\% \\
-    \midrule
-    Mean delay after     & \multirow{2}{*}{7.69 h} \\
-    event time           & \\
-    Mean delay after     & \multirow{2}{*}{1.57 h} \\
-    becoming visible     & \\
-    \midrule
-    Mean airmass         & 1.64 \\
-    %% PASTE ABOVE /\/\
-    & \\
-    \end{tabular}
-    \vfill
-    \end{minipage}
-
+        \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/gw_sims/2n8+2s8_pie.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+            \begin{tabular}{lrr}
+                \multicolumn{3}{c}{\textbf{Simulation results}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                \textcolor{Green}{Observed} & 839 & 75.9\% \\
+                \textcolor{Red}{Not observed} & 8 & 0.7\% \\
+                \textcolor{darkgray}{Not selected} & 47 & 4.3\% \\
+                \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
+                \textcolor{Blue}{Bad event time} & 70 & 6.3\% \\
+                \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+                \midrule
+                Visible events & 894 &  80.9\% \\
+                %% PASTE ABOVE /\/\
+            \end{tabular}
+        \end{minipage}
+        \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+            \begin{tabular}{lr}
+                \multicolumn{2}{c}{\textbf{System: 2N8+2S8}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                Observing efficiency & 93.8\% \\
+                \midrule
+                Mean delay after     & \multirow{2}{*}{7.69 h} \\
+                event time           & \\
+                Mean delay after     & \multirow{2}{*}{1.57 h} \\
+                becoming visible     & \\
+                \midrule
+                Mean airmass         & 1.64 \\
+                %% PASTE ABOVE /\/\
+                & \\
+            \end{tabular}
+        \end{minipage}
     \end{center}
     \caption[GW simulation results: 2N8+2S8 system]{
         Simulation results for a 2N8+2S8 system. The largest gain over the northern hemisphere-only system is the removal of the declination limited events, meaning more event sources are visible. The efficiency remains the same but there is a notable improvement in the post-event delay times.
     }\label{fig:gw_sim_2n8+2s8}
 \end{figure}
 
-% ---------
-
 \begin{figure}[p]
     \begin{center}
-
-    \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
-    \includegraphics[width=\linewidth]{images/gw_sims/2n8+2k8_pie.png}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
-    \begin{tabular}{lrr}
-    \multicolumn{3}{c}{\textbf{Simulation results}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    \textcolor{Green}{Observed} & 828 & 74.9\% \\
-    \textcolor{Red}{Not observed} & 11 & 1.0\% \\
-    \textcolor{darkgray}{Not selected} & 48 & 4.3\% \\
-    \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
-    \textcolor{Blue}{Bad event time} & 77 & 7.0\% \\
-    \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
-    \midrule
-    Visible events & 887 &  80.3\% \\
-    %% PASTE ABOVE /\/\
-    \end{tabular}
-    \end{minipage}
-    %
-    \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
-    \begin{tabular}{lr}
-    \multicolumn{2}{c}{\textbf{System: 2N8+2K8}} \\
-    \midrule
-    %% PASTE BELOW \/\/
-    Observing efficiency & 93.3\% \\
-    \midrule
-    Mean delay after     & \multirow{2}{*}{7.69 h} \\
-    event time           & \\
-    Mean delay after     & \multirow{2}{*}{1.55 h} \\
-    becoming visible     & \\
-    \midrule
-    Mean airmass         & 1.64 \\
-    %% PASTE ABOVE /\/\
-    & \\
-    \end{tabular}
-    \vfill
-    \end{minipage}
-
+        \begin{minipage}[t]{0.2\textwidth}\vspace{10pt}
+            \includegraphics[width=\linewidth]{images/gw_sims/2n8+2k8_pie.png}
+        \end{minipage}
+        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+            \begin{tabular}{lrr}
+                \multicolumn{3}{c}{\textbf{Simulation results}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                \textcolor{Green}{Observed} & 828 & 74.9\% \\
+                \textcolor{Red}{Not observed} & 11 & 1.0\% \\
+                \textcolor{darkgray}{Not selected} & 48 & 4.3\% \\
+                \textcolor{NavyBlue}{Below dec limit} & 0 & 0.0\% \\
+                \textcolor{Blue}{Bad event time} & 77 & 7.0\% \\
+                \textcolor{BurntOrange}{Too close to Sun} & 141 & 12.8\% \\
+                \midrule
+                Visible events & 887 &  80.3\% \\
+                %% PASTE ABOVE /\/\
+            \end{tabular}
+        \end{minipage}
+        \begin{minipage}[t]{0.35\textwidth}\vspace{0pt}
+            \begin{tabular}{lr}
+                \multicolumn{2}{c}{\textbf{System: 2N8+2K8}} \\
+                \midrule
+                %% PASTE BELOW \/\/
+                Observing efficiency & 93.3\% \\
+                \midrule
+                Mean delay after     & \multirow{2}{*}{7.69 h} \\
+                event time           & \\
+                Mean delay after     & \multirow{2}{*}{1.55 h} \\
+                becoming visible     & \\
+                \midrule
+                Mean airmass         & 1.64 \\
+                %% PASTE ABOVE /\/\
+                & \\
+            \end{tabular}
+        \end{minipage}
     \end{center}
     \caption[GW simulation results: 2N8+2K8 system]{
         Simulation results for a 2N8+2K8 system. Note it makes very little difference to the results if the southern site is at Siding Spring or Mt Kent, compared to the huge gain from either compared to just La Palma.
     }\label{fig:gw_sim_2n8+2k8}
 \end{figure}
 
-% ---------
-
 \clearpage
 
 \begin{table}[t]
     \begin{center}
-    \begin{tabular}{c|cccc|c|cc|c} % chktex 44
-
-    \multirow{2}{*}{System} &
-    \multicolumn{4}{c|}{Observed within \ldots} &
-    Observing &
-    \multicolumn{2}{c|}{Mean delay time \ldots} &
-    Mean
-    \\
-    &
-    1h &
-    6h &
-    12h &
-    24h &
-    efficiency&
-    event &
-    visible &
-    airmass
-    \\
-    \midrule
-    1N4 & 5.9\% & 16.5\% & 26.2\% & 48.1\% & 89.7\% & 9.96 h & 1.58 h & 1.64 \\
-    1N8 & 6.8\% & 16.9\% & 27.1\% & 50.0\% & 93.1\% & 10.06 h & 1.60 h & 1.66 \\
-    2N8 & 7.2\% & 17.3\% & 27.9\% & 50.4\% & 93.8\% & 9.89 h & 1.53 h & 1.67 \\
-    &&&&&&&&\\
-    1S4 & 8.8\% & 18.8\% & 27.9\% & 47.1\% & 87.7\% & 9.39 h & 1.64 h & 1.61 \\
-    1S8 & 10.3\% & 20.6\% & 31.1\% & 49.2\% & 91.0\% & 8.81 h & 1.52 h & 1.63 \\
-    2S8 & 11.1\% & 21.2\% & 31.8\% & 49.9\% & 92.1\% & 8.67 h & 1.47 h & 1.64 \\
-    &&&&&&&&\\
-    2K8 & 10.8\% & 20.9\% & 31.3\% & 50.9\% & 92.3\% & 9.02 h & 1.46 h & 1.65 \\
-    &&&&&&&&\\
-    1N8+1S8 & 17.1\% & 36.8\% & 52.5\% & 74.8\% & 92.5\% & 7.82 h & 1.63 h & 1.63 \\
-    2N8+1S8 & 17.6\% & 37.2\% & 52.9\% & 75.2\% & 93.0\% & 7.75 h & 1.59 h & 1.64 \\
-    2N8+2S8 & 18.4\% & 37.7\% & 53.8\% & 75.9\% & 93.8\% & 7.69 h & 1.57 h & 1.64 \\
-    &&&&&&&&\\
-    2N8+2K8 & 18.2\% & 38.0\% & 52.8\% & 74.9\% & 93.3\% & 7.69 h & 1.55 h & 1.64 \\
-    &&&&&&&&\\
-    2N8+1S4* & 16.0\% & 35.7\% & 50.3\% & 74.4\% & 90.3\% & 8.16 h & 1.66 h & 1.63 \\
-    2N8+1S8* & 17.6\% & 37.2\% & 53.0\% & 75.2\% & 93.0\% & 7.76 h & 1.60 h & 1.64 \\
-    2N8+2S8* & 18.4\% & 37.7\% & 53.7\% & 75.9\% & 93.8\% & 7.70 h & 1.58 h & 1.64 \\
-
-    \end{tabular}
+        \begin{tabular}{c|cccc|c|cc|c} % chktex 44
+            \multirow{2}{*}{System} &
+            \multicolumn{4}{c|}{Observed within \ldots} &
+            Observing &
+            \multicolumn{2}{c|}{Mean delay time \ldots} &
+            Mean \\
+                & 1h & 6h & 12h & 24h & efficiency& event & visible & airmass \\
+            \midrule
+            1N4 & 5.9\% & 16.5\% & 26.2\% & 48.1\% & 89.7\% & 9.96 h & 1.58 h & 1.64 \\
+            1N8 & 6.8\% & 16.9\% & 27.1\% & 50.0\% & 93.1\% & 10.06 h & 1.60 h & 1.66 \\
+            2N8 & 7.2\% & 17.3\% & 27.9\% & 50.4\% & 93.8\% & 9.89 h & 1.53 h & 1.67 \\
+            &&&&&&&&\\
+            1S4 & 8.8\% & 18.8\% & 27.9\% & 47.1\% & 87.7\% & 9.39 h & 1.64 h & 1.61 \\
+            1S8 & 10.3\% & 20.6\% & 31.1\% & 49.2\% & 91.0\% & 8.81 h & 1.52 h & 1.63 \\
+            2S8 & 11.1\% & 21.2\% & 31.8\% & 49.9\% & 92.1\% & 8.67 h & 1.47 h & 1.64 \\
+            &&&&&&&&\\
+            2K8 & 10.8\% & 20.9\% & 31.3\% & 50.9\% & 92.3\% & 9.02 h & 1.46 h & 1.65 \\
+            &&&&&&&&\\
+            1N8+1S8 & 17.1\% & 36.8\% & 52.5\% & 74.8\% & 92.5\% & 7.82 h & 1.63 h & 1.63 \\
+            2N8+1S8 & 17.6\% & 37.2\% & 52.9\% & 75.2\% & 93.0\% & 7.75 h & 1.59 h & 1.64 \\
+            2N8+2S8 & 18.4\% & 37.7\% & 53.8\% & 75.9\% & 93.8\% & 7.69 h & 1.57 h & 1.64 \\
+            &&&&&&&&\\
+            2N8+2K8 & 18.2\% & 38.0\% & 52.8\% & 74.9\% & 93.3\% & 7.69 h & 1.55 h & 1.64 \\
+            &&&&&&&&\\
+            2N8+1S4* & 16.0\% & 35.7\% & 50.3\% & 74.4\% & 90.3\% & 8.16 h & 1.66 h & 1.63 \\
+            2N8+1S8* & 17.6\% & 37.2\% & 53.0\% & 75.2\% & 93.0\% & 7.76 h & 1.60 h & 1.64 \\
+            2N8+2S8* & 18.4\% & 37.7\% & 53.7\% & 75.9\% & 93.8\% & 7.70 h & 1.58 h & 1.64 \\
+        \end{tabular}
     \end{center}
     \caption[GW simulation results summary table]{
         Summary of simulation results. Systems marked with an asterisk (*) were not simulated together, but were instead combined from the individual simulations for each site.
     }\label{tab:gw_sim_results}
-    \end{table}
+\end{table}
 
 \end{colsection}
 
@@ -843,7 +624,7 @@ Almost as critical to the \gls{goto} project as the gravitational wave follow-up
 
 Simulating the all-sky survey is more straightforward than the gravitational wave simulations, as there isn't the added complication of processing the \gls{lvc} skymap or checking the visibility of the source coordinates. Instead the only set up that is needed is to fill the observation database with the all-sky survey mpointings (see \aref{sec:obsdb}) run the fake pilot calling the usual scheduler commands (see \aref{sec:scheduler}).
 
-The only drawback to this method is the time taken. Unlike the gravitational wave simulations the simulation can't be finished early if the source is not visible, or stopped once the source has been observed. Instead the fake pilot needs to simulate the full 24 hours of observations, for however many days the simulation is run for. The same simplifications detailed in \aref{sec:multi_site} still apply, so each loop still skips approximately 4 minutes of simulation time until the observation has completed. A full simulation of a year of observations including both sites (therefore observing for approximately to 20 hours each day) requires 1.1 million steps, and with each simulation loop taking approximately 2 seconds (the scheduler check takes the majority of the time) the full simulation takes approximately 60 hours. This compares to at most 16 hours for the multi-site gravitational wave simulations.
+The only drawback to this method is the time taken. Unlike the gravitational wave simulations the simulation can't be finished early if the source is not visible, or stopped once the source has been observed. Instead the fake pilot needs to simulate the full 24 hours of observations, for however many days the simulation is run for. The same simplifications detailed previously still apply, so each loop still skips approximately 4 minutes of simulation time until the observation has completed. A full simulation of a year of observations including both sites (therefore observing for approximately to 20 hours each day) requires 1.1 million steps, and with each simulation loop taking approximately 2 seconds (the scheduler check takes the majority of the time) the full simulation takes approximately 60 hours. This compares to at most 16 hours for the multi-site gravitational wave simulations.
 
 Due to the full simulations requiring a large time investment only a few of these were carried out. Instead, a simplified version of the simulation code was developed that could produce the same results much faster. This `lite' script did away with the scheduler and database code, and instead at each step just finds the highest altitude tiles that have been observed the least times and takes them as the return pointings from the scheduler. This is a massive simplification of the scheduling functions, however the result is effectively the same and the same simulations are 15--20 times faster to run. Therefore a majority of the simulations discussed in this section use this much faster `lite' script. The other benefit of this method was making it much easier to modify the ``scheduling'' function to test different methods, as discussed in \aref{sec:survey_sim_meridian}, without yet needing the rewrite the actual \gls{gtecs} scheduler.
 
@@ -887,35 +668,33 @@ The results of each simulation are given in \aref{tab:survey_sim_results}. \aref
 
 \begin{table}[t]
     \begin{center}
-    \begin{tabular}{c|cc|c|c|c} % chktex 44
-
-    \multirow{2}{*}{System} &
-    \multicolumn{2}{c|}{Fraction of sky observed} &
-    No.\ times &
-    Mean cadence &
-    Mean observed
-    \\
-    &
-    each night &
-    over 1y &
-    tiles observed &
-    (days) &
-    airmass
-    \\
-    \midrule
-    1N4* & 4.3\%--6.5\% & 76.5\% & 26 (13--28) & $10.0\pm1.8$ & $1.6\pm0.4$ \\
-    &&&&&\\
-    1N4 & 4.3\%--6.4\% & 76.5\% & 26 (13--28) & $10.1\pm1.8$ & $1.6\pm0.3$ \\
-    1N8 & 9.5\%--14.0\% & 74.2\% & 58 (34--62) & $4.6\pm0.7$ & $1.6\pm0.4$ \\
-    2N8 & 19.0\%--28.1\% & 74.2\% & 117 (68--123) & $2.3\pm0.4$ & $1.6\pm0.4$ \\
-    &&&&&\\
-    1N8+1S8 & 23.2\%--24.1\% & 99.9\% & 87 (67--91) & $3.4\pm0.3$ & $1.5\pm0.4$ \\
-    2N8+1S8 & 33.0\%--37.3\% & 99.9\% & 130 (98--138) & $2.3\pm0.2$ & $1.6\pm0.4$ \\
-    2N8+2S8 & 46.3\%--48.1\% & 99.9\% & 173 (134--180) & $1.7\pm0.1$ & $1.5\pm0.4$ \\
-    &&&&&\\
-    2N8+2K8 & 46.8\%--48.3\% & 99.8\% & 174 (134--181) & $1.7\pm0.1$ & $1.6\pm0.4$ \\
-
-    \end{tabular}
+        \begin{tabular}{c|cc|c|c|c} % chktex 44
+            \multirow{2}{*}{System} &
+            \multicolumn{2}{c|}{Fraction of sky observed} &
+            No.\ times &
+            Mean cadence &
+            Mean observed
+            \\
+            &
+            each night &
+            over 1y &
+            tiles observed &
+            (days) &
+            airmass
+            \\
+            \midrule
+            1N4* & 4.3\%--6.5\% & 76.5\% & 26 (13--28) & $10.0\pm1.8$ & $1.6\pm0.4$ \\
+            &&&&&\\
+            1N4 & 4.3\%--6.4\% & 76.5\% & 26 (13--28) & $10.1\pm1.8$ & $1.6\pm0.3$ \\
+            1N8 & 9.5\%--14.0\% & 74.2\% & 58 (34--62) & $4.6\pm0.7$ & $1.6\pm0.4$ \\
+            2N8 & 19.0\%--28.1\% & 74.2\% & 117 (68--123) & $2.3\pm0.4$ & $1.6\pm0.4$ \\
+            &&&&&\\
+            1N8+1S8 & 23.2\%--24.1\% & 99.9\% & 87 (67--91) & $3.4\pm0.3$ & $1.5\pm0.4$ \\
+            2N8+1S8 & 33.0\%--37.3\% & 99.9\% & 130 (98--138) & $2.3\pm0.2$ & $1.6\pm0.4$ \\
+            2N8+2S8 & 46.3\%--48.1\% & 99.9\% & 173 (134--180) & $1.7\pm0.1$ & $1.5\pm0.4$ \\
+            &&&&&\\
+            2N8+2K8 & 46.8\%--48.3\% & 99.8\% & 174 (134--181) & $1.7\pm0.1$ & $1.6\pm0.4$ \\
+        \end{tabular}
     \end{center}
     \caption[All-sky survey simulation results summary table]{
         Summary of all-sky survey simulation results. The first 1N4 simulation, marked with an asterisk (*), was the only one carried out using the full scheduler and database system. All the other simulations used the `lite' script. The fraction of the sky observed each night is given as a range over the course of a year, and the number of times each tile was observed gives the mean of all tiles as well as the the minimum and maximum.
@@ -963,7 +742,6 @@ All the all-sky survey simulations described in the previous section were starte
     \begin{center}
         \includegraphics[width=\linewidth]{images/150.pdf}
     \end{center}
-
     \caption[Observations carried out in the first 150 days of the 4-UT all-sky survey]{
         Observations carried out in the first 150 days of the 4-UT all-sky survey. The count of survey observations is shown in the upper plot, with the number of survey tiles observed each night shown in \textcolor{Blue}{blue}, and any extra observations (of gravitational wave events, GRB triggers or manually-inserted pointings) shown in \textcolor{BurntOrange}{orange}. The background \textcolor{Gray}{grey} bars show the number of tiles observed on the same nights by the 1N4 survey simulation. The lower ``barcode'' plot shows the periods when the conditions flags were recorded as bad, either due to weather (\textcolor{Red}{red}) or hardware errors (\textcolor{Purple}{purple}).
     }\label{fig:150}
@@ -987,7 +765,6 @@ The major difference in the coverage between the real and simulated results is i
     \begin{center}
         \includegraphics[height=190pt]{images/survey_sims/150_1N4_real.png}
     \end{center}
-
     \caption[Real survey observations over 150 days]{
         Real all-sky survey coverage map of observations over the first 150 days, from 21st February to 21st July. Tiles are coloured by the number of times they were observed during that period, and tiles in white were not observed.
     }\label{fig:survey_real_150}
@@ -997,7 +774,6 @@ The major difference in the coverage between the real and simulated results is i
     \begin{center}
         \includegraphics[height=190pt]{images/survey_sims/150_1N4_lite.png}
     \end{center}
-
     \caption[1N4 survey simulation observations over 150 days]{
         1N4 all-sky survey simulation coverage map over the first 150 days. Compare to \aref{fig:survey_sim_1n4} for the coverage over the entire 1-year simulation.
     }\label{fig:survey_sim_1n4_150}
@@ -1012,6 +788,8 @@ The major difference in the coverage between the real and simulated results is i
 \subsection{An alternative, meridian limited survey method}
 \label{sec:survey_sim_meridian}
 \begin{colsection}
+
+\rtxt{link to scheduler chapter, maybe even move there?}
 
 One of the problems with the current scheduling system for the all-sky survey is that it leads to observations being carried out at low airmasses. Due to how the scheduler ranks tiles, discussed in \aref{sec:scheduler}, when all the visible survey tiles have been observed the same number of times then the scheduler will chose between them based on the airmass tiebreak parameter (unlike tiles linked to skymaps all survey tiles have equal weights, so the tiebreaking algorithm examined in \aref{sec:scheduler_sims} is simplified). This results in the scheduler always selecting tiles as soon as they rise if they have been observed fewer times than any others currently visible, and this means survey tiles are often observed at low airmasses leading to poor data quality. In practice images with poor data quality will be rejected by the analysis pipelines anyway, so arguably it is wasting the telescope's time to observe them.
 
@@ -1028,7 +806,6 @@ In order to see the consequences of this method several simulations were carried
             \includegraphics[height=140pt]{images/survey_sims/365_1N4_meridian_airmass3.png}
         \end{minipage}
     \end{center}
-
     \caption[Airmass distribution over a year of observations]{
         Airmass distribution over a year of observations with the 1N4 system, for the normal unlimited case (left) and the meridian $\pm\SI{10}{\degree}$ case (right).
     }\label{fig:survey_sim_airmass_365}
@@ -1038,7 +815,6 @@ In order to see the consequences of this method several simulations were carried
     \begin{center}
         \includegraphics[width=0.7\linewidth]{images/survey_sims/30_1N4_lite_airmass.png}
     \end{center}
-
     \caption[Mean observation airmasses for the 1N4 survey simulation]{
         Mean observation airmasses for the first month of the 1N4 survey simulation with no meridian limit. The plot shows the mean airmass of observations of each tile.
     }\label{fig:survey_sim_airmass_normal}
@@ -1048,7 +824,6 @@ In order to see the consequences of this method several simulations were carried
     \begin{center}
         \includegraphics[width=0.7\linewidth]{images/survey_sims/30_1N4_meridian_airmass.png}
     \end{center}
-
     \caption[Mean observation airmasses using the meridian scanning method]{
         Mean observation airmasses for the first month of a survey using the meridian scanning method, restricting observations to tiles within $\pm\SI{10}{\degree}$ of the meridian. With the limit the airmass of observations can be optimised, but the coverage of the survey is reduced.
     }\label{fig:survey_sim_airmass_meridian}
@@ -1058,27 +833,25 @@ In order to see the consequences of this method several simulations were carried
 
 \begin{table}[t]
     \begin{center}
-    \begin{tabular}{c|cc|c|c|c} % chktex 44
-
-    Survey &
-    \multicolumn{2}{c|}{Fraction of sky observed} &
-    Mean cadence &
-    Mean observed
-    \\
-    method &
-    1st month &
-    whole year &
-    (days) &
-    airmass
-    \\
-    \midrule
-    Meridian  \SI{\pm5}{\degree} & 39.4\% & 76.5\% &  $6.2\pm0.5$ & $1.2\pm0.2$ \\
-    Meridian \SI{\pm10}{\degree} & 41.3\% & 76.5\% &  $6.6\pm0.7$ & $1.2\pm0.3$ \\
-    Meridian \SI{\pm30}{\degree} & 48.5\% & 76.5\% &  $7.9\pm0.8$ & $1.3\pm0.3$ \\
-    Meridian \SI{\pm45}{\degree} & 53.3\% & 76.5\% &  $8.8\pm0.9$ & $1.3\pm0.3$ \\
-    No limit                     & 57.0\% & 76.5\% & $10.1\pm1.8$ & $1.6\pm0.3$ \\
-
-    \end{tabular}
+        \begin{tabular}{c|cc|c|c|c} % chktex 44
+            Survey &
+            \multicolumn{2}{c|}{Fraction of sky observed} &
+            Mean cadence &
+            Mean observed
+            \\
+            method &
+            1st month &
+            whole year &
+            (days) &
+            airmass
+            \\
+            \midrule
+            Meridian  \SI{\pm5}{\degree} & 39.4\% & 76.5\% &  $6.2\pm0.5$ & $1.2\pm0.2$ \\
+            Meridian \SI{\pm10}{\degree} & 41.3\% & 76.5\% &  $6.6\pm0.7$ & $1.2\pm0.3$ \\
+            Meridian \SI{\pm30}{\degree} & 48.5\% & 76.5\% &  $7.9\pm0.8$ & $1.3\pm0.3$ \\
+            Meridian \SI{\pm45}{\degree} & 53.3\% & 76.5\% &  $8.8\pm0.9$ & $1.3\pm0.3$ \\
+            No limit                     & 57.0\% & 76.5\% & $10.1\pm1.8$ & $1.6\pm0.3$ \\
+        \end{tabular}
     \end{center}
     \caption[Comparison of survey simulations using a meridian limit]{
         Comparison of 1N4 survey simulations using different meridian limits.

@@ -1,0 +1,55 @@
+<?xml version=\'1.0\'
+      encoding=\'UTF-8\'?>\n<voe:VOEvent
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:voe="http://www.ivoa.net/xml/VOEvent/v2.0"
+      xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v2.0
+                          http://www.ivoa.net/xml/VOEvent/VOEvent-v2.0.xsd"
+      role="observation"
+      ivorn="ivo://gwnet/LVC#S190408an-2-Initial">
+<Who>
+ <Date>2019-04-08T20:21:42</Date>
+ <Author>
+  <contactName>LIGO Scientific Collaboration and Virgo Collaboration</contactName>
+ </Author>
+</Who>
+<What>
+ <Param name="Packet_Type" dataType="int" value="151"></Param>
+ <Param name="internal" dataType="int" value="0"></Param>
+ <Param name="Pkt_Ser_Num" dataType="string" value="2"></Param>
+ <Param name="GraceID" dataType="string" value="S190408an" ucd="meta.id"></Param>
+ <Param name="AlertType" dataType="string" value="Initial" ucd="meta.version"></Param>
+ <Param name="HardwareInj" dataType="int" value="0" ucd="meta.number"></Param>
+ <Param name="OpenAlert" dataType="int" value="1" ucd="meta.number"></Param>
+ <Param name="EventPage" dataType="string" value="https://gracedb.ligo.org/superevents/S190408an/view/" ucd="meta.ref.url"></Param>
+ <Param name="Instruments" dataType="string" value="H1,L1,V1" ucd="meta.code"> </Param>
+ <Param name="FAR" dataType="float" value="2.81096164616e-18" ucd="arith.rate;stat.falsealarm" unit="Hz"></Param>
+ <Param name="Group" dataType="string" value="CBC" ucd="meta.code"></Param>
+ <Param name="Pipeline" dataType="string" value="gstlal" ucd="meta.code"></Param>
+ <Param name="Search" dataType="string" value="AllSky" ucd="meta.code"></Param>
+ <Group type="GW_SKYMAP" name="bayestar">
+  <Param name="skymap_fits" dataType="string" value="https://gracedb.ligo.org/api/superevents/S190408an/files/bayestar.fits.gz" ucd="meta.ref.url"></Param>
+ </Group>
+ <Group type="Classification">
+  <Param name="BNS" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="NSBH" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="BBH" dataType="float" value="0.99999999999" ucd="stat.probability"></Param>
+  <Param name="MassGap" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="Terrestrial" dataType="float" value="9.82357724531e-12" ucd="stat.probability"></Param>
+ </Group>
+ <Group type="Properties">
+  <Param name="HasNS" dataType="float" value="0.0" ucd="stat.probability"></Param>
+  <Param name="HasRemnant" dataType="float" value="0.12" ucd="stat.probability"></Param>
+ </Group>
+</What>
+<WhereWhen>
+ <ObsDataLocation>
+ <ObservatoryLocation id="LIGO Virgo"/>
+ <ObservationLocation>
+ <AstroCoordSystem id="UTC-FK5-GEO"/>
+ <AstroCoords coord_system_id="UTC-FK5-GEO">
+ <Time><TimeInstant><ISOTime>2019-04-08T18:18:02.288180</ISOTime></TimeInstant></Time>
+ </AstroCoords>
+ </ObservationLocation>
+ </ObsDataLocation>
+</WhereWhen>
+...
