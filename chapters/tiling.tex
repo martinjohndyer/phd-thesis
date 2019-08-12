@@ -204,10 +204,10 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/globe1.pdf}
+        \includegraphics[width=\linewidth]{images/globe1.pdf} %TODO:recolour
     \end{center}
     \caption[The celestial sphere]{
-        The celestial sphere. The celestial equator is marked in \textcolor{red}{red}, the vernal equinox (where the ecliptic (not shown) crosses the equator) is marked with the symbol \Aries{} and the meridian that intercepts the vernal equinox is marked in \textcolor{blue}{blue}. The northern and southern celestial poles are marked as NCP and SCP respectively. The definition of the equatorial coordinate system is shown: declination (Dec, $\delta$) is defined as the angle from the equator, ranging from \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP, and right ascension (RA, $\alpha$) is defined as angle east from the vernal equinox between \SI{0}{\degree} and \SI{360}{\degree}.
+        The celestial sphere. The celestial equator is marked in \textcolorbf{Red}{red}, the vernal equinox (where the ecliptic (not shown) crosses the equator) is marked with the symbol \Aries{} and the meridian that intercepts the vernal equinox is marked in \textcolorbf{NavyBlue}{blue}. The northern and southern celestial poles are marked as NCP and SCP respectively. The definition of the equatorial coordinate system is shown: declination (Dec, $\delta$) is defined as the angle from the equator, ranging from \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP, and right ascension (RA, $\alpha$) is defined as angle east from the vernal equinox between \SI{0}{\degree} and \SI{360}{\degree}.
     }\label{fig:sphere}
 \end{figure}
 
@@ -225,7 +225,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
         \includegraphics[width=\linewidth]{images/globe3.pdf}
     \end{center}
     \caption[Defining the spacing between tiles]{
-        After the declination strips are defined (see \aref{fig:deltadelta}) for each strip tile centres are defined with a set spacing $\Delta\alpha(\delta)$. Unlike $\Delta\delta$, which is fixed across the sphere, $\Delta\alpha$ varies as a function of declination meaning strips closer to the poles will contain fewer tiles. Two examples of defining tiles are shown above, one at declination $\delta_1$ (\SI{50}{\degree}, in \textcolor{cyan}{light blue}) in the northern hemisphere and another at $\delta_2$ (\SI{-10}{\degree}, in \textcolor{Plum}{purple}) in the southern hemisphere. The results of the ``minverlap'' algorithm are shown, previous algorithms had different ways of defining $\Delta\alpha$ that would have resulted in different spacings.
+        After the declination strips are defined (see \aref{fig:deltadelta}) for each strip tile centres are defined with a set spacing $\Delta\alpha(\delta)$. Unlike $\Delta\delta$, which is fixed across the sphere, $\Delta\alpha$ varies as a function of declination meaning strips closer to the poles will contain fewer tiles. Two examples of defining tiles are shown above, one at declination $\delta_1$ (\SI{50}{\degree}, in \textcolorbf{BlueGreen}{cyan}) in the northern hemisphere and another at $\delta_2$ (\SI{-10}{\degree}, in \textcolorbf{Purple}{purple}) in the southern hemisphere. The results of the ``minverlap'' algorithm are shown, previous algorithms had different ways of defining $\Delta\alpha$ that would have resulted in different spacings.
     }\label{fig:deltaalpha}
 \end{figure}
 
@@ -234,7 +234,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
         \includegraphics[width=\linewidth]{images/globe4.pdf}
     \end{center}
     \caption[A fully tiled sphere]{
-        Once every declination strip is complete the full grid is defined, as shown above. The same two strips are shown in \textcolor{cyan}{light blue} and \textcolor{Plum}{purple} as in \aref{fig:deltaalpha}. Due to each strip starting the tile spacing at RA$=0$, there is a fully aligned column of tiles along the vernal equinox, shown in \textcolor{orange}{yellow}. The grid in these examples was defined using the ``minverlap'' algorithm, with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and the overlap was set to zero for clarity (note this can lead to gaps between tiles towards the poles, as visible here). In this case the complete grid contains 424 tiles.
+        Once every declination strip is complete the full grid is defined, as shown above. The same two strips are shown in \textcolorbf{BlueGreen}{cyan} and \textcolorbf{Purple}{purple} as in \aref{fig:deltaalpha}. Due to each strip starting the tile spacing at RA$=0$, there is a fully aligned column of tiles along the vernal equinox, shown in \textcolorbf{Orange}{orange}. The grid in these examples was defined using the ``minverlap'' algorithm, with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and the overlap was set to zero for clarity (note this can lead to gaps between tiles towards the poles, as visible here). In this case the complete grid contains 424 tiles.
     }\label{fig:tiledsphere}
 \end{figure}
 
@@ -332,7 +332,7 @@ The new ``minverlap'' algorithm is an improvement on the previous versions, in p
     \hfill
     \begin{minipage}[c]{0.50\textwidth}
         \caption[The ``product'' gridding algorithm]{
-            A sky grid of tiles defined using the ``product'' gridding algorithm. The inputs were a field of view of \SI{13}{\degree} $\times$ \SI{13}{\degree} and an overlap factor of $0.2$ in both axes. The colours show overlapping coverage: \textcolor{Yellow}{yellow} areas are within only one tile, \textcolor{green}{green} two, \textcolor{blue}{blue} three, \textcolor{cyan}{cyan} four and \textcolor{RubineRed}{pink} five or more. This grid contains 595 tiles. Note the constant spacing of tiles in RA and the huge number of redundant tiles at the pole.
+            A sky grid of tiles defined using the ``product'' gridding algorithm. The inputs were a field of view of \SI{13}{\degree} $\times$ \SI{13}{\degree} and an overlap factor of $0.2$ in both axes. The colours show overlapping coverage: \textcolorbf{Yellow}{yellow} areas are within only one tile, \textcolorbf{green}{green} two, \textcolorbf{blue}{blue} three, \textcolorbf{cyan}{cyan} four and \textcolorbf{RubineRed}{pink} five or more. This grid contains 595 tiles. Note the constant spacing of tiles in RA and the huge number of redundant tiles at the pole.
         }\label{fig:product}
     \end{minipage}
 \end{figure}
@@ -340,7 +340,7 @@ The new ``minverlap'' algorithm is an improvement on the previous versions, in p
 \begin{figure}[p]
     \begin{minipage}[c]{0.50\textwidth}
         \caption[The ``cosine'' gridding algorithm]{
-            A sky grid of tiles defined using the ``product'' gridding algorithm. The input parameters and colours are the same as in \aref{fig:product}. This grid contains 393 tiles. Note the asymmetric ``seam'' along the $\alpha=0$ meridian, and the \textcolor{red}{red} areas near the pole that are not within the area of any tiles.
+            A sky grid of tiles defined using the ``product'' gridding algorithm. The input parameters and colours are the same as in \aref{fig:product}. This grid contains 393 tiles. Note the asymmetric ``seam'' along the $\alpha=0$ meridian, and the \textcolorbf{red}{red} areas near the pole that are not within the area of any tiles.
         }\label{fig:cosine}
     \end{minipage}
     \hfill

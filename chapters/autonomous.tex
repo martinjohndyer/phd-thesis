@@ -55,7 +55,6 @@ The most important script to the robotic operation of the telescope is the pilot
 
 \gls{goto} is a robotic telescope, and \gls{gtecs} is designed around that concept. This means the system will operate nightly with no human intervention needed. However, sometimes it is necessary for a human operator to take control of the telescope, if one of the automated scripts fails or a situation arises that is easer to deal with manually. One example was taking observations of the asteroid Phaethon \citep{Phaethon}: G-TeCS was not designed to observe solar system objects, and although the mount allows sidereal tracking there was no way to add a pointing into the database without fixed coordinates. Therefore it was necessary for a human observer to look up and slew to the coordinates of the asteroid as it moved past the Earth. There are also cases when it is important that the automated systems are disabled: if work is being done to the hardware on-site it could be dangerous if the system still tried to move the mount or dome autonomously.
 
-
 \begin{table}[t]
     \begin{center}
         \begin{tabular}{c|ccccc} % chktex 44
@@ -75,18 +74,18 @@ The most important script to the robotic operation of the telescope is the pilot
             \textcolor{Green}{active}
             \\[5pt]
             \code{manual} &
-            \textcolor{orange}{paused} &
+            \textcolor{Orange}{paused} &
             \textcolor{Green}{active} &
-            \textcolor{orange}{adjustable} &
-            \textcolor{orange}{adjustable} &
-            \textcolor{red}{ignored}
+            \textcolor{Orange}{adjustable} &
+            \textcolor{Orange}{adjustable} &
+            \textcolor{Red}{ignored}
             \\[5pt]
             \code{engineering} &
-            \textcolor{red}{disabled} &
-            \textcolor{red}{disabled} &
-            \textcolor{red}{disabled} &
-            \textcolor{red}{disabled} &
-            \textcolor{red}{ignored}
+            \textcolor{Red}{disabled} &
+            \textcolor{Red}{disabled} &
+            \textcolor{Red}{disabled} &
+            \textcolor{Red}{disabled} &
+            \textcolor{Red}{ignored}
             \\
         \end{tabular}
     \end{center}
@@ -140,10 +139,10 @@ Asynchronous code contains multiple parallel \textit{coroutines}. The program it
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.9\linewidth]{images/async.pdf}
+        \includegraphics[width=0.89\linewidth]{images/async.pdf} % TODO:recolour
     \end{center}
     \caption[Multi-threaded vs asynchronous programming]{
-        A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolor{blue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolor{ForestGreen}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolor{red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated for clarity, pilot tasks typically take less than a second and wait for between 10 and 60 seconds. \\
+        A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolorbf{NavyBlue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolorbf{Green}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolorbf{Red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated for clarity, pilot tasks typically take less than a second and wait for between 10 and 60 seconds. \\
         \textbf{Top}: The three tasks with different execution periods (solid blocks) and wait times (blank) are run in a multi-threaded program. Each task is being run in an independent parallel thread on its own core, even though they rarely overlap and it is uncommon for multiple cores to be in use at the same time. \\
         \textbf{Bottom}: The same three tasks are run as coroutines in an asynchronous program. The event loop decides which coroutine to run on the single core, represented by the black arrows. This does lead to some coroutines being left waiting (lighter blocks) until the previous is finished, and as routines can be delayed it is not suitable for checks that need to happen at exact frequencies. However the overall core usage is much more efficient.
     }\label{fig:async}
@@ -502,27 +501,27 @@ The scheduler daemon contains the usual control loop, which runs the scheduling 
             \\
             \multirow{8}{*}{\rotatebox[origin=c]{90}{Current pointing is\ldots}}
             & \ldots valid
-            & \makecell{\textcolor{ForestGreen}{Continue} \\ \textcolor{ForestGreen}{current pointing}}
+            & \makecell{\textcolor{Green}{Continue} \\ \textcolor{Green}{current pointing}}
             & \makecell{\textcolor{BlueGreen}{Interrupt and start new pointing} \\ \textcolor{BlueGreen}{if it is a ToO and the current pointing is not,} \\ \textcolor{BlueGreen}{otherwise continue current pointing}}
-            & \textcolor{red}{Park}
-            & \textcolor{red}{Park}
+            & \textcolor{Red}{Park}
+            & \textcolor{Red}{Park}
             \\[1.5cm]
             & \ldots invalid
-            & \textcolor{red}{Park}
+            & \textcolor{Red}{Park}
             & \textcolor{NavyBlue}{Interrupt and start new pointing}
-            & \textcolor{red}{Park}
-            & \textcolor{red}{Park}
+            & \textcolor{Red}{Park}
+            & \textcolor{Red}{Park}
             \\[1.5cm]
             & \ldots N/A (parked)
-            & \textcolor{red}{Remain parked}
+            & \textcolor{Red}{Remain parked}
             & \textcolor{NavyBlue}{Unpark and start new pointing}
-            & \textcolor{red}{Remain parked}
-            & \textcolor{red}{Remain parked}
+            & \textcolor{Red}{Remain parked}
+            & \textcolor{Red}{Remain parked}
             \\[0.5cm]
         \end{tabular}
     \end{center}
     \caption[Actions to take based on scheduler results]{
-        Actions the pilot will take based on the scheduler results. The scheduler can return one of three options as the highest priority pointing: the current pointing, a different pointing or \code{None} (meaning the current queue is empty). Each pointing can either be valid or invalid. The pilot will either continue with the current pointing (\textcolor{ForestGreen}{green}), switch to the new pointing depending on the ToO flag (\textcolor{NavyBlue}{blue}, \textcolor{BlueGreen}{blue-green}) or park the telescope (\textcolor{red}{red}).
+        Actions the pilot will take based on the scheduler results. The scheduler can return one of three options as the highest priority pointing: the current pointing, a different pointing or \code{None} (meaning the current queue is empty). Each pointing can either be valid or invalid. The pilot will either continue with the current pointing (\textcolorbf{Green}{green}), switch to the new pointing depending on the ToO flag (\textcolorbf{NavyBlue}{blue}, \textcolorbf{BlueGreen}{blue-green}) or park the telescope (\textcolorbf{Red}{red}).
     }\label{tab:sched}
 \end{sidewaystable}
 
