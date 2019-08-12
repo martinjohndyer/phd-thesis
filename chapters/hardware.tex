@@ -67,15 +67,15 @@ The noises described above (aside from the bias) are all independent Gaussian ra
 % ########################################
 
 \newpage
-\section{Detector characterisation tests}
-\label{sec:detector_tests}
+\section{Detector properties}
+\label{sec:detectors}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-CCD cameras have a variety of characteristic parameters described above, including sources of noise, and analysing the in laboratory conditions is important to fully profile them before they are used to take scientific images. The camera manufacturer \glsfirst{fli} and detector manufacturer ON Semiconductor both produce specification sheets advertising expected parameters\footnote{\url{http://www.flicamera.com/spec_sheets/ML50100.pdf}}\textsuperscript{,}\footnote{\href{http://www.onsemi.com/pub/Collateral/KAF-50100-D.PDF}{\texttt{http://www.onsemi.com/pub/Collateral/KAF-50100-D.pdf}}}, and FLI carried out a limited series of tests on the cameras before selling them. Carrying out our own tests ensures that the cameras meet the specifications, and also allows independent measurements of the key parameters.
+CCD cameras have a variety of characteristic parameters as described above, including sources of noise, and analysing the in laboratory conditions is important to fully profile them before they are used to take scientific images. The camera manufacturer \glsfirst{fli} and detector manufacturer ON Semiconductor both produce specification sheets advertising expected parameters\footnote{\url{http://www.flicamera.com/spec_sheets/ML50100.pdf}}\textsuperscript{,}\footnote{\href{http://www.onsemi.com/pub/Collateral/KAF-50100-D.PDF}{\texttt{http://www.onsemi.com/pub/Collateral/KAF-50100-D.pdf}}}, and FLI carried out a limited series of tests on the cameras before selling them. Carrying out our own tests ensures that the cameras meet the specifications, and also allows independent measurements of the key parameters.
 
 \end{colsection}
 
@@ -615,7 +615,7 @@ Single hot or dead pixels are not a major problem, as they can be removed by sub
 % ########################################
 
 \newpage
-\section{System throughput modelling}
+\section{System throughput}
 \label{sec:throughput}
 \begin{colsection}
 
@@ -623,13 +623,87 @@ Single hot or dead pixels are not a major problem, as they can be removed by sub
 
 \begin{colsection}
 
+The throughput is important to measure.
+
+It's made up of a variety of elements.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\subsection{Optical elements}
+\label{sec:optics}
+\begin{colsection}
+
+The GOTO unit telescopes are Wynne-Newtonian astrographs manufactured by APM Telescopes\footnote{\url{https://www.professional-telescopes.com/}}. They are fast Newtonian telescopes with a \SI{40}{\centi\meter} primary mirror and a flat \SI{19}{\milli\meter} (on the short axis) elliptical secondary. Between the secondary and the camera is a three-lens Wynne corrector to focus the light back onto the CCD detector. The full \gls{ota} design is shown in \aref{fig:ota}, and the five elements the light must pass through (the three corrector lenses, the filter in the filter wheel and the window in front of the detector) are shown in \aref{fig:wynne}.
+
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{images/throughput/OTA_optics.png}
+    \end{center}
+    \caption[GOTO optical telescope assembly]{
+        The \gls{ota} design for one of the GOTO prototype unit telescopes. Light enters from the left, and the optical elements have been highlighted: the primary mirror in \textcolor{Green}{\textbf{green}}, the secondary mirror in \textcolor{BlueGreen}{\textbf{blue}}, the Wynne corrector lenses in \textcolor{Red}{\textbf{red}} and the FLI camera hardware (focuser, filter wheel and camera) in \textcolor{Purple}{\textbf{purple}}.
+    }\label{fig:ota}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{images/throughput/wynne.pdf}
+    \end{center}
+    \caption[Ray tracing the corrector elements]{
+        A ray trace showing the optical elements after the secondary mirror. From left-to-right light passes through the three corrector lenses, the filter and the camera window before reaching the detector located in the focal plane.
+    }\label{fig:wynne}
+\end{figure}
+
+\clearpage
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Colour filters}
+\label{sec:filters}
+\begin{colsection}
+
 \rtxt{TODO}
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Throughput}
-\label{sec:stuff}
+\newpage
+\subsection{Atmospheric extinction}
+\label{sec:atmosphere}
+\begin{colsection}
+
+\rtxt{TODO}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Throughput modelling}
+\label{sec:synphot}
+\begin{colsection}
+
+\rtxt{TODO}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Comparison to on-sky zeropoints}
+\label{sec:onsky_throughput}
+\begin{colsection}
+
+\rtxt{TODO}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\newpage
+\subsection{Predicting exposure times}
+\label{sec:etc}
 \begin{colsection}
 
 \rtxt{TODO}
