@@ -13,7 +13,7 @@
 
 \begin{colsection}
 
-\rtxt{TODO}
+\todo{This whole intro section needs to be written after split}
 
 \end{colsection}
 
@@ -22,6 +22,8 @@
 \subsection{Requirements for a robotic telescope?}
 \label{sec:robot_requiremnets}
 \begin{colsection}
+
+\todo{An idea for a section, maybe not needed}
 
 The hardware control systems described in \aref{sec:hardware_control} provide the basic methods to control and operate the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount to a given target, take exposures once there, and then repeat with other targets for the rest of the night. There is a limited autonomy provided by the dome daemon, so the dome will close in bad weather without the delay from a human sending the command, but even that can be disabled if desired. Fundamentally the software described in \aref{sec:hardware_control} provides a perfectly usable human-operated telescope control system. \gls{goto}, however, was always designed as a fully robotic installation, as described in \aref{sec:control_requirements}. Therefore an additional level of software is required, to take the place of the observer as the source of the commands to the daemons.
 
@@ -34,6 +36,8 @@ In \gls{gtecs}, as in the \gls{pt5m} system before it, the role of the observer 
 \subsection{Scripts}
 \label{sec:scripts}
 \begin{colsection}
+
+\todo{This should be better linked to expanding on \aref{chap:gtecs}}
 
 As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, called from within other scripts like the pilot or run automatically with utilities like \software{cron}.
 
@@ -197,7 +201,7 @@ The above check routines are support tasks for the primary routine, which is cal
 
 \item STARTUP, run immediately when the pilot starts. The \texttt{startup} script powers on the camera hardware, unparks the mount, homes the filter wheels and cools the CCDs down to their operating temperature of \SI{-20}{\celsius}. Once startup has finished the pilot will send a report of the current conditions to Slack (see \aref{fig:pilot_slack} below).
 
-\item DARKS, run after the system start up is complete before opening the dome. This executes the \texttt{takeBiasesAndDarks} script to take bias and dark frames at the start of the night. \rtxt{see commissioning}
+\item DARKS, run after the system start up is complete before opening the dome. This executes the \texttt{takeBiasesAndDarks} script to take bias and dark frames at the start of the night. \todo{see commissioning}
 
 \item OPEN, run once the Sun reaches \SI{0}{\degree} altitude. It simply executes the \texttt{dome~open} command. If the pilot is paused due to bad weather or a hardware fault then the night marshal will wait and not open until the weather improves or fault is fixed. If it is never resolved then the night marshal will remain at this point until the end of the night and the shutdown timer runs out (see below).
 
@@ -259,7 +263,8 @@ Although the pilot is a completely robotic system it is still important that it 
 
 \begin{colsection}
 
-\rtxt{Monitoring the conditions is important}
+\todo{Monitoring the conditions is important}
+\todo{Maybe a map of the site? Brief overview of weather in La Palma?}
 
 \end{colsection}
 
@@ -416,7 +421,7 @@ The final category are the `critical' flags, for more serious situations that mi
 
 \begin{colsection}
 
-\rtxt{TODO}
+\todo{Needs a short intro}
 
 \end{colsection}
 
@@ -473,7 +478,7 @@ The alert listener is a key part of the automated system but was not initially p
 \label{sec:scheduler}
 \begin{colsection}
 
-\rtxt{Need to link to new chapter}
+\todo{Need to link to new \aref{chap:scheduling}}
 
 In order for a target to be observed by the telescope in robotic mode an appropriate pointing must be added to the observation database (or an ``mpointing'' entry that generates pointings, as described in \aref{sec:obsdb}). These can be added manually if desired, but in most cases they are either defined once when the database is created (for the constant all-sky survey tiles) or added by the sentinel daemon when a transient alert is received. All entries in the \code{pointings} table with status ``\code{pending}'' form the current \textit{queue}, and the task of selecting which of these pointings the system should observe is the role of the scheduler.
 

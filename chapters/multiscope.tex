@@ -13,8 +13,8 @@
 
 \begin{colsection}
 
-\rtxt{rewrite so it's an independent introduction}
-\rtxt{link to future of G-TeCS?}
+\todo{rewrite so it's an independent introduction}
+\todo{link to future of G-TeCS?}
 
 As outlined in \aref{sec:gtecs_multisite} it is envisioned that, as GOTO expands to multiple telescopes and sites, the \gls{gtecs} scheduling system will be extended so that all the telescopes query a single observation database and a master scheduler decides what each telescope should be observing at a given time. This will require a large amount of work to modify both the database structure and the scheduling functions, and as it is not currently implemented into the existing scheduler several workarounds needed to be used in order to create realistic multi-telescope simulations.
 
@@ -27,6 +27,8 @@ In this chapter I outline my work creating simulations of the GOTO observatory. 
 \subsection{Scheduling for multiple observing telescopes}
 \label{sec:multi_tel_scheduling}
 \begin{colsection}
+
+\todo{Could this and below go back to a seperate section? See other ideas on removing the intros.}
 
 One of the current restrictions in the scheduling functions (as described in \aref{sec:scheduler}) is that they only ever expect a single pointing in the observation database to be marked as \code{running} at any one time. It is explicitly coded into the scheduler that detecting multiple running pointings should raise a critical error, as certain bugs early in development could lead to this undesired state to occur. Obviously once the system is to be expanded to multiple telescopes this restriction will have to be lifted, but for these simulations a simplification was required to work around this restriction.
 
@@ -82,7 +84,7 @@ The convenient location of the Australian sites means implementing them into the
 
 One fundamental feature of the existing \gls{goto} code is that observations are carried out on an all-sky grid, as defined in \aref{sec:gototile}. When considering multiple telescopes this is both useful in some ways and limiting in others. Having a fixed grid that is common to all telescopes is vital for the \gls{goto} image subtraction systems, which is why it is anticipated to form the base of the global system. By sharing tiles each telescope can contribute to the same all-sky survey grid, as well as coordinate mapping out a gravitational wave skymap.
 
-However sharing the grid requires all the telescopes to have essentially the same field of view. There is some leeway in the exact field of view of each array, tiles in the existing grid are not defined to cover precisely the combined output of all the telescopes but leave a slight overlap around the edge (\rtxt{see figure in commissioning}). But if the field of view is much larger than the tile tile size then the pointings will be too close together and therefore inefficient. Worse is if the field of view is much smaller than the defined tile size, as it would lead to gaps on the sky between observations.
+However sharing the grid requires all the telescopes to have essentially the same field of view. There is some leeway in the exact field of view of each array, tiles in the existing grid are not defined to cover precisely the combined output of all the telescopes but leave a slight overlap around the edge (\todo{see figure in intro/commissioning}). But if the field of view is much larger than the tile tile size then the pointings will be too close together and therefore inefficient. Worse is if the field of view is much smaller than the defined tile size, as it would lead to gaps on the sky between observations.
 
 For the proposed \gls{goto} system with near-identical \gls{goto}-8 units around the world this is not an issue, but it should be recognised as a limitation of not just the simulations but the whole \gls{gtecs} control system. One potential case where this may be an issue is when commissioning \gls{goto}-South. If it spends time as a GOTO-4 system similar to La Palma before getting the second set of unit telescopes then it will be observing concurrently with one or two GOTO-8 systems on La Palma. This is a likely enough situation that it was considered in the gravitational wave simulations as described in \aref{sec:gw_sims}, using the work around of two independent simulations as mentioned above. How this set-up would be dealt with within a real implementation of \gls{gtecs} is a problem that needs development in the future should it prove to be necessary.
 
@@ -230,7 +232,7 @@ The region of the sky visible during the night for a given site change over the 
 \label{sec:gw_selecting}
 \begin{colsection}
 
-\rtxt{link to scheduler section}
+\todo{link to scheduler section}
 
 Even if an event source is visible within the 24 hours from a given site (or combination of sites) there is one further criteria that would prevent observations of the source, that being whether the source is located within any of the tiles added to the database. The issue of determining which tiles to add to the database is detailed in \aref{sec:event_insert}, but is ultimately a matter of probability. If the telescope covered the 90\% confidence region for every event then it would be expected to observe 90\% of the event sources. Two particular examples are shown in \aref{fig:poor_selection}.
 
@@ -789,7 +791,7 @@ The major difference in the coverage between the real and simulated results is i
 \label{sec:survey_sim_meridian}
 \begin{colsection}
 
-\rtxt{link to scheduler chapter, maybe even move there?}
+\todo{link to scheduler chapter, maybe even move there?}
 
 One of the problems with the current scheduling system for the all-sky survey is that it leads to observations being carried out at low airmasses. Due to how the scheduler ranks tiles, discussed in \aref{sec:scheduler}, when all the visible survey tiles have been observed the same number of times then the scheduler will chose between them based on the airmass tiebreak parameter (unlike tiles linked to skymaps all survey tiles have equal weights, so the tiebreaking algorithm examined in \aref{sec:scheduler_sims} is simplified). This results in the scheduler always selecting tiles as soon as they rise if they have been observed fewer times than any others currently visible, and this means survey tiles are often observed at low airmasses leading to poor data quality. In practice images with poor data quality will be rejected by the analysis pipelines anyway, so arguably it is wasting the telescope's time to observe them.
 

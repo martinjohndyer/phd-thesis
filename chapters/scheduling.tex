@@ -13,7 +13,7 @@
 
 \begin{colsection}
 
-\rtxt{TODO}
+\todo{Usual intro blurb needed}
 
 \end{colsection}
 
@@ -23,7 +23,7 @@
 \label{sec:scheduling}
 \begin{colsection}
 
-\rtxt{TODO}
+\todo{I don't quite know what to put here \ldots}
 
 \end{colsection}
 
@@ -119,7 +119,7 @@ An example queue of pointings is shown in \aref{tab:priority} above. The current
 \label{sec:scheduler_tiebreaker}
 \begin{colsection}
 
-\rtxt{link with previous section}
+\todo{link with previous section}
 
 The workings of the scheduler functions are described in detail in \aref{sec:scheduler}. The scheduler weights pointings in the current queue by several parameters: the assigned rank, the number of times it was previously observed, if it is a \gls{too} or not. But in practice most of the time the queue will contain a large number of pointings where these values are all the same. For example, when a new gravitational wave event is processed by the sentinel GOTO-alert adds in a large number of tiles from the skymap (see \aref{sec:event_insert}). On the next scheduler check the queue will be populated by a large number of pointings each with the same rank and \gls{too} flag and having never been observed. Likewise when observing the all-sky survey the queue will be filled with tiles that have all been observed the same number of times. This is why the scheduler then needs a further way to distinguish pointings, which is known as the tiebreaker.
 

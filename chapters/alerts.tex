@@ -13,7 +13,7 @@
 
 \begin{colsection}
 
-\rtxt{Split out GOTO-alert bits only}
+\todo{Split out GOTO-alert bits only}
 
 In this chapter I outline my work on the systems that allow GOTO to automatically follow up alerts of transient events, specifically gravitational wave detections and gamma-ray bursts. \aref{sec:gototile} describes the \software{Python} module GOTO-tile, which is used to create the all-sky grid that probability skymaps are mapped onto. The module was originally created by Darren White and then expanded by Evert Rol before I took over development, and the functions to create Gaussian skymaps were originally written by Yik Lun Mong. \aref{sec:gotoalert} describes another \software{Python} module GOTO-alert, which contains the structures and functions to process alerts published by LIGO, NASA and other sources. This module was originally based on work by Alex Obradovic before I took over the code and developed it to work with the other GOTO modules. All work described in this chapter is my own and has not been published before anywhere else.
 
@@ -59,7 +59,7 @@ In order for the \gls{goto} imaging pipeline to identify new sources that might 
 
 \begin{colsection}
 
-\rtxt{TODO}
+\todo{Need to write little intro paragraph}
 
 \end{colsection}
 
@@ -141,9 +141,9 @@ VOEvents take the form of a structured \gls{xml} document. \gls{xml} is a ``mark
 
 \begin{colsection}
 
-\rtxt{rewrite, include the sentinel}
+\todo{rewrite, include the sentinel}
 
-GOTO-alert is another \proglang{Python} module (\pkg{gotoalert} \rtxt{footnote url?}) created for the \gls{goto} project to contain functions related to alert handling and VOEvents. It was originally created based on code written by Alex Obradovic (a student at Monash) for \gls{grb} events. After he uploaded his code I reworked it into an object-oriented Python module and integrated it into the wider \gls{goto} software ecosystem, specifically adding in functions related to the GOTO-tile and ObsDB modules as well as creating a more advanced strategy system.
+GOTO-alert is another \proglang{Python} module (\pkg{gotoalert} \todo{footnote url?}) created for the \gls{goto} project to contain functions related to alert handling and VOEvents. It was originally created based on code written by Alex Obradovic (a student at Monash) for \gls{grb} events. After he uploaded his code I reworked it into an object-oriented Python module and integrated it into the wider \gls{goto} software ecosystem, specifically adding in functions related to the GOTO-tile and ObsDB modules as well as creating a more advanced strategy system.
 
 Once the VOEvent is received by the \gls{gtecs} sentinel the work of parsing and processing the event uses another \proglang{Python} module GOTO-Alert (\pkg{gotoalert}).
 
