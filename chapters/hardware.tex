@@ -637,8 +637,9 @@ It's made up of a variety of elements.
 \label{sec:optics}
 \begin{colsection}
 
-The GOTO unit telescopes are Wynne-Newtonian astrographs manufactured by APM Telescopes\footnote{\url{https://www.professional-telescopes.com/}}. They are fast Newtonian telescopes with a \SI{40}{\centi\meter} primary mirror and a flat \SI{19}{\milli\meter} (on the short axis) elliptical secondary. Between the secondary and the camera is a three-lens Wynne corrector to focus the light back onto the CCD detector. The full \gls{ota} design is shown in \aref{fig:ota}, and the five elements the light must pass through (the three corrector lenses, the filter in the filter wheel and the window in front of the detector) are shown in \aref{fig:wynne}.
+The GOTO unit telescopes are Wynne-Newtonian astrographs manufactured by APM Telescopes\footnote{\url{https://www.professional-telescopes.com/}}. They are fast (f/2.5) Newtonian telescopes with a \SI{40}{\centi\meter} primary mirror and a flat elliptical secondary. Between the secondary and the camera is a three-lens Wynne corrector to focus the light back onto the CCD detector. The full \gls{ota} design is shown in \aref{fig:ota}, and the five elements the light must pass through (the three corrector lenses, the filter in the filter wheel and the window in front of the detector) are shown in \aref{fig:wynne}. In order to correctly model the throughput each element needed to be considered in turn.
 
+\newpage
 
 \begin{figure}[p]
     \begin{center}
@@ -654,18 +655,94 @@ The GOTO unit telescopes are Wynne-Newtonian astrographs manufactured by APM Tel
         \includegraphics[width=0.7\textwidth]{images/throughput/wynne.pdf}
     \end{center}
     \caption[Ray tracing the corrector elements]{
-        A ray trace showing the optical elements after the secondary mirror. From left-to-right light passes through the three corrector lenses, the filter and the camera window before reaching the detector located in the focal plane.
+        A ray trace showing the optical elements after the secondary mirror. From left-to-right light passes through the three Wynne corrector lenses, the filter and the camera window before reaching the detector located in the focal plane.
     }\label{fig:wynne}
 \end{figure}
 
 \clearpage
 
+% ---------
+\subsubsection{Mirrors}
+
+The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Optics\footnote{\url{https://www.orionoptics.co.uk/}}. Orion uses their own ``HiLux'' high reflectivity coating, and while individual reflectance curves were not available for the GOTO mirrors at the time this work was carried out Orion do provide a representative reflectance curve on their website.
+
+As there are two mirrors this curve will be included twice in the final throughput model. Orion's website states that the difference in angle of incidence of the two mirrors is also accounted for in the thickness of the coating applied, so otherwise the two mirrors can be treated as identical in terms of reflectivity.
+
+% ---------
+\subsubsection{Lenses}
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|cccc} %chktex 44
+            Lens & Type     & Material (manufacturer) & Diameter               & On-axis thickness \\
+            \midrule
+               1 & Crescent &    H-K9L (Schott)       & \SI{120}{\milli\meter} & \SI{12}{\milli\meter} \\
+               2 & Crescent &    H-K9L (Schott)       & \SI{90}{\milli\meter}  & \SI{5}{\milli\meter} \\
+               3 & Biconvex &  S-FPL53 (Ohara)        & \SI{90}{\milli\meter}  & \SI{20}{\milli\meter} \\
+        \end{tabular}
+    \end{center}
+    \caption[Wynne corrector lens properties]{
+        Properties of the three Wynne corrector lenses.
+    }\label{tab:lenses}
+\end{table}
+
+Each Wynne corrector contains three lenses, as shown in \aref{fig:wynne}. Details of the three lenses are given in \aref{tab:lenses}. No complete transmission data was available, so a model throughput curve was created.
+
+As the light is transmitting through the lenses both the reflectivity of the front surface and the internal transmittance needs to be considered. Each lens was coated with an anti-reflection coating, the profile of which was included in the GOTO optical report. Transmittance curves for each lens were not available, however the glass types were included in the report and are given in \aref{tab:lenses}. Transmittance data provided by the manufacturers was retrieved from the online Refractive Index Database\footnote{\url{https://refractiveindex.info/}}. For simplicity each lens was modelled as having a constant thickness, using their on-axis thickness. As shown in \aref{fig:wynne} this is true for lens 1 but will typically overestimate the thickness of lens 2 and underestimate the thickness of lens 3. However the thickness of glass each light path travels through should be the same, and there is very little difference between the two types of glass.
+
+Throughput curves for the anti-reflection coating and the three lenses is shown in \aref{fig:trans_lenses}, along with the total throughput found by multiplying the contribution from each lens and the three coatings.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/trans_lenses.png}
+    \end{center}
+    \caption[Wynne corrector transmission curve]{
+        Transmission curve for the Wynne corrector, comprised of the three lenses each with an anti-reflection (AR) coating.
+    }\label{fig:trans_lenses}
+\end{figure}
+
+% ---------
+\subsubsection{Filters}
+
+The filter transmittance is included in their bandpass profiles, described in \aref{sec:filters}. At this stage we will consider the \gls{ota} with no filter in place.
+
+% ---------
+\subsubsection{Camera window}
+
+Finally, before reaching the detector light must pass through a glass window in the camera which protects the CCD.\@ The window transmission profile was provided by FLI.\@
+
+\newpage
+
+% ---------
+\subsubsection{Combined OTA throughput}
+
+The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans_ota}.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/trans_ota.png}
+    \end{center}
+    \caption[Combined OTA transmission curve]{
+        Transmission curve for the unfiltered OTA, including two mirrors, the corrector lenses and the camera window.
+    }\label{fig:trans_ota}
+\end{figure}
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Colour filters}
+\subsection{Baader coloured filters}
 \label{sec:filters}
+\begin{colsection}
+
+\todo{WIP}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Quantum efficiency}
+\label{sec:qe}
 \begin{colsection}
 
 \todo{WIP}
