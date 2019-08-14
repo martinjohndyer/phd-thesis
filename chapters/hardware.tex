@@ -781,15 +781,26 @@ where $T$ is the transmission integrated over all wavelengths $\lambda$. The eff
     \label{eq:bandwidth}
 \end{equation}
 
-The Baader filters used by GOTO were designed for amateur astronomers and astro-photographers and are less common for scientific instruments than other sets; such as the \textit{u'g'r'i'z'} set used by the Sloan Digital Sky Survey \citep{Sloan_filters}, or the traditional Johnson-Cousins \textit{UBVRI} set redefined in \citet{Bessell_filters}. A comparison of the transmission curves of the three different sets is shown in \aref{fig:filter_comparison}. As can be seen the Baader \textit{L} filter approximately covers the extent of the Sloan \textit{g'} and \textit{r'}, with the \textit{B} and \textit{G} filters covering \textit{g'} and \textit{R} roughly matching \textit{r'}. Colour terms to compare GOTO \textit{RBG} observations with others using the Sloan \textit{g'} and \textit{r'} filters were calculated in \citet{Phaethon}.
+The Baader filters used by GOTO were designed for amateur astronomers and astro-photographers and are less common for scientific instruments than other sets; such as the \textit{u'g'r'i'z'} set used by the Sloan Digital Sky Survey \citep{Sloan_filters}, or the traditional Johnson-Cousins \textit{UBVRI} set redefined in \citet{Bessell_filters}. A comparison of the transmission curves are shown in \aref{fig:filter_comparison1} for Sloan and \aref{fig:filter_comparison2} for Bessell. As can be seen the Baader \textit{L} filter approximately covers the extent of the Sloan \textit{g'} and \textit{r'}, with the \textit{B} and \textit{G} filters covering \textit{g'} and \textit{R} roughly matching \textit{r'}. Colour terms to compare GOTO \textit{RBG} observations with others using the Sloan \textit{g'} and \textit{r'} filters were calculated in \citet{Phaethon}.
 
-\begin{figure}[p]
+\newpage
+
+\begin{figure}[t]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/throughput/filt_comp.png}
+        \includegraphics[width=\textwidth]{images/throughput/filt_comp1.png}
     \end{center}
-    \caption[Comparison of Baader filters to other sets]{
-        A comparison of the Baader \textit{LRGB} filters used by GOTO to two other commonly-used filter sets: Sloan \textit{u'g'r'i'z'} and Bessell \textit{UBVRI}.
-    }\label{fig:filter_comparison}
+    \caption[Comparison of Baader and Sloan filters]{
+        A comparison of the Baader \textit{LRGB} filters to the Sloan \textit{u'g'r'i'z'} set.
+    }\label{fig:filter_comparison1}
+\end{figure}
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/filt_comp2.png}
+    \end{center}
+    \caption[Comparison of Baader and Bessell filters]{
+        A comparison of the Baader \textit{LRGB} filters to the Bessell \textit{UBVRI} set.
+    }\label{fig:filter_comparison2}
 \end{figure}
 
 \clearpage
