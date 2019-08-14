@@ -655,7 +655,7 @@ The GOTO unit telescopes are Wynne-Newtonian astrographs manufactured by APM Tel
         \includegraphics[width=0.7\textwidth]{images/throughput/wynne.pdf}
     \end{center}
     \caption[Ray tracing the corrector elements]{
-        A ray trace showing the optical elements after the secondary mirror. From left-to-right light passes through the three Wynne corrector lenses, the filter and the camera window before reaching the detector located in the focal plane.
+        A ray trace showing the optical elements after the secondary mirror. From left-to-right light passes through the three Wynne corrector lenses, the focuser (which contains no optical elements), the filter in the filter wheel and the camera window before reaching the detector located in the focal plane.
     }\label{fig:wynne}
 \end{figure}
 
@@ -664,7 +664,7 @@ The GOTO unit telescopes are Wynne-Newtonian astrographs manufactured by APM Tel
 % ---------
 \subsubsection{Mirrors}
 
-The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Optics\footnote{\url{https://www.orionoptics.co.uk/}}. Orion uses their own ``HiLux'' high reflectivity coating, and while individual reflectance curves were not available for the GOTO mirrors at the time this work was carried out Orion do provide a representative reflectance curve on their website.
+The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Optics\footnote{\url{https://www.orionoptics.co.uk/}}. Orion uses their own ``HiLux'' high reflectivity coating, and while individual reflectance curves were not available for the GOTO mirrors at the time this work was carried out Orion does provide a representative reflectance curve on their website.
 
 As there are two mirrors this curve will be included twice in the final throughput model. Orion's website states that the difference in angle of incidence of the two mirrors is also accounted for in the thickness of the coating applied, so otherwise the two mirrors can be treated as identical in terms of reflectivity.
 
@@ -674,11 +674,11 @@ As there are two mirrors this curve will be included twice in the final throughp
 \begin{table}[t]
     \begin{center}
         \begin{tabular}{c|cccc} %chktex 44
-            Lens & Type     & Material (manufacturer) & Diameter               & On-axis thickness \\
+            Lens & Type     & Glass (manufacturer) & Diameter               & On-axis thickness \\
             \midrule
-               1 & Crescent &    H-K9L (Schott)       & \SI{120}{\milli\meter} & \SI{12}{\milli\meter} \\
-               2 & Crescent &    H-K9L (Schott)       & \SI{90}{\milli\meter}  & \SI{5}{\milli\meter} \\
-               3 & Biconvex &  S-FPL53 (Ohara)        & \SI{90}{\milli\meter}  & \SI{20}{\milli\meter} \\
+               1 & Crescent &    H-K9L (Schott)    & \SI{120}{\milli\meter} & \SI{12}{\milli\meter} \\
+               2 & Crescent &    H-K9L (Schott)    & \SI{90}{\milli\meter}  & \SI{5}{\milli\meter} \\
+               3 & Biconvex &  S-FPL53 (Ohara)     & \SI{90}{\milli\meter}  & \SI{20}{\milli\meter} \\
         \end{tabular}
     \end{center}
     \caption[Wynne corrector lens properties]{
@@ -688,7 +688,7 @@ As there are two mirrors this curve will be included twice in the final throughp
 
 Each Wynne corrector contains three lenses, as shown in \aref{fig:wynne}. Details of the three lenses are given in \aref{tab:lenses}. No complete transmission data was available, so a model throughput curve was created.
 
-As the light is transmitting through the lenses both the reflectivity of the front surface and the internal transmittance needs to be considered. Each lens was coated with an anti-reflection coating, the profile of which was included in the GOTO optical report. Transmittance curves for each lens were not available, however the glass types were included in the report and are given in \aref{tab:lenses}. Transmittance data provided by the manufacturers was retrieved from the online Refractive Index Database\footnote{\url{https://refractiveindex.info/}}. For simplicity each lens was modelled as having a constant thickness, using their on-axis thickness. As shown in \aref{fig:wynne} this is true for lens 1 but will typically overestimate the thickness of lens 2 and underestimate the thickness of lens 3. However the thickness of glass each light path travels through should be the same, and there is very little difference between the two types of glass.
+Both the reflectivity of the front surface and the internal transmittance of the lens glass needs to be considered. Each lens was coated with an anti-reflection coating, the profile of which was included in the GOTO optical report. Transmittance curves for each lens were not available, however the glass types were included in the report and are given in \aref{tab:lenses}. Transmittance data provided by the manufacturers was retrieved from the online Refractive Index Database\footnote{\url{https://refractiveindex.info/}}. For simplicity each lens was modelled as having a constant thickness, using their on-axis thickness. As shown in \aref{fig:wynne} this is true for lens 1 but will typically underestimate the thickness of lens 2 and overestimate the thickness of lens 3. However the thickness of glass each light path travels through should be the same, and there is very little difference between the two types of glass.
 
 Throughput curves for the anti-reflection coating and the three lenses is shown in \aref{fig:trans_lenses}, along with the total throughput found by multiplying the contribution from each lens and the three coatings.
 
@@ -716,7 +716,7 @@ Finally, before reaching the detector light must pass through a glass window in 
 % ---------
 \subsubsection{Combined OTA throughput}
 
-The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans_ota}.
+The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans_ota}. This was constructed by multiplying through the transmission curves for the two mirrors, the corrector and the camera window. In the 400--\SI{700}{\nano\metre} visible region used by GOTO the throughput is typically 60\% or above, although all the elements have a sharp cut-off towards the UV at low wavelengths.
 
 \begin{figure}[t]
     \begin{center}
@@ -735,7 +735,64 @@ The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans
 \label{sec:filters}
 \begin{colsection}
 
-\todo{WIP}
+Each GOTO unit telescope has a five-slot CFW9--5 filter wheel from FLI.\@ Each contains a set of \SI{65}{\milli\metre} square filters from Baader Planetarium\footnote{\url{https://www.baader-planetarium.com/}}: three coloured filters (\textit{R}, \textit{G}, \textit{B}), one wide ``luminance'' filter (\textit{L}) covering the whole visible range, and a clear glass filter ({\textit{C}}). Transmission curves for each filter are shown in \aref{fig:filters}. Each filter has a high throughput and steep cut-offs outside of the desired bandpasses. For the coloured filters the cut-offs were chosen deliberately so the [O\textsc{iii}] $\lambda 5007$ emission line falls within the overlap of the \textit{B} and \textit{G} filters, while the region around \SI{580}{\nano\metre} which contains emission lines from Mercury and Sodium vapour lamps is excluded by the gap between the \textit{G} and \textit{R} filters.
+
+The clear filter is not used for scientific observations, and therefore from now on only the set of four \textit{LRGB} filters are considered.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/trans_filters.png}
+    \end{center}
+    \caption[Baader filter transmission curves]{
+        Transmission curves for the Baader \textit{LRGBC} filter set used by GOTO.\
+    }\label{fig:filters}
+\end{figure}
+
+\newpage
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|cccc} %chktex 44
+            Filter            & Central wavelength                          & Bandwidth            \\
+                              & ($\lambda_\text{eff}$, nm) & ($\Delta\lambda$, nm) \\
+            \midrule
+            Baader \textit{L} & 535.5 & 294.2 \\
+            Baader \textit{R} & 657.3 &  97.9 \\
+            Baader \textit{G} & 537.3 &  81.3 \\
+            Baader \textit{B} & 450.9 & 118.8 \\
+        \end{tabular}
+    \end{center}
+    \caption[Baader filter properties]{
+        Properties of the Baader \textit{LRGB} filters.
+    }\label{tab:filters}
+\end{table}
+
+Properties of the four \textit{LRGB} filters are given in \aref{tab:filters}. The effective wavelength $\lambda_\text{eff}$ given is the pivot wavelength as defined in \citet{HST_calibration} for HST filters
+
+\begin{equation}
+    \lambda_\text{eff}^2 = \frac{\int T\lambda \, d\lambda}{\int T/\lambda \, d\lambda},
+    \label{eq:pivot_wavelength}
+\end{equation}
+
+where $T$ is the transmission integrated over all wavelengths $\lambda$. The effective bandwidth $\Delta\lambda$ is defined as the width of a rectangle that has a height of the maximum transmission (1) and the same area as the area under the filter transmission curve, i.e.
+
+\begin{equation}
+    \Delta\lambda = \int T d\lambda.
+    \label{eq:bandwidth}
+\end{equation}
+
+The Baader filters used by GOTO were designed for amateur astronomers and astro-photographers and are less common for scientific instruments than other sets; such as the \textit{u'g'r'i'z'} set used by the Sloan Digital Sky Survey \citep{Sloan_filters}, or the traditional Johnson-Cousins \textit{UBVRI} set redefined in \citet{Bessell_filters}. A comparison of the transmission curves of the three different sets is shown in \aref{fig:filter_comparison}. As can be seen the Baader \textit{L} filter approximately covers the extent of the Sloan \textit{g'} and \textit{r'}, with the \textit{B} and \textit{G} filters covering \textit{g'} and \textit{R} roughly matching \textit{r'}. Colour terms to compare GOTO \textit{RBG} observations with others using the Sloan \textit{g'} and \textit{r'} filters were calculated in \citet{Phaethon}.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/filt_comp.png}
+    \end{center}
+    \caption[Comparison of Baader filters to other sets]{
+        A comparison of the Baader \textit{LRGB} filters used by GOTO to two other commonly-used filter sets: Sloan \textit{u'g'r'i'z'} and Bessell \textit{UBVRI}.
+    }\label{fig:filter_comparison}
+\end{figure}
+
+\clearpage
 
 \end{colsection}
 
