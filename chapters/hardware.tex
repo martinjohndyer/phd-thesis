@@ -836,7 +836,18 @@ The quantum efficiency of a CCD can also change as a function of temperature, ho
 \label{sec:atmosphere}
 \begin{colsection}
 
-\todo{WIP}
+In order to fully model light from an astronomical source through to the CCD detector the absorption of light by the Earth's atmosphere must also be considered. The atmosphere is close to transparent over most of the visible region, however losses due to Rayleigh scattering begin to dominate closer to the UV \citep{atmosphere}.
+
+The amount of light lost due to absorption and scattering in the atmosphere will depend on the altitude of the source, as light from sources closer to the horizon will pass through more atmosphere. The transmission of the atmosphere above La Palma has been measured as a function of airmass in \citet{tn31}, and is shown in \aref{fig:trans_atm}.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/trans_atm.png}
+    \end{center}
+    \caption[Atmospheric transmission curve]{
+        Transmission curve for the atmosphere at several airmasses.
+    }\label{fig:trans_atm}
+\end{figure}
 
 \end{colsection}
 
