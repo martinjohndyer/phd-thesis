@@ -731,7 +731,7 @@ The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Baader coloured filters}
+\subsection{Filters}
 \label{sec:filters}
 \begin{colsection}
 
@@ -809,29 +809,6 @@ The Baader filters used by GOTO were designed for amateur astronomers and astro-
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Quantum efficiency}
-\label{sec:qe}
-\begin{colsection}
-
-Once photons pass through the optical elements they are focused onto the CCD.\@ There they interact with the photosensitive layer and produce electric charge carriers which are recorded by the detector \citep{CCDs}. The conversion from photons to electrons is measured by the \gls{qe} of the CCD.\@ The QE is dependent on wavelength: short-wavelength photons will be absorbed before reaching the photosensitive layer, while long wavelength photons will not have enough energy to create free electrons from the silicon. CCDs that are back-side illuminated have improved QE due to each photon passing through fewer layers and therefore having less chance of being absorbed, however these are much more complicated and expensive to build.
-
-The QE curve for the (front-illuminated) KAF-50100 CCDs within the GOTO MicroLine cameras was provided by FLI, and is shown in \aref{fig:qe}. % The QE peaks at 60\% at \SI{550}{\nano\metre} and falls below 30\% outside of the visible region.
-
-The quantum efficiency of a CCD can also change as a function of temperature, however this is negligible in the visible portion of the spectrum.
-
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=\textwidth]{images/throughput/qe.png}
-    \end{center}
-    \caption[MicroLine quantum efficiency curve]{
-        Quantum efficiency curve for the GOTO MicroLine cameras.
-    }\label{fig:qe}
-\end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-\newpage
 \subsection{Atmospheric extinction}
 \label{sec:atmosphere}
 \begin{colsection}
@@ -853,8 +830,86 @@ The amount of light lost due to absorption and scattering in the atmosphere will
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Throughput modelling}
+\subsection{Quantum efficiency}
+\label{sec:qe}
+\begin{colsection}
+
+Once photons pass through the atmosphere and the telescope they are focused onto the CCD, where they interact with the photosensitive layer and produce electric charge carriers which are recorded by the detector \citep{CCDs}. The conversion from photons to electrons is measured by the \gls{qe} of the CCD and is dependent on wavelength: short-wavelength photons will be absorbed before reaching the photosensitive layer, while long wavelength photons will not have enough energy to create free electrons from the silicon. CCDs that are back-side illuminated have improved QE due to each photon passing through fewer layers and therefore having less chance of being absorbed, however these are much more complicated and expensive to build.
+
+The QE curve for the (front-illuminated) KAF-50100 CCDs within the GOTO MicroLine cameras was provided by FLI, and is shown in \aref{fig:qe}. % The QE peaks at 60\% at \SI{550}{\nano\metre} and falls below 30\% outside of the visible region.
+
+The quantum efficiency of a CCD can also change as a function of temperature, however this is negligible in the visible portion of the spectrum.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/qe.png}
+    \end{center}
+    \caption[MicroLine quantum efficiency curve]{
+        Quantum efficiency curve for the GOTO MicroLine cameras.
+    }\label{fig:qe}
+\end{figure}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Total throughput}
+\label{sec:total_throughput}
+\begin{colsection}
+
+The complete GOTO throughput is a combination of all of the above elements: atmospheric extinction, the throughput of the optics and filters and the quantum efficiency of the cameras. The complete throughput model is shown in \aref{fig:throughput} for each of the four science filters. As the quantum efficiency is included the throughput is equivalent to the conversion between photons entering the atmosphere and electrons detected in the CCD, i.e.\ when observing in the \textit{L} filter for each source photon emitted at \SI{550}{\nano\metre} there is roughly a 40\% chance it will be recorded in the camera output. The mean throughput in each filter can be found by dividing the filled areas in \aref{fig:throughput} by the area of the filter bandpass, these are given in electrons per photon in \aref{tab:throughput}. When combined with the gain for each camera given in \aref{tab:ptc} (in ADU per electron) the full conversion between source photons and output counts can be made.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/throughput.png}
+    \end{center}
+    \caption[Complete throughput model for the GOTO filters]{
+        The complete GOTO throughput model for the Baader \textit{LRGB} filters (bandpasses from \aref{fig:filters}). Other contributions are from atmospheric extinction (from \aref{fig:trans_atm}, here assuming a source at zenith), throughput of the OTA elements (from \aref{fig:trans_ota}) and the quantum efficiency of the cameras (from \aref{fig:qe}).
+    }\label{fig:throughput}
+\end{figure}
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|cccc} %chktex 44
+            Filter            & Throughput  \\
+                              & (\elec/photon) \\
+            \midrule
+            Baader \textit{L} & 0.3220 \\
+            Baader \textit{R} & 0.3616 \\
+            Baader \textit{G} & 0.3854 \\
+            Baader \textit{B} & 0.2519 \\
+        \end{tabular}
+    \end{center}
+    \caption[Throughputs for each of the GOTO filters]{
+        Throughputs for each of the GOTO filters \todo{probably include more here}.
+    }\label{tab:throughput}
+\end{table}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Photometric modelling}
 \label{sec:synphot}
+\begin{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{colsection}
+
+pysynphot is a thing!
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Theoretical zeropoints}
+\label{sec:zeropoints}
 \begin{colsection}
 
 \todo{WIP}
@@ -864,7 +919,7 @@ The amount of light lost due to absorption and scattering in the atmosphere will
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
 \subsection{Comparison to on-sky zeropoints}
-\label{sec:onsky_throughput}
+\label{sec:onsky_zeropoints}
 \begin{colsection}
 
 \todo{WIP}
