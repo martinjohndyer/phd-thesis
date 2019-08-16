@@ -853,7 +853,7 @@ The quantum efficiency of a CCD can also change as a function of temperature, ho
 \label{sec:total_throughput}
 \begin{colsection}
 
-The complete GOTO throughput is a combination of all of the above elements. Each source profile was linearly extrapolated to fit the same wavelength range (3500--\SI{8500}{\angstrom}) and multiplied together to produce the complete throughput model, shown in \aref{fig:throughput} for each of the four science filters. As the quantum efficiency is included the throughput is equivalent to the conversion between photons entering the atmosphere and electrons detected in the CCD, i.e.\ when observing in the \textit{L} filter for each source photon emitted at \SI{5500}{\angstrom} there is roughly a 40\% chance it will be recorded in the camera output. The mean throughput in each filter can be found by dividing the filled areas in \aref{fig:throughput} by the area of the filter bandpass, these are given in electrons per photon in \aref{tab:throughput}. When combined with the gain for each camera given in \aref{tab:ptc} (in electrons per ADU) the full conversion between source photons and output counts can be made.
+The complete GOTO throughput is a combination of all of the above elements. Each source profile was linearly extrapolated to fit the same wavelength range (3500--\SI{8500}{\angstrom}) and multiplied together to produce the complete throughput model, shown in \aref{fig:throughput} for each of the four science filters. As the quantum efficiency is included the throughput is equivalent to the conversion between photons entering the atmosphere and electrons detected in the CCD, i.e.\ when observing in the \textit{L} filter for each source photon emitted at \SI{5500}{\angstrom} there is roughly a 40\% chance it will be recorded in the camera output. The mean throughput in each filter can be found by dividing the filled areas in \aref{fig:throughput} by the area of the filter bandpass, these are given in electrons per photon in \aref{tab:throughput_zeropoint} in the next section. When these are combined with the gain for each camera given in \aref{tab:ptc} the full conversion between source photons and output counts can be made.
 
 \begin{figure}[t]
     \begin{center}
@@ -863,23 +863,6 @@ The complete GOTO throughput is a combination of all of the above elements. Each
         The complete GOTO throughput model for the Baader \textit{LRGB} filters (bandpasses from \aref{fig:filters}). Other contributions are from atmospheric extinction (from \aref{fig:trans_atm}, here assuming a source at zenith), throughput of the OTA elements (from \aref{fig:trans_ota}) and the quantum efficiency of the cameras (from \aref{fig:qe}).
     }\label{fig:throughput}
 \end{figure}
-
-\begin{table}[t]
-    \begin{center}
-        \begin{tabular}{c|cccc} %chktex 44
-            Filter            & Throughput  \\
-                              & (\elec/photon) \\
-            \midrule
-            Baader \textit{L} & 0.3220 \\
-            Baader \textit{R} & 0.3616 \\
-            Baader \textit{G} & 0.3854 \\
-            Baader \textit{B} & 0.2519 \\
-        \end{tabular}
-    \end{center}
-    \caption[Throughputs for each of the GOTO filters]{
-        Throughputs for each of the GOTO filters \todo{probably include more here}.
-    }\label{tab:throughput}
-\end{table}
 
 \end{colsection}
 
@@ -891,7 +874,7 @@ The complete GOTO throughput is a combination of all of the above elements. Each
 
 \newpage
 \section{Photometric modelling}
-\label{sec:synphot}
+\label{sec:photometry}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -903,12 +886,139 @@ pysynphot is a thing!
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
-\subsection{Theoretical zeropoints}
+\subsection{Magnitude zeropoints}
 \label{sec:zeropoints}
 \begin{colsection}
 
-\todo{WIP}
+The number of counts recorded in an image from a given source should be proportional to the source flux $F$, the monochromatic flux defined as the energy reaching the telescope divided by the collecting area, exposure time and wavelength range (bandpass). The output flux of a source is related to its magnitude by
+%
+\begin{equation}
+    m - m_\text{ref} = -2.5 \log_{10}\left(\frac{F}{F_\text{ref}}\right),
+    \label{eq:apparent_magnitude}
+\end{equation}
+%
+which requires a reference star of known magnitude $m_\text{ref}$ and flux $F_\text{ref}$. By definition, a star with $m=0$ should produce a flux of one photon per second; traditionally Vega is used as a reference star as it has a magnitude of very close to 0.
+
+The instrumental magnitude measured from an image is related to the number of counts within a given aperture, $S$, using the standard magnitude definition
+%
+\begin{equation}
+    m_\text{ins} = -2.5 \log_{10}(S/t),
+    \label{eq:ins_mag}
+\end{equation}
+%
+where $t$ is the exposure time. This is assuming the image has already been calibrated (corrected for bias, dark current and flat-fielded) and a background level of counts has also been subtracted, meaning $S$ should, ideally, only include counts from the source object.
+
+If the number of counts per second $S/t$ is proportional to the flux $F$ by a constant $\kappa$ then \aref{eq:ins_mag} becomes
+%
+\begin{equation}
+    \begin{split}
+        m_\text{ins} & = -2.5 \log_{10}\left(\kappa F\right) \\
+                     & = -2.5 \log_{10}\left(F\right) - C    \\
+                     & = m - C,
+    \end{split}
+    \label{eq:ins_mag2}
+\end{equation}
+%
+where constant $C$ is equivalent to the magnitude \emph{zeropoint} $m_\text{ZP}$ used to convert the measured instrumental magnitude into the real (apparent) magnitude
+%
+\begin{equation}
+    m = m_\text{ins} + m_\text{ZP}.
+    \label{eq:zp}
+\end{equation}
+
+The zeropoint is so called because observing an object with a true magnitude equal to the zeropoint will produce an instrumental magnitude of 0, which corresponds to one count per second in the image. The zeropoint can be calculated using the equation
+
+\begin{equation}
+    \begin{split}
+        m_\text{ZP} & = m - m_\text{ins} \\
+                    & = m + 2.5 \log_{10}(S/t),
+    \end{split}
+    \label{eq:zp2}
+\end{equation}
+
+and so by measuring the number of counts per second recorded from star with a known catalogue magnitude $m$, and repeating for enough stars, the zeropoint can be determined.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Calculating theoretical zeropoints}
+\label{sec:model_zeropoints}
+\begin{colsection}
+
+Once the camera properties and throughput model had been created it was possible to predict zeropoints for the GOTO filters before GOTO had taken any data.
+
+As an initial calculation, consider taking an observation of a zero magnitude star, such as Vega. For this star $m=0$, so the zeropoint calculated with \aref{eq:zp2} will only depend on the number of recorded counts per second. In the AB magnitude system a zero magnitude star has a fixed flux density: \SI{3631}{\jansky}, and so passing that flux through the throughput model will produce a zeropoint for each filter. \SI{3631}{\jansky} is \SI{3.631e-20}{\erg\per\second\per\centi\metre\squared\per\hertz} or $1.51 \times 10^{26}/\lambda_c$~\SI{}{\photon\per\second\per\centi\metre\squared\per\angstrom} where $\lambda_c$ is the central wavelength of the observing band in Angstroms. Multiplying by the central wavelength and bandwidth of each filter and by the effective collecting area of the telescope (modelled as the circular \SI{40}{\centi\metre} radius primary reduced by 80\% by the shadow of the spider holding the secondary) gives an expected number of photons per second, this can then be converted into ADU/second in the detector using the throughput and gain values calculated previously. Values for the expected signal in ADU/s and zeropoints calculated using \aref{eq:zp2} are given in \aref{tab:throughput_zeropoint}. These values assumed an airmass of 1 and a gain of 0.57, which is the average of the values for each camera found in \aref{tab:ptc}.
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|c|cc|cc|cc} %chktex 44
+             &
+            Mean &
+            \multicolumn{2}{c|}{AB (calculated)} &
+            \multicolumn{2}{c|}{AB (\pkg{pysynphot})} &
+            \multicolumn{2}{c}{Vega (\pkg{pysynphot})}
+            \\
+            Filter &
+            Throughput &
+            Signal &
+            ZP &
+            Signal &
+            ZP &
+            Signal &
+            ZP
+            \\
+             &
+            (\elec/photon) &
+            (ADU/s) &
+            (mag) &
+            (ADU/s) &
+            (mag) &
+            (ADU/s) &
+            (mag)
+            \\
+            \midrule
+            \textit{L} & 0.3220 &
+            $6.84 \times 10^{9} $ & 24.6 &
+            $6.05 \times 10^{9} $ & 24.5 &
+            $5.96 \times 10^{9} $ & 24.4
+            \\
+            \textit{R} & 0.3616 &
+            $2.08 \times 10^{9} $ & 23.3 &
+            $1.85 \times 10^{9} $ & 23.2 &
+            $1.56 \times 10^{9} $ & 23.0
+            \\
+            \textit{G} & 0.3854 &
+            $2.26 \times 10^{9} $ & 23.4 &
+            $1.92 \times 10^{9} $ & 23.2 &
+            $1.94 \times 10^{9} $ & 23.2
+            \\
+            \textit{B} & 0.2519 &
+            $2.57 \times 10^{9} $ & 23.5 &
+            $2.48 \times 10^{9} $ & 23.5 &
+            $2.73 \times 10^{9} $ & 23.6
+            \\
+        \end{tabular}
+    \end{center}
+    \caption[Throughputs and zeropoints for each of the GOTO filters]{
+        Calculated throughputs for each of the GOTO filters, along with expected signals from a zero-magnitude star and predicted zeropoints using different methods and systems.
+    }\label{tab:throughput_zeropoint}
+\end{table}
+
+The values calculated using this method are only rough approximations, in particular by using the central wavelength and mean throughput of each filter they do not consider the full extent of each bandwidth.
+
+\newpage
+
+A more robust model was created using the \proglang{Python} module \pkg{pysynphot} (Python Synthetic Photometry)\footnote{\url{https://pysynphot.readthedocs.io/}}, a \proglang{Python} replacement for the \proglang{IRAF} \pkg{SYNPHOT} package. Each of the GOTO throughput elements described in \aref{sec:throughput} were imported to create bandpasses for each filter. Then observations were simulated of a flat spectrum of \SI{3631}{\jansky} (0 mag in the AB system) and the built-in Vega spectrum (0 mag in the Vega system) by convolving the spectra with the bandpasses. The resulting observation spectra are shown in \aref{fig:pysynphot} for both cases; the area under each curve gives the predicted number of photons observed. These counts, converted into ADU/s and zeropoints, are also given in \aref{tab:throughput_zeropoint} (again these assume the target is at airmass 1 and a gain of 0.57). The counts are all lower than the previous approximation, although there is little change to the zeropoints. The difference between the two systems is visible as the AB spectrum giving more counts in the red filter while the Vega spectrum is higher in the blue.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/synphot.png}
+    \end{center}
+    \caption[Simulating photometric observations in the GOTO filters]{
+        Simulating photometric observations in the GOTO filters using \pkg{pysynphot}. The filled coloured areas show the throughputs in the \textit{RGB} filters from \aref{fig:throughput}. The coloured dotted lines show the throughputs convolved with a flat \SI{3631}{\jansky} spectrum (dot-dashed black line), while the dashed lines show the throughputs convolved with the model Vega spectrum (solid black line). The same process was repeated for the \textit{L} filter (not shown).
+    }\label{fig:pysynphot}
+\end{figure}
 
 \end{colsection}
 
