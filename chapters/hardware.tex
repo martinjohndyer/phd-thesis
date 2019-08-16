@@ -712,7 +712,7 @@ Finally, before reaching the detector light must pass through a glass window in 
 % ---------
 \subsubsection{Combined OTA throughput}
 
-The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans_ota}. This was constructed by multiplying through the transmission curves for the two mirrors, the corrector and the camera window. In the 400--\SI{700}{\nano\metre} visible region used by GOTO the throughput is typically 60\% or above, although all the elements have a sharp cut-off towards the UV at low wavelengths.
+The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans_ota}. This was constructed by multiplying through the transmission curves for the two mirrors, the corrector and the camera window. In the 4000--\SI{7000}{\angstrom} visible region used by GOTO the throughput is typically 60\% or above, although all the elements have a sharp cut-off towards the UV at low wavelengths.
 
 \begin{figure}[t]
     \begin{center}
@@ -731,7 +731,7 @@ The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans
 \label{sec:filters}
 \begin{colsection}
 
-Each GOTO unit telescope has a five-slot CFW9--5 filter wheel from FLI.\@ Each contains a set of \SI{65}{\milli\metre} square filters from Baader Planetarium\footnote{\url{https://www.baader-planetarium.com/}}: three coloured filters (\textit{R}, \textit{G}, \textit{B}), one wide ``luminance'' filter (\textit{L}) covering the whole visible range, and a clear glass filter ({\textit{C}}). Transmission curves for each filter are shown in \aref{fig:filters}. Each filter has a high throughput and steep cut-offs outside of the desired bandpasses. For the coloured filters the cut-offs were chosen so the [O\textsc{iii}] $\lambda 5007$ emission line falls within the overlap of the \textit{B} and \textit{G} filters and the region around \SI{580}{\nano\metre}, which contains emission lines from Mercury and Sodium vapour lamps, is excluded by the gap between the \textit{G} and \textit{R} filters.
+Each GOTO unit telescope has a five-slot CFW9--5 filter wheel from FLI.\@ Each contains a set of \SI{65}{\milli\metre} square filters from Baader Planetarium\footnote{\url{https://www.baader-planetarium.com/}}: three coloured filters (\textit{R}, \textit{G}, \textit{B}), one wide ``luminance'' filter (\textit{L}) covering the whole visible range, and a clear glass filter ({\textit{C}}). Transmission curves for each filter are shown in \aref{fig:filters}. Each filter has a high throughput and steep cut-offs outside of the desired bandpasses. For the coloured filters the cut-offs were chosen so the [O\textsc{iii}] $\lambda 5007$ emission line falls within the overlap of the \textit{B} and \textit{G} filters and the region around \SI{5800}{\angstrom}, which contains emission lines from Mercury and Sodium vapour lamps, is excluded by the gap between the \textit{G} and \textit{R} filters.
 
 The clear filter is never used for scientific observations, so from now on only the \textit{LRGB} filters are considered. Most of GOTO observations are taken using the \textit{L} filter, because it would currently take too long to survey in multiple colours. However the \textit{RBG} filters have been used for targeted observations and manual follow-up images.
 
@@ -750,12 +750,12 @@ The clear filter is never used for scientific observations, so from now on only 
     \begin{center}
         \begin{tabular}{c|cccc} %chktex 44
             Filter            & Central wavelength                          & Bandwidth            \\
-                              & ($\lambda_\text{eff}$, nm) & ($\Delta\lambda$, nm) \\
+             & ($\lambda_\text{eff}$, \SI{}{\angstrom}) & ($\Delta\lambda$, \SI{}{\angstrom}) \\
             \midrule
-            Baader \textit{L} & 535.5 & 294.2 \\
-            Baader \textit{R} & 657.3 &  97.9 \\
-            Baader \textit{G} & 537.3 &  81.3 \\
-            Baader \textit{B} & 450.9 & 118.8 \\
+            Baader \textit{L} & 5355 & 2942 \\
+            Baader \textit{R} & 6573 &  979 \\
+            Baader \textit{G} & 5373 &  813 \\
+            Baader \textit{B} & 4509 & 1188 \\
         \end{tabular}
     \end{center}
     \caption[Baader filter properties]{
@@ -832,7 +832,7 @@ The amount of light lost due to absorption and scattering in the atmosphere will
 
 Once photons pass through the atmosphere and the telescope they are focused onto the CCD, where they interact with the photosensitive layer and produce electric charge carriers which are recorded by the detector \citep{CCDs}. The conversion from photons to electrons is measured by the \gls{qe} of the CCD and is dependent on wavelength: short-wavelength photons will be absorbed before reaching the photosensitive layer, while long wavelength photons will not have enough energy to create free electrons from the silicon. CCDs that are back-side illuminated have improved QE due to each photon passing through fewer layers and therefore having less chance of being absorbed, however these are much more complicated and expensive to build.
 
-The QE curve for the (front-illuminated) KAF-50100 CCDs within the GOTO MicroLine cameras was provided by FLI, and is shown in \aref{fig:qe}. % The QE peaks at 60\% at \SI{550}{\nano\metre} and falls below 30\% outside of the visible region.
+The QE curve for the (front-illuminated) KAF-50100 CCDs within the GOTO MicroLine cameras was provided by FLI, and is shown in \aref{fig:qe}. % The QE peaks at 60\% at \SI{5500}{\angstrom} and falls below 30\% outside of the visible region.
 
 The quantum efficiency of a CCD can also change as a function of temperature, however this is negligible in the visible portion of the spectrum.
 
@@ -853,7 +853,7 @@ The quantum efficiency of a CCD can also change as a function of temperature, ho
 \label{sec:total_throughput}
 \begin{colsection}
 
-The complete GOTO throughput is a combination of all of the above elements. Each source profile was linearly extrapolated to fit the same wavelength range (350--\SI{850}{\nano\metre}) and multiplied together to produce the complete throughput model, shown in \aref{fig:throughput} for each of the four science filters. As the quantum efficiency is included the throughput is equivalent to the conversion between photons entering the atmosphere and electrons detected in the CCD, i.e.\ when observing in the \textit{L} filter for each source photon emitted at \SI{550}{\nano\metre} there is roughly a 40\% chance it will be recorded in the camera output. The mean throughput in each filter can be found by dividing the filled areas in \aref{fig:throughput} by the area of the filter bandpass, these are given in electrons per photon in \aref{tab:throughput}. When combined with the gain for each camera given in \aref{tab:ptc} (in ADU per electron) the full conversion between source photons and output counts can be made.
+The complete GOTO throughput is a combination of all of the above elements. Each source profile was linearly extrapolated to fit the same wavelength range (3500--\SI{8500}{\angstrom}) and multiplied together to produce the complete throughput model, shown in \aref{fig:throughput} for each of the four science filters. As the quantum efficiency is included the throughput is equivalent to the conversion between photons entering the atmosphere and electrons detected in the CCD, i.e.\ when observing in the \textit{L} filter for each source photon emitted at \SI{5500}{\angstrom} there is roughly a 40\% chance it will be recorded in the camera output. The mean throughput in each filter can be found by dividing the filled areas in \aref{fig:throughput} by the area of the filter bandpass, these are given in electrons per photon in \aref{tab:throughput}. When combined with the gain for each camera given in \aref{tab:ptc} (in electrons per ADU) the full conversion between source photons and output counts can be made.
 
 \begin{figure}[t]
     \begin{center}
