@@ -936,13 +936,12 @@ where constant $m_\text{ZP}$ is defined as the instrumental \emph{zeropoint}. Th
     \label{eq:zp}
 \end{equation}
 
-By observing sources with known catalogue magnitudes, and measuring the number of counts from each source in the output image, the zeropoint can be calculated as
+Therefore were it possible to observe a star with $m=0$ (without immediately saturating the telescope) and get a measured count rate the zeropoint could simply be calculated as
 %
 \begin{equation}
     \begin{split}
-        m_\text{ZP} & = m - m_\text{ins} \\
-                    & = m + 2.5 \log_{10}(N/t) \\
-                    & = m + 2.5 \log_{10}(gS/t).
+        m_\text{ZP} & = 0 - m_\text{ins} \\
+                    & = 2.5 \log_{10}(N/t).
     \end{split}
     \label{eq:zp2}
 \end{equation}
@@ -975,7 +974,12 @@ where $h$ is Plank's constant. Again at this stage it is assumed that all the ph
     \label{eq:zero-mag_photons}
 \end{equation}
 %
-where $\lambda_c$ is given in Angstroms. This is still over a particular range of wavelengths and per unit area, so needs to be multiplied by the filter bandwidth and the collecting area of the telescope. Each of GOTO's unit telescopes has a \SI{40}{\centi\metre} diameter primary mirror, giving an area of \SI{1256.6}{\centi\metre\squared}. However not all of this is available to collect photons due to the shadow of the spider mechanism holding the secondary mirror. Assuming this blocks 20\% of the light (a deliberately pessimistic assumption) gives an effective collecting area of \SI{1005.3}{\centi\metre\squared}. Using this and the filter properties given in \aref{tab:filters} the expected signal in photons per second that from this zero-magnitude star can be calculated for each filter, these values are given in \aref{tab:throughput_zeropoint}.
+where $\lambda_c$ is given in Angstroms. This is still over a particular range of wavelengths and per unit area, so needs to be multiplied by the filter bandwidth and the collecting area of the telescope. Each of GOTO's unit telescopes has a \SI{40}{\centi\metre} diameter primary mirror, giving an area of \SI{1256.6}{\centi\metre\squared}. However not all of this is available to collect photons due to the shadow of the spider mechanism holding the secondary mirror. Assuming this blocks 10\% of the light gives an effective collecting area of \SI{1131}{\centi\metre\squared}. Using this and the filter properties given in \aref{tab:filters} the expected signal in photons per second that from this zero-magnitude star can be calculated for each filter, these values are given in \aref{tab:throughput_zeropoint}.
+
+
+
+
+
 
 \begin{table}[t]
     \begin{center}
@@ -984,10 +988,10 @@ where $\lambda_c$ is given in Angstroms. This is still over a particular range o
             Filter & Throughput     & Signal     & Count     & Zeropoint \\
                    & (\elec/photon) & (photon/s) & (\elec/s) & (mag) \\
             \midrule
-            Baader \textit{L} & 0.3220 & \num{3.03e9} & \num{9.75e8} & 22.47 \\
-            Baader \textit{R} & 0.3616 & \num{8.21e8} & \num{2.97e8} & 21.18 \\
-            Baader \textit{G} & 0.3854 & \num{8.34e8} & \num{3.21e8} & 21.27 \\
-            Baader \textit{B} & 0.2519 & \num{1.45e9} & \num{3.66e8} & 21.41 \\
+            Baader \textit{L} & 0.3220 & \num{3.41e9} & \num{1.10e9} & 22.60 \\
+            Baader \textit{R} & 0.3616 & \num{9.24e8} & \num{3.34e8} & 21.31 \\
+            Baader \textit{G} & 0.3854 & \num{9.38e8} & \num{3.62e8} & 21.40 \\
+            Baader \textit{B} & 0.2519 & \num{1.63e9} & \num{4.12e8} & 21.54 \\
         \end{tabular}
     \end{center}
     \caption[Throughputs and zeropoints for each of the GOTO filters]{
@@ -999,7 +1003,7 @@ Multiplying these expected signals by the throughput value calculated for each f
 
 This method produces reasonable results, but is still only approximating the filter bandpasses. A more robust model was created using the \proglang{Python} module \pkg{pysynphot} (Python Synthetic Photometry)\footnote{\url{https://pysynphot.readthedocs.io/}}, which is based the \proglang{IRAF} \pkg{SYNPHOT} package. Each of the GOTO throughput elements described in \aref{sec:throughput} were imported to create bandpasses for each filter. Then observations were simulated of a flat spectrum of \SI{3631}{\jansky} (0 mag in the AB system) and the built-in Vega spectrum (0 mag in the Vega system) by convolving the spectra with the bandpasses.
 
-The resulting observation spectra are shown in \aref{fig:pysynphot} for both cases; the area under each curve gives the predicted signal. These counts and derived zeropoints are given in \aref{tab:throughput_zeropoint}. The AB counts and zeropoints are all lower than the previous values. The difference between the two systems is visible as the AB spectrum giving more counts in the red filter while the Vega spectrum is higher in the blue.
+The resulting observation spectra are shown in \aref{fig:pysynphot} for both cases; the area under each curve gives the predicted signal. These counts and derived zeropoints are given in \aref{tab:pysynphot_zeropoints}. The AB counts and zeropoints are all lower than the previous values. The difference between the two systems is visible as the AB spectrum giving more counts in the red filter while the Vega spectrum is higher in the blue.
 
 \newpage
 
@@ -1019,10 +1023,10 @@ The resulting observation spectra are shown in \aref{fig:pysynphot} for both cas
             Filter & Signal    & Zeropoint & Signal    & Zeropoint\\
                    & (\elec/s) & (mag)     & (\elec/s) & (mag) \\
             \midrule
-            Baader \textit{L} & \num{8.62e8} & 22.34 & \num{8.50e8} & 22.32 \\
-            Baader \textit{R} & \num{2.63e8} & 21.05 & \num{2.23e8} & 20.87 \\
-            Baader \textit{G} & \num{2.73e8} & 21.09 & \num{2.76e8} & 21.10 \\
-            Baader \textit{B} & \num{3.54e8} & 21.37 & \num{3.89e8} & 21.48 \\
+            Baader \textit{L} & \num{9.70e8} & 22.47 & \num{9.56e8} & 22.45 \\
+            Baader \textit{R} & \num{2.96e8} & 21.18 & \num{2.51e8} & 21.00 \\
+            Baader \textit{G} & \num{3.07e8} & 21.22 & \num{3.11e8} & 21.23 \\
+            Baader \textit{B} & \num{3.98e8} & 21.50 & \num{4.38e8} & 21.60 \\
         \end{tabular}
     \end{center}
     \caption[Zeropoints in the AB and Vega systems calculated using pysynphot]{
@@ -1040,7 +1044,81 @@ The resulting observation spectra are shown in \aref{fig:pysynphot} for both cas
 \label{sec:onsky_zeropoints}
 \begin{colsection}
 
-\todo{WIP}
+In order to determine if GOTO is performing to expectations it is necessary to compare the theoretical zeropoints calculated in the previous section to real on-sky observations. To do this a set of sample observations were used: three images in all four filters of the Virgo Cluster taken on the 16th of March 2019. These images were taken during dark time and when the target was at a high altitude (airmass 1.08) to get the best quality data. Since GOTO is a very wide-field survey instrument there was no need to observe a particular standard star --- each frame contained thousands of individual sources that could be matched to a reference catalogue. The images were processed using the standard GOTO-photo pipeline (\todo{described in intro}), which calibrated the frames and extracted sources using Source Extractor \citep{SE}, which used the gain values for each camera calculated in \aref{sec:ptc}. The sources were then matched to the Pan-STARRS PS1 catalogue \citep{Pan-STARRS}, and the catalogue magnitudes were plotted against the background-subtracted instrumental magnitudes from Source Extractor. A linear fit was made against this plot, and the intercept was taken as the zeropoint for that image. The zeropoints for each image are given in \aref{tab:real_zeropoints}. The best for each set of three were selected and compared to the theoretical AB magnitudes calculated using pysynphot in \aref{tab:zeropoint_comparison}. For each filter and unit telescope a performance factor is calculated based on the ratio of observed to theoretical signals.
+
+In most cases the observed zeropoints are very close to the theoretical model values. Further images taken over more nights and other targets would be needed to make any firm conclusions on potential hardware problems, but a few trends are clear. UT3 is consistently better performing than the others, which is expected since it was the last mirror to be reground just a few months before the images were taken and therefore would be clear of any dust or imperfections the other mirrors have built up. On the other hand UT1 is consistently the worst performing of the four which is harder to explain. It's also clear that the throughput in the \textit{G} band has somehow been underestimated, as the real observations are consistently recording higher signals than expected.
+
+\newpage
+
+\begin{table}[p]
+    \begin{center}
+        \begin{tabular}{cc|c|c|c|c} %chktex 44
+             & & UT1 & UT2 & UT3 & UT4 \\
+            Filter & Run &
+            {\small(ML6094917)} &
+            {\small(ML0010316)} &
+            {\small(ML0420516)} &
+            {\small(ML5644917)}
+            \\
+            \midrule
+            \textit{L} & 1 & 22.32 & 22.31 & 22.40 & 22.32 \\
+                       & 2 & 22.26 & 22.27 & 22.44 & 22.37 \\
+                       & 3 & 22.39 & 22.42 & 22.45 & 22.40 \\
+            \multicolumn{2}{r|}{Best} & 22.39 & 22.42 & 22.45 & 22.40 \\
+            \midrule
+            \textit{R} & 1 & 20.83 & 21.05 & 21.10 & 21.05 \\
+                       & 2 & 20.84 & 21.11 & 21.13 & 21.06 \\
+                       & 3 & 20.91 & 21.01 & 21.04 & 20.94 \\
+            \multicolumn{2}{r|}{Best} & 20.91 & 21.11 & 21.13 & 21.06 \\
+            \midrule
+            \textit{G} & 1 & 21.20 & 21.39 & 21.40 & 21.27 \\
+                       & 2 & 21.16 & 21.43 & 21.46 & 21.36 \\
+                       & 3 & 21.26 & 21.44 & 21.45 & 21.32 \\
+            \multicolumn{2}{r|}{Best} & 21.26 & 21.44 & 21.46 & 21.36 \\
+            \midrule
+            \textit{B} & 1 & 21.22 & 21.35 & 21.43 & 21.27 \\
+                       & 2 & 21.22 & 21.32 & 21.44 & 21.22 \\
+                       & 3 & 21.20 & 21.35 & 21.44 & 21.26 \\
+            \multicolumn{2}{r|}{Best} & 21.22 & 21.35 & 21.44 & 21.27 \\
+        \end{tabular}
+    \end{center}
+    \caption[Observed zeropoints for each filter and unit telescope]{
+        Observed zeropoints for each filter and unit telescope.
+    }\label{tab:real_zeropoints}
+\end{table}
+
+\begin{table}[p]
+    \begin{center}
+        \begin{tabular}{cr|c|c|c|c} %chktex 44
+            Filter & & UT1 & UT2 & UT3 & UT4 \\
+            \midrule
+            \textit{L} & Theoretical & 22.47 & 22.47 & 22.47 & 22.47 \\
+                       & Observed    & 22.39 & 22.42 & 22.45 & 22.40 \\
+                       & Difference  & -0.08 & -0.05 & -0.02 & -0.07 \\
+                       & Performance &  93\% &  95\% &  98\% &  94\% \\
+            \midrule
+            \textit{R} & Theoretical & 21.18 & 21.18 & 21.18 & 21.18 \\
+                       & Observed    & 20.91 & 21.11 & 21.13 & 21.06 \\
+                       & Difference  & -0.27 & -0.07 & -0.05 & -0.12 \\
+                       & Performance &  78\% &  94\% &  95\% &  90\% \\
+            \midrule
+            \textit{G} & Theoretical & 21.22 & 21.22 & 21.22 & 21.22 \\
+                       & Observed    & 21.26 & 21.44 & 21.46 & 21.36 \\
+                       & Difference  & +0.04 & +0.22 & +0.24 & +0.14 \\
+                       & Performance & 104\% & 122\% & 125\% & 114\% \\
+            \midrule
+            \textit{B} & Theoretical & 21.50 & 21.50 & 21.50 & 21.50 \\
+                       & Observed    & 21.22 & 21.35 & 21.44 & 21.27 \\
+                       & Difference  & -0.28 & -0.15 & -0.06 & -0.23 \\
+                       & Performance &  77\% &  87\% &  95\% &  81\% \\
+        \end{tabular}
+    \end{center}
+    \caption[Comparison between theoretical and observed zeropoints]{
+        Comparison between theoretical and observed zeropoints.
+    }\label{tab:zeropoint_comparison}
+\end{table}
+
+\clearpage
 
 \end{colsection}
 
