@@ -976,11 +976,6 @@ where $h$ is Plank's constant. Again at this stage it is assumed that all the ph
 %
 where $\lambda_c$ is given in Angstroms. This is still over a particular range of wavelengths and per unit area, so needs to be multiplied by the filter bandwidth and the collecting area of the telescope. Each of GOTO's unit telescopes has a \SI{40}{\centi\metre} diameter primary mirror, giving an area of \SI{1256.6}{\centi\metre\squared}. However not all of this is available to collect photons due to the shadow of the spider mechanism holding the secondary mirror. Assuming this blocks 10\% of the light gives an effective collecting area of \SI{1131}{\centi\metre\squared}. Using this and the filter properties given in \aref{tab:filters} the expected signal in photons per second that from this zero-magnitude star can be calculated for each filter, these values are given in \aref{tab:throughput_zeropoint}.
 
-
-
-
-
-
 \begin{table}[t]
     \begin{center}
         \begin{tabular}{c|c|cc|c} %chktex 44
@@ -1044,9 +1039,28 @@ The resulting observation spectra are shown in \aref{fig:pysynphot} for both cas
 \label{sec:onsky_zeropoints}
 \begin{colsection}
 
-In order to determine if GOTO is performing to expectations it is necessary to compare the theoretical zeropoints calculated in the previous section to real on-sky observations. To do this a set of sample observations were used: three images in all four filters of the Virgo Cluster taken on the 16th of March 2019. These images were taken during dark time and when the target was at a high altitude (airmass 1.08) to get the best quality data. Since GOTO is a very wide-field survey instrument there was no need to observe a particular standard star --- each frame contained thousands of individual sources that could be matched to a reference catalogue. The images were processed using the standard GOTO-photo pipeline (\todo{described in intro}), which calibrated the frames and extracted sources using Source Extractor \citep{SE}, which used the gain values for each camera calculated in \aref{sec:ptc}. The sources were then matched to the Pan-STARRS PS1 catalogue \citep{Pan-STARRS}, and the catalogue magnitudes were plotted against the background-subtracted instrumental magnitudes from Source Extractor. A linear fit was made against this plot, and the intercept was taken as the zeropoint for that image. The zeropoints for each image are given in \aref{tab:real_zeropoints}. The best for each set of three were selected and compared to the theoretical AB magnitudes calculated using pysynphot in \aref{tab:zeropoint_comparison}. For each filter and unit telescope a performance factor is calculated based on the ratio of observed to theoretical signals.
+The GOTO prototype finally reached a stable 4-UT system in February 2019. In order to determine if it was performing to expectations the theoretical zeropoints calculated in the previous section can be compared to those found from real on-sky observations. Since GOTO is a very wide-field survey instrument there was no need to observe a particular standard star --- each frame contains thousands of individual sources that could be matched to a reference catalogue. In this case a set of sample observations were used: three \SI{60}{\second} exposures in all four filters (12 in total) of the Virgo Cluster, taken on the 16th of March 2019. These observations were taken during dark time and when the target was at a high altitude (airmass 1.08).
 
-In most cases the observed zeropoints are very close to the theoretical model values. Further images taken over more nights and other targets would be needed to make any firm conclusions on potential hardware problems, but a few trends are clear. UT3 is consistently better performing than the others, which is expected since it was the last mirror to be reground just a few months before the images were taken and therefore would be clear of any dust or imperfections the other mirrors have built up. On the other hand UT1 is consistently the worst performing of the four which is harder to explain. It's also clear that the throughput in the \textit{G} band has somehow been underestimated, as the real observations are consistently recording higher signals than expected.
+The sample images were processed using the standard GOTO-photo pipeline (\todo{described in intro}), which calibrated the frames and extracted source counts using Source Extractor \citep{SE}. These counts were background-subtracted and converted into instrumental magnitudes using \aref{eq:ins_mag}, with $t=60$ and using the gain values for each camera calculated in \aref{sec:ptc}.
+
+Unfortunately, as GOTO uses the non-standard Baader filters (see \aref{sec:filters}) there are no exact catalogue magnitudes to compare to. The GOTO pipeline instead makes do with the best available catalogues: the Pan-STARRS PS1 catalogue \citep{Pan-STARRS} and APASS, the AAVSO Photometric All-Sky Survey \citep{APASS}. The \textit{L} and \textit{G} Baader filters are matched to Pan-STARRS \textit{g}, \textit{R} to Pan-STARRS \textit{r} and \textit{B} to APASS \textit{B}.
+
+In order to find the zeropoints a linear fit was made against all sources which were matched to catalogue stars. An example of one of these plots is shown in \aref{fig:zeropoint}. As is visible in that plot the low-magnitude sources have large errors, so to take the best fit only sources above a nominal limiting magnitude of 20 were included when fitting. From this fit the y-intercept was taken as the zeropoint for that image. This was repeated for every image, and the zeropoints for each are given in \aref{tab:real_zeropoints}.
+
+\newpage
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/zeropoint.png}
+    \end{center}
+    \caption[Finding the observed zeropoint from a GOTO image]{
+        Finding the observed zeropoint from a GOTO image, in this case a single \SI{60}{\second} \textit{L}-band image taken of the Virgo Cluster with UT1.
+    }\label{fig:zeropoint}
+\end{figure}
+
+The best zeropoint from each set of three was selected; these are compared to the theoretical AB magnitudes calculated using pysynphot in \aref{tab:zeropoint_comparison} for each of the 16 filter and unit telescope combinations. The difference between the theoretical and observed zeropoints is found and from this a performance factor is calculated.
+
+In most cases the observed zeropoints are very close to the theoretical model values. Further images taken over more nights would be needed to make any firm conclusions but a few trends are clear. UT3 is consistently better performing than the others, which is expected since it was the last mirror to be serviced just a few months before the images were taken and therefore would be clear of any dust or imperfections the other mirrors have built up. On the other hand UT1 is consistently the worst performing of the four, which may be due to it being on the telescope the longest. It is also clear that the throughput in the \textit{G} band has somehow been underestimated, as the real observations are consistently recording higher signals than expected.
 
 \newpage
 
