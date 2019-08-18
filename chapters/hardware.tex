@@ -38,7 +38,7 @@ CCD cameras have a variety of characteristic parameters, including sources of no
 
 % ~~~~~~~~~~~~~~~~~~~~
 \subsection{Sources of CCD noise}
-\label{sec:CCD_noise}
+\label{sec:noise}
 \begin{colsection}
 
 There are many possible sources of noise in images taken with CCD cameras \citep{CCDs}. The most important noise sources for astronomical images are:
@@ -1034,116 +1034,239 @@ The resulting observation spectra are shown in \aref{fig:pysynphot} for both cas
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \newpage
-\subsection{Comparison to on-sky zeropoints}
-\label{sec:onsky_zeropoints}
+\subsection{Limiting magnitude}
+\label{sec:lim_mag}
 \begin{colsection}
 
-The GOTO prototype finally reached a stable 4-UT system in February 2019. In order to determine if it was performing to expectations the theoretical zeropoints calculated in the previous section can be compared to those found from real on-sky observations. Since GOTO is a very wide-field survey instrument there was no need to observe a particular standard star --- each frame contains thousands of individual sources that could be matched to a reference catalogue. In this case a set of sample observations were used: three \SI{60}{\second} exposures in all four filters (12 in total) of the Virgo Cluster, taken on the 16th of March 2019. These observations were taken during dark time and when the target was at a high altitude (airmass 1.08).
+Using the camera parameters determined in \aref{sec:detectors}, the throughput model created in \aref{sec:throughput} and the zeropoints calculated in \aref{sec:model_zeropoints} a complete photometric model of the GOTO telescopes can be created. One use of this is to predict the system limiting magnitude for a target signal-to-noise ratio.
 
-The sample images were processed using the standard GOTO-photo pipeline (\todo{described in intro}), which calibrated the frames and extracted source counts using Source Extractor \citep{SE}. These counts were background-subtracted and converted into instrumental magnitudes using \aref{eq:ins_mag}, with $t=60$ and using the gain values for each camera calculated in \aref{sec:ptc}.
+% ---------
+\subsubsection{Signal-to-noise}
 
-Unfortunately, as GOTO uses the non-standard Baader filters (see \aref{sec:filters}) there are no exact catalogue magnitudes to compare to. The GOTO pipeline instead makes do with the best available catalogues: the Pan-STARRS PS1 catalogue \citep{Pan-STARRS} and APASS, the AAVSO Photometric All-Sky Survey \citep{APASS}. The \textit{L} and \textit{G} Baader filters are matched to Pan-STARRS \textit{g}, \textit{R} to Pan-STARRS \textit{r} and \textit{B} to APASS \textit{B}.
+The common sources of noise in CCDs are discussed in \aref{sec:noise}. Discounting the bias level and fixed-pattern noise, both properties of the camera which are easy to remove, the major sources of noise in an image will be the dark current and read-out noise. In addition, when taking on-sky images there will be a certain contamination level from background light. Accounting for these the total noise in the image is given by
+%
+\begin{equation}
+    \sigma_\text{Total} = \sqrt{N + N_\text{BG} + D + R^2},
+    \label{eq:total_noise}
+\end{equation}
+%
+where $N$ is the electron signal from the source object, $N_\text{BG}$ is the additional signal from the background, $D$ is the dark current signal and $R$ is the read-out noise. Noise is usually quantified as a fraction of the target signal $N$, known as the signal-to-noise ratio:
+%
+\begin{equation}
+    \text{SNR} = \frac{N}{\sigma_\text{Total}} = \frac{N}{\sqrt{N + N_\text{BG} + D + R^2}}.
+    \label{eq:snr}
+\end{equation}
 
-In order to find the zeropoints a linear fit was made against all sources which were matched to catalogue stars. An example of one of these plots is shown in \aref{fig:zeropoint}. As is visible in that plot the low-magnitude sources have large errors, so to take the best fit only sources above a nominal limiting magnitude of 20 were included when fitting. From this fit the y-intercept was taken as the zeropoint for that image. This was repeated for every image, and the zeropoints for each are given in \aref{tab:real_zeropoints}.
+For good science-quality observations a signal-to-noise value of 5 or more is required, also known as a $5\sigma$ detection (as the signal will be more than 5 times the noise).
+
+\newpage
+
+% ---------
+\subsubsection{Background noise}
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/background.png}
+    \end{center}
+    \caption[Simulating sky background observations]{
+        Simulating sky background observations in the GOTO filters using pysynphot. Compare to \aref{fig:pysynphot}.
+    }\label{fig:background}
+\end{figure}
+
+The one value in \aref{eq:snr} that has not yet been considered is the background noise, $N_\text{BG}$. In order to determine a theoretical background noise for GOTO the same method using pysynphot can be used as in \aref{sec:model_zeropoints}, except instead of the spectra of a zero-magnitude star a spectrum representing the sky background is passed through the throughput model.
+
+The brightness of the sky will change most noticeably as a function of the Moon phase, with a full Moon creating a background noise several magnitudes higher than during a new Moon or when the Moon is below the horizon. In order to model the background spectra were taken from \citet{sky_background}, which includes background spectra taken from 6 years of VLT observations using the FORS1 instrument\footnote{Spectra available at \href{http://www.eso.org/~fpatat/science/skybright}{\texttt{http://www.eso.org/\raisebox{0.5ex}{\texttildelow}fpatat/science/skybright}}}. Three sample spectra were selected to give a range of background signals: a ``Dark'' spectrum taken when the Moon was new and below the horizon, a ``Grey'' spectrum taken when the Moon was 60\% illuminated and a ``Bright'' spectrum when taken when the Moon was full. These spectra are shown in \aref{fig:background}. The spectra were again convolved with the throughput model for each filter, and multiplied by the collecting area of the telescope, in order to get an expected signal in electrons per second. These were converted into instrumental magnitudes using \aref{eq:ins_mag} and then into true magnitudes using \aref{eq:zp} and the AB zeropoints given in \aref{tab:pysynphot_zeropoints}. The resulting background signals are given in \aref{tab:pysynphot_background}. Note that the background is given per square arcsecond; when calculating the background flux the signal must be multiplied by plate scale of the camera to get the signal per pixel (1.24 arcseconds/pixel for the MicroLine cameras).
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|ccc|ccc} %chktex 44
+                   & \multicolumn{6}{c}{Background signal} \\
+            Filter &
+            \multicolumn{3}{c|}{(\elec/s/arcsec$^2$)} &
+            \multicolumn{3}{c}{(mag/s/arcsec$^2$)} \\
+                   & Dark & Grey & Bright & Dark & Grey & Bright \\
+            \midrule
+            Baader \textit{L} & 2.58 & 14.27 & 27.13 & 21.44 & 19.58 & 18.88 \\
+            Baader \textit{R} & 1.18 &  4.37 &  8.20 & 20.99 & 19.58 & 18.89 \\
+            Baader \textit{G} & 0.81 &  4.56 &  8.99 & 21.45 & 19.57 & 18.83 \\
+            Baader \textit{B} & 0.52 &  5.74 & 10.65 & 22.20 & 19.60 & 18.93 \\
+        \end{tabular}
+    \end{center}
+    \caption[Sky background signals calculated using pysynphot]{
+        Sky background signals calculated using pysynphot for different Moon phases.
+    }\label{tab:pysynphot_background}
+\end{table}
+
+% ---------
+\subsubsection{Calculating limiting magnitudes}
+
+The limiting magnitude of a telescope is defined by the signal which would be required to get over a particular SNR, for example $5\sigma$. \aref{eq:snr} therefore can be rearranged into a quadratic formula
+%
+\begin{equation}
+    N_\text{lim}^2 - \text{SNR}^2 N_\text{lim} + \text{SNR}^2 (N_\text{BG} + D + R^2) = 0,
+    \label{eq:snr2}
+\end{equation}
+%
+and this can be solved to find $N_\text{lim}$.
+
+It is important to remember that $N_\text{lim}$, $N_\text{BG}$ and $D$ are in electrons per second per pixel while $R$ is just in electrons per pixel (as the read-out noise is independent of the exposure time). Each therefore needs to be multiplied by the number of pixels the source is spread across, which will be the determined by the the size of the seeing disk. A given seeing $s$ in arcseconds is defined as the full-width at half-maximum (FWHM) of the seeing disk in the image, and number of pixels the source will be spread across is
+%
+\begin{equation}
+    n = \pi {\left(3 \frac{0.5s}{p}\right)}^2,
+    \label{eq:seeing}
+\end{equation}
+%
+where $p$ is the plate scale in arcseconds/pixel and the factor of three comes from taking the $3\sigma$ radius (note as the seeing is the FWHM it must be halved to get the radius).
+
+Finally, the limiting magnitude in each filter and telescope can be calculated for a range of exposure times. These are plotted in \aref{fig:lim_mags} for dark and bright skies, for each GOTO filter and camera. Note it is almost impossible to distinguish between the lines for each camera, as the fractional difference between their dark and read out noise values are very small. The limiting magnitudes for a \SI{60}{\second} image, the typical exposure time for GOTO observations, are given in \aref{tab:lim_mags}.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/limiting_mag.png}
+    \end{center}
+    \caption[$5\sigma$ limiting magnitudes for GOTO]{
+        $5\sigma$ limiting magnitudes for GOTO plotted as a function of exposure time, assuming an airmass of 1 and seeing of 1.5. Solid lines give the limiting magnitude during dark time, dotted lines during bright time. A vertical dashed line has been added at \SI{60}{\second}.
+    }\label{fig:lim_mags}
+\end{figure}
+
+\begin{table}[t]
+    \begin{center}
+        \begin{tabular}{c|ccc} %chktex 44
+                   & \multicolumn{3}{c}{Limiting magnitude} \\
+            Filter & \multicolumn{3}{c}{(mag)} \\
+                   & Dark & Grey & Bright \\
+            \midrule
+            Baader \textit{L} & 19.76 & 19.53 & 19.35 \\
+            Baader \textit{R} & 18.51 & 18.43 & 18.35 \\
+            Baader \textit{G} & 18.56 & 18.46 & 18.37 \\
+            Baader \textit{B} & 18.85 & 18.72 & 18.62 \\
+        \end{tabular}
+    \end{center}
+    \caption[$5\sigma$ limiting magnitudes for a \SI{60}{\second} exposure]{
+        $5\sigma$ limiting magnitudes for a \SI{60}{\second} exposure in different filters and Moon phases.
+    }\label{tab:lim_mags}
+\end{table}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Comparison to on-sky observations}
+\label{sec:onsky_comparison}
+\begin{colsection}
+
+The GOTO prototype finally reached a stable 4-UT system in February 2019. In order to determine if it was performing to expectations the theoretical zeropoints and limiting magnitudes calculated in the previous sections can be compared to those found from real on-sky observations. Since GOTO is a very wide-field survey instrument there was no need to observe a particular standard star or field --- each frame contains thousands of individual sources that could be matched to a reference catalogue. In this case a set of sample observations were used: three \SI{60}{\second} exposures in all four filters (12 in total) of the Virgo Cluster, taken on the 16th of March 2019. These observations were taken during dark time and when the target was at a high altitude (airmass 1.08).
+
+Each image was processed using the standard GOTO-photo pipeline (\todo{described in intro}), which calibrated the frames and extracted source counts using Source Extractor \citep{SE}. These counts were background-subtracted and converted into instrumental magnitudes using \aref{eq:ins_mag}, with $t=60$ and using the gain values for each camera calculated in \aref{sec:ptc}.
+
+As GOTO uses the non-standard Baader filters (see \aref{sec:filters}) there are no exact catalogue magnitudes to compare to. The GOTO pipeline instead makes do with the best available catalogues: the Pan-STARRS PS1 catalogue \citep{Pan-STARRS} and APASS, the AAVSO Photometric All-Sky Survey \citep{APASS}. The \textit{L} and \textit{G} Baader filters are matched to Pan-STARRS \textit{g}, \textit{R} to Pan-STARRS \textit{r} and \textit{B} to APASS \textit{B}.
 
 \newpage
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/throughput/zeropoint.png}
+        \includegraphics[width=\textwidth]{images/throughput/zeropoint_real.png}
     \end{center}
     \caption[Finding the observed zeropoint from a GOTO image]{
-        Finding the observed zeropoint from a GOTO image, in this case a single \SI{60}{\second} \textit{L}-band image taken of the Virgo Cluster with UT1.
+        Finding the observed zeropoint from a GOTO image.
     }\label{fig:zeropoint}
 \end{figure}
 
-The best zeropoint from each set of three was selected; these are compared to the theoretical AB magnitudes calculated using pysynphot in \aref{tab:zeropoint_comparison} for each of the 16 filter and unit telescope combinations. The difference between the theoretical and observed zeropoints is found and from this a performance factor is calculated.
+In order to find the zeropoint for each image a linear function was fitted between the measured instrumental magnitudes of each source and the catalogue magnitude of the star it was matched against, with the y-intercept being equal to the zeropoint for that image. This is shown in \aref{fig:zeropoint} for one of the \textit{L}-band images. To exclude low-magnitude sources with large errors when fitting only sources with an SNR of 5$\sigma$ or above were included. This was repeated for every image, and the zeropoints for each are given in \aref{tab:zps_lms}.
 
-In most cases the observed zeropoints are very close to the theoretical model values. Further images taken over more nights would be needed to make any firm conclusions but a few trends are clear. UT3 is consistently better performing than the others, which is expected since it was the last mirror to be serviced just a few months before the images were taken and therefore would be clear of any dust or imperfections the other mirrors have built up. On the other hand UT1 is consistently the worst performing of the four, which may be due to it being on the telescope the longest. It is also clear that the throughput in the \textit{G} band has somehow been underestimated, as the real observations are consistently recording higher signals than expected.
+Once the zeropoint had been determined the measured instrumental magnitudes were converted into calibrated magnitudes by adding the zeropoint. Then the $5\sigma$ limiting magnitude was taken as the mean calibrated magnitude of sources with a signal to noise ratio between 4.5 and 5.5. This method is plotted in \aref{fig:lim_mag}, and the limiting magnitude values are also given in  \aref{tab:zps_lms}.
+
+\newpage
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/throughput/limiting_mag_real.png}
+    \end{center}
+    \caption[Finding the limiting magnitude from a GOTO image]{
+        Finding the limiting magnitude from a GOTO image.
+    }\label{fig:lim_mag}
+\end{figure}
+
+For each of the 16 filter and unit telescope combinations the best (highest) zeropoints and limiting magnitudes were selected from the set of three images. These are given in \aref{tab:zps_lms_comparison} along with the difference from the theoretical AB magnitude zeropoints given in \aref{tab:pysynphot_zeropoints} and the theoretical limiting magnitudes given in \aref{tab:lim_mags}.
+
+In most cases the observed zeropoints are very close to the theoretical model values, while the limiting magnitudes are consistently higher than predicted. Further images taken over more nights would be needed to make any firm conclusions but a few trends are clear. UT3 consistently has a better observed zeropoint than the others, this might be expected as it was the last mirror to be serviced just a few months before the images were taken and therefore would be clear of any dust or imperfections the other mirrors have built up. On the other hand UT1 is consistently the worst performing of the four in both zeropoint and limiting magnitude, particularly in the \textit{R} filter. It is also clear that the throughput in the \textit{G} band has been underestimated as the observations have notably higher zeropoints and limiting magnitudes than predicted.
 
 \newpage
 
 \begin{table}[p]
     \begin{center}
-        \begin{tabular}{cc|c|c|c|c} %chktex 44
-             & & UT1 & UT2 & UT3 & UT4 \\
-            Filter & Run &
-            {\small(ML6094917)} &
-            {\small(ML0010316)} &
-            {\small(ML0420516)} &
-            {\small(ML5644917)}
+        \begin{tabular}{cc|cc|cc|cc|cc} %chktex 44
+             & &
+            \multicolumn{2}{c|}{UT1} &
+            \multicolumn{2}{c|}{UT2} &
+            \multicolumn{2}{c|}{UT3} &
+            \multicolumn{2}{c}{UT4}
             \\
+             & &
+            \multicolumn{2}{c|}{{\footnotesize(ML6094917)}} &
+            \multicolumn{2}{c|}{{\footnotesize(ML0010316)}} &
+            \multicolumn{2}{c|}{{\footnotesize(ML0420516)}} &
+            \multicolumn{2}{c}{{\footnotesize(ML5644917)}}
+            \\
+            Filter & Run &
+            ZP & LM & ZP & LM & ZP & LM & ZP & LM \\
             \midrule
-            \textit{L} & 1 & 22.32 & 22.31 & 22.40 & 22.32 \\
-                       & 2 & 22.26 & 22.27 & 22.44 & 22.37 \\
-                       & 3 & 22.39 & 22.42 & 22.45 & 22.40 \\
-            \multicolumn{2}{r|}{Best} & 22.39 & 22.42 & 22.45 & 22.40 \\
+            \textit{L} & 1 & 22.32 & 19.80 & 22.31 & 19.73 & 22.40 & 19.77 & 22.32 & 19.70 \\
+                       & 2 & 22.26 & 19.72 & 22.27 & 19.61 & 22.44 & 19.87 & 22.37 & 19.76 \\
+                       & 3 & 22.39 & 19.83 & 22.42 & 19.95 & 22.45 & 19.89 & 22.40 & 19.84 \\
             \midrule
-            \textit{R} & 1 & 20.83 & 21.05 & 21.10 & 21.05 \\
-                       & 2 & 20.84 & 21.11 & 21.13 & 21.06 \\
-                       & 3 & 20.91 & 21.01 & 21.04 & 20.94 \\
-            \multicolumn{2}{r|}{Best} & 20.91 & 21.11 & 21.13 & 21.06 \\
+            \textit{R} & 1 & 20.83 & 18.44 & 21.05 & 18.63 & 21.10 & 18.67 & 21.05 & 18.63 \\
+                       & 2 & 20.84 & 18.42 & 21.11 & 18.77 & 21.13 & 18.69 & 21.06 & 18.64 \\
+                       & 3 & 20.91 & 18.49 & 21.01 & 18.64 & 21.04 & 18.57 & 20.94 & 18.52 \\
             \midrule
-            \textit{G} & 1 & 21.20 & 21.39 & 21.40 & 21.27 \\
-                       & 2 & 21.16 & 21.43 & 21.46 & 21.36 \\
-                       & 3 & 21.26 & 21.44 & 21.45 & 21.32 \\
-            \multicolumn{2}{r|}{Best} & 21.26 & 21.44 & 21.46 & 21.36 \\
+            \textit{G} & 1 & 21.20 & 18.84 & 21.39 & 19.03 & 21.40 & 18.96 & 21.27 & 18.88 \\
+                       & 2 & 21.16 & 18.81 & 21.43 & 19.08 & 21.46 & 19.10 & 21.36 & 18.92 \\
+                       & 3 & 21.26 & 18.92 & 21.44 & 19.05 & 21.45 & 19.04 & 21.32 & 18.86 \\
             \midrule
-            \textit{B} & 1 & 21.22 & 21.35 & 21.43 & 21.27 \\
-                       & 2 & 21.22 & 21.32 & 21.44 & 21.22 \\
-                       & 3 & 21.20 & 21.35 & 21.44 & 21.26 \\
-            \multicolumn{2}{r|}{Best} & 21.22 & 21.35 & 21.44 & 21.27 \\
+            \textit{B} & 1 & 21.22 & 18.86 & 21.35 & 19.03 & 21.43 & 19.03 & 21.27 & 19.03 \\
+                       & 2 & 21.22 & 18.91 & 21.32 & 18.88 & 21.44 & 19.08 & 21.22 & 18.95 \\
+                       & 3 & 21.20 & 18.91 & 21.35 & 18.92 & 21.44 & 19.07 & 21.26 & 18.95 \\
         \end{tabular}
     \end{center}
-    \caption[Observed zeropoints for each filter and unit telescope]{
-        Observed zeropoints for each filter and unit telescope.
-    }\label{tab:real_zeropoints}
+    \caption[Observed zeropoints and limiting magnitudes for each filter and unit telescope]{
+        Observed zeropoints and limiting magnitudes for each filter and unit telescope.
+    }\label{tab:zps_lms}
 \end{table}
 
 \begin{table}[p]
     \begin{center}
         \begin{tabular}{cr|c|c|c|c} %chktex 44
-            Filter & & UT1 & UT2 & UT3 & UT4 \\
+                Filter &                  & UT1   & UT2   & UT3   & UT4   \\
             \midrule
-            \textit{L} & Theoretical & 22.47 & 22.47 & 22.47 & 22.47 \\
-                       & Observed    & 22.39 & 22.42 & 22.45 & 22.40 \\
-                       & Difference  & -0.08 & -0.05 & -0.02 & -0.07 \\
-                       & Performance &  93\% &  95\% &  98\% &  94\% \\
+            \textit{L} & Best observed ZP & 22.39 & 22.42 & 22.45 & 22.40 \\
+                       &  Observed-theory & -0.08 & -0.05 & -0.02 & -0.07 \\
+                       & Best observed LM & 19.83 & 19.95 & 19.89 & 19.84 \\
+                       &  Observed-theory & +0.07 & +0.19 & +0.13 & +0.08 \\
             \midrule
-            \textit{R} & Theoretical & 21.18 & 21.18 & 21.18 & 21.18 \\
-                       & Observed    & 20.91 & 21.11 & 21.13 & 21.06 \\
-                       & Difference  & -0.27 & -0.07 & -0.05 & -0.12 \\
-                       & Performance &  78\% &  94\% &  95\% &  90\% \\
+            \textit{R} & Best observed ZP & 20.91 & 21.11 & 21.13 & 21.06 \\
+                       &  Observed-theory & -0.27 & -0.07 & -0.05 & -0.12 \\
+                       & Best observed LM & 18.49 & 18.77 & 18.69 & 18.64 \\
+                       &  Observed-theory & -0.02 & +0.26 & +0.18 & +0.13 \\
             \midrule
-            \textit{G} & Theoretical & 21.22 & 21.22 & 21.22 & 21.22 \\
-                       & Observed    & 21.26 & 21.44 & 21.46 & 21.36 \\
-                       & Difference  & +0.04 & +0.22 & +0.24 & +0.14 \\
-                       & Performance & 104\% & 122\% & 125\% & 114\% \\
+            \textit{G} & Best observed ZP & 21.26 & 21.44 & 21.46 & 21.36 \\
+                       &  Observed-theory & +0.04 & +0.22 & +0.24 & +0.14 \\
+                       & Best observed LM & 18.92 & 19.08 & 19.10 & 18.92 \\
+                       &  Observed-theory & +0.36 & +0.52 & +0.54 & +0.36 \\
             \midrule
-            \textit{B} & Theoretical & 21.50 & 21.50 & 21.50 & 21.50 \\
-                       & Observed    & 21.22 & 21.35 & 21.44 & 21.27 \\
-                       & Difference  & -0.28 & -0.15 & -0.06 & -0.23 \\
-                       & Performance &  77\% &  87\% &  95\% &  81\% \\
+            \textit{B} & Best observed ZP & 21.22 & 21.35 & 21.44 & 21.27 \\
+                       &  Observed-theory & -0.28 & -0.15 & -0.06 & -0.23 \\
+                       & Best observed LM & 18.91 & 19.03 & 19.08 & 19.03 \\
+                       &  Observed-theory & +0.06 & +0.18 & +0.23 & +0.18 \\
         \end{tabular}
     \end{center}
-    \caption[Comparison between theoretical and observed zeropoints]{
-        Comparison between theoretical and observed zeropoints.
-    }\label{tab:zeropoint_comparison}
+    \caption[Comparison between theoretical and observed zeropoints and limiting magnitudes]{
+        Comparison between the best observed zeropoints and limiting magnitudes and the theoretical values from \aref{tab:pysynphot_zeropoints} and \aref{tab:lim_mags}.
+    }\label{tab:zps_lms_comparison}
 \end{table}
 
 \clearpage
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\newpage
-\subsection{Predicting exposure times}
-\label{sec:etc}
-\begin{colsection}
-
-\todo{WIP}
 
 \end{colsection}
 
