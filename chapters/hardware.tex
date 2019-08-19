@@ -13,7 +13,15 @@
 
 \begin{colsection}
 
-\todo{usual intro blurb}
+In this chapter I detail my work characterising and modelling the GOTO hardware. This work was carried out predominantly in the first year and a half of my PhD, prior to GOTO's commissioning in 2017.
+%
+\begin{itemize}
+    \item In \nref{sec:detectors} I describe and give the results of the detector characterisation tests I ran on the GOTO cameras in the laboratory in Sheffield.
+    \item In \nref{sec:throughput} I detail creating a throughput model for the GOTO optical system, in particular examining the Baader filters GOTO uses.
+    \item Finally in \nref{sec:photometry} I apply the results of the previous two sections to predict the photometric properties of GOTO images, before comparing them to real observations taken once GOTO was fully operational.
+\end{itemize}
+%
+All work described in this chapter is my own and has not been published anywhere else.
 
 \end{colsection}
 
@@ -881,7 +889,7 @@ The complete GOTO throughput is a combination of all of the above elements. Each
 
 \begin{colsection}
 
-\todo{add}
+Using the throughput model created in the previous section it is possible to simulate photometric observations with GOTO before the telescope was even commissioned. This section applies the theoretical model to two important photometric properties: the magnitude zeropoint, the correction required to convert between instrumental and ``real'' magnitude values, and the limiting magnitude, the brightest magnitude a source can bbe to still produce a noticeable signal above a given noise threshold. These theoretical values are then compared to values calculated from real GOTO observations in order to test the validity of the model and check that the hardware is performing to specification.
 
 \end{colsection}
 
@@ -897,7 +905,7 @@ The output flux of a source, $F$, is related to its magnitude, $m$, by
     \label{eq:apparent_magnitude}
 \end{equation}
 %
-In practice measuring magnitudes is usually done relative to a particular reference star using
+In practice magnitudes are usually measured relative to a particular reference star using
 %
 \begin{equation}
     m - m_\text{ref} = -2.5 \log_{10}\left(\frac{F}{F_\text{ref}}\right),
@@ -906,7 +914,7 @@ In practice measuring magnitudes is usually done relative to a particular refere
 %
 which requires a reference star of known magnitude $m_\text{ref}$ and flux $F_\text{ref}$. By definition, a star with a magnitude of zero should produce a flux of one photon per second; traditionally Vega is used as a reference star as it has a magnitude of very close to 0.
 
-The instrumental magnitude measured from an image is related to the number of photo-electrons recorded, $N$, using the standard magnitude definition
+The instrumental magnitude measured from an image is related to the number of photo-electrons recorded, $N$, using the same magnitude definition
 %
 \begin{equation}
     \begin{split}
@@ -935,8 +943,8 @@ where constant $m_\text{ZP}$ is defined as the instrumental \emph{zeropoint}. Th
     m = m_\text{ins} + m_\text{ZP}.
     \label{eq:zp}
 \end{equation}
-
-Therefore were it possible to observe a star with $m=0$ (without immediately saturating the telescope) and get a measured count rate the zeropoint could simply be calculated as
+%
+Therefore, were it possible to observe a star with $m=0$ (without immediately saturating the telescope) and get a measured count rate the zeropoint can be calculated simply as
 %
 \begin{equation}
     \begin{split}
@@ -954,7 +962,7 @@ Therefore were it possible to observe a star with $m=0$ (without immediately sat
 \label{sec:model_zeropoints}
 \begin{colsection}
 
-It is possible to use to throughput model detailed in \aref{sec:throughput} to predict zeropoints for GOTO before it was even built. Consider taking an observation of a zero magnitude star, such as Vega. For this star $m=0$, and so from \aref{eq:zp} the instrumental magnitude will be equal to the negative zeropoint. In the AB magnitude system a zero magnitude star has a fixed flux density $F_\nu = $ \SI{3631}{\jansky} \citep{Sloan_filters}. Therefore passing that flux through the throughput model for each filter will produce a predicted signal in photo-electrons which can be used to calculated the zeropoint.
+Consider taking an observation of a zero magnitude star, such as Vega. For this star $m=0$, and so from \aref{eq:zp} the instrumental magnitude will be equal to the negative zeropoint. In the AB magnitude system a zero magnitude star has a fixed flux density $F_\nu = $ \SI{3631}{\jansky} \citep{Sloan_filters}. Therefore passing that flux through the throughput model for each filter created in \aref{sec:throughput} will produce a predicted signal in photo-electrons which can be used to calculate an expected zeropoint.
 
 First the zero-magnitude flux density needs to be converted into a flux in photons. \SI{3631}{\jansky} is equal to \SI{3.631e-20}{\erg\per\second\per\centi\metre\squared\per\hertz}. To convert from $F_\nu$ to photon flux $F_\lambda$ this needs to be multiplied by a factor of $c/\lambda_c^2$, where $c$ is the speed of light and $\lambda_c$ is the wavelength of the photon, in this case the central wavelength of the filter in question\footnote{The $c/\lambda_c^2$ conversion factor comes from differentiating the relationship $\nu = c/\lambda$}. This will then give a flux in Joules, but to convert to a photon count it needs to be divided by the energy of each photon $E_\lambda$ given by
 %
