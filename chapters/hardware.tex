@@ -1176,7 +1176,7 @@ As GOTO uses the non-standard Baader filters (see \aref{sec:filters}) there are 
 
 In order to find the zeropoint for each image a linear function was fitted between the measured instrumental magnitudes of each source and the catalogue magnitude of the star it was matched against, with the y-intercept being equal to the zeropoint for that image. This is shown in \aref{fig:zeropoint} for one of the \textit{L}-band images. To exclude low-magnitude sources with large errors when fitting only sources with an SNR of 5$\sigma$ or above were included. This was repeated for every image, and the zeropoints for each are given in \aref{tab:zps_lms}.
 
-Once the zeropoint had been determined the measured instrumental magnitudes were converted into calibrated magnitudes by adding the zeropoint. Then the $5\sigma$ limiting magnitude was taken as the mean calibrated magnitude of sources with a signal to noise ratio between 4.5 and 5.5. This method is plotted in \aref{fig:lim_mag}, and the limiting magnitude values are also given in  \aref{tab:zps_lms}.
+Once the zeropoint had been determined the measured instrumental magnitudes were converted into calibrated magnitudes by adding the zeropoint. Then the $5\sigma$ limiting magnitude was taken as the mean calibrated magnitude of sources with a signal to noise ratio between 4.5 and 5.5. This method is plotted in \aref{fig:lim_mag}, and the limiting magnitude values and error values are also given in  \aref{tab:zps_lms}.
 
 \newpage
 
@@ -1189,9 +1189,9 @@ Once the zeropoint had been determined the measured instrumental magnitudes were
     }\label{fig:lim_mag}
 \end{figure}
 
-For each of the 16 filter and unit telescope combinations the best (highest) zeropoints and limiting magnitudes were selected from the set of three images. These are given in \aref{tab:zps_lms_comparison} along with the difference from the theoretical AB magnitude zeropoints given in \aref{tab:pysynphot_zeropoints} and the theoretical limiting magnitudes given in \aref{tab:lim_mags}.
+For each of the 16 filter and unit telescope combinations the best zeropoints and limiting magnitudes were selected from the set of three images. These are given in \aref{tab:zps_comparison} and \aref{tab:lms_comparison}, and are compared to the theoretical AB magnitude zeropoints given in \aref{tab:pysynphot_zeropoints} and the theoretical limiting magnitudes given in \aref{tab:lim_mags}.
 
-In most cases the observed zeropoints are very close to the theoretical model values, while the limiting magnitudes are consistently higher than predicted. Further images taken over more nights would be needed to make any firm conclusions but a few trends are clear. UT3 consistently has a better observed zeropoint than the others, this might be expected as it was the last mirror to be serviced just a few months before the images were taken and therefore would be clear of any dust or imperfections the other mirrors have built up. On the other hand UT1 is consistently the worst performing of the four in both zeropoint and limiting magnitude, particularly in the \textit{R} filter. It is also clear that the throughput in the \textit{G} band has been underestimated as the observations have notably higher zeropoints and limiting magnitudes than predicted.
+In most cases the observed zeropoints are very close to the theoretical model values, while the limiting magnitudes are usually within one sigma of the theoretical value. Further images taken over more nights would be needed to make any firm conclusions but a few trends are clear. UT3 consistently has a better observed zeropoints than the others, followed by UT2. This matches the order the mirrors were serviced, with UT3 having only been returned to the telescope a month before the images were taken. Therefore the deficit in the observed zeropoints may be due to dust or imperfections that build up on the mirrors and reduce the throughput. It is also clear that the throughput in the \textit{G} band has been underestimated, as the observations have notably higher zeropoints and better limiting magnitudes than predicted.
 
 \newpage
 
@@ -1210,60 +1210,130 @@ In most cases the observed zeropoints are very close to the theoretical model va
             \multicolumn{2}{c|}{{\footnotesize(ML0420516)}} &
             \multicolumn{2}{c}{{\footnotesize(ML5644917)}}
             \\
-            Filter & Run &
+            \multicolumn{2}{c|}{Filter} &
             ZP & LM & ZP & LM & ZP & LM & ZP & LM \\
             \midrule
-            \textit{L} & 1 & 22.32 & 19.80 & 22.31 & 19.73 & 22.40 & 19.77 & 22.32 & 19.70 \\
-                       & 2 & 22.26 & 19.72 & 22.27 & 19.61 & 22.44 & 19.87 & 22.37 & 19.76 \\
-                       & 3 & 22.39 & 19.83 & 22.42 & 19.95 & 22.45 & 19.89 & 22.40 & 19.84 \\
+            \textit{L} & 1 &
+            22.32 & $19.8 \pm 0.2$ &
+            22.31 & $19.7 \pm 0.3$ &
+            22.40 & $19.8 \pm 0.2$ &
+            22.32 & $19.7 \pm 0.1$
+            \\
+             & 2 &
+            22.26 & $19.7 \pm 0.2$ &
+            22.27 & $19.6 \pm 0.2$ &
+            22.44 & $19.9 \pm 0.2$ &
+            22.37 & $19.8 \pm 0.4$
+            \\
+             & 3 &
+            22.39 & $19.8 \pm 0.2$ &
+            22.42 & $20.0 \pm 0.4$ &
+            22.45 & $19.9 \pm 0.2$ &
+            22.40 & $19.8 \pm 0.3$
+            \\
             \midrule
-            \textit{R} & 1 & 20.83 & 18.44 & 21.05 & 18.63 & 21.10 & 18.67 & 21.05 & 18.63 \\
-                       & 2 & 20.84 & 18.42 & 21.11 & 18.77 & 21.13 & 18.69 & 21.06 & 18.64 \\
-                       & 3 & 20.91 & 18.49 & 21.01 & 18.64 & 21.04 & 18.57 & 20.94 & 18.52 \\
+            \textit{R} & 1 &
+            20.83 & $18.4 \pm 0.2$ &
+            21.05 & $18.6 \pm 0.2$ &
+            21.10 & $18.7 \pm 0.1$ &
+            21.05 & $18.6 \pm 0.3$
+            \\
+             & 2 &
+            20.84 & $18.4 \pm 0.2$ &
+            21.11 & $18.8 \pm 0.3$ &
+            21.13 & $18.7 \pm 0.2$ &
+            21.06 & $18.6 \pm 0.3$
+            \\
+             & 3 &
+            20.91 & $18.5 \pm 0.2$ &
+            21.01 & $18.6 \pm 0.4$ &
+            21.04 & $18.6 \pm 0.2$ &
+            20.94 & $18.5 \pm 0.1$
+            \\
             \midrule
-            \textit{G} & 1 & 21.20 & 18.84 & 21.39 & 19.03 & 21.40 & 18.96 & 21.27 & 18.88 \\
-                       & 2 & 21.16 & 18.81 & 21.43 & 19.08 & 21.46 & 19.10 & 21.36 & 18.92 \\
-                       & 3 & 21.26 & 18.92 & 21.44 & 19.05 & 21.45 & 19.04 & 21.32 & 18.86 \\
+            \textit{G} & 1 &
+            21.20 & $18.8 \pm 0.2$ &
+            21.39 & $19.0 \pm 0.3$ &
+            21.40 & $19.0 \pm 0.2$ &
+            21.27 & $18.9 \pm 0.3$
+            \\
+             & 2 &
+            21.16 & $18.8 \pm 0.2$ &
+            21.43 & $19.1 \pm 0.3$ &
+            21.46 & $19.1 \pm 0.2$ &
+            21.36 & $18.9 \pm 0.3$
+            \\
+             & 3 &
+            21.26 & $18.9 \pm 0.2$ &
+            21.44 & $19.1 \pm 0.2$ &
+            21.45 & $19.0 \pm 0.1$ &
+            21.32 & $18.9 \pm 0.2$
+            \\
             \midrule
-            \textit{B} & 1 & 21.22 & 18.86 & 21.35 & 19.03 & 21.43 & 19.03 & 21.27 & 19.03 \\
-                       & 2 & 21.22 & 18.91 & 21.32 & 18.88 & 21.44 & 19.08 & 21.22 & 18.95 \\
-                       & 3 & 21.20 & 18.91 & 21.35 & 18.92 & 21.44 & 19.07 & 21.26 & 18.95 \\
+            \textit{B} & 1 &
+            21.22 & $18.9 \pm 0.1$ &
+            21.35 & $19.0 \pm 0.3$ &
+            21.43 & $19.0 \pm 0.2$ &
+            21.27 & $19.0 \pm 0.4$
+            \\
+             & 2 &
+            21.22 & $18.9 \pm 0.2$ &
+            21.32 & $18.9 \pm 0.4$ &
+            21.44 & $19.1 \pm 0.2$ &
+            21.22 & $18.9 \pm 0.3$
+            \\
+             & 3 &
+            21.20 & $18.9 \pm 0.2$ &
+            21.35 & $18.9 \pm 0.4$ &
+            21.44 & $19.1 \pm 0.2$ &
+            21.26 & $19.0 \pm 0.3$
+            \\
         \end{tabular}
     \end{center}
-    \caption[Observed zeropoints and limiting magnitudes for each filter and unit telescope]{
-        Observed zeropoints and limiting magnitudes for each filter and unit telescope.
+    \caption[Observed zeropoints and limiting magnitudes]{
+        Observed zeropoints and limiting magnitudes from three \SI{60}{\second} exposures taken in each filter. The camera serial numbers can be matched to \aref{tab:cameras}.
     }\label{tab:zps_lms}
 \end{table}
 
 \begin{table}[p]
     \begin{center}
-        \begin{tabular}{cr|c|c|c|c} %chktex 44
-                Filter &                  & UT1   & UT2   & UT3   & UT4   \\
+        \begin{tabular}{c|c|cccc|cccc} %chktex 44
+             &
+            Theoretical &
+            \multicolumn{4}{c|}{Best observed zeropoint} &
+            \multicolumn{4}{c}{Difference (obs-theory)}
+            \\
+            Filter & zeropoint & UT1 & UT2 & UT3 & UT4 & UT1 & UT2 & UT3 & UT4 \\
             \midrule
-            \textit{L} & Best observed ZP & 22.39 & 22.42 & 22.45 & 22.40 \\
-                       &  Observed-theory & -0.08 & -0.05 & -0.02 & -0.07 \\
-                       & Best observed LM & 19.83 & 19.95 & 19.89 & 19.84 \\
-                       &  Observed-theory & +0.07 & +0.19 & +0.13 & +0.08 \\
-            \midrule
-            \textit{R} & Best observed ZP & 20.91 & 21.11 & 21.13 & 21.06 \\
-                       &  Observed-theory & -0.27 & -0.07 & -0.05 & -0.12 \\
-                       & Best observed LM & 18.49 & 18.77 & 18.69 & 18.64 \\
-                       &  Observed-theory & -0.02 & +0.26 & +0.18 & +0.13 \\
-            \midrule
-            \textit{G} & Best observed ZP & 21.26 & 21.44 & 21.46 & 21.36 \\
-                       &  Observed-theory & +0.04 & +0.22 & +0.24 & +0.14 \\
-                       & Best observed LM & 18.92 & 19.08 & 19.10 & 18.92 \\
-                       &  Observed-theory & +0.36 & +0.52 & +0.54 & +0.36 \\
-            \midrule
-            \textit{B} & Best observed ZP & 21.22 & 21.35 & 21.44 & 21.27 \\
-                       &  Observed-theory & -0.28 & -0.15 & -0.06 & -0.23 \\
-                       & Best observed LM & 18.91 & 19.03 & 19.08 & 19.03 \\
-                       &  Observed-theory & +0.06 & +0.18 & +0.23 & +0.18 \\
+            \textit{L} & 22.47 & 22.39 & 22.42 & 22.45 & 22.40 & -0.08 & -0.05 & -0.02 & -0.07 \\
+            \textit{R} & 21.18 & 20.91 & 21.11 & 21.13 & 21.06 & -0.27 & -0.07 & -0.05 & -0.12 \\
+            \textit{G} & 21.22 & 21.26 & 21.44 & 21.46 & 21.36 & +0.04 & +0.22 & +0.24 & +0.14 \\
+            \textit{B} & 21.50 & 21.22 & 21.35 & 21.44 & 21.27 & -0.28 & -0.15 & -0.06 & -0.23 \\
         \end{tabular}
     \end{center}
-    \caption[Comparison between theoretical and observed zeropoints and limiting magnitudes]{
-        Comparison between the best observed zeropoints and limiting magnitudes and the theoretical values from \aref{tab:pysynphot_zeropoints} and \aref{tab:lim_mags}.
-    }\label{tab:zps_lms_comparison}
+    \caption[Comparison between theoretical and observed zeropoints]{
+        Comparison between the best observed zeropoints and the theoretical AB magnitude zeropoints from \aref{tab:pysynphot_zeropoints}.
+    }\label{tab:zps_comparison}
+\end{table}
+
+\begin{table}[p]
+    \begin{center}
+        \begin{tabular}{c|c|cccc} %chktex 44
+             &
+            Theoretical &
+            \multicolumn{4}{c}{Best observed limiting magnitude}
+            \\
+            Filter & limiting magnitude & UT1 & UT2 & UT3 & UT4 \\
+            \midrule
+            \textit{L} & 19.76 & $19.8 \pm 0.2$ & $20.0 \pm 0.4$ & $19.9 \pm 0.2$ & $19.8 \pm 0.3$ \\
+            \textit{R} & 18.51 & $18.5 \pm 0.2$ & $18.8 \pm 0.3$ & $18.7 \pm 0.1$ & $18.6 \pm 0.3$ \\
+            \textit{G} & 18.56 & $18.9 \pm 0.2$ & $19.1 \pm 0.2$ & $19.1 \pm 0.2$ & $18.9 \pm 0.2$ \\
+            \textit{B} & 18.85 & $18.9 \pm 0.2$ & $19.0 \pm 0.3$ & $19.1 \pm 0.2$ & $19.0 \pm 0.4$ \\
+        \end{tabular}
+    \end{center}
+    \caption[Comparison between theoretical and observed limiting magnitudes]{
+        Comparison between the best observed limiting magnitudes and the theoretical dark-time limiting magnitudes from \aref{tab:lim_mags}.
+    }\label{tab:lms_comparison}
 \end{table}
 
 \clearpage
