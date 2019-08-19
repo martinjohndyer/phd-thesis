@@ -9,26 +9,40 @@
 \label{sec:multiscope_intro}
 \begin{colsection}
 
+In this chapter I describe the potential future expansion of the GOTO project, with additional telescopes at the current site in La Palma and a future second site in Australia.
+%
+\begin{itemize}
+    \item In \nref{sec:multi_tel} I give an outline of the additional work required to create a multi-site scheduling system, and how the existing simulation code can be modified to approximate the required functionality.
+    \item In \nref{sec:gw_sims} I describe simulations showing the benefits of additional telescopes observing gravitational wave alerts in order to locate the counterpart source.
+    \item In \nref{sec:survey_sims} I describe further simulations detailing the effects of additional telescopes on the all-sky survey.
+\end{itemize}
+%
+All work described in this chapter is my own, and has not been published anywhere else.
+
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Scheduling for multiple telescopes}
+\label{sec:multi_tel}
+\begin{colsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-\todo{rewrite so it's an independent introduction}
-\todo{link to future of G-TeCS?}
+\todo{Should the G-TeCS expansion stuff be here?}
 
-As outlined in \aref{sec:gtecs_multisite} it is envisioned that, as GOTO expands to multiple telescopes and sites, the \gls{gtecs} scheduling system will be extended so that all the telescopes query a single observation database and a master scheduler decides what each telescope should be observing at a given time. This will require a large amount of work to modify both the database structure and the scheduling functions, and as it is not currently implemented into the existing scheduler several workarounds needed to be used in order to create realistic multi-telescope simulations.
-
-In this chapter I outline my work creating simulations of the GOTO observatory. \code{sec:scheduler\_sims} describes early simulations carried out when developing the G-TeCS scheduler in order to find the optimal ``tiebreak'' parameters, \code{sec:multi\_site} details how this simulation code could be modified to simulate multiple observing sites and \code{sec:gw\_sims} and \code{sec:survey\_sims} apply this to multi-site simulations of gravitational wave events and the all-sky survey respectively. All work described in this chapter is my own and has not been published before anywhere else.
+As outlined in \todo{confirm this section} it is envisioned that, as GOTO expands to multiple telescopes and sites, the \gls{gtecs} scheduling system will be extended so that all the telescopes query a single observation database and a master scheduler decides what each telescope should be observing at a given time. This will require a large amount of work to modify both the database structure and the scheduling functions, and as it is not currently implemented into the existing scheduler several workarounds needed to be used in order to create realistic multi-telescope simulations.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Scheduling for multiple observing telescopes}
+\subsection{Multiple observing telescopes}
 \label{sec:multi_tel_scheduling}
 \begin{colsection}
-
-\todo{Could this and below go back to a seperate section? See other ideas on removing the intros.}
 
 One of the current restrictions in the scheduling functions (as described in \aref{sec:scheduler}) is that they only ever expect a single pointing in the observation database to be marked as \code{running} at any one time. It is explicitly coded into the scheduler that detecting multiple running pointings should raise a critical error, as certain bugs early in development could lead to this undesired state to occur. Obviously once the system is to be expanded to multiple telescopes this restriction will have to be lifted, but for these simulations a simplification was required to work around this restriction.
 
@@ -42,7 +56,7 @@ The second simplification was to ensure the telescopes always stayed in sync whe
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Scheduling for multiple observing sites}
+\subsection{Multiple observing sites}
 \label{sec:multi_site_scheduling}
 \begin{colsection}
 

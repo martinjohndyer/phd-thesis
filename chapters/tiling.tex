@@ -9,27 +9,15 @@
 \label{sec:tiling_intro}
 \begin{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
-
-\todo{Split out GOTO-tile bits only}
-
-In this chapter I outline my work on the systems that allow GOTO to automatically follow up alerts of transient events, specifically gravitational wave detections and gamma-ray bursts. \aref{sec:gototile} describes the \software{Python} module GOTO-tile, which is used to create the all-sky grid that probability skymaps are mapped onto. The module was originally created by Darren White and then expanded by Evert Rol before I took over development, and the functions to create Gaussian skymaps were originally written by Yik Lun Mong. \aref{sec:gotoalert} describes another \software{Python} module GOTO-alert, which contains the structures and functions to process alerts published by LIGO, NASA and other sources. This module was originally based on work by Alex Obradovic before I took over the code and developed it to work with the other GOTO modules. All work described in this chapter is my own and has not been published before anywhere else.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Observing on a grid}
-\label{sec:on_grid}
-\begin{colsection}
-
-\todo{Again, not sure what we need here. Maybe removing all subsections from intros would be easier}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
+In this chapter I describe the software used by GOTO to create an all-sky survey gid, which gravitational wave events are then mapped onto.
+%
+\begin{itemize}
+    \item In \nref{sec:mapping_the_sky} I describe how transient alert localisations are mapped onto the celestial sphere.
+    \item In \nref{sec:gototile} I describe the GOTO-tile Python module, and the algorithms is uses to define the all-sky grid and apply skymaps to it.
+    \item In \nref{sec:grb_skymaps} I detail how GOTO-tile can be used to create our own skymaps for events that do not use them.
+\end{itemize}
+%
+All work described in this chapter is my own, and has not been published anywhere else. The GOTO-tile module was originally created by Darren White and then expanded by Evert Rol before I took over development.
 
 \end{colsection}
 

@@ -9,21 +9,31 @@
 \label{sec:autonomous_intro}
 \begin{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
-
-\todo{This whole intro section needs to be written after split}
+Continuing the description of the GOTO Telescope Control System from \aref{chap:gtecs}, in this chapter I describe the secondary layer of programs written to enable GOTO to operate as a robotic observatory.
+%
+\begin{itemize}
+    \item In \nref{sec:something} I outline the additional functionality added to G-TeCS in order to allow the telescope to operate autonomously.
+    \item In \nref{sec:pilot} I describe the master control program that operates the telescope when in robotic mode.
+    \item In \nref{sec:conditions} I detail how G-TeCS monitors the local conditions, and list the different flags used to judge if it is safe to observe.
+    \item In \nref{sec:observing} I give an outline of how targets are observed by the robotic system. These topics are expanded further in following chapters.
+\end{itemize}
+%
+All work described in this chapter is my own, and again is based on \citet{Dyer}.
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
+% ########################################
 
-\subsection{Requirements for a robotic telescope?}
-\label{sec:robot_requiremnets}
+\newpage
+\section{Something}
+\label{sec:something}
 \begin{colsection}
 
-\todo{An idea for a section, maybe not needed}
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{colsection}
+
+\todo{This whole section needs to be reorganised}
 
 The hardware control systems described in \aref{sec:hardware_control} provide the basic methods to control and operate the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount to a given target, take exposures once there, and then repeat with other targets for the rest of the night. There is a limited autonomy provided by the dome daemon, so the dome will close in bad weather without the delay from a human sending the command, but even that can be disabled if desired. Fundamentally the software described in \aref{sec:hardware_control} provides a perfectly usable human-operated telescope control system. \gls{goto}, however, was always designed as a fully robotic installation, as described in \aref{sec:control_requirements}. Therefore an additional level of software is required, to take the place of the observer as the source of the commands to the daemons.
 
@@ -36,8 +46,6 @@ In \gls{gtecs}, as in the \gls{pt5m} system before it, the role of the observer 
 \subsection{Scripts}
 \label{sec:scripts}
 \begin{colsection}
-
-\todo{This should be better linked to expanding on \aref{chap:gtecs}}
 
 As well as the daemons, the \pkg{gtecs} package includes multiple \proglang{Python} scripts. Once installed these scripts can all be run from the command line by a human, called from within other scripts like the pilot or run automatically with utilities like \software{cron}.
 

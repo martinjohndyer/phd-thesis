@@ -9,13 +9,30 @@
 \label{sec:gtecs_intro}
 \begin{colsection}
 
+Over the next three chapters I detail my work creating a software control system for GOTO.\@ This chapter includes the initial requirements and outline of the control system, and then focuses on the core programs to control the telescope hardware.
+%
+\begin{itemize}
+    \item In \nref{sec:control_systems} I detail the requirements for the GOTO control system, describe the options considered and detail the chosen system that the future work is built off of.
+    \item In \nref{sec:gtecs} I give an overview of the software that makes up the GOTO Telescope Control System and how it was implemented.
+    \item In \nref{sec:hardware_control} I go through each category of hardware and describe how the G-TeCS programs were written to control them.
+\end{itemize}
+%
+The work on the GOTO Telescope Control System described in this chapter is my own, incorporating advice and feedback from members of the GOTO collaboration. This and the following chapters have been expanded from my SPIE conference paper on G-TeCS, \citet{Dyer}. G-TeCS is based on the pt5m control system \citep{pt5m}, written primarily by Tim Butterly at Durham and Stu Littlefair and Vik Dhillon at Sheffield.
+
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Telescope control systems}
+\label{sec:control_systems}
+\begin{colsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-\todo{Need to make shure the division between this and \aref{chap:autonomous} is clear}
-
-In this chapter I outline my work creating a control system for the GOTO telescope. \aref{chap:gtecs}, \aref{chap:autonomous} and \aref{chap:scheduling} are expanded from my SPIE conference paper \citealt{Dyer}. The GOTO Telescope Control System is based on the pt5m control system (\citealt{pt5m}), written primarily by Tim Butterly at Durham and Stu Littlefair and Vik Dhillon at Sheffield. This provided the foundation that the GOTO system builds upon, but has been heavily modified and rewritten to meet the requirements of the GOTO project. All work described in this chapter is my own, incorporating advice and feedback from members of the GOTO collaboration.
+\todo{write this}
 
 \end{colsection}
 
@@ -24,8 +41,6 @@ In this chapter I outline my work creating a control system for the GOTO telesco
 \subsection{Requirements of the control system}
 \label{sec:control_requirements}
 \begin{colsection}
-
-\todo{Should this be its own section? These bits are a lot for the intro}
 
 My first task as part of the GOTO collaboration, in the summer of 2015 before I started my PhD in Sheffield, was to decide on what control system software to use for the telescope. There were several requirements to consider.
 

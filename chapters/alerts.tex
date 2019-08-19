@@ -9,13 +9,29 @@
 \label{sec:alerts_intro}
 \begin{colsection}
 
+In this chapter I describe the software used by GOTO to process alerts generated from transient astronomical events, including as gravitational wave detections.
+%
+\begin{itemize}
+    \item In \nref{sec:alert_standards} I give an overview of the systems in place to publish and distribute astronomical alerts used by the LVC, NASA and other organisations.
+    \item In \nref{sec:gotoalert} I describe the GOTO-alert Python module, which includes processing transient alerts, determining the optimal follow-up strategy and preparing targets for GOTO to observe.
+\end{itemize}
+%
+All work described in this chapter is my own, and has not been published anywhere else.
+
+\end{colsection}
+
+% ########################################
+
+\newpage
+\section{Standards for reporting transient events}
+\label{sec:alert_standards}
+\begin{colsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-\todo{Split out GOTO-alert bits only}
-
-In this chapter I outline my work on the systems that allow GOTO to automatically follow up alerts of transient events, specifically gravitational wave detections and gamma-ray bursts. \aref{sec:gototile} describes the \software{Python} module GOTO-tile, which is used to create the all-sky grid that probability skymaps are mapped onto. The module was originally created by Darren White and then expanded by Evert Rol before I took over development, and the functions to create Gaussian skymaps were originally written by Yik Lun Mong. \aref{sec:gotoalert} describes another \software{Python} module GOTO-alert, which contains the structures and functions to process alerts published by LIGO, NASA and other sources. This module was originally based on work by Alex Obradovic before I took over the code and developed it to work with the other GOTO modules. All work described in this chapter is my own and has not been published before anywhere else.
+\todo{Need to write little intro paragraph}
 
 \end{colsection}
 
@@ -24,6 +40,8 @@ In this chapter I outline my work on the systems that allow GOTO to automaticall
 \subsection{Transient astronomy}
 \label{sec:transient_astronomy}
 \begin{colsection}
+
+\todo{This whole section needs adjusting}
 
 For the last few decades the number of detections of transient astronomical sources has been rapidly increasing. From space-based gamma-ray burst monitors such as \textit{Fermi} and \textit{Swift} to wide-field survey telescopes such as the \gls{ptf} or \gls{asassn}, increasing numbers of time-critical events have been detected and therefore had to be rapidly sent to other observing partners for follow-up campaigns. Historically this was done, at a much slower pace, through physical post and telegrams --- hence the names of some of the current services offering modern, email-based alternatives: the Astronomer's Telegram \citep{ATel} GCN Circulars \citep{GCN}.
 
@@ -41,25 +59,6 @@ In order for the \gls{goto} imaging pipeline to identify new sources that might 
         The detection of Type Ia supernova SN 2019bpc by the GOTOphoto difference imaging pipeline. The new exposure on the left (a) has the reference image (b) subtracted to give the difference image on the right (c), where the new source is clearly visible.
     }\label{fig:difference_imaging}
 \end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
-% ########################################
-
-\newpage
-\section{Standards for reporting transient events}
-\label{sec:alert_standards}
-\begin{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
-
-\todo{Need to write little intro paragraph}
 
 \end{colsection}
 
@@ -128,7 +127,6 @@ VOEvents take the form of a structured \gls{xml} document. \gls{xml} is a ``mark
 % ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
-
 
 % ########################################
 
