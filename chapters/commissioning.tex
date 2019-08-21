@@ -30,7 +30,7 @@ All work described in this chapter is my own, and has not been published anywher
 
 \begin{colsection}
 
-\todo{WIP}
+GOTO commissioning began with the installation of the prototype telescope on La Palma in the spring of 2017. Over 2017 and 2018 I spent a total of nine weeks on-site, helping deploy the hardware as well as commissioning and developing the control software described in previous chapters.
 
 \end{colsection}
 
@@ -40,21 +40,28 @@ All work described in this chapter is my own, and has not been published anywher
 \label{sec:timeline}
 \begin{colsection}
 
+GOTO was envisioned as a quick, simple and cheap project that could provide a large field of view to cover the early gravitational wave skymaps produced by LIGO.\@ When I first interviewed to join the project in February 2015 it was anticipated that GOTO would be up and running imminently, perhaps before the end of the year. Ultimately that did not happen, as can be seen in the project timeline given in \aref{tab:timeline}, and GOTO did not see first light until June 2017. In hindsight the delay was irrelevant, as the first (and, at the time of writing, only) gravitational wave event to have an electromagnetic counterpart occurred two months later in August 2017 --- and was only visible from the southern hemisphere \citep{GW170817,GW170817_followup}.
+
+GOTO's deployment date was repeatedly set back for a variety of reasons, including planning permission being held up by local tax disputes and delays manufacturing the mount and optics. The site was ready months before the telescope was, with the first dome being built in November 2016. My first visit to La Palma took place in March 2017, while the the telescope was still in the factory. Vik Dhillon and I went out to the site from Sheffield, and the focus of the trip was on developing the dome and conditions monitoring systems as described in \aref{sec:dome} and \aref{sec:conditions}. During this trip we also installed the additional dome hardware systems I had built, described in \aref{sec:arduino}.
 
 \begin{figure}[p]
     \begin{center}
         \begin{tabular}{cl|@{\tls}l} %chktex 44
             2015 & July      & Collaboration meeting in Warwick (29 Jul) \\
+                 &           & Site planning application submitted \\
                  & September & Research collaboration agreement signed \\
+                 &           & \textit{LIGO's first observing run (O1) begins} \\
                  &           & \textit{First observation of gravitational waves (GW 150914)} \\
             \midrule
-            2016 & September & La Palma site construction begins \\
+            2016 & January   & \textit{O1 ends} \\
+                 & August    & Planning permission granted \\
+                 & September & Site construction begins \\
                  & November  & First dome assembled \\
-                 &           & \textit{LIGO second observing run (O2) begins} \\
+                 &           & \textit{LIGO's second observing run (O2) begins} \\
             \midrule
             2017 & March     & \textcolor{Blue}{Trip 1 (23--31 Mar) --- install dome systems} \\
-                 & May       & Telescope hardware installed \\
-                 & June      & \textbf{GOTO first light (19 Jun)} \\
+                 & May       & Telescope hardware shipped \\
+                 & June      & \textbf{GOTO first light (10 Jun)} \\
                  &           & Collaboration meeting in Warwick (19--20 Jun) \\
                  &           & \textcolor{Blue}{Trip 2 (22 Jun--7 Jul) --- install control software} \\
                  & July      & Inauguration ceremony (3 July) \\
@@ -62,10 +69,10 @@ All work described in this chapter is my own, and has not been published anywher
                  &           & Robotic operations begin \\
                  &           & Dec motor drive fails \\
                  & August    & UT3 mirrors sent back to factory \\
+                 &           & \textit{Virgo joins O2} \\
                  &           & \textit{First gravitational wave counterpart detected (GW 170817)} \\
                  &           & \textit{O2 ends} \\
-                 & November  & Drive motors upgraded \\
-                 &           & Arm extensions installed \\
+                 & November  & Drive motors upgraded, arm extensions installed \\
                  &           & \textcolor{Blue}{Trip 4 (9--16 Nov) --- on-site monitoring} \\
                  & December  & Second dome assembled \\
             \midrule
@@ -74,11 +81,12 @@ All work described in this chapter is my own, and has not been published anywher
                  & May       & On-site monitoring program ends \\
                  & June      & Refurbished mirrors reinstalled, UT4 mirrors sent back \\
                  & July      & \textcolor{Blue}{Trip 6 (5--13 Jul) --- software development} \\
+                 &           & New guidemounts installed \\
                  & December  & \textit{LIGO-Virgo Engineering Run 13 (14--18 Dec)} \\
             \midrule
             2019 & February  & Refurbished mirrors reinstalled into UT3 \\
                  &           & Current 4-UT all-sky survey begins \\
-                 & April     & \textit{LIGO-Virgo third observing run (O3) begins} \\
+                 & April     & \textit{LIGO-Virgo's third observing run (O3) begins} \\
         \end{tabular}
     \end{center}
     \caption[Timeline of the GOTO project]{
@@ -87,6 +95,70 @@ All work described in this chapter is my own, and has not been published anywher
 \end{figure}
 
 \clearpage
+
+Ultimately the mount and first four unit telescopes were shipped to La Palma in late May 2017, and GOTO officially saw first light on the 10th of June. I went out to the site a few weeks later, at the same time as the annual Sheffield undergraduate field trip, in order to install the G-TeCS software. By the time of the official inauguration on the 3rd of July the hardware control system was in place and working well, and I was able to demonstrate the telescope that evening to the assembled dignitaries. I returned to the site less than two weeks later along with Stu Littlefair, in order to do further work on the control software. In particular Stu and I were there to commission the pilot and observing scripts, and oversaw the telescope's first automated night on the 27th of July.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/inauguration_photo.jpg}
+    \end{center}
+    \caption[Working in the GOTO dome prior to the inauguration in June 2017]{
+        Working in the GOTO dome prior to the inauguration in June 2017. Photo taken looking west towards W1m and the WHT (with the orange ELT test laser visible). The empty platform on the right is where the second dome was installed later in the year.
+    }\label{fig:inauguration}
+\end{figure}
+
+Unfortunately in the months after the inauguration problems began to surface with the hardware. The first problem was the failure of the declination motor encoder while Stu and I were on-site. We were able to operate the telescope in a limited RA survey mode (described in \aref{sec:challenges}), however this greatly limited the capability of the telescope. There were also other problems with the guide mounts that hold the unit telescopes to the boom arm becoming lose, as well as the arms being too short so the telescopes could hit the mount. These issues meant that for the first few months of commissioning someone always needed to be present in the dome, so they could stop the mount moving if it was in danger of damaging itself. Once the O2 observing run ended there was less of a reason to be observing in this limited mode, so GOTO was shut down during the autumn until hardware upgrades could be installed at the start of November.
+
+At the same time problems with the optical performance had become apparent, which were blamed on the mirror quality and issues with collimation. A program of sending each set of mirrors back to the factory one at a time was decided on, allowing GOTO to still operate with the remaining three. The worst performing telescope, UT3, had its mirrors taken out and returned in August. Once the telescope was reactivated in November the remaining three active unit telescopes were aligned to form a single 3$\times$1 footprint, shown in \aref{fig:3ut_footprint}. Counterweights were placed in the empty UT3 tube to allow the mount to still be balanced. GOTO operated in this mode for over a year, with the downtime from the gravitational wave detectors giving time to fully test the control software as well as develop the back-end image pipeline and classification systems (\todo{see intro}). The first set of mirrors were returned to the site in June 2018 and were placed into UT4, which was the second-worst performing. The old UT4 mirrors were sent back to the factory and GOTO continued to operate with three unit telescopes until February 2019. At this point, based on the imminent start of the third LIGO-Virgo observing run, it was decided to leave the other two mirrors and operate from then on in the designed 4-UT configuration shown in \aref{fig:4ut_footprint}.
+
+One of the other problems found during commissioning was excessive scattered light entering the system, in particular light from the Moon entering the corrector lens. This was solved by adding covers around the telescope tubes, which prevented light from entering the corrector but made the system more susceptible to wind-shake (the reason that the tubes were designed as open in the first place). Ultimately the covers provided enough benefits, including protecting the mirrors from dust, that it is planned that future unit telescopes will have a closed tube design from the start.
+
+\newpage
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{images/footprint_1_box.png}
+    \end{center}
+    \caption[The previous 3-UT GOTO footprint]{
+        The previous 3-UT GOTO footprint, used from August 2017 to February 2019. The initial $5.5 \times 2.6$ degree tile area is shown in \textcolorbf{Green}{green}. Note that a reasonable amount of space is left around the edge of the tile.
+    }\label{fig:3ut_footprint}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{images/footprint_2_box.png}
+    \end{center}
+    \caption[The current 4-UT GOTO footprint]{
+        The current 4-UT GOTO footprint, in use from February 2019 onwards. The revised $3.7 \times 4.9$ degree tile area is shown in \textcolorbf{Green}{green}.
+    }\label{fig:4ut_footprint}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=0.4\textwidth]{images/commissioning_photo.jpg}
+        \includegraphics[width=0.4\textwidth]{images/commissioning_photo3.jpg}
+    \end{center}
+    \caption[Photos from GOTO commissioning]{
+        Photos from GOTO commissioning.\\
+        Left: Monitoring the telescope from inside the dome, November 2017.\\
+        Right: Fitting the mirror counterweights in UT3, January 2018
+    }\label{fig:commissioning}
+\end{figure}
+
+The secondary software commissioning period ran from the telescope being reactivated in November 2017 through to May 2018. During this time the telescope was typically running robotically each night, however there was always a member of the collaboration on site in order to supervise and monitor it in case of problems. Over that period the monitor moved from physically sitting in the dome, to sitting in the relative comfort of the neighbouring SuperWASP server room, until finally in the last few months being able to monitor from the observatory residencia or one of the other telescopes. I visited La Palma twice during this period, with the first trip in November 2017 covering the first week of the monitoring period immediately following the hardware upgrades. Other volunteers and students covered up until Christmas, then commissioning halted over the holiday period before I returned to the site in January for a three week visit. The first week overlapped with Kendall Ackley from Monash as well as a team from Sheffield, including Vik Dhillon and Stu Littlefair, who where there to work on the separate HiPERCAM instrument on the GTC.\@ During this period we replaced the counterweights, rebalanced the mount and realigned the unit telescopes, and I continued the software work with a major update to the observing database. During the second week I monitored the telescope alone from SuperWASP, and worked on upgrading the pilot so it was able to run automatically entirely with no human supervision. In the third week the HiPERCAM team returned and I continued to monitor the telescope, however a severe snowstorm stopped all observing and confined us to the residencia.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/snow_photo.jpg}
+    \end{center}
+    \caption[The GOTO site shut down due to snow]{
+        The GOTO site shut down due to snow, February 2018. Photo taken looking south-east, note the addition of the second dome compared to \aref{fig:inauguration}. SuperWASP is housed within the shed on the left.
+    }\label{fig:snow}
+\end{figure}
+
+Due to the cold weather and ice build up GOTO was unable to open throughout all of February 2018, and the on-site monitoring only recommenced in the spring once the snow had melted. Monitors continued to be on site for several more months, in between hardware upgrade trips from Warwick, until eventually in May the software was deemed robust enough to allow GOTO to run unsupervised. The pilot output was still regularly monitored remotely, especially by the Australian team who had the benefit of a more convenient timezone. By the time the 4-UT system was recommissioned in February 2019 the pilot and hardware control systems had been fully tested and were operating reliably, and my focus had shifted to the alert follow-up systems in advance of O3.
 
 \end{colsection}
 
@@ -97,10 +169,10 @@ All work described in this chapter is my own, and has not been published anywher
 \label{sec:arduino}
 \begin{colsection}
 
-GOTO uses a dome manufactured by Astrohaven, the same company that made the pt5m dome \citep{pt5m}. Based on experience at Sheffield with p5tm, it was decided that some extra hardware was needed to be added to the dome in addition to the in-built system. For p5tm the entire dome control unit was replaced by a custom one designed and manufactured in Durham, however if possible we wanted to avoid such a drastic step. There were several limitations of the stock dome, which are outlined below.
+GOTO uses a clamshell dome manufactured by Astrohaven, the same company that made the pt5m dome \citep{pt5m}. Based on experience with p5tm the there were several hardware systems which would be useful to add to the GOTO dome. In fact the entire pt5m dome control unit was replaced by a custom one designed and manufactured in Durham, however if possible we wanted to avoid such a drastic step. Several limitations of the stock dome are outlined below.
 %
 \begin{itemize}
-    \item First, there was no easily-accessible emergency stop button to cut power to the dome in an emergency (e.g.\ something gets caught in the motors). This is a serious concern for pt5m as when open the shutters completely cover the access hatch, making it dangerous for anyone to be passing through the hatch when the dome is moving. Therefore one of the additions to pt5m was an emergency stop button within arms reach of the hatch entrance. As the GOTO dome is taller the hatch is still mostly uncovered when the dome is open, however installing an emergency stop button was still a priority.
+    \item First, there was no easily-accessible emergency stop button to cut power to the dome in an emergency (e.g.\ something gets caught in the motors). This is a serious concern for pt5m as when the dome is open the shutters completely cover the access hatch, making it dangerous for anyone to be passing through the hatch when the dome is moving. Therefore one of the additions to pt5m was an emergency stop button within arms reach of the hatch entrance. As the GOTO dome is taller the hatch is still mostly uncovered when the dome is open, however installing an emergency stop button was still a priority.
     \item In a similar health and safety concern, by default the dome does not come with a siren to sound when it opens or closes. This is an important safety feature when operating a robotic observatory, as the dome will be operated entirely through software and it is important to warn anyone on site several seconds before it is about to move. When members of the GOTO team are on-site the robotic systems can be disabled entirely by going into engineering mode (see \aref{sec:mode}), however it is still important to make sure there is no chance of the dome moving without prior warning. In addition, the GOTO site on La Palma is completely publicly accessible, and it is not unknown for tourists or hikers, or other astronomers, to be around the dome when it is unsupervised.
     \item By default the dome \glsfirst{plc} only provides limited information about the status of the dome shutters. As described in \aref{sec:dome}, the \gls{plc} only returns a single status byte in response to a query. This is not enough to distinguish whether the dome is fully or only partially open, and if one side is moving the status of the other side is unknown. It is possible to determine the current status by saving the previous status within the dome daemon, but having constant on/off switches would be more reliable.
     \item The dome comes with two in-built magnetic sensors on each side, which should detect when the shutters are either fully closed or fully open. However these have been know to be unreliable and tricky to align. In some cases the switches failed to trigger when the shutter reached its open limit, leading to the dome continuing to drive the belts and the shutter embedding itself into the ground. Therefore having secondary, independent sensors was a priority to ensure this did not happen.
@@ -207,18 +279,17 @@ One further addition to the GOTO dome should be mentioned: the ``heartbeat'' mon
 \label{sec:challenges}
 \begin{colsection}
 
-Not mentioned: SiTech TCP/IP, Camera speed-up
+Not mentioned: SiTech TCP/IP (only software), guide mounts (only hardware), camera speed-up (performance)
 
-filter wheel serials
+Filter wheel serials? If so need to remove from \aref{sec:filt}.
 
 Camera readout not storing
 
-Dec drive failing
+Mount dec drive failing, work around in the daemon
 
-Mount balancing
+Mount balancing and pointing model with PointXP
 
-Dome stutter and falling open in the ice
-
+Dome stutter, going too far, and falling open in the ice
 
 \end{colsection}
 
