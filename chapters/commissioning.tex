@@ -299,13 +299,42 @@ Note this section focuses on the software side of commissioning, and does not in
 \label{sec:flats}
 \begin{colsection}
 
-\todo{WIP}
-\citep{flats}
+As GOTO does not have a uniform flat field within the dome it instead uses the twilight sky to approximate a flat surface. Some care has to be taken to design a reasonable flat-field routine, as taking flat fields is not simple for a wide-field instrument such as GOTO \citep{flats3, flats2}. The \code{takeFlats} observing script is run at twilight twice a day, once in the evening and again in the morning. In the evening the script begins after the dome is opened, when the Sun has set below the \SI{0}{\degree} horizon. In the morning it begins after observations have finished and the Sun has reached \SI{-10}{\degree}.
+
+To begin the telescope needs to slew from the park position to a chosen section of sky. In the pt5m version of the script the telescope would slew to one of a predefined set of empty sky regions. However with GOTO's large field of view it is impossible to find a large enough region with no bright stars in, so GOTO would instead slew to the zenith. Based on the analysis of the twilight sky gradient in \citet{flats} this was later changed to point at the ``anti-sun'' position, which is at an azimuth \SI{180}{\degree} opposite the position of the Sun and an altitude of \SI{75}{\degree}. This should be the position in the sky where the gradient is minimised and therefore the field is flattest.
+
+Once the telescope is in position glance exposures (see \aref{sec:cam}) are taken until the sky has reached an appropriate level. In the evening exposures start at \SI{3}{\second}, and the the first images will almost always still be saturated. Images are taken until the mean count level has fallen below 40,000 counts per pixel. In the morning exposures start at \SI{40}{\second} and as the sky is still dark exposures are taken until the mean count level is above 2 counts per pixel.
+
+Once the sky has reached the target level exposures are taken at increasing exposure times. The exposure time sequence is determined using the method in \citet{flats3}, which defines the spacing between exposures as iteratively using
+%
+\begin{equation}
+    t_{i+1} = \frac{\ln{(a^{t_n+\Delta t})}}{\ln{a}},
+    \label{eq:sky}
+\end{equation}
+%
+where $\Delta t$ is the time between exposures (including readout time and any offset slew time) and $a$ is a scaling factor which depends on the twilight duration $\tau$ in minutes as
+%
+\begin{equation}
+    a = 10^{\pm 0.094/\tau}.
+    \label{eq:sky2}
+\end{equation}
+%
+The twilight duration can be calculated easily using Astropy, and $a$ is taken as greater than 1 in the evening (exposure times increase) or less than 1 in the morning (exposure times decrease). Note $t$ is the time \emph{between} exposures, the actual exposure time of each exposure is given by
+%
+\begin{equation}
+    E_{i+1} = t_{i+1} - (t_i + \Delta t).
+    \label{eq:sky3}
+\end{equation}
+%
+Using this method a sequence of exposure times is determined iteratively either until a target number is reached (5, by default) or the exposure times pass a given limit (greater than \SI{60} in the evening, less than \SI{1}{\second} in the morning).
+
+Every time the script is run flat fields are taken in each of the \textit{LRGB} filters (see \aref{sec:filters}). In the evening flats start in the \textit{B} filter (as the sky is redder in the twilight), progress through \textit{G} and \textit{R} and finish on \textit{L} (as the sky will be dark and the \textit{L} filter has the widest bandpass). In the morning the sequence is reversed. Once the first set of flats is taken in the starting filter (\textit{B} in the evening, \textit{L} in the morning) a new starting exposure time is calculated based on the relative sky brightness terms in each filter determined in \aref{sec:lim_mag}.
+
+This method allows a reasonable set of flat fields to be taken in each filter most nights. Although initially nightly calibration frames were used at the start of commissioning, the GOTO pipeline now creates new master flat frames each month (the same is true of bias and dark frames). This means that taking new flats each night is important but not critical. If, for example, the Moon is too close to the anti-Sun point then that flat task can be skipped without causing any disruption.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
 \subsection{Focusing the telescopes}
 \label{sec:autofocus}
 \begin{colsection}
