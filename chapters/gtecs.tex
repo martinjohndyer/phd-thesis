@@ -189,8 +189,6 @@ The core programs of \gls{gtecs} are the hardware daemons. There are seven prima
 
 \subsection{FLI interfaces}
 \label{sec:fli}
-% transfer images as num py arrays, so pickle
-% "meta-daemons"??
 \begin{colsection}
 
 \todo{As described in the intro/hardware chapter}, \gls{goto} uses off-the-shelf camera, focuser and filter-wheel hardware from \gls{fli}. Each \gls{goto} unit telescope has a MicroLine ML50100 camera, an Atlas focuser and a CFW9--5 filter wheel connected to a small Intel \gls{nuc} attached to the boom arm. On these \glspl{nuc} run very basic daemons called the \gls{fli} interfaces. Barely daemons by the definition given in \aref{sec:daemons}, these interfaces have no control loop and exist only as a way to expose the serial connection of the hardware to the wider \gls{pyro} network. By using these interface daemons, the primary control daemons for the \gls{fli} hardware can run on the main control computer without being physically connected to the hardware (aside from via ethernet).
@@ -207,11 +205,6 @@ There are three control daemons that interact with the \gls{fli} interfaces: the
 
 \subsection{Camera control}
 \label{sec:cam}
-% how images are written
-%   multiple FITS extensions considered
-%   don't have space to store a whole image on the chip... (inside fli api)
-% headers
-%   all cards in appendix?
 \begin{colsection}
 
 The camera daemon interacts with all of the \gls{fli} cameras on a single \gls{goto} mount, making it the most complicated daemon. The commands to the camera daemon are fairly straightforward. There are four types of exposures that can be taken with the daemon:
@@ -225,7 +218,7 @@ The camera daemon interacts with all of the \gls{fli} cameras on a single \gls{g
 
 The \pkg{fli-api} interface also gives other options for exposures aside from just the exposure time, including different binning factors and windowing the active area of the chip to read out. Although the camera daemon does offer commands to set these they are never used during normal operations, and the image processing pipeline is set up to only expect full-frame, unbinned images.
 
-Once an exposure is completed the image data needs to be downloaded from the cameras and then sent through the interfaces to the camera daemon before the frames can be saved as \gls{fits} files. This is a disadvantage of the interface system, and consideration was given to instead having the interfaces write out the files to their local NUCs. Although this would have been faster to save the raw images, they would still need to be copied down from the NUCs to the primary archive on the control computer. Having the interfaces send the raw count arrays to the camera daemon for processing proved to save more time in the long run. The camera daemon also queries all the other hardware daemons at the start of the exposure, to get their current statuses to add to the \gls{fits} headers (for example, getting the current pointing position from the mount daemon).
+Once an exposure is completed the image data needs to be downloaded from the cameras and then sent through the interfaces to the camera daemon before the frames can be saved as \gls{fits} files. This is a disadvantage of the interface system, and consideration was given to instead having the interfaces write out the files to their local NUCs. Although this would have been faster to save the raw images, they would still need to be copied down from the NUCs to the primary archive on the control computer. Having the interfaces send the raw count arrays to the camera daemon for processing proved to save more time in the long run. The camera daemon also queries all the other hardware daemons at the start of the exposure, to get their current statuses to add to the \gls{fits} headers (for example, getting the current pointing position from the mount daemon). \todo{add header in appendix?}
 
 The time taken by each exposure, from the command being received to the FITS images being written to disk, has been optimised to minimise the amount of ``dead time'' between exposures. One of the primary ways to save time was to have the two most time-dependent processes, downloading the images from the interfaces and writing them to disk, run as separate threads for each camera independently of the main daemon control loop. Other time-saving improvements included only fetching the status information from the other daemons once, just after starting the exposures (so it doesn't take any extra time in addition to the exposure time).
 
@@ -240,8 +233,6 @@ Images are written to \gls{fits} files by the camera daemon and are archived in 
 \begin{colsection}
 
 The filter wheel daemon (sometimes shortened to just the filter daemon) controls the filter wheels on the \gls{goto} unit telescopes. The \gls{fli} CFW9--5 filter wheels are fairly standard pieces of hardware, with 5 slots that contain the \SI{65}{\milli\metre} square Baader \textit{R}, \textit{G}, \textit{B}, \textit{L} and \textit{C} filters (see \aref{sec:filters}). Moving the filter wheel is typically done via the exposure queue daemon (see \aref{sec:exq}) but can be done individually. When being restarted the filter wheels need to be homed to position 0, which contains the \textit{L} filter. This was intentional as the vast majority of typical \gls{goto} observations are taken in this filter.
-
-The only major complication in creating the filter wheel daemon was identifying the hardware when connected to the interface NUCs. The usual way to connect to specific hardware units through \pkg{fli-api} is to search the connected USB devices for their unique FLI serial numbers, but the initial set of CFW9--5 units did not have these serial numbers defined. As two filter wheels were connected to each NUC this problem made it impossible to tell them apart through the software. A solution was found using the \proglang{Python} \pkg{pyudev} module, which uses the Linux \code{udev} device manager to identify devices using their unique device names. This feature was patched into \pkg{fli-api} and enabled the control system to tell apart the connected filter wheels.
 
 \end{colsection}
 
@@ -290,10 +281,6 @@ Similar to the camera daemon, the timing of code and functions within the exposu
 
 \subsection{Dome control}
 \label{sec:dome}
-% limit switches + extras with Aurduino (in commissioning chapter?)
-%   sometimes didn't fully open
-%   closing slightly and reopening worked most of the time
-%   limit switches needed adjustment
 \begin{colsection}
 
 The dome daemon is the primary interface to the Astrohaven clamshell dome. It is in effect the most critical of all of the hardware control systems, because a failure in the software resulting in the dome opening in bad weather could be catastrophic to the hardware inside. As such, it is the most complicated single hardware daemon requiring multiple levels of internal checks and backup systems. It is also the only daemon with a small amount of autonomy built in, and therefore blurs the line between a pure hardware control daemon and the more complicated autonomous systems described in \aref{chap:autonomous}.
@@ -316,12 +303,11 @@ The dome daemon is also the hardware interface to the dehumidifier located withi
 
 \subsection{Mount control}
 \label{sec:mount}
-% dec freezing
 \begin{colsection}
 
 The mount daemon sends commands to the \gls{goto} mount through the \gls{sitech} servo controller. As discussed in \aref{sec:control_requirements}, the software for the servo controller is a Windows program called \software{SiTechEXE}. Therefore, enabling communication between \software{SiTechEXE} and the rest of the control system was a key requirement of G-TeCS.\@
 
-Initially the only way to communicate with \software{SiTechEXE} was via the \software{ASCOM} software. It was possible to communicate directly with the servo controller through a serial interface, however this was a very low-level interface and would have required a lot of work to re-implement the array of commands and functions within \software{SiTechEXE}. In particular the \software{PointXP} pointing model software was essential to make a pointing model for the mount (\todo{commissioning section?}), and it would have been very difficult to implement using serial commands. \software{ASCOM} is so called because it uses the Microsoft \gls{com} interface standard to provide a unified \gls{api} for astronomical hardware. \gls{sitech} provides their own \software{ASCOM} driver for their servo controller, and through the \proglang{Python} \pkg{pywin32} extensions module \software{Python} code could interact with \software{ASCOM} and therefore \software{SiTechEXE}. The \software{ASCOM} \gls{api} gave access to a wide variety of commands and status functions, including being able to slew the telescope, start and stop tracking, parking and setting and clearing targets.
+Initially the only way to communicate with \software{SiTechEXE} was via the \software{ASCOM} software. It was possible to communicate directly with the servo controller through a serial interface, however this was a very low-level interface and would have required a lot of work to re-implement the array of commands and functions within \software{SiTechEXE}. In particular the \software{PointXP} pointing model software was essential to make a pointing model for the mount (see \aref{sec:challenges}), and it would have been very difficult to implement using serial commands. \software{ASCOM} is so called because it uses the Microsoft \gls{com} interface standard to provide a unified \gls{api} for astronomical hardware. \gls{sitech} provides their own \software{ASCOM} driver for their servo controller, and through the \proglang{Python} \pkg{pywin32} extensions module \software{Python} code could interact with \software{ASCOM} and therefore \software{SiTechEXE}. The \software{ASCOM} \gls{api} gave access to a wide variety of commands and status functions, including being able to slew the telescope, start and stop tracking, parking and setting and clearing targets.
 
 The \software{ASCOM} method did however require the \software{Python} daemon to be running on the Windows computer. The solution to this was to write a \code{sitech} interface in the same manner that the \gls{fli} hardware connected to the boom arm computers use an \code{fli} interface. The \code{sitech} interface acted purely as a way of routing commands sent through the \gls{pyro} network to the \software{ASCOM} equivalent. However as it had to run on the Windows machine it differed slightly in implementation to the \code{fli} interface and other daemons, as Windows and Linux have different ways of defining ``daemon'' processes (Windows generally does not call them daemons, instead using terms like ``background processes''). Furthermore the interface had to be able to be started, stopped and killed from the remote control computer using a \code{sitech} control script, which meant \gls{gtecs} needed to include functions specifically to interact with Windows processes. It also meant the entire \gls{gtecs} package needed to be installable on Windows and deal with configuration file paths and parameters (compare Windows \code{C:\textbackslash{}Users\textbackslash{}goto\textbackslash{}} to Linux \code{/home/goto/}). This was simplified by the use of the \software{Cygwin} package, which provides Unix-like commands and behaviour on Windows including mapping directories into Unix format. Once this was developed the system was reliable enough to correctly control the mount during commissioning.
 

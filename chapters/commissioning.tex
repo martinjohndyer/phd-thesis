@@ -23,7 +23,7 @@ All work described in this chapter is my own, and has not been published anywher
 
 \newpage
 \section{Deploying the hardware}
-\label{sec:deployment}
+\label{sec:hardware_commissioning}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -65,9 +65,9 @@ GOTO's deployment date was repeatedly set back for a variety of reasons, includi
                  &           & Collaboration meeting in Warwick (19--20 Jun) \\
                  &           & \textcolor{Blue}{Trip 2 (22 Jun--7 Jul) --- install control software} \\
                  & July      & Inauguration ceremony (3 July) \\
+                 &           & Dec axes encoder fails \\
                  &           & \textcolor{Blue}{Trip 3 (20--28 Jul) --- pilot commissioning} \\
                  &           & Robotic operations begin \\
-                 &           & Dec motor drive fails \\
                  & August    & UT3 mirrors sent back to factory \\
                  &           & \textit{Virgo joins O2} \\
                  &           & \textit{First gravitational wave counterpart detected (GW 170817)} \\
@@ -107,7 +107,7 @@ Ultimately the mount and first four unit telescopes were shipped to La Palma in 
     }\label{fig:inauguration}
 \end{figure}
 
-Unfortunately in the months after the inauguration problems began to surface with the hardware. The first problem was the failure of the declination motor encoder while Stu and I were on-site. We were able to operate the telescope in a limited RA survey mode (described in \aref{sec:challenges}), however this greatly limited the capability of the telescope. There were also other problems with the guide mounts that hold the unit telescopes to the boom arm becoming lose, as well as the arms being too short so the telescopes could hit the mount. These issues meant that for the first few months of commissioning someone always needed to be present in the dome, so they could stop the mount moving if it was in danger of damaging itself. Once the O2 observing run ended there was less of a reason to be observing in this limited mode, so GOTO was shut down during the autumn until hardware upgrades could be installed at the start of November.
+Unfortunately in the months after the inauguration problems began to surface with the hardware. The first problem was the failure of the declination motor encoder shortly after the inauguration. We were able to operate the telescope in a limited RA survey mode (described in \aref{sec:challenges}), however this greatly limited the capability of the telescope. There were also other problems with the guide mounts that hold the unit telescopes to the boom arm becoming lose, as well as the arms being too short so the telescopes could hit the mount. These issues meant that for the first few months of commissioning someone always needed to be present in the dome, so they could stop the mount moving if it was in danger of damaging itself. Once the O2 observing run ended there was less of a reason to be observing in this limited mode, so GOTO was shut down during the autumn until hardware upgrades could be installed at the start of November.
 
 At the same time problems with the optical performance had become apparent, which were blamed on the mirror quality and issues with collimation. A program of sending each set of mirrors back to the factory one at a time was decided on, allowing GOTO to still operate with the remaining three. The worst performing telescope, UT3, had its mirrors taken out and returned in August. Once the telescope was reactivated in November the remaining three active unit telescopes were aligned to form a single 3$\times$1 footprint, shown in \aref{fig:3ut_footprint}. Counterweights were placed in the empty UT3 tube to allow the mount to still be balanced. GOTO operated in this mode for over a year, with the downtime from the gravitational wave detectors giving time to fully test the control software as well as develop the back-end image pipeline and classification systems (\todo{see intro}). The first set of mirrors were returned to the site in June 2018 and were placed into UT4, which was the second-worst performing. The old UT4 mirrors were sent back to the factory and GOTO continued to operate with three unit telescopes until February 2019. At this point, based on the imminent start of the third LIGO-Virgo observing run, it was decided to leave the other two mirrors and operate from then on in the designed 4-UT configuration shown in \aref{fig:4ut_footprint}.
 
@@ -274,41 +274,22 @@ One further addition to the GOTO dome should be mentioned: the ``heartbeat'' mon
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\newpage
-\subsection{Commissioning challenges}
-\label{sec:challenges}
-\begin{colsection}
-
-Not mentioned: SiTech TCP/IP (only software), guide mounts (only hardware), camera speed-up (performance)
-
-Filter wheel serials? If so need to remove from \aref{sec:filt}.
-
-Camera readout not storing
-
-Mount dec drive failing, work around in the daemon
-
-Mount balancing and pointing model with PointXP
-
-Dome stutter, going too far, and falling open in the ice
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
 \end{colsection}
 
 % ########################################
 
 \newpage
-\section{Developing observing routines}
-\label{sec:obs_scripts}
+\section{Developing the software}
+\label{sec:software_commissioning}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-\todo{WIP}
+While the GOTO hardware was being commissioned the G-TeCS control software was also being developed. There were several important parts of the software that could not reasonably be developed without access to the actual telescope, notably developing observing routines such as taking flat fields or autofocusing.
+
+Note this section focuses on the software side of commissioning, and does not include pure hardware issues such as with the mount drive, mirrors or guidemounts outlined in \aref{tab:timeline}. These were dealt with by the core GOTO hardware team at Warwick, and although I spent plenty of time on La Palma balancing the mount, adjusting mirror positions and aligning unit telescopes it had limited impact on the control software development.
 
 \end{colsection}
 
@@ -324,7 +305,7 @@ Dome stutter, going too far, and falling open in the ice
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-
+\newpage
 \subsection{Focusing the telescopes}
 \label{sec:autofocus}
 \begin{colsection}
@@ -335,61 +316,100 @@ Dome stutter, going too far, and falling open in the ice
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Creating a pointing model}
+\label{sec:pointxp}
+\begin{colsection}
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\textwidth]{images/pointing_model.png}
+    \end{center}
+    \caption[Creating a pointing model using PointXP]{
+        Creating a pointing model using PointXP.\@
+    }\label{fig:pointing_model}
+\end{figure}
+
+Mount balancing and pointing model with PointXP
 
 \end{colsection}
 
-% ########################################
+% ~~~~~~~~~~~~~~~~~~~~
 
 \newpage
-\section{System performance}
-\label{sec:results}
+\subsection{Other commissioning challenges}
+\label{sec:challenges}
 \begin{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
+In this section I outline a few of the other hardware-related challenges that the software had to overcome. This is not an exhaustive list, and several of the software-only changes were already discussed in the relevant section in \aref{sec:hardware_control} (for example changing the mount control from requiring a Windows interface).
 
-\begin{colsection}
+% ---------
+\subsubsection{Filter wheel serial numbers}
 
-\todo{WIP}
+One of the hardware issues that was identified early on concerned identifying the filter wheels when they were connected to the interface NUCs. The usual way to connect to specific hardware units through the \pkg{fli-api} package is to search the connected USB devices for their unique FLI serial numbers (for example the serial numbers of the GOTO cameras given in \aref{tab:cameras}). However the initial set of CFW9--5 filter wheels delivered to us by FLI did not have serial numbers defined. As on the mount two filter wheels were connected to each interface NUC this problem made it impossible to send individual commands to each through the software.
 
-\end{colsection}
+A solution was eventually found using the \proglang{Python} \pkg{pyudev} module, which uses the Linux \code{udev} device manager to identify devices using the \code{/dev/} name, and therefore create a pseudo-serial number based on which port each device was connected to. Using this method it is possible to tell apart filter wheels as long as you knew which physical USB port each was plugged into. This is not an ideal solution, but as long as the USBs remain connected it is not an issue even if the NUCs are rebooted.
 
-% ~~~~~~~~~~~~~~~~~~~~
+% ---------
+\subsubsection{Downloading images from the cameras}
 
-\subsection{Hardware control}
-\label{sec:hardware_results}
-\begin{colsection}
+One of the more complicated parts of the camera control software within \pkg{fli-api} is reading images from the FLI cameras. Once an exposure has finished counts from the chip are read out and stored in a buffer on the camera, where they can be downloaded by USB.\@ A last-minute change lead to the GOTO cameras using new, larger detectors than originally designed for the cameras, which lead to there not being enough space in the camera buffer to store a full-frame image. This was discovered when corrupted images such as the one shown in \aref{fig:cam_readout} were being produced; the regions in the lower third of the image are just duplicates of the data in the upper third meaning the original data in that section was lost.
 
-\todo{WIP}
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{images/cam_readout.png}
+    \end{center}
+    \caption[A corrupted image which was not read out fast enough]{
+        An example of a corrupted image from one of the MicroLine cameras which was not read out fast enough.
+    }\label{fig:cam_readout}
+\end{figure}
 
-\end{colsection}
+The cameras return a \code{DataReady} status once the exposure has finished and the data is reading out, however when installing G-TeCS on site it was clear that the camera daemon was not able to reliably start downloading the data from the cameras quick enough to clear space in the internal buffer. The solution was to add an internal image queue within \code{fli-api}, which would immediately begin downloading from the cameras as soon as they reported the exposure was finished. This meant the camera data was stored within the memory on the interface NUCs, and then the camera daemon queried the \code{fli} interfaces (see \aref{sec:fli}) to download the images across the network.
 
-% ~~~~~~~~~~~~~~~~~~~~
+This solution did run into a few problems with a feature of the Python programming language called the global interpreter lock (GIL), which prevents multiple threads accessing the same Python object at once (the exact workings of the GIL are out of scope for this thesis). In short this prevented reading out the cameras to the internal queue in parallel, which added extra delay time. Luckily the \pkg{fli-api} module was not written in standard Python (technically CPython) but in Cython, which interfaces between the FLI API code written in C and the rest of the system written in Python. Cython contains a GIL to maintain compatibility with CPython, however it is not required and can be disabled. Doing this allowed the cameras to be read out in parallel as intended.
 
-\subsection{The all-sky survey}
-\label{sec:survey_results}
-\begin{colsection}
+% ---------
+\subsubsection{Dec axis encoder failure}
 
-\todo{WIP}
+Just a few weeks after the inauguration the mount declination axis encoder failed, preventing any automated slewing in the declination axis (the telescope could still be moved manually with the hand-pad). Of the two axes to fail this was by far the better one, had the RA axis failed instead then the telescope would not be able to track and images could not be taken. Instead the telescope could still take images, and commissioning the optics and the control software could therefore continue.
 
-\end{colsection}
+However when Stu and I visited in July 2017 we wanted to test the automated pilot, and the SiTech control software was not able to cope with the disabled dec axis. When sent a command to slew to a position it would move to the closest correct position in RA, however it would never register reaching the target and therefore would not start tracking. Instead a workaround was coded into the mount daemon, a separate thread which would monitor the RA position and stop moving when the target RA coordinates were reached regardless of the declination coordinates. Some other small changes were needed in the pilot and startup/shutdown scripts, as the mount was unable to officially park for the same reason. When these were in place GOTO was able to observe `normally', and with a limited set of targets added to the observing database the telescope could carry out a survey in a limited declination band of the sky.
 
-% ~~~~~~~~~~~~~~~~~~~~
+Had an important gravitational wave target come through during this period the on-site monitor would have had to move the telescope to the correct declination and then manually carry out observations --- thankfully this was not needed and once O2 ended GOTO was shut down until the motors could be replaced.
 
-\subsection{Gravitational wave observations}
-\label{sec:gw_results}
-\begin{colsection}
+% ---------
+\subsubsection{Dome movement}
 
-\todo{WIP}
+The Astrohaven clamshell dome is driven by internal belts attached to the dome shutters. It is important when moving the dome to not put undue stress on these belts, as should one of them dislodge or snap there is nothing preventing the dome falling open. As described in \aref{sec:dome} the dome motors are deliberately moved in short bursts rather than continually when opening. This prevents the shutters being pulled down too fast, which can cause the upper shutter to fall and put excess stress on the belts.
 
-\end{colsection}
+As mentioned in \aref{sec:arduino} the dome has also occasionally opened past its limits, with the switches failing to trigger meaning the motors drove the shutters into the ground. The extra limit switches we installed provided a backup in order to cut the motors when they trigger, but also gave a method to detect when the shutters overshot if the arm returned back to horizontal. Extra code was written into the dome daemon to check for this, and if necessary override the dome to move the shutters back up.
 
-% ~~~~~~~~~~~~~~~~~~~~
+One of the more serious hardware problems occurred a few days after I left La Palma in February 2018. During the freezing conditions ice built up on the upper dome shutter, and eventually was heavy enough to pull the shutter past its limits --- exposing the telescope to the elements (see \aref{fig:ice_internal}). I was able to remotely move the dome and drag the shutter closed, but a large amount of ice fell into the dome. Luckily the HiPERCAM team, Vik Dhillon, Stu Littlefair and Tom Marsh, were still at the observatory along with my replacement GOTO monitor, Tom Watts from Armagh. As shown in \aref{fig:ice_external} they were able to get up the mountain to clear ice from inside and outside of the dome, as well as place a tarpaulin over the telescope.
 
-\subsection{Other transient follow-up}
-\label{sec:other_results}
-\begin{colsection}
+Once informed about the event Astrohaven manufactured brackets to fit inside the dome to prevent the upper shutter opening this way. This was also the motivation for the \code{internal} and \code{ice} flags in the conditions monitor, to be able to alert us should similar conditions occur in the future.
 
-\todo{WIP}
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.45\textwidth]{images/ice_open.jpeg}
+        \includegraphics[width=0.45\textwidth]{images/ice_closed.jpeg}
+    \end{center}
+    \caption[Internal webcam images showing the dome open during a snowstorm]{
+        Internal webcam images showing the dome open during the 2018 snowstorm.\\
+        Left: The dome when the opening was discovered, with the upper shutter (which normally closes on the south side, to the left of the image) having been pulled past its limits by the weight of ice built up on the north side.\\
+        Right: The dome after closing the shutter remotely. Moving the shutters caused a large amount of ice to dislodge and fall into the dome, thankfully missing the mirrors and camera hardware.
+    }\label{fig:ice_internal}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+    \includegraphics[width=0.88\textwidth]{images/ice_outside.jpeg}
+    \end{center}
+    \caption[External webcam image showing the ice rescue team]{
+        External webcam image showing the ice rescue team. Note the build up of ice visible on the northern side of the upper shutter of the (empty) left-hand dome. A similar build up caused the upper shutter on the right-hand dome containing GOTO to be pulled open.
+    }\label{fig:ice_external}
+\end{figure}
+
+\clearpage
 
 \end{colsection}
 
