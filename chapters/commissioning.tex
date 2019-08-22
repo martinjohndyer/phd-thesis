@@ -326,7 +326,7 @@ The twilight duration can be calculated easily using Astropy, and $a$ is taken a
     \label{eq:sky3}
 \end{equation}
 %
-Using this method a sequence of exposure times is determined iteratively either until a target number is reached (5, by default) or the exposure times pass a given limit (greater than \SI{60} in the evening, less than \SI{1}{\second} in the morning).
+Using this method a sequence of exposure times is determined iteratively either until a target number is reached (5, by default) or the exposure times pass a given limit (greater than \SI{60} in the evening, less than \SI{1}{\second} in the morning). In between each exposure the telescope is stepped 10~arcminutes in both RA and declination, enough to ensure any objects in the field are not in the same position.
 
 Every time the script is run flat fields are taken in each of the \textit{LRGB} filters (see \aref{sec:filters}). In the evening flats start in the \textit{B} filter (as the sky is redder in the twilight), progress through \textit{G} and \textit{R} and finish on \textit{L} (as the sky will be dark and the \textit{L} filter has the widest bandpass). In the morning the sequence is reversed. Once the first set of flats is taken in the starting filter (\textit{B} in the evening, \textit{L} in the morning) a new starting exposure time is calculated based on the relative sky brightness terms in each filter determined in \aref{sec:lim_mag}.
 
@@ -339,8 +339,52 @@ This method allows a reasonable set of flat fields to be taken in each filter mo
 \label{sec:autofocus}
 \begin{colsection}
 
-\todo{WIP}
-\citep{autofocus}
+The GOTO unit telescopes are designed to adjust to temperature changes during the night, meaning the focus should be fairly stable and refocusing only once a night is reasonable. The night marshal has an autofocus routine, however due to the repeated issues with the optics and mirrors during the commissioning phase it was often easier to focus each unit telescope manually when possible. Once the hardware became more stable the autofocus routine was allowed to run each night as intended. Once the sky is too dark for flats but to early to start observations the pilot night marshal runs the \code{autoFocus} to focus the telescopes. To save time all of the unit telescopes are focused at the same time, although completely independently.
+
+The autofocus routine is based on the V-curve method used by the FocusMax software\footnote{\url{https://www.ccdware.com/products/focusmax/}}, as described in \citet{autofocus}. Instead of measuring the focus using the \glsfirst{fwhm} or a Gaussian fit it is instead measured using the \gls{hfd}. The HFD is defined as the diameter of a circle centred on a star in which half of the total flux is inside the circle and half is outside. Unlike the FWHM this parameter is based only on the total spread of the flux and not on the maximum peak, which can be disrupted due to seeing effects. The important feature of the HFD is that it should vary linearly with focus position, forming a V-shaped curve with a fixed gradient either side of the best focus (shown in \aref{fig:autofocus}). The V-curve gradient is a function of the telescope hardware: changes in seeing will increase or decrease the point-spread function (moving the curve up and down) while changes in temperature will change the best focus position (moving it side-to-side) but the shape should remain the same. Therefore if the curve has been defined for the given telescope once you can find which part of the curve you are on you can use the known gradient and intercept to move directly to the minimum point, which will give the best focus.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{images/autofocus.pdf}
+    \end{center}
+    \caption[Steps to find the best focus position using the HFD V-curve]{
+        Steps to find the best focus position using the HFD V-curve.
+    }\label{fig:autofocus}
+\end{figure}
+
+As GOTO is a wide-field instrument no particular focus star needs to be picked, and instead focusing takes place at zenith assuming there are always enough stars in the field. Images are windowed to just a central 2000$\times$2000 area, to avoid any distortions around the edge of the field. Sources are extracted and the half flux diameter measured using the Python SEP module (Source Extraction and Photometry, \pkg{sep}\footnote{\url{https://sep.readthedocs.io/}}) which implements the Source Extractor algorithms in Python \citep{SE}. This is done for all objects in the frame with a signal of more than $5\sigma$, excluding any sources that do not match a Gaussian filter i.e.\ are not point sources. This typically results in several hundred sources in each unit telescope, and the mean of all the points is taken as the representative HFD for that image.
+
+At the start of the focus routine an initial image is taken and starting HFD values are measured. The starting focus position is also recorded at this point, so that if the script fails for any reason the initial focus can be restored. It is assumed that this value should be fairly close to the ideal focus value, but it is not known which side of the ideal position it is (i.e.\ if it is on the positive or negative gradient). This starting point is shown by the \textbf{?} marker in \aref{fig:autofocus}.
+
+The first step is moving the focuser a large positive quantity, to point \textbf{A} in \aref{fig:autofocus}, and measuring the HFD.\@ This is done to make sure that the image is completely de-focused, and we are on a known side of the best focus position. At this stage the V-curve might not even be completely linear, but as long as the measured HFDs have increased compared to the starting value then we can proceeded.
+
+The second step is a small step back in the opposite direction, towards the best focus position (point \textbf{B}). The HFDs are measured again, they should now be smaller than at point \textbf{A} but still larger than the starting values. If that is not true then the script returns an error, it is not possible to determine if we are on the correct side of the V-curve.
+
+The next stage is to continue taking small steps in the same direction, until measured HFD value is less than double the \emph{near-focus value} (NFV). The NFV is parameter a chosen to be a HFD value that is approximately equal to the best-focus value, based on previous measurements. Once at this point (point \textbf{C}) we should be well within the linear portion of the V-curve. At this stage the exact HFD values are important, so three consecutive images are taken at this focus position and the smallest of the HFD values is taken as the first point on the V-curve (the HFD values will change due to external factors, such as clouds or windshake, but these will only ever make the value worse --- so the minimum is the closest to the best value).
+
+Once the HFD value has been well measured at point \textbf{C} the near-focus position, the position that should produce a HFD equal to the near-focus value, can be found with
+%
+\begin{equation}
+    F_\text{NF} = F + \frac{\text{NFV} - D(F)}{m_\text{R}}
+    \label{eq:nearfocus}
+\end{equation}
+%
+where $F$ is the current focus position, $D(F)$ is the current HFD and $m_\text{R}$ is the known negative gradient of the right-hand side of the V-curve --- this is just applying the equation of a straight line between two points.
+
+Once the near-focus position has been found the focuser is moved to that position (point \textbf{D}) and the HFD is measured three times again. Now we have a known $F_\text{NF}$ and $D(F_\text{NF})$ on the right-hand side of the V-curve the meeting point of the two lines, the best focus position, is given by
+%
+\begin{equation}
+    \begin{split}
+                c_1 & = D(F_\text{NF}) - m_\text{R} F_\text{NF}, \\
+                c_2 & = m_\text{L}(\frac{c_1}{m_\text{R}} - \delta), \\
+        F_\text{BF} & = \frac{c_2 - c_1}{m_\text{R} - m_\text{L}},
+    \end{split}
+    \label{eq:bestfocus}
+\end{equation}
+%
+where $m_\text{L}$ and $m_\text{R}$ are the gradients of the lines and $\delta$ is the difference between their intercepts. The focuser is then moved to the best focus position, the HFD values are recorded and the script is complete. This method has proven reliable to focus the GOTO telescopes on a nightly basis, although the optical issues mentioned before often produce badly-focused regions especially in the corners of the frames.
+
+Finally, some of the proposed designs for the next set of unit telescopes have built-in focusers that require much finer adjustment to account for changes in temperature during the night. If they are chosen then the autofocus system will need to be revisited to run in between targets, ideally as fast as possible to reduce the time lost.
 
 \end{colsection}
 
