@@ -9,10 +9,11 @@
 \label{sec:commissioning_intro}
 \begin{colsection}
 
-In this chapter I describe \todo{TODO}.
+In this chapter I describe commissioning the GOTO hardware and parallel software developments.
 %
 \begin{itemize}
-    \item In \todo{A SECTION} I describe \todo{SOMETHING}.
+    \item In \nref{sec:hardware_commissioning} I give an outline of the commissioning period, focusing on my own involvement with trips to La Palma and building additional hardware for the dome.
+    \item In \nref{sec:software_commissioning} I describe how the control software was developed along side the hardware, including creating nightly observing routines and how challenges arising from hardware issues were overcome.
 \end{itemize}
 %
 All work described in this chapter is my own, and has not been published anywhere else.
@@ -120,16 +121,16 @@ One of the other problems found during commissioning was excessive scattered lig
         \includegraphics[width=0.7\textwidth]{images/footprint_1_box.png}
     \end{center}
     \caption[The previous 3-UT GOTO footprint]{
-        The previous 3-UT GOTO footprint, used from August 2017 to February 2019. The initial $5.5 \times 2.6$ degree tile area is shown in \textcolorbf{Green}{green}. Note that a reasonable amount of space is left around the edge of the tile.
+        The previous 3-UT GOTO footprint, used from August 2017 to February 2019. The initial \SI{5.5}{\degree} $\times$ \SI{2.6}{\degree} tile area is shown in \textcolorbf{Green}{green}. Note that a reasonable amount of space is left around the edge of the tile.
     }\label{fig:3ut_footprint}
 \end{figure}
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.6\textwidth]{images/footprint_2_box.png}
+        \includegraphics[width=0.55\textwidth]{images/footprint_2_box.png}
     \end{center}
     \caption[The current 4-UT GOTO footprint]{
-        The current 4-UT GOTO footprint, in use from February 2019 onwards. The revised $3.7 \times 4.9$ degree tile area is shown in \textcolorbf{Green}{green}.
+        The current 4-UT GOTO footprint, in use from February 2019 onwards. The revised \SI{3.7}{\degree} $\times$ \SI{4.9}{\degree} tile area is shown in \textcolorbf{Green}{green}. The future four unit telescopes are expected to be arranged in two more columns on the left and right, creating a $\sim$\SI{7.8}{\degree}--wide footprint.
     }\label{fig:4ut_footprint}
 \end{figure}
 
@@ -390,7 +391,7 @@ Finally, some of the proposed designs for the next set of unit telescopes have b
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Creating a pointing model}
+\subsection{Mount pointing and stability}
 \label{sec:pointxp}
 \begin{colsection}
 
@@ -403,7 +404,15 @@ Finally, some of the proposed designs for the next set of unit telescopes have b
     }\label{fig:pointing_model}
 \end{figure}
 
-Mount balancing and pointing model with PointXP
+As described in \aref{sec:mount}, using the SiTech-provided mount software (SiTechEXE) required a Windows computer for it to run on, as well as additional development effort to allow the rest of the software to interact with it. However once this was implemented it allowed us to use the various utilities built into SiTechEXE, including the pointing modelling software PointXP.\@ Using this software means it was not necessary to create our own model within the mount daemon, as once a model is created with PointXP any commands sent to SiTechEXE have the model applied before slewing.
+
+In order to create a pointing model using PointXP the camera output from one of the telescopes needs to be connected to the Windows NUC running the software, and the rest of the G-TeCS software must be disabled to ensure PointXP has full control. The software creates a grid of equally spaced pointings at a range of altitudes and azimuths, as shown on the sky chart in \aref{fig:pointing_model}, then takes images at each position, solves the frames and calculates the model transformations to best convert requested coordinates to mount axis positions.
+
+\newpage
+
+One of the problems creating a pointing model with GOTO is that the model can only be optimised for a single one of the unit telescopes. When aligned int the 3-UT configuration, as shown in \aref{fig:3ut_footprint}, it was easy to create the model using the central telescope (UT4). When in the 4-UT alignment (\aref{fig:4ut_footprint}) there is no central telescope, which complicates the model as whichever output is uses is not aligned with the central axis of the mount. One suggestion has been to add a small guide telescope in the centre of the array, which could be used to base the pointing model off of. However the models created using the existing method are still perfectly good for use with GOTO, as even being a few arcminutes off the desired pointing is minor compared to the large field of view.
+
+GOTO does not include an autoguiding system, although the proposed guide scope mentioned above could also be used as one. In the absence of this the telescope must be able to track accurately. The initial mount drives had problems on this front, and were very sensitive to any imbalances in the weight distribution. Since the motors were replaced in November 2017 they have been much more reliable, although it is still important to ensure the mount is balanced. GOTO by default only takes \SI{60}{\second} exposures, with the occasional manual insertion of pointings with up to 2--3 minute exposure times, and no significant trailing is seen in these images. Also, by its nature GOTO only spends a few minutes on each target before moving on to the next, so the longer term tracking over several hours is not a major concern. It has been important to check these metrics after each change to the hardware, and the stability of the mount will also be a concern in the future when more telescopes are added.
 
 \end{colsection}
 
@@ -414,7 +423,7 @@ Mount balancing and pointing model with PointXP
 \label{sec:challenges}
 \begin{colsection}
 
-In this section I outline a few of the other hardware-related challenges that the software had to overcome. This is not an exhaustive list, and several of the software-only changes were already discussed in the relevant section in \aref{sec:hardware_control} (for example changing the mount control from requiring a Windows interface).
+In this section I outline a few of the changes that had to be made to the software based on experience with the hardware. This is not an exhaustive list, but gives some examples of the challenges that always occur when commissioning a major project such as GOTO.\@
 
 % ---------
 \subsubsection{Filter wheel serial numbers}
@@ -483,6 +492,22 @@ Once informed about the event Astrohaven manufactured brackets to fit inside the
 \end{figure}
 
 \clearpage
+
+% ---------
+\subsubsection{Processing GW skymaps}
+
+Ensuring the stability of the alerts handling system (described in \aref{chap:alerts}) was a high priority when commissioning the GOTO software in the run-up to O3. The LVC begun producing test GCN notices in December 2018 prior to the beginning of ER13, which included mock skymaps similar to the ones used for the simulations in \aref{sec:scheduler_sims} and \aref{sec:gw_sims}. These events allowed the handling system to be tested from the VOEvent being received to the pointings being added to the observation database and being selected by the pilot.
+
+Since the start of O3 in February 2019 until \todo{31 Aug?} GOTO has responded to \todo{X} gravitational wave detections, of which \todo{Y} were ultimately retracted. Of the \todo{Z} events that were visible from La Palma during the night when GOTO was observing the average response time was \todo{XXs} between the alert being received by the sentinel and the first exposure beginning. A full run-down of the response to each event is given in \aref{sec:gw_results} \todo{in the conclusion}.
+
+A few complications did arise during O3 which required changes to the software, mostly due to problems on the LVC's end. These are outlined below.
+
+\begin{itemize}
+    \item The initial alert for S190517h was delayed until several hours after the event, as the upload to the LVC GraceDB service\footnote{\url{https://gracedb.ligo.org/}} which hosts the skymaps still had to be done manually. To remove this delay it was proposed that a separate sentinel thread could be used to query GraceDB to check for new skymaps even before the notice was sent out. However since then the delay has been much shorter, and this was never implemented.
+    \item An update skymap for the S190521g event was uploaded with the wrong permissions, causing the sentinel to raise an error when it could not download it from the URL in the notice. This would not have mattered had the event handler not already cleared the existing pointings from the GOTO observation database, after this event this was changed so existing pointings were only removed once the new skymap had been downloaded and processed.
+    \item The second skymap for the S190426c event was initially uploaded in a non-standard HEALPix format (see \aref{sec:healpix}) used internally in the LVC, which could not be read by GOTO-tile. Due to the changes made following the S190521g event this did not interrupt GOTO observations, and the LVC have since clarified their filetypes.
+    \item Finally, the updated skymap for the S190814bv event was incorrectly uploaded to GraceDB with the same filename (\code{bayestar.fits.gz}) as the initial skymap (typically updates are called \code{bayestar1.fits.gz} etc). By default the Astropy FITS download function used within the sentinel caches each file, and if asked to download a file from the same URL will instead use the cached version. This lead to GOTO continuing to observe the large initial skymap instead of focusing on the smaller region given in the update. Again the LVC have said that this will be prevented in the future, but just in case the sentinel was patched to disable the caching feature.
+\end{itemize}
 
 \end{colsection}
 
