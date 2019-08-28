@@ -9,7 +9,7 @@
 \label{sec:autonomous_intro}
 \begin{colsection}
 
-Continuing the description of the GOTO Telescope Control System from \aref{chap:gtecs}, in this chapter I describe the secondary layer of programs written to enable GOTO to operate as a robotic observatory.
+Continuing the description of the GOTO Telescope Control System from \aref{chap:gtecs}, in this chapter I describe the higher level programs written to enable GOTO to operate as a robotic observatory.
 %
 \begin{itemize}
     \item In \nref{sec:something} I outline the additional functionality added to G-TeCS in order to allow the telescope to operate autonomously.
@@ -151,7 +151,7 @@ Asynchronous code contains multiple parallel \textit{coroutines}. The program it
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.89\linewidth]{images/async.pdf} % TODO:recolour
+        \includegraphics[width=0.89\linewidth]{images/async.pdf}
     \end{center}
     \caption[Multi-threaded vs asynchronous programming]{
         A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolorbf{NavyBlue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolorbf{Green}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolorbf{Red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated for clarity, pilot tasks typically take less than a second and wait for between 10 and 60 seconds. \\
