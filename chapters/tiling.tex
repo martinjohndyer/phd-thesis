@@ -74,7 +74,7 @@ and therefore the area of each HEALPix pixel is
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{images/healpix.pdf}
+        \includegraphics[width=0.7\linewidth]{images/healpix.pdf} %\todo{recolour??}
     \end{center}
     \caption[HEALPix partitions of a sphere]{
         HEALPix partitions of a sphere, of increasing order and $N_\text{side}$ resolution parameter. Note that as the resolution increases each pixel on the previous sphere is split into four on the new sphere, and $N_\text{side}$ is the number of pixels along the side of a base-resolution pixel (two of which are highlighted). Adapted (colourised) from Figure~4 of \citet{HEALPix}.
@@ -126,7 +126,7 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_probs.pdf}
+        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_probs.pdf} %\todo{recolour}
     \end{center}
     \caption[An example 2D probability skymap]{
         A cartoon 2-dimensional skymap. Each pixel (represented by one of the 81 squares) has an assigned probability, and together they all sum to 100\%. The inner blue thick contour line contains 50\% of the probability, while the outer green contour line contains 90\% of the probability. These contours are created based on the values shown in \aref{fig:sim_skymap_conts}.
@@ -135,7 +135,7 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf}
+        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf} %\todo{recolour}
     \end{center}
     \caption[An example 2D skymap with pixel contour values]{
         The same cartoon skymap as in \aref{fig:sim_skymap_probs}, but now each pixel contains its contour value. These are calculated by sorting the pixels by probability and assigning each the value of the cumulative sum. The pixel with the highest probability (E5) has the same contour value as its probability value, the second highest (F5) has the sum of the probability values of both E5 and F5, and this continues to the pixel with the lowest probability value (A9) which has a contour value of 100\%. The thick blue line is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\%. The green line likewise encloses all pixels with a contour value of less than 90\%.
@@ -192,7 +192,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/globe1.pdf} %TODO:recolour
+        \includegraphics[width=\linewidth]{images/globe1.pdf} %\todo{recolour}
     \end{center}
     \caption[The celestial sphere]{
         The celestial sphere. The celestial equator is marked in \textcolorbf{Red}{red}, the vernal equinox (where the ecliptic (not shown) crosses the equator) is marked with the symbol \Aries{} and the meridian that intercepts the vernal equinox is marked in \textcolorbf{NavyBlue}{blue}. The northern and southern celestial poles are marked as NCP and SCP respectively. The definition of the equatorial coordinate system is shown: declination (Dec, $\delta$) is defined as the angle from the equator, ranging from \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP, and right ascension (RA, $\alpha$) is defined as angle east from the vernal equinox between \SI{0}{\degree} and \SI{360}{\degree}.
@@ -201,7 +201,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/globe2.pdf}
+        \includegraphics[width=\linewidth]{images/globe2.pdf} %\todo{recolour}
     \end{center}
     \caption[Defining declination strips]{
         The first stage when creating a sky grid is defining the declination strips. This is done by dividing the full range of declination (\SI{-90}{\degree} to \SI{90}{\degree}) equally by a constant spacing value $\Delta\delta$. In this example $\Delta\delta =$ \SI{10}{\degree}, and so strips are defined at $\delta=$ \SI{0}{\degree}, \SI{10}{\degree}, \SI{20}{\degree} etc\ldots, and mirrored in the southern hemisphere. There is always a strip with $\delta=0$. Exactly how the strips are defined when $\Delta\delta$ is not an integer factor of \SI{90}{\degree} depends on the algorithm used, in this case using the ``minverlap'' algorithm the strips range from \SI{-90}{\degree} to \SI{90}{\degree} and include a ``strip'' at the poles which will contain single tile (as shown in \aref{fig:tiledsphere}).
@@ -210,7 +210,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/globe3.pdf}
+        \includegraphics[width=\linewidth]{images/globe3.pdf} %\todo{recolour}
     \end{center}
     \caption[Defining the spacing between tiles]{
         After the declination strips are defined (see \aref{fig:deltadelta}) for each strip tile centres are defined with a set spacing $\Delta\alpha(\delta)$. Unlike $\Delta\delta$, which is fixed across the sphere, $\Delta\alpha$ varies as a function of declination meaning strips closer to the poles will contain fewer tiles. Two examples of defining tiles are shown above, one at declination $\delta_1$ (\SI{50}{\degree}, in \textcolorbf{BlueGreen}{cyan}) in the northern hemisphere and another at $\delta_2$ (\SI{-10}{\degree}, in \textcolorbf{Purple}{purple}) in the southern hemisphere. The results of the ``minverlap'' algorithm are shown, previous algorithms had different ways of defining $\Delta\alpha$ that would have resulted in different spacings.
@@ -219,7 +219,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/globe4.pdf}
+        \includegraphics[width=\linewidth]{images/globe4.pdf} %\todo{recolour}
     \end{center}
     \caption[A fully tiled sphere]{
         Once every declination strip is complete the full grid is defined, as shown above. The same two strips are shown in \textcolorbf{BlueGreen}{cyan} and \textcolorbf{Purple}{purple} as in \aref{fig:deltaalpha}. Due to each strip starting the tile spacing at RA$=0$, there is a fully aligned column of tiles along the vernal equinox, shown in \textcolorbf{Orange}{orange}. The grid in these examples was defined using the ``minverlap'' algorithm, with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and the overlap was set to zero for clarity (note this can lead to gaps between tiles towards the poles, as visible here). In this case the complete grid contains 424 tiles.
@@ -315,7 +315,7 @@ The new ``minverlap'' algorithm is an improvement on the previous versions, in p
 
 \begin{figure}[p]
     \begin{minipage}[c]{0.46\textwidth}
-        \includegraphics[width=\linewidth]{images/algo_product.pdf}
+        \includegraphics[width=\linewidth]{images/algo_product.pdf} %\todo{recolour}??
     \end{minipage}
     \hfill
     \begin{minipage}[c]{0.50\textwidth}
@@ -333,13 +333,13 @@ The new ``minverlap'' algorithm is an improvement on the previous versions, in p
     \end{minipage}
     \hfill
     \begin{minipage}[c]{0.46\textwidth}
-        \includegraphics[width=\linewidth]{images/algo_cosine.pdf}
+        \includegraphics[width=\linewidth]{images/algo_cosine.pdf} %\todo{recolour}??
     \end{minipage}
 \end{figure}
 
 \begin{figure}[p]
     \begin{minipage}[c]{0.46\textwidth}
-        \includegraphics[width=\linewidth]{images/algo_minverlap.pdf}
+        \includegraphics[width=\linewidth]{images/algo_minverlap.pdf} %\todo{recolour}??
     \end{minipage}
     \hfill
     \begin{minipage}[c]{0.50\textwidth}
@@ -353,7 +353,7 @@ The new ``minverlap'' algorithm is an improvement on the previous versions, in p
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/spacing_cosine.pdf}
+        \includegraphics[width=\linewidth]{images/spacing_cosine.pdf} %\todo{recolour}
     \end{center}
     \caption[Tile spacing with the ``cosine'' algorithm]{
         Tile spacing with the ``cosine'' algorithm, with a \SI{13}{\degree}$\times$\SI{13}{\degree} FoV and $0.2$ overlap.
@@ -366,7 +366,7 @@ The new ``minverlap'' algorithm is an improvement on the previous versions, in p
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/spacing_minverlap.pdf}
+        \includegraphics[width=\linewidth]{images/spacing_minverlap.pdf} %\todo{recolour}
     \end{center}
     \caption[Tile spacing with the ``minverlap'' algorithm]{
         Tile spacing with the ``minverlap'' algorithm, with the same parameters as \aref{fig:cosine_spacing}.
@@ -395,7 +395,7 @@ Finding which contour each tile is in is not as simple, and there are multiple w
 
 \begin{figure}[p]
     \begin{center}
-        \begin{tabular}{cccccc}
+        \begin{tabular}{cccccc} %\todo{recolour}
             \multicolumn{3}{c}{Pixel probabilities (from \aref{fig:sim_skymap_probs}):} &
             \multicolumn{3}{c}{Pixel contours (from \aref{fig:sim_skymap_conts}):} \\
             \multicolumn{3}{c}{\includegraphics[width=0.46\linewidth]{images/sim/sim_skymap_pix_probs.pdf}} &
@@ -419,7 +419,7 @@ Finding which contour each tile is in is not as simple, and there are multiple w
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/skymaps_170817_gw.pdf}
+        \includegraphics[width=\linewidth]{images/skymaps_170817_gw.pdf} %\todo{recolour}
     \end{center}
     \caption[Tile probabilities for GW170817]{
         Tile probabilities using the final skymap for GW170817 \citep{GW170817}. The sphere shows the whole skymap for this event, with each pixel coloured by probability, and the location of the source of the event is shown with the blue star. Overlaid is the GOTO-4 sky grid, with tiles of \SI{3.7}{\degree} $\times$ \SI{4.9}{\degree} and overlap of $0.1$. The inset shows the tiles coloured by their contained probability (the sum of all pixels within). The four tiles with contained probability of higher than 5\% are highlighted in red.
@@ -493,7 +493,7 @@ This radius is then used with \aref{eq:gaussian_sigma} onwards to create the Gau
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/skymaps_170817_grb.pdf}
+        \includegraphics[width=\linewidth]{images/skymaps_170817_grb.pdf} %\todo{recolour}
     \end{center}
     \caption[Tile probabilities for GRB 170817A]{
         Tile probabilities using the constructed Gaussian skymap for GRB 170817A \citep{GW170817_Fermi}. As in \aref{fig:170817_gw} the sphere shows the skymap and the GOTO-4 grid, with the identified source of GW170817 shown by the blue star. The tiles highlighted in red each contain more than 1\% of the probability instead of 5\% used in \aref{fig:170817_gw}, due to the greater spread of the skymap meaning no tile here contains more than 5\%.
