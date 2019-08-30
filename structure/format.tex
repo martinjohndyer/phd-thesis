@@ -39,8 +39,15 @@
 % header/footer
 \pagestyle{fancy}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
+% one page formatting
 \fancyhead[L]{\chaptername\ \thechapter: \leftmark}
-%\renewcommand{\sectionmark}[1]{\markright{\thesection\ \emph{#1}}}
-%\fancyhead[L]{\rightmark}
 \fancyhead[R]{\textbf{\thepage}}
+
+% two page formatting
+%\fancyhead[RE]{\chaptername\ \thechapter: \leftmark}
+%\fancyhead[LO]{Section \thesection: \rightmark}
+%\fancyhead[LE, RO]{\textbf{\thepage}}
+
 \fancyfoot{}
