@@ -15,9 +15,9 @@
 
 Einstein's theory of General Relativity describes gravity as the curvature of spacetime \citep{Einstein1914}, and he went on to describe the propagation of distortions within the spacetime `fabric' \citep{Einstein1916}. These \emph{gravitational waves} (GWs) are produced by the acceleration of matter within the field of spacetime and propagate at the speed of light, analogous to electromagnetic (EM) waves being produced by a moving charge. The existence of gravitational waves is a consequence of the finite propagation time of gravity in general relativity, there is no analogue to gravitational waves in Newtonian gravity as Newton described a force propagating instantaneously.
 
-The full theory of gravitational waves is beyond the scope of this thesis, but the result of Einstein's quadrupole equations is that gravity propagates as a transverse wave that alternately stretches and compresses spacetime in orthogonal axes \citep{BIGcardiff}. Gravitational waves have two polarisation states, plus ($+$) or cross ($\times$), as shown in \aref{fig:wave}. A single object will never `observe' a gravitational wave, the only way to detect the passing of gravitational waves is to look for changes in the relative positions of two or more objects. The magnitude of these perturbations is described as the strain, $h$. It is the goal of gravitational wave detectors to observe these minute spatial perturbations as the wave passes through.
+The result of Einstein's quadrupole equations is that gravity propagates as a transverse wave, which alternately stretches and compresses spacetime in two orthogonal axes \citep{BIGcardiff}. A single object will never `observe' a gravitational wave, so the only way to detect the passing of gravitational waves is to look for changes in the relative positions of two or more objects. A thought experiment considering the effects of gravitational waves on free-floating masses is shown in \aref{fig:wave}, for the two wave polarisation states.  The magnitude of these perturbations is described as the strain, and it is the goal of gravitational wave detectors to observe these minute spatial perturbations as the wave passes through. A detailed discussion of gravitational wave science is beyond the scope of this thesis, so this section gives merely a brief introduction to the topic in order to explain the core purpose of the GOTO project.
 
-\begin{figure}[t]
+\begin{figure}[p]
     \begin{center}
         \includegraphics[width=0.8\linewidth]{images/waveimg2.pdf}
     \end{center}
@@ -25,6 +25,38 @@ The full theory of gravitational waves is beyond the scope of this thesis, but t
         Consider a 2-dimensional ring of free-floating particles in the $x$-$y$-plane. A gravitational wave that passes through the ring in the $z$-direction (out of the page) will alternately stretch and compress the ring in two orthogonal axes out of phase. The upper image shows the effect of a plus-polarised wave, the lower image shows the effect of a cross-polarised wave.
         }\label{fig:wave}
 \end{figure}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Detecting gravitational waves}
+\label{sec:gw_detecting}
+\begin{colsection}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.75\linewidth]{images/detector.pdf}
+    \end{center}
+    \caption[A Michelson interferometer used as a gravitational wave detector]{
+        A Michelson interferometer used as a gravitational wave detector. As a wave passes through the relative lengths of the arms will change, as shown (highly exaggerated) in the inset. This will reduce or increase the distance the laser light travels through each arm and therefore alter the output interference signal. Adapted from \citet{GW150914_detectors}.
+        }\label{fig:detector}
+\end{figure}
+
+As described above, gravitational waves manifest as alternately stretching and compressing spacetime along perpendicular axes. The method used for detecting these waves requires observing how two test masses move relative to each other as the wave passes through. This is done using a Michelson interferometer with two long perpendicular arms \citep{BIGbirmingham}, as shown in \aref{fig:detector}. The input laser is split into two by a beam spitter and each beam is sent into one of the arms, where they are reflected multiple times between two mirrored test masses. When they exit the arms the beams are recombined to form a single output. Should the distance either beam travels change relative to the other the change in the resulting interference pattern will be detected. The test masses are suspended by a complex vibration isolation system in order to reduce any outside interference, such as from man-made vibrations or seismic events.
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=0.95\linewidth]{images/global.pdf}
+    \end{center}
+    \caption[Locations of gravitational wave detectors]{
+        Locations of current and proposed gravitational wave detectors around the globe.
+        }\label{fig:global}
+\end{figure}
+
+Several of these detectors have been built around the world, to give redundancy and improve the localisation of each source. There are currently three active second-generation detectors: two \glsfirst{ligo} detectors at Hanford and Livingston in the United States \citep{LIGO}, and the \glsfirst{ego} Virgo detector in Italy \citep{Virgo}. In addition the older GEO600 detector in Germany is still used primarily as a test system \citep{GEO600}, the Japanese \glsfirst{kagra} is under construction \citep{KAGRA} and in the next decade work should begin on LIGO-India \citep{LIGO_India}. The three current detectors form a global network as the \glsfirst{lvc}, with KAGRA expected to join before the end of 2019 \citep{LIGO-Virgo, LIGO-Virgo-KAGRA}.
+
+In the longer term the third generation of larger and more sensitive gravitational wave telescopes is already being planned, including the Einstein Telescope \citep{EinsteinTelescope} and the Cosmic Explorer \citep{CosmicExplorer}. As well space-based detectors are being built, such as the \glsfirst{lisa} \citep{LISA}, which would be free from the seismic noise limit and therefore could detect lower-frequency gravitational waves.
 
 \end{colsection}
 
@@ -38,7 +70,7 @@ Any accelerating mass will generate gravitational waves as it moves through spac
 
 A continuous source of gravitational waves will be generated by two massive objects orbiting one another \citep{GW_sources}, and the loss of energy from the system in the form of gravitational waves will slowly cause the orbiting distance of the two objects to shrink. The first binary pulsar was discovered in 1974 \citep{HulseTaylor}, and after repeated observations it was apparent that the orbital period of the two stars was decreasing in perfect alignment with the predictions given by general relativity. This was the first real evidence, albeit indirect, of the existence of gravitational waves, and the discovery of the Hulse-Taylor pulsar was deemed so significant that its discoverers were awarded the Nobel Prize in 1993 \citep{HulseTaylor2}.
 
-Due to the emission of gravitational radiation any binary orbit will eventually decay enough that the two objects collide. As the orbital distance decreases so will the period, resulting in the system emitting gravitational waves at a higher frequency. This will produce a characteristic `chirp' signal until the two objects merge and produce a huge burst of energy \citep{GW_sources, BIGparis}. The more massive the objects in the system the stronger the signal produced, and so the ideal binary systems for gravitational wave detections are binary neutron stars (BNS), binary black holes (BBH) or neutron star-black hole (NSBH) binaries. The first detection of gravitational waves, GW150914, was a binary black hole \citep{GW150914}, the `chirp' signals recorded in the LIGO detectors on the 14th of September 2015 are shown in \aref{fig:chirp}.
+Due to the loss of energy in the form of gravitational radiation any binary orbit will eventually decay enough that the two objects collide. As the orbital distance decreases so will the period, resulting in the objects rotating faster and the system emitting gravitational waves at a higher frequencies. This will produce a characteristic `chirp' signal until the two objects merge and produce a huge burst of energy \citep{GW_sources, BIGparis}. The more massive the objects in the system the stronger the signal produced, and so the ideal binary systems for gravitational wave detections are binary neutron stars (BNS), binary black holes (BBH) or neutron star-black hole (NSBH) binaries. The first direct detection of gravitational waves, GW150914, was produced by a binary black hole system \citep{GW150914}. The `chirp' signals recorded in the LIGO detectors on the 14th of September 2015 are shown in \aref{fig:chirp}. Note the fractional strain on the $y$-axis is of the order of $10^{-21}$, meaning the \SI{4}{\kilo\metre}-long LIGO detector arms changed in length by a fraction of the size of a proton.
 
 \begin{figure}[t]
     \begin{center}
@@ -49,47 +81,15 @@ Due to the emission of gravitational radiation any binary orbit will eventually 
         }\label{fig:chirp}
 \end{figure}
 
-\todo{note strain size, compare to 4km arms etc}
-
-Binary mergers involving neutrons stars are suggested as possible sources of short duration gamma ray bursts (SGRBs) \citep{GW-NSbinaries}. They would also potentially produce kilonovae, from which it might be possible to detect other forms of electromagnetic signal. On the other hand BBH mergers are thought to be unlikely to produce EM emission, as the stellar-mass black holes would not be surrounded by much orbiting matter with which to interact \citep{GW-BHbinaries,GW150914followup}.
-
-As opposed to the continuous sinusoidal waves produced by massive binaries, any particularly cataclysmic astronomical event is thought to produce a burst of gravitational waves. Compact binary mergers are one source of these bursts, but more sudden ones are thought to include be produced in core-collapse supernovae \citep{GW-supernovae}. Unlike binary systems the exact form of GW burst waveforms are unknown. As such gravitational wave detectors are likely to detect new and unexpected sources.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-\newpage
-\subsection{Detecting gravitational waves}
-\label{sec:gw_detecting}
-\begin{colsection}
-
-As described above, gravitational waves manifest as alternately stretching and compressing spacetime along perpendicular axes. The method used for detecting these waves requires observing how two test masses move relative to each other as the wave passes through. This is done using a Michelson interferometer with two long perpendicular arms, as shown in \aref{fig:detector} \citep{BIGbirmingham}. The input laser is split into two by a beam spitter and each beam is sent into one of the arms, where they are reflected multiple times between two mirrored test masses. When they exit the arms the beams are recombined to form a single output. Should the distance either beam travels change relative to the other the change in the resulting interference pattern will be detected. The test masses are suspended by a complex vibration isolation system in order to reduce any outside interference, such as from man-made vibrations or seismic events.
-
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=0.75\linewidth]{images/detector.pdf}
-    \end{center}
-    \caption[A Michelson interferometer used as a gravitational wave detector]{
-        A Michelson interferometer used as a gravitational wave detector. As a wave passes through the relative lengths of the arms will change, as shown in the inset, this will reduce or increase the distance the laser light travels through each arm and therefore alter the output interference signal. Adapted from \citet{GW150914_detectors}.
-        }\label{fig:detector}
-\end{figure}
+The LIGO detectors became operational in 2002 and observed on-and-off until 2010 without detecting any gravitational wave signals, when they were taken offline in order to upgrade into Advanced LIGO \citep{LIGO_initial, LIGO_advanced}. The detectors were recommissioned in 2015, and almost immediately detected the first signal, GW150914, as mentioned above \citep{GW150914}. The first LIGO observing run (O1) \glsadd{o1} lasted from September 2015 to January 2016, and during that time two additional signals were detected \citep{LIGO_O1}. All three detections were identified as being produced by coalescing black hole binaries, and although at the time one (LVT151012) was below the $5\sigma$ significance level it has since been upgraded to a significant detection and reclassified as GW151012 \citep{GW_catalog}.
 
 \newpage
 
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=0.9\linewidth]{images/global.pdf}
-    \end{center}
-    \caption[Locations of gravitational wave detectors]{
-        Locations of current and proposed gravitational wave detectors around the globe.
-        }\label{fig:global}
-\end{figure}
+The second observing run (O2) \glsadd{o2} took place from November 2016 to August 2017. This run saw the first observation of gravitational waves from a binary neutron star, GW170817 \citep{GW170817}, as well as the addition of the Virgo detector to the network. In total eleven gravitational wave events were detected during O1 and O2, ten from binary black holes and just the one (GW170817) from a binary neutron star \citep{GW_catalog}.
 
-Several of these detectors have been built around the world, to give redundancy and improve the localisation of each source. There are currently three active second-generation detectors: two \glsfirst{ligo} detectors at Hanford and Livingston in the United States \citep{LIGO}, and the \glsfirst{ego} Virgo detector in Italy \citep{Virgo}. In addition the older GEO600 detector in Germany is still used primarily as a test system \citep{GEO600}, the Japanese \glsfirst{kagra} is under construction \citep{KAGRA} and in the next decade work should begin on LIGO-India \citep{LIGO_India}. The three current detectors form a global network as the \glsfirst{lvc}, with KAGRA expected to join before the end of 2019 \citep{LIGO-Virgo, LIGO-Virgo-KAGRA}.
+After a few short engineering runs the third observing run (O3) \glsadd{o3} begun on 1 April 2019. At the time of writing it is currently ongoing, and after a short break during October is expected to run until May 2020. This is the first run to include three detectors from the beginning, and KAGRA is expected to join before the end of 2019. This run also marked the start of public alert releases; during O1 and O2 alerts were only released to groups who had signed memoranda of understanding with the LVC (the GOTO Collaboration was one of these groups). In the first 5 months of O3, from the start of April to the end of August 2019, the LVC released 32 alerts\footnote{Public alerts are available at \url{https://gracedb.ligo.org/superevents/public/O3/}}. Of these 7 were ultimately retracted as false alarms, leaving 25 due to real astronomical signals.
 
-In the longer term the third generation of larger and more sensitive gravitational wave telescopes is already being planned, including the Einstein Telescope \citep{EinsteinTelescope} and the Cosmic Explorer \citep{CosmicExplorer}. As well space-based detectors are being considered, such as the \glsfirst{lisa} \citep{LISA}, which would be free from the seismic noise limit and therefore could detect lower-frequency gravitational waves.
-
-\newpage
+As O3 is currently ongoing the LVC has not yet published final values or mass estimates for any of these events. As such they are still treated as candidates, with provisional signal designations and preliminary classification probabilities. Of the 25 non-retracted events 20 are currently classified as originating from binary black hole systems ($P_\text{BBH}>90\%$). Only one is likely from a binary neutron star (S190425z), one is classed as a likely neutron star-black hole binary (S190814bv), and one (S190426c) has an uncertain classification: a 49\% probability as coming from a binary neutron star, 24\% coming from a `MassGap' object (a theorised object with a mass between a neutron star and a black hole) and 13\% from a neutron star-black hole binary (the remaining 14\% is the chance the signal is from a non-astrophysical source, i.e.\ detector noise). The remaining two events both have over 50\% non-astrophysical probability but have not been formally retracted by the LVC.\@
 
 \end{colsection}
 
@@ -99,44 +99,26 @@ In the longer term the third generation of larger and more sensitive gravitation
 \label{sec:gw_localisation}
 \begin{colsection}
 
+One problem with the interferometer detectors is that alone they are very poor at localising the direction a signal originates from. It is possible to estimate a rough direction from polarisation of the signal, and the distance to the origin can be estimated from the signal strength, however multiple detectors are really needed to get more accurate sky localisations \citep{GW_localisation, GW_localisation2}. With two detectors the difference between the arrival time of a signal at each allows the direction to the source to be narrowed down, based on the distance between the two detectors and knowing that gravitational waves propagate at the speed of light. However this will only be able to locate the source to a annulus on the celestial sphere perpendicular to the line between the detectors, and as shown in \aref{fig:triangulate} at least three detectors are needed to triangulate the source location. The skymaps for GW170817, shown in \aref{fig:170817_skymaps}, show how the contribution from multiple detectors drastically reduced the on-sky area. Even with the three current detectors sources can typically only be localised to areas of tens to hundreds of square degrees at best, and only if the signal is detected in all three.
+
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=0.45\linewidth]{images/triangulate_1.pdf}
         \includegraphics[width=0.45\linewidth]{images/triangulate_2.pdf}
     \end{center}
     \caption[Localising signals using gravitational wave detectors]{
-        Localising signals using gravitational wave detectors. \\
-        Left: With just two detectors the arrival time difference allows sources to be localised to a ring on the sky, perpendicular to the baseline between the detectors. \\
-        Right: The addition of a third detector gives two more baselines, meaning sources can be triangulated to where the rings intercept.
+        Localising signals using gravitational wave detectors. With just two detectors sources can only be localised to a ring on the sky (shown on the left, for three different sources). The addition of a third detector means sources can be triangulated to where the rings intercept (shown on the right).
         }\label{fig:triangulate}
 \end{figure}
-
-
-\todo{GW isn't great at localising on its own}
-
-\todo{}
-
-The obvious difficulty in observing an EM counterpart to a GW detection comes from the poor localisation from the gravitational wave detectors. With multiple detectors it is possible to triangulate the location of the signal using the timing difference between the signal reaching each detector \citep{LIGO-localization,LIGO-localization2}. Two detectors would be able to localize the source to a annulus on the celestial sphere (see the sky maps in Figure \ref{fig:skymap} for an example), whereas three or more will be able to narrow down the candidate to a much narrower area. There are other effects that can assist localisation, such as considering the polarisation of the signal at either detector. It is predicted that even in the case of three detectors the sky localization region will be of the order of tens to hundreds of square degrees \citep{LIGO-prospects}.
 
 \begin{figure}[p]
     \begin{center}
         \includegraphics[width=\linewidth]{images/skymaps.pdf}
     \end{center}
     \caption[Skymaps for GW170817]{
-        Skymaps for GW170817, from the single Hanford detector (in \textcolorbf{NavyBlue}{blue}), both Hanford and Livingston (\textcolorbf{Orange}{orange}) and all three detectors (\textcolorbf{Green}{green}). The final \textit{Fermi} GBM skymap is also shown in \textcolorbf{Purple}{purple}, and the location of the counterpart source is marked by a \textcolorbf{Red}{red} star. Solid lines show 50\% confidence regions, dashed lines 90\% regions.
+        Skymaps for GW170817, produced from the single Hanford detector (in \textcolorbf{NavyBlue}{blue}), both Hanford and Livingston (\textcolorbf{Orange}{orange}) and all three detectors (\textcolorbf{Green}{green}). The final \textit{Fermi} GBM skymap is also shown in \textcolorbf{Purple}{purple}, and the location of the counterpart source is marked by a \textcolorbf{Red}{red} star. Solid lines show 50\% confidence regions, dashed lines 90\% regions.
         }\label{fig:170817_skymaps}
 \end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-\newpage
-\subsection{Detections of gravitational waves}
-\label{sec:gw_detections}
-\begin{colsection}
-
-\todo{Go through history, the O2 catalogue, how much of O3?}
-\todo{cumulative plot}
 
 \end{colsection}
 
@@ -157,6 +139,12 @@ The obvious difficulty in observing an EM counterpart to a GW detection comes fr
 
 \todo{this is worded weirdly}
 \todo{more sources?}
+
+
+
+Binary mergers involving neutrons stars are suggested as possible sources of short duration gamma ray bursts (SGRBs) \citep{GW-NSbinaries}. They would also potentially produce kilonovae, from which it might be possible to detect other forms of electromagnetic signal. On the other hand BBH mergers are thought to be unlikely to produce EM emission, as the stellar-mass black holes would not be surrounded by much orbiting matter with which to interact \citep{GW-BHbinaries,GW150914followup}.
+
+As opposed to the continuous sinusoidal waves produced by massive binaries, any particularly cataclysmic astronomical event is thought to produce a burst of gravitational waves. Compact binary mergers are one source of these bursts, but more sudden ones are thought to include be produced in core-collapse supernovae \citep{GW-supernovae}. Unlike binary systems the exact form of GW burst waveforms are unknown. As such gravitational wave detectors are likely to detect new and unexpected sources.
 
 The term \emph{multi-messenger} astronomy is often used to describe the search for GW candidates. It emphasises the fact that the hunt is focused on multiple `types' of observation in addition to gravitational wave detections --- across the EM spectrum as well as neutrino detections. The observation of EM counterparts of transient GW sources would provide several scientific benefits \citep{LIGO-EM, LIGO-firstrun-2012}. Most obviously, an EM detection would help massively in the localisation of the source, potentially the identification of a host galaxy and measurement of a redshift. An associated EM observation would also assist with identification of the nature of the source. While a gravitational wave is generated by the motion of the source in spacetime, any EM signal would be produced either from direct outflows or interactions of the matter with the surrounding medium. In the longer term these observations should be useful in determining cosmological parameters such as $H_0$.
 
