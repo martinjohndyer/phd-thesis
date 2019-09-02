@@ -54,6 +54,10 @@
     \large{ --- #2\ifthenelse{\isempty{#3}}{}{, \textit{#3}}}
     }
 
+% Put footnotes in brackets
+% https://tex.stackexchange.com/questions/23601/footnote-number-in-braces-parentheses
+\renewcommand*{\thefootnote}{[\arabic{footnote}]}
+
 % timeline symbol
 % https://tex.stackexchange.com/questions/196794/how-can-you-create-a-vertical-timeline
 \newcommand{\tls}{\hspace{-2.95pt}$\bullet$ \hspace{5pt}}
