@@ -214,7 +214,27 @@ S190425z was something of an extreme example, and as more gravitational wave det
 
 \begin{colsection}
 
-The \gls{goto}\footnote{\url{https://goto-observatory.org/}} is a project dedicated to detecting optical counterparts of gravitational wave sources. The GOTO collaboration was founded in 2015 and by 2019 contains XX institutions from XX countries\footnote{These are the University of Warwick (UK), Monash University (Aus), Armagh }.
+The \glsfirst{goto}\footnote{\url{https://goto-observatory.org/}} is a project dedicated to detecting optical counterparts of gravitational wave sources. The GOTO collaboration was founded in 2014 and as of 2019 contains 10 institutions from the UK, Australia, Thailand, Spain and Finland\footnote{The GOTO collaboration includes the University of Warwick, Monash University, Armagh Observatory \& Planetarium, the University of Leicester, the University of Sheffield, the National Astronomical Research Institute of Thailand (NARIT), the Instituto de Astrofisica de Canarias (IAC), the University of Manchester, the University of Turku and the University of Portsmouth.}. The first prototype GOTO telescope was inaugurated at the Roque de los Muchachos Observatory on La Palma, Canary Islands in July 2017 and is shown in \aref{fig:goto_photo}.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{images/goto_photo.jpg}
+    \end{center}
+    \caption[The GOTO prototype instrument]{
+        The GOTO prototype instrument on La Palma, with the first four unit telescopes.
+    }\label{fig:goto_photo}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{images/goto_render.png}
+    \end{center}
+    \caption[A render of a complete GOTO node]{
+        A render of a complete GOTO node, with 16 unit telescopes across two mounts.
+    }\label{fig:goto_render}
+\end{figure}
+
+\end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -222,82 +242,80 @@ The \gls{goto}\footnote{\url{https://goto-observatory.org/}} is a project dedica
 \label{sec:goto_motivation}
 \begin{colsection}
 
-Even before the first detection of gravitational waves it was recognised that, due to the issues described in the previous section, the best chance of reliably detecting counterparts quickly was with a series of dedicated, robotic, wide-field telescopes. In order to detect new transient objects when not responding to gravitational wave alerts the telescope would need to carry out an all-sky survey with as low a cadence as possible, so that when images are taken
+Even before the first detection of gravitational waves it was recognised that, due to the issues described in the previous section, the best chance of reliably detecting counterparts quickly was with a series of dedicated, robotic, wide-field telescopes. Most nights the telescopes would normally be carrying out an all-sky survey on a fixed grid, but when a gravitation wave alert was received they would quickly change to covering the skymap.
+
+Rapidly covering large areas of the sky maximises the chance of finding any possible counterpart before it fades from view, however any such observations are going to be contaminated by a huge number of unrelated transient and variable objects (recall the hundreds of thousands of detections by ZTF when searching for the S190425z counterpart). Therefore the difficulty in finding any counterpart is not just covering the search area, but being able to distinguish the needle from the haystack of other astronomical detections. The best way to reduce the number of candidate detections is temporally: any objects with detections prior to the gravitational wave event time could not be associated with it. In order to do this the project needs an as-recent-as-possible image of the same patch of sky, which necessitates the telescope carrying out an all-sky survey with as low a cadence (the time between observing each point of the sky) as possible.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-
-by employing a wide-field approach to be able to localize such counterparts early. The first prototype instrument was inaugurated at the Roque de los Muchachos Observatory on La Palma, Canary Islands in July 2017 and is shown in \aref{fig:goto_photo}. \gls{goto} uses arrays of \SI{40}{\cm} \glspl{ut} on a single fast-slewing mount. This modular approach allows the project to scale to large fields of view in a cost-effective manner. A full instrument will have 8 of these \glspl{ut} per mount, giving an overall field of view of \SI{40}{\square\deg} with a pixel scale of \SI[per-mode=symbol]{1.2}{\arcsec\per\pixel} and a limiting magnitude of \about20 in each two minute exposure. Each UT has a set of wide white and coloured filters to assist source characterisation.  An additional instrument with 8 more \glspl{ut} on a second mount is planned to be co-located in a second dome on La Palma, which will double the instantaneous field of view to \SI{80}{\square\deg}, allow the sky to be surveyed at a higher cadence and give more options for transient follow-up. A southern node is also planned for Australia.
-
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=11cm]{images/goto_photo.jpg}
-    \end{center}
-    \caption[The GOTO prototype instrument]{
-        The GOTO prototype instrument on La Palma, with four of the eventual eight unit telescopes.
-    }\label{fig:goto_photo}
-\end{figure}
-
-\gls{goto} is designed as a robotic, wide-field transient detection telescope. Under normal circumstances the telescope will carry out an all-sky survey, based on a fixed grid of tiles. Each tile corresponds to the \SI{40}{\square\deg} field of view of the 8 \glspl{ut} observing neighbouring patches of sky, as shown in \aref{fig:tiles}. The all-sky survey will aim to obtain a high-cadence at an appropriate depth, mapping the entire visible sky several times a week. The high cadence will ensure that there are very recent reference images available to allow detection of objects using difference imaging.
-
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=11cm]{images/tiles.pdf}
-    \end{center}
-    \caption[M31]{
-        A single commissioning image of M31, showing the wide field of view of each unit telescope. The full 8 unit telescope array will cover an area of approximately 40 square degrees, which forms a single survey tile.
-    }\label{fig:tiles}
-\end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
+\newpage
 \subsection{Hardware design}
 \label{sec:goto_design}
 \begin{colsection}
 
-\todo{WIP}
-\todo{Include lots of pictures, labeled diagram of bits}
+The GOTO telescopes have been designed to cover a large field of view to a reasonable depth (19--20 mag) while being able to rapidly slew between targets, all for a reasonable cost. The design, as shown in \aref{fig:goto_photo}, uses an array of of \SI{40}{\cm} \glspl{ut} on a single fast-slewing mount. Using multiple smaller instruments on one mount is a design already used by several survey and wide-field telescopes, such as the All-Sky Automated Survey for Supernovae \glsadd{asassn} \citep[ASAS-SN,][]{ASAS-SN} or Warwick's existing telescope on La Palma SuperWASP \glsadd{wasp} \citep{SuperWASP}. This modular design provides a cost-effective way of reaching the desired field of view, while also allowing the project to be scaled up as funding allows.
+
+The prototype telescopes and mount were constructed by APM Telescopes\footnote{\url{https://www.professional-telescopes.com}}. Each UT is a fast Wynne-Newtonian astrograph with a focal ratio of f/2.5, and each uses off-the-shelf camera hardware from \glsfirst{fli}\footnote{\url{https://www.flicamera.com}}. The FLI MicroLine cameras each use a 50 megapixel sensor from ON Semiconductor\footnote{\url{https://www.onsemi.com}}, which gives each UT a field of view of approximately 6 square degrees with a pixel scale of \SI[per-mode=symbol]{1.2}{\arcsec\per\pixel}. A full GOTO telescope will have eight UTs per mount, giving an overall field of view of \SI{40}{\square\deg} (accounting for some overlap between cameras). A sample frame taken with one UT is shown in \aref{fig:fov}, which also gives a comparison of the GOTO field of view to other projects. Each unit telescope is fitted with a filter wheel with several wide-band coloured filters, which can be used for additional source identification.
+
+Each GOTO site is anticipated to host two mounts, as shown in \aref{fig:goto_render}, with 16 unit telescopes giving a total instantaneous field of view of \SI{80}{\square\deg}. Having two independent mounts allows the sky to be surveyed at a higher cadence, and also gives more options for survey and transient follow-up strategies. For example the two mounts could observe separately to cover the sky as fast as possible, or they could combine to observe the same field to a greater depth.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/fov.pdf}
+    \end{center}
+    \caption[GOTO's field of view compared to other projects]{
+        GOTO's field of view compared to other projects. On the left is a commissioning image of M31 taken with one of GOTO's cameras, showing the wide field of view of a single unit telescope. Four of these UTs form the initial 18 square degree survey tile, to be increased to 40 square degrees in the full 8-UT system. On the right the GOTO FoV is compared to two similar projects: the Zwicky Transient Facility \glsadd{ztf} \citep[ZTF,][]{ZTF} and the Large Synoptic Survey Telescope \glsadd{lsst} \citep[LSST,][]{LSST}.
+    }\label{fig:fov}
+\end{figure}
+
+\clearpage
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Image processing}
+\label{sec:gotophoto}
+\begin{colsection}
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/diffimg.pdf}
+    \end{center}
+    \caption[The detection of SN 2019bpc through difference imaging]{
+        The detection of Type Ia supernova SN 2019bpc by the GOTOphoto difference imaging pipeline. The new exposure on the left (a) has the reference image (b) subtracted to give the difference image on the right (c), where the new source is clearly visible.
+    }\label{fig:diffimg}
+\end{figure}
+
+The GOTO project requires handling a huge amount of data. Each output from the 50~Mpx cameras produces 100~MB image, GOTO typically takes three \SI{60}{\second} exposures per pointing and on average observes $\sim130$ targets each night. Just the prototype 4-UT system produces on the order of 150~GB every day, and a full multi-site GOTO system would produce close to 400~TB per year. In order for real-time transient detection each set of images needs to be processed in the approximately three minutes between each target, and due to the wide field of view each image will contain many thousands of sources. Processing the images is therefore not an easy task. In order to do this a real-time data flow system has been developed called GOTOflow, which is used to run the GOTO pipeline GOTOphoto.
+
+GOTOphoto calibrates each image and combines each set of three, which increases the effective depth while also accounting for moving targets between the two exposures. New or changed sources are then detected using the method of difference imaging, as shown in \aref{fig:diffimg}. This requires a master reference image at each position in the sky, which is built up from the all-sky survey. New candidates are then currently presented for human vetting, although work is ongoing across the collaboration on machine-learning projects for transient detection and identification.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \newpage
-\subsection{Deployment plan}
+\subsection{Deployment and future expansion}
 \label{sec:goto_expansion}
 \begin{colsection}
 
-\todo{WIP}
+The 4-UT GOTO prototype shown in \aref{fig:goto_photo} was inaugurated in the summer of 2017. The telescope is located at the \glsfirst{orm_lapalma} on La Palma in the Canary Islands, at the site shown in \aref{fig:orm}. After some hardware issues the telescope is now fully operational: since February 2019 GOTO has been carrying out a continual all-sky survey, and as of the start of the third LIGO-Virgo observing run (O3) in April 2019 it has been actively following-up gravitational wave events.
 
-Starting with 4 in the North, 1 mount.
+The second stage in the GOTO project will be the addition of the second set of four unit telescopes, due in late 2019. A second dome has been constructed on La Palma and funding for the second mount and initial unit telescopes has also been secured, this is expected to be commissioned in the next few years.
 
-Then 8 on the 1 mount, soon (TM).
+Ultimately a second GOTO node is planned to be built in the southern hemisphere, most likely in Australia. Having a site in each hemisphere allows the entire sky to be visible, and as Australia is on the opposite side of the Earth from La Palma the two sites would provide almost 24-hour observing coverage. This second node would also host two GOTO telescopes with 8 UTs each, and the two sites combined would be able to survey the entire visible sky every 1--2 days.
 
-Then another 8.
-
-Then Australia, hopefully.
-
-\newpage
+As GOTO grows it is anticipated that the telescopes at both sites will be operated as a single observatory, meaning observation scheduling will be optimised between each site and the output data will be unified into a single detection database.
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/orm_labelled.png}
+        \includegraphics[width=\linewidth]{images/orm.pdf}
     \end{center}
-    \caption[Locations of major telescopes on La Palma]{
-        Locations of major telescopes at the ORM on La Palma. GOTO, marked in \textcolorbf{BlueGreen}{blue}, is located on the east side of the observatory, close to the edge of the Caldera.
+    \caption[The location of GOTO and other telescopes on La Palma]{
+        The location of GOTO and other telescopes at the Observatorio del Roque de los Muchachos on La Palma, including the sites of proposed and under-construction projects in \textcolorbf{Goldenrod}{yellow}. GOTO, marked in \textcolorbf{BlueGreen}{blue}, is located on the east side of the observatory, close to the edge of the caldera. The lower image shows the eastern part of the ORM and the telescopes surrounding GOTO, including the other Warwick-operated telescopes (W1m and SuperWASP) and the Sheffield/Durham-operated pt5m (on the roof of the WHT building) in \textcolorbf{ForestGreen}{green}. Satellite images taken from Google Maps.
     }\label{fig:orm}
-\end{figure}
-
-\begin{figure}[p]
-    \begin{center}
-        \includegraphics[width=\linewidth]{images/orm_east_labelled.png}
-    \end{center}
-    \caption[The location of GOTO on La Palma]{
-        The location of GOTO on the eastern edge of the ORM on La Palma, marked in \textcolorbf{BlueGreen}{blue}. The surrounding telescopes are also labelled, including the other Warwick-operated telescopes (W1m and SuperWASP) in \textcolorbf{Orange}{orange} and the Sheffield-Durham operated pt5m (on the roof of the WHT building) in \textcolorbf{Green}{green}.
-    }\label{fig:orm_east}
 \end{figure}
 
 \clearpage
@@ -315,21 +333,21 @@ Then Australia, hopefully.
 \label{sec:outline}
 \begin{colsection}
 
-\todo{This is my thesis!} This thesis is about GOTO, a telescope with the primary mission to detect counterparts to gravitational wave sources.
+This thesis details my work on the GOTO project, over four years between 2015 and 2019, primarily on the hardware and control software side of the project. The thesis is arranged as follows:
 %
 \begin{itemize}
-    \item In \nref{chap:hardware} I blah.
-    \item In \nref{chap:gtecs} I blah.
-    \item In \nref{chap:autonomous} I blah.
-    \item In \nref{chap:scheduling} I blah.
-    \item In \nref{chap:tiling} I blah.
-    \item In \nref{chap:alerts} I blah.
-    \item In \nref{chap:commissioning} I blah.
-    \item In \nref{chap:multiscope} I blah.
-    \item In \nref{chap:conclusion} I blah.
+    \item In \nref{chap:hardware} I describe my work characterising the GOTO hardware and optical systems prior to its deployment.
+    \item In \nref{chap:gtecs} I introduce the software I developed to control the GOTO hardware.
+    \item In \nref{chap:autonomous} I describe the additional autonomous level of software I wrote to allow GOTO to operate as a fully autonomous telescope.
+    \item In \nref{chap:scheduling} I examine in detail the functions used to prioritise and schedule GOTO observations.
+    \item In \nref{chap:tiling} I describe how GOTO observations are mapped onto an all-sky grid, and how it is used to observe gravitational wave skymaps.
+    \item In \nref{chap:alerts} I describe the software systems used to receive and process astronomical alerts, including gravitational wave detections.
+    \item In \nref{chap:commissioning} I detail my work during the deployment of the GOTO prototype and subsequent development of the on-site system.
+    \item In \nref{chap:multiscope} I examine the future expansion plans of GOTO, including simulations I carried out to quantify the benefits of multiple telescopes and sites.
+    \item Finally, in \nref{chap:conclusion} I present concluding remarks and some suggestions for future project development.
 \end{itemize}
 %
-Let's begin \ldots
+Let's begin\ldots
 
 \end{colsection}
 
