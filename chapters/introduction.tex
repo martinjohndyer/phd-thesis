@@ -333,7 +333,19 @@ As GOTO grows it is anticipated that the telescopes at both sites will be operat
 \label{sec:outline}
 \begin{colsection}
 
-This thesis details my work on the GOTO project, over four years between 2015 and 2019, primarily on the hardware and control software side of the project. The thesis is arranged as follows:
+This thesis details my work on the GOTO project, over four years between 2015 and 2019.
+
+My primary role within the GOTO collaboration was to develop the software needed for GOTO to operate as an autonomous telescope. On the basic level, the hardware design of GOTO --- with multiple unit telescopes attached to each mount --- required custom software which could operate all the cameras in sync. Each unit telescope is also equipped with a filter wheel and a focuser, which would also need to be controlled in parallel. Additional control software was also required to move the mount, open and close the dome, and control any other pieces of on-site hardware.
+
+The next stage of the control system development was writing the software that would operate the telescope without human involvement. The routine nightly operations (move to a target, take an exposure, repeat until sunrise) would need to be supported, and in addition standard observational tasks such as taking calibration frames and focusing the telescopes needed to be automated. Crucially the control system required robust and reliable systems for monitoring the weather and the hardware status, and in the case of an emergency it had to be able to close the dome or recover from any problems without immediate human intervention.
+
+In order for a telescope to observe autonomously it needs to be able to know what targets to observe and when. Therefore GOTO needed an automatic scheduling system, which had to be able to handle two distinct operational modes:\@ carrying out the all-sky survey for the majority of the time, but quickly switching to follow-up any gravitational wave alerts (or other transient events) when triggered. For the all-sky survey a series of tiled pointings had to be to be defined and alert observations should be mapped onto the same grid, to enable the pipeline to carry out difference imaging. Reacting quickly to any alerts is vital, so GOTO needed a robust alert monitoring system that could determine the optimal follow-up strategy for each event.
+
+Finally, as described in \aref{sec:goto_expansion}, GOTO is envisioned as a modular project with an increasing number of telescopes and sites. Therefore this future expansion had to be taken into account in the design of both the hardware control and scheduling systems. Ultimately GOTO is expected to operate as a multi-site observatory, and the control system will need to be able to expand to meet this case.
+
+\newpage
+
+This thesis is arranged as follows:
 %
 \begin{itemize}
     \item In \nref{chap:hardware} I describe my work characterising the GOTO hardware and optical systems prior to its deployment.
