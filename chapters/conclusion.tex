@@ -5,7 +5,7 @@
 % ########################################
 
 \newpage
-\section{Conclusion}
+\section{Conclusions}
 \label{sec:conclusion}
 \begin{colsection}
 
@@ -13,44 +13,26 @@
 
 \begin{colsection}
 
-\todo{WIP}
+In this thesis I have described my work as part of the GOTO project, primarily working on the control software in order to create a fully-autonomous robotic telescope. After several years of development and commissioning the prototype GOTO telescope is fully operational, and observing from La Palma most nights with no human interaction.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Hardware control}
-\label{sec:hardware_results}
+\subsection{Telescope control}
+\label{sec:control_results}
 \begin{colsection}
 
-\todo{WIP}
+The core of my work has been the \glsfirst{gtecs}, a complete software package split across several Python modules that controls every aspect of the telescope. The hardware control daemons interface with the dome, mount and cameras (see \aref{chap:gtecs}) while the ``pilot'' master control program and its associated systems (see \aref{chap:autonomous}) allow the telescope to function with no human involvement. GOTO has now been operating successfully for months with the pilot in full control. The conditions monitoring systems have proven robust enough to trust the telescope to close in bad weather, and when the occasional unexpected hardware issues do occur the pilot recovery systems can fix the problem and resume observing in a majority of cases before a human even has time to log in. Of course commissioning was not entirely without incident, as described in \aref{chap:commissioning}. However all the software challenges were overcome, and the majority of the delays to GOTO were due to hardware faults which were out of my purview.
+
+Each set of exposures taken with the G-TeCS camera daemon are assigned an incremental run number. From the initial installation in the summer of 2017 up until September 2019 GOTO has taken over 185,000 such exposure sets, and produced many tens of terabytes of data. My role ends when each image has been saved to a file, whereupon they are copied to the master archive in Warwick and backups at other partner institutions.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{The all-sky survey}
-\label{sec:survey_results}
-\begin{colsection}
-
-\todo{WIP}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Gravitational wave observations}
+\newpage
+\subsection{Scheduling and gravitational wave follow-up}
 \label{sec:gw_results}
-\begin{colsection}
-
-\todo{WIP}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Other transient follow-up}
-\label{sec:other_results}
 \begin{colsection}
 
 \todo{WIP}
