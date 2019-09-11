@@ -69,6 +69,19 @@
 \renewcommand{\@tocrmarg}{4em}
 \makeatother
 
+% Reduce ToC spacing
+% https://tex.stackexchange.com/questions/64229/how-to-change-font-size-in-table-of-contents
+\setlength{\cftparskip}{-7pt}
+
+% No glossary skip
+\renewcommand*{\glsclearpage}{}
+
+% Change chapter spacing
+%https://tex.stackexchange.com/questions/407843/how-do-i-reduce-spacing-between-chapter-title-and-first-section
+\makeatletter
+\patchcmd{\@makechapterhead}{\vskip 20}{\vskip 0}{}{} % chktex 41
+\makeatother
+
 % add a small contents to the start of a chapter
 \mtcsettitle{minitoc}{}
 \mtcsetrules{*}{off}
@@ -79,17 +92,19 @@
 \let\oldappendices\appendices\def\appendices{\oldappendices\adjustmtc}
 \newcommand\chaptoc{
     \begin{singlespacing}
+    \begin{small}
     \vspace{-1.4cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
-    \vspace{-0.7cm}
+    \vspace{-1cm}
     {\hypersetup{linkcolor=black}
     \minitoc{}
     }
-    \vspace{-0.2cm}
+    \vspace{-0.5cm}
     \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
     \begin{center}
         \hyperref[contents]{\textcolor{white}{\uptriangle}}
     \end{center}
+    \end{small}
     \end{singlespacing}
     }
 

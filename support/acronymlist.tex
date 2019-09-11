@@ -1,11 +1,21 @@
+\chapter*{Acronyms and Abbreviations}
+\vspace{-3.5cm}
+
 \setlength{\glsdescwidth}{0.8\textwidth}
 %\glsdisablehyper{}
 
 \pdfbookmark[section]{Acronyms and Abbreviations}{aaa}
-\printglossary[title={Acronyms and Abbreviations},
+
+\begingroup
+\let\clearpage\relax
+\vspace{-12pt}
+\begin{singlespacing}
+\printglossary[title={},
                type=\acronymtype,
                style=super,
                nopostdot,
                nonumberlist,
                %nogroupskip,
                ]
+\end{singlespacing}
+\endgroup
