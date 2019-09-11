@@ -5,7 +5,7 @@
 % ########################################
 
 \newpage
-\section{Conclusions}
+\section{Summary and Conclusions}
 \label{sec:conclusion}
 \begin{colsection}
 
@@ -31,11 +31,263 @@ Each set of exposures taken with the G-TeCS camera daemon are assigned an increm
 
 % ~~~~~~~~~~~~~~~~~~~~
 \newpage
-\subsection{Scheduling and gravitational wave follow-up}
+\subsection{Scheduling and alert follow-up}
 \label{sec:gw_results}
 \begin{colsection}
 
-\todo{WIP}
+GOTO needed a observation scheduling system that could deal with both the survey and follow-up modes. The scheduler used by G-TeCS is a just-in-time system, where the highest priority target is recalculated every time the scheduler is called. This makes it very reactive to transient alerts, which was a requirement of the project. As described above the scheduler has been operating as parted of the automated systems for several months, and GOTO has been reliably taking regular observations.
+
+From the beginning of the LIGO-Virgo third observing run (O3) in April 2019 up until the end of August the LVC released 32 alerts. GOTO responded to every one of these events, including the ones which were later retracted. In a few cases the event handler initially failed to process the VOEvent or the skymap, as described in \aref{sec:challenges} this was usually due to a problem in the LIGO GraceDB and changes to prevent this were made to the GOTO-alert code. Each event had pointings added to the observation database, and for events that occurred during the night on La Palma this resulted in the pilot immediately being able to begin observations.
+
+\newpage
+
+\begin{sidewaystable}[p]
+    \begin{footnotesize}
+    \begin{center}
+        \begin{tabular}{l|cccrl} % chktex 44
+
+            \multicolumn{1}{c}{Event} &
+            Event time &
+            Alert received &
+            Observation start &
+            \multicolumn{1}{c}{$\Delta T$ (hours)} &
+            Observed?
+            \\
+            \midrule
+            S190405ar &
+            2019--04--05 16:01:30 &
+            2019--04--12 15:07:26 &
+            N/A &
+             &
+            Retracted
+            \\
+            S190408an &
+            2019--04--08 18:18:02 &
+            2019--04--08 19:02:50 &
+            2019--04--09 05:40:39 &
+            10.63 &
+            Start of following night
+            \\
+            S190412m  &
+            2019--04--12 05:30:44 &
+            2019--04--12 06:31:39 &
+            2019--04--12 20:28:35 &
+            13.95 &
+            Start of following night
+            \\
+            S190421ar  &
+            2019--04--21 21:38:56 &
+            2019--04--22 16:26:24 &
+            2019--04--23 21:54:59 &
+            29.48 &
+            During following night
+            \\
+            S190425z  &
+            2019--04--25 08:18:05 &
+            2019--04--25 09:00:56 &
+            2019--04--25 20:38:22 &
+            11.62 &
+            Start of following night
+            \\
+            S190426c  &
+            2019--04--26 15:21:55 &
+            2019--04--26 15:47:11 &
+            2019--04--26 20:38:45 &
+            4.86 &
+            Start of following night
+            \\
+            S190503bf  &
+            2019--05--03 18:54:04 &
+            2019--05--03 19:30:15 &
+            N/A &
+             &
+            Not visible from La Palma
+            \\
+            S190510g  &
+            2019--05--10 02:59:39 &
+            2019--05--10 04:21:59 &
+            2019--05--10 04:22:55 &
+            0.02 &
+            56s after notice received
+            \\
+            S190512at  &
+            2019--05--12 18:07:14 &
+            2019--05--12 18:59:01 &
+            2019--05--12 20:53:20 &
+            1.91 &
+            Start of following night
+            \\
+            S190513bm  &
+            2019--05--13 20:54:28 &
+            2019--05--13 21:21:51 &
+            2019--05--13 21:26:19 &
+            0.07 &
+            4.5m after notice received
+            \\
+            S190517h  &
+            2019--05--17 05:51:01 &
+            2019--05--17 06:26:48 &
+            2019--05--17 21:42:06 &
+            15.26 &
+            During following night
+            \\
+            S190518bb  &
+            2019--05--18 19:19:19 &
+            2019--05--18 19:25:49 &
+            N/A &
+             &
+            Retracted
+            \\
+            S190519bj  &
+            2019--05--19 15:35:44 &
+            2019--05--19 17:01:40 &
+            2019--05--19 20:55:19 &
+            3.89 &
+            Start of following night
+            \\
+            S190521g  &
+            2019--05--21 03:02:29 &
+            2019--05--21 03:08:49 &
+            2019--05--21 03:09:17 &
+            0.01 &
+            28s after notice received
+            \\
+            S190521r  &
+            2019--05--21 07:43:59 &
+            2019--05--21 07:50:27 &
+            2019--05--21 22:54:03 &
+            15.06 &
+            Start of following night
+            \\
+            S190524q  &
+            2019--05--24 04:52:06 &
+            2019--05--24 04:58:40 &
+            2019--05--24 04:59:33 &
+            0.01 &
+            53s after notice received (retracted 6m later)
+            \\
+            S190602aq  &
+            2019--06--02 17:59:27 &
+            2019--06--02 18:06:01 &
+            N/A &
+             &
+            Not visible from La Palma
+            \\
+            S190630ag  &
+            2019--06--30 18:52:05 &
+            2019--06--30 18:55:47 &
+            2019--06--30 21:14:49 &
+            2.32 &
+            Start of following night
+            \\
+            S190701ah  &
+            2019--07--01 20:33:06 &
+            2019--07--01 20:38:06 &
+            N/A &
+             &
+            Not visible from La Palma
+            \\
+            S190706ai  &
+            2019--07--06 22:26:41 &
+            2019--07--06 22:44:31 &
+            2019--07--06 22:45:09 &
+            0.01 &
+            38s after notice received
+            \\
+            S190707q  &
+            2019--07--07 09:33:26 &
+            2019--07--07 10:13:24 &
+            2019--07--07 21:54:47 &
+            11.69 &
+            During following night
+            \\
+            S190718y  &
+            2019--07--18 14:35:12 &
+            2019--07--18 15:03:13 &
+            2019--07--18 21:08:53 &
+            6.09 &
+            Start of following night
+            \\
+            S190720a  &
+            2019--07--20 00:08:36 &
+            2019--07--20 00:11:26 &
+            2019--07--20 00:11:57 &
+            0.01 &
+            31s after notice received
+            \\
+            S190727h  &
+            2019--07--27 06:03:33 &
+            2019--07--27 06:12:02 &
+            2019--07--27 21:03:40 &
+            14.86 &
+            Start of following night
+            \\
+            S190728q  &
+            2019--07--28 06:45:10 &
+            2019--07--28 06:59:32 &
+            2019--07--28 21:29:58 &
+            14.51 &
+            During following night
+            \\
+            S190808ae  &
+            2019--08--08 22:21:21 &
+            2019--08--08 22:28:00 &
+            2019--08--08 22:28:31 &
+            0.01 &
+            31s after notice received (retracted 5h later)
+            \\
+            S190814bv  &
+            2019--08--14 21:10:39 &
+            2019--08--14 21:31:44 &
+            2019--08--14 22:59:27 &
+            1.46 &
+            During following night
+            \\
+            S190816i  &
+            2019--08--16 13:04:31 &
+            2019--08--16 08:53:19 &
+            N/A &
+             &
+            Retracted
+            \\
+            S190822c  &
+            2019--08--22 01:29:59 &
+            2019--08--22 01:37:00 &
+            2019--08--22 01:37:30 &
+            0.01 &
+            30s after notice received (retracted 2.5h later)
+            \\
+            S190828j  &
+            2019--08--28 06:34:05 &
+            2019--08--28 06:50:14 &
+            2019--08--28 22:38:25 &
+            15.80 &
+            Start of following night
+            \\
+            S190828l  &
+            2019--08--28 06:55:09 &
+            2019--08--28 07:17:46 &
+            2019--08--28 23:48:38 &
+            16.51 &
+            During following night
+            \\
+            S190829u  &
+            2019--08--29 21:05:56 &
+            2019--08--29 21:17:14 &
+            N/A &
+             &
+            Retracted
+            \\
+
+        \end{tabular}
+    \end{center}
+    \end{footnotesize}
+    \caption[GOTO observation log for O3 events so far]{
+        GOTO observation log for O3 events up to the end of August 2019.
+    }\label{tab:modes}
+\end{sidewaystable}
+
+\clearpage
 
 \end{colsection}
 
