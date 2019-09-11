@@ -1,5 +1,5 @@
-\documentclass[a4paper,11pt,oneside,openright,nohints]{report}
-%\documentclass[a4paper,11pt,twoside,openright,nohints]{report}
+\documentclass[a4paper,12pt,oneside,openright,nohints]{report}
+%\documentclass[a4paper,12pt,twoside,openright,nohints]{report}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -16,17 +16,22 @@
 \begin{document}
 
 % Document properties
-\title{Title goes here}
+\title{\todo{Title goes here}}
 \author{Martin J Dyer}
-\date{September 2019}
+\date{\todo{??} September 2019}
 
-% Front matter
-\pagenumbering{roman}
-\pagestyle{plain}
+% Front pages
 \singlespacing{}
+\pagenumbering{roman}
+\pagestyle{empty}
 % ---------
 \include{support/titlepage}
 \include{support/quote}
+
+% Front matter
+\onehalfspacing{}
+\pagestyle{plain}
+% ---------
 \include{support/declaration}
 \include{support/acknowledgements}
 \include{support/summary}
@@ -39,7 +44,6 @@
 \cleardoublepage{}
 \pagenumbering{arabic}
 \pagestyle{fancy}
-\doublespacing{}
 % ---------
 \include{chapters/introduction}
 \include{chapters/hardware}
@@ -54,22 +58,19 @@
 
 % Bibliography
 \pagestyle{plain}
-\doublespacing{}
 % ---------
 \include{support/bibliography}
 
 % Appendices
 \pagestyle{fancy}
-\doublespacing{}
 % ---------
 \begin{appendices}
 \renewcommand\chaptername{Appendix}
 \include{chapters/appendix}
 \end{appendices}
 
-% Back matter
+% Back pages
 \pagestyle{plain}
-\singlespacing{}
 % ---------
 \include{support/backpage}
 

@@ -45,13 +45,13 @@
 % format a quote
 \newcommand\makequote[3]{
     \begin{center}
-        \Huge{\textbf{\textcolor{GOTOlightblue}{``~~}}}\\
-            \LARGE{#1}\\
+        {\Huge \textbf{\textcolor{GOTOlightblue}{``~~}}}\\
+            {\LARGE #1}\\
         \vspace{0.3cm}
-        \Huge{\textbf{\textcolor{GOTOlightblue}{~~''}}}
+        {\Huge \textbf{\textcolor{GOTOlightblue}{~~''}}}
     \end{center}
     \vspace{-0.7cm} \hspace{8cm}
-    \large{ --- #2\ifthenelse{\isempty{#3}}{}{, \textit{#3}}}
+    {\large --- #2\ifthenelse{\isempty{#3}}{}{, \textit{#3}}}
     }
 
 % Put footnotes in brackets
