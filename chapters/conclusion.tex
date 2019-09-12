@@ -342,23 +342,17 @@ This thesis only details the beginning of the GOTO project, and the work describ
 \label{sec:gtecs_future}
 \begin{colsection}
 
-The obvious direction of future work will be adapting and expanding G-TeCS in order to match the expansion of GOTO.\@
+The obvious direction of future work will be adapting and expanding G-TeCS in order to match the expansion of GOTO, as described in \aref{sec:goto_expansion}.
 
 % ---------
 \subsubsection{Stage 2}
 
-The next stage, adding the second set of 4 unit telescopes to the existing mount, should require nothing more than a few configuration changes to handle the new \code{fli} interface daemons. On the scheduling side the observation database will need to be reset to handle the new all-sky grid, based on the GOTO-8 field of view instead of the existing GOTO-4 grid. With the change of grid some of the observing strategy detailed in
-\aref{chap:alerts}
-could be revisited; in particular since each tile will cover a larger area the tile selection algorithm described in
-\aref{sec:mapping_skymaps}
-might need to be adjusted. Aside from this nothing else should require major changes, and the current pilot will be able to resume observations immediately.
+Adding the second set of 4 unit telescopes to the existing mount should require nothing more than a few configuration changes to handle the new interface daemons. On the scheduling side the observation database will need to be reset with a new all-sky grid, based on the GOTO-8 field of view instead of the existing GOTO-4 grid. With the change of grid some of the observing strategy detailed in \aref{chap:alerts} could be revisited; in particular since each tile will cover a larger area the tile selection algorithm described in \aref{sec:mapping_skymaps} might need to be adjusted. Aside from this nothing else should require major changes, and the pilot should be able to resume observations immediately.
 
 % ---------
 \subsubsection{Stage 3}
 
-The addition of the second mount on La Palma will require more control system development. With two telescopes of the same design it would be simple to copy-and-paste the control system and have them operate completely independently. Some systems could be shared between the two domes, and a proposed system diagram is shown in \aref{fig:flow2}.  For example, there would be no need to have two conditions daemons both monitoring the same site masts. But, as described in
-\aref{sec:multi_tel_scheduling},
-the great benefit of having two telescopes is having them share a common scheduling system. This could be as simple as the system adopted for the multi-telescope simulations in that section, marking one telescope as the primary that always observes the highest-priority pointing and having the other always observe the second-highest. But in reality the telescopes will never be perfectly in sync, and there are more benefits to be gained from a more advanced scheduling system.
+The addition of the second mount on La Palma will require more control system development. With two telescopes of the same design it should be simple to copy the hardware control daemons, and some systems could be shared between the two domes (for example, there is no need to have two conditions daemons both monitoring the same site masts). A proposed system diagram is shown in \aref{fig:flow2}. But, as described in \aref{sec:multi_tel_scheduling}, the great benefit of having two telescopes is having them share a common scheduling system. This could be as simple as the system adopted for the multi-telescope simulations in that section, marking one telescope as the primary that always observes the highest-priority pointing and having the other always observe the second-highest. But in reality the telescopes will never be perfectly in sync, and there are more benefits to be gained from a more advanced scheduling system.
 
 \begin{figure}[t]
     \begin{center}
@@ -369,17 +363,9 @@ the great benefit of having two telescopes is having them share a common schedul
     }\label{fig:flow2}
 \end{figure}
 
-Just as the current scheduler described in
-\aref{chap:scheduling}
-has to decide what to observe based on various constraints, the next-generation scheduler will need to optimise which target is being observed by each telescope. Although several of the constraints will be the same for both mounts (e.g.\ the Moon phase or Sun altitude) it is possible that the two telescopes could have different horizons and therefore altitude limits. The scheduler tie-breaking system will need to be revisited to account for distributing pointings to either telescope. One possible parameter to add to decide which telescope to send a pointing to would be the distance each mount would need to slew from the current target, and a particularly advanced system might also want to account for the time left on the current observations (e.g.\ telescope 1 might be ready to observe while telescope 2 has 10 seconds left on the current target; if the difference in slew times to the new pointing is greater than \SI{10}{\second} then it would be better to wait for telescope 2 to finish).
+Just as the current scheduler described in \aref{chap:scheduling} has to decide what to observe based on various constraints, the next-generation scheduler will need to optimise which target is being observed by each telescope. Although several of the constraints will be the same for both mounts (e.g.\ the Moon phase or Sun altitude) it is possible that the two telescopes could have different horizons and therefore altitude limits. The scheduler tie-breaking system will need to be revisited to account for distributing pointings to either telescope. One possible parameter to add to decide which telescope to send a pointing to would be the distance each mount would need to slew from the current target, and a particularly advanced system might also want to account for the time left on the current observations (e.g.\ telescope 1 might be ready to observe while telescope 2 has 10 seconds left on the current target; if the difference in slew times to the new pointing is greater than \SI{10}{\second} then it would be better to wait for telescope 2 to finish).
 
-The move from one 8-UT mount to two 8-UT mounts should mean the same grid can be used, as long as both have the same field of view (see
-\aref{sec:multi_grid_scheduling}
-for the problems inherent in observing with multiple different grids). However multiple telescopes opens up opportunities for many more advanced observing strategies. They could both observe different parts of the sky to cover the survey or alert skymaps quicker, or they could observe the same point to achieve a greater depth when the images are stacked. The simulations in
-\aref{chap:multiscope}
-assumed the former in all cases to get the fastest possible coverage, however ideally the future scheduling system should be designed to allow these coordinated observations if required. The presence of the coloured filters adds even more possibilities and complexity. It should be possible to have the two telescopes observe the same target simultaneously but using different filters, to get immediate colour information on any sources. It might also be desired to accept the hit to survey cadence but have each telescope carry out an independent survey in different filters, or perhaps have one taking rapid \SI{60}{\second} exposures while the other takes longer takes longer but uses a meridian scanning method as detailed in
-\aref{survey_sim_meridian}.
-The possibilities will be huge, and although the ultimate decision will be made depending on the science needs of the GOTO collaboration ideally the scheduling system will be able to handle whatever strategy is desired.
+The move from one 8-UT mount to two 8-UT mounts should mean the same grid can be used, as long as both have the same field of view (see \aref{sec:multi_grid_scheduling} for the problems inherent in observing with multiple different grids). However multiple telescopes opens up opportunities for many more advanced observing strategies. They could both observe different parts of the sky to cover the survey or alert skymaps quicker, or they could observe the same point to achieve a greater depth when the images are stacked. The simulations in \aref{chap:multiscope} assumed the former in all cases to get the fastest possible coverage, however ideally the future scheduling system should be designed to allow these coordinated observations if required. The presence of the coloured filters adds even more possibilities and complexity. It should be possible to have the two telescopes observe the same target simultaneously but using different filters, to get immediate colour information on any sources. It might also be desired to accept the hit to survey cadence but have each telescope carry out an independent survey in different filters, or perhaps have one taking rapid \SI{60}{\second} exposures while the other takes longer takes longer but uses a meridian scanning method as detailed in \aref{sec:survey_sim_meridian}. The possibilities will be huge, and although the ultimate decision will be made depending on the science needs of the GOTO collaboration ideally the scheduling system will be able to handle whatever strategy is desired.
 
 % ---------
 \subsubsection{Stage 4}
@@ -396,13 +382,9 @@ The final form of the GOTO project is intended to include multiple telescopes at
 
 The work described in the previous section will be important to carry out as GOTO expands, however it will also naturally be directed by the timeline of the project going forwards. In general there is still plenty of software development work to do that is less dependent on the GOTO funding situation.
 
-One particular future area of importance should be better integration between the control system and the later analysis pipeline and candidate marshal described in
-\aref{sec:gotophoto}.
-To achieve a fully autonomous system the pipeline should be able to reschedule observations independently, for example if an image is affected by clouds. More excitingly a future detection algorithm might be permitted to automatically schedule follow-up observations of promising candidates.
+One particular future area of importance should be better integration between the control system and the later analysis pipeline and candidate marshal described in \aref{sec:gotophoto}. To achieve a fully autonomous system the pipeline should be able to reschedule observations independently, for example if an image is affected by clouds. More excitingly a future detection algorithm might be permitted to automatically schedule follow-up observations of promising candidates.
 
-Another future direction that is being considered is the generalisation of some or all of the G-TeCS code, removing the GOTO-specific parts and making it usable by other projects. For example, the GOTO-tile code for creating survey grids and mapping skymaps to them described in
-\aref{chap:tiling}
-is not at all GOTO-specific, and would only require a small amount to work to rewrite into a separate Astropy-compatible Python module (probably along with a new name). On a wider scale the G-TeCS control system could be adapted for other telescopes, and a parallel version is already being used by the other Warwick telescopes on La Palma.
+Another future direction that is being considered is the generalisation of some or all of the G-TeCS code, removing the GOTO-specific parts and making it usable by other projects. For example, the GOTO-tile code for creating survey grids and mapping skymaps to them described in \aref{chap:tiling} is not at all GOTO-specific, and would only require a small amount to work to rewrite into a separate Astropy-compatible Python module (probably along with a new name). On a wider scale the G-TeCS control system could be adapted for other telescopes, and a parallel version is already being used by the other Warwick telescopes on La Palma.
 
 Overall the GOTO Telescope Control System is still under active development, which will continue as the GOTO project evolves. Based on the initial results from O3 the system has been working well and fulfilling its requirements, and it is therefore only a matter of time until GOTO observes the next gravitational wave counterpart.
 
