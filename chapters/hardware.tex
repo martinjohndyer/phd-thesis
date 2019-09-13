@@ -991,7 +991,7 @@ This method produces reasonable results, but is only approximating the filter ba
     \begin{center}
         \includegraphics[width=\textwidth]{images/throughput/synphot.png}
     \end{center}
-    \caption[Simulating photometric observations in the GOTO filters using pysynphot]{
+    \caption[Simulating photometric observations using pysynphot]{
         Simulating photometric observations in the GOTO filters using pysynphot. The filled coloured areas show the throughputs in the \textit{RGB} filters from \aref{fig:throughput}. The coloured dotted lines show the throughputs convolved with a flat \SI{3631}{\jansky} spectrum (dot-dashed black line), while the dashed lines show the throughputs convolved with the model Vega spectrum (solid black line). The same process was repeated for the \textit{L} filter (not shown for clarity).
     }\label{fig:pysynphot}
 \end{figure}
@@ -1130,7 +1130,7 @@ Finally, the limiting magnitude in each filter and telescope can be calculated f
         \end{tabular}
     \end{center}
     \caption[$5\sigma$ limiting magnitudes for a \SI{60}{\second} exposure]{
-        $5\sigma$ limiting magnitudes for a \SI{60}{\second} exposure in different filters and Moon phases.
+        $5\sigma$ limiting magnitudes for a \SI{60}{\second} exposure.
     }\label{tab:lim_mags}
 \end{table}
 
@@ -1144,7 +1144,7 @@ Finally, the limiting magnitude in each filter and telescope can be calculated f
 
 The GOTO prototype finally reached a stable 4-UT system in February 2019 (see \aref{sec:timeline}). In order to determine if it was performing to expectations the theoretical zeropoints and limiting magnitudes calculated in the previous sections can be compared to those found from real on-sky observations. Since GOTO is a very wide-field survey instrument there was no need to observe a particular standard star or field --- each frame contains thousands of individual sources that could be matched to a reference catalogue. In this case a set of sample observations were used: three \SI{60}{\second} exposures in all four filters (12 in total) of the Virgo Cluster, taken on the 16th of March 2019. These observations were taken during dark time and when the target was at a high altitude (airmass 1.08).
 
-Each image was processed using the standard GOTO-photo pipeline (\todo{described in intro}), which calibrated the frames and extracted source counts using Source Extractor \citep{SE}. These counts were background-subtracted and converted into instrumental magnitudes using \aref{eq:ins_mag}, with $t=60$ and using the gain values for each camera calculated in \aref{sec:ptc}.
+Each image was processed using the standard GOTOphoto pipeline (described in \aref{sec:gotophoto}), which calibrated the frames and extracted source counts using Source Extractor \citep{SE}. These counts were background-subtracted and converted into instrumental magnitudes using \aref{eq:ins_mag}, with $t=60$ and using the gain values for each camera calculated in \aref{sec:ptc}.
 
 As GOTO uses the non-standard Baader filters (see \aref{sec:filters}) there are no exact catalogue magnitudes to compare to. The GOTO pipeline instead makes do with the best available catalogues: the Pan-STARRS PS1 catalogue \citep{Pan-STARRS} and APASS, the AAVSO Photometric All-Sky Survey \citep{APASS}. The \textit{L} and \textit{G} Baader filters are matched to Pan-STARRS \textit{g}, \textit{R} to Pan-STARRS \textit{r} and \textit{B} to APASS \textit{B}.
 

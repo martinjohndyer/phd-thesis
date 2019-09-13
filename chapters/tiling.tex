@@ -42,7 +42,7 @@ All work described in this chapter is my own, and has not been published anywher
 \label{sec:healpix}
 \begin{colsection}
 
-\gls{healpix} is a system used to define pixelised data on the surface of a sphere~\citep{HEALPix}. Developed at NASA JPL for microwave background data, it is now widely used for other applications including for gravitational wave skymaps produced by the \gls{lvc}. HEALPix divides the sphere into a series of nested (hierarchical) equal-area (although not equal-shape) pixels arranged in declination strips (``isoLatitude''). Shown in \aref{fig:healpix} are the first four orders of spheres, starting from a base resolution with 12 pixels and increasing as each pixel is split into four. The resolution of the sphere is defined using the $N_\text{side}$ parameter, which is given by the number of pixels along the side of one of the 12 base pixels in the given resolution. At every resolution each base-resolution pixel contains $N_\text{side}^2$ pixels, so the total number of pixels in a sphere is given by
+\gls{healpix} is a system used to define pixelised data on the surface of a sphere~\citep{HEALPix}. Developed at NASA JPL for microwave background data, it is now widely used for other applications including for gravitational-wave skymaps produced by the \gls{lvc}. HEALPix divides the sphere into a series of nested (hierarchical) equal-area (although not equal-shape) pixels arranged in declination strips (``isoLatitude''). Shown in \aref{fig:healpix} are the first four orders of spheres, starting from a base resolution with 12 pixels and increasing as each pixel is split into four. The resolution of the sphere is defined using the $N_\text{side}$ parameter, which is given by the number of pixels along the side of one of the 12 base pixels in the given resolution. At every resolution each base-resolution pixel contains $N_\text{side}^2$ pixels, so the total number of pixels in a sphere is given by
 
 \begin{equation}
     N_\text{pix} = 12 N_\text{side}^2.
@@ -119,8 +119,8 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
             \includegraphics[width=0.45\linewidth]{images/regrade/128.png} \\
         \end{tabular}
     \end{center}
-    \caption[Regrading a gravitational wave skymap]{
-        Changing the HEALPix resolution of a gravitational wave skymap (also known as regrading). At every stage each pixel is assigned a probability value as shown by the colour scale, which indicates the probability the source is located within that pixel. At lower $N_\text{side}$ individual pixels are visible, but as the resolution increases the structure is less visible.
+    \caption[Regrading a gravitational-wave skymap]{
+        Changing the HEALPix resolution of a gravitational-wave skymap (also known as regrading). At every stage each pixel is assigned a probability value as shown by the colour scale, which indicates the probability the source is located within that pixel. At lower $N_\text{side}$ individual pixels are visible, but as the resolution increases the structure is less visible.
     }\label{fig:skymap_regrade}
 \end{figure}
 

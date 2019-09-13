@@ -25,7 +25,7 @@ All work described in this chapter is my own, and again is based on \citet{Dyer}
 % ########################################
 
 \newpage
-\section{Something}
+\section{Automating telescope operations}
 \label{sec:something}
 \begin{colsection}
 
@@ -33,39 +33,32 @@ All work described in this chapter is my own, and again is based on \citet{Dyer}
 
 \begin{colsection}
 
-\todo{This whole section needs to be reorganised}
+The hardware control systems described in \aref{sec:hardware_control} provide the basic methods to control and operate GOTO.\@ A human observer could run through a series of simple commands to open the dome, slew the mount to a given target, take exposures once there, and then repeat with other targets for the rest of the night. There is a limited autonomy provided by the dome daemon, so the dome will close in bad weather without the delay from a human sending the command, but even that can be disabled if desired. Fundamentally the software described previously provides a perfectly usable human-operated telescope control system.
 
-The hardware control systems described in \aref{sec:hardware_control} provide the basic methods to control and operate the telescope. A human observer could run through a series of simple commands to open the dome, slew the mount to a given target, take exposures once there, and then repeat with other targets for the rest of the night. There is a limited autonomy provided by the dome daemon, so the dome will close in bad weather without the delay from a human sending the command, but even that can be disabled if desired. Fundamentally the software described in \aref{sec:hardware_control} provides a perfectly usable human-operated telescope control system. \gls{goto}, however, was always designed as a fully robotic installation, as described in \aref{sec:control_requirements}. Therefore an additional level of software is required, to take the place of the observer as the source of the commands to the daemons.
-
-In \gls{gtecs}, as in the \gls{pt5m} system before it, the role of the observer is filled by a master control program called the pilot. The pilot decides what to observe, sends commands to the daemons, monitors the hardware and attempts to fix problems that may arise. The intention is that the pilot will fully replicate anything a trained on-site observer would be required to do. In order to manage this there are several auxiliary systems and additional support daemons that the pilot confers with. The conditions daemon monitors weather and other system conditions, the sentinel daemon listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
+GOTO, however, was always designed as a fully robotic installation, as described in \aref{sec:goto_motivation}. Therefore an additional level of software was required, to take the place of the observer as the source of commands to the daemons.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Scripts}
-\label{sec:scripts}
+\subsection{Robotic telescopes}
+\label{sec:robotic_telescopes}
 \begin{colsection}
 
-As well as the daemons, the \pkg{gtecs} package includes multiple Python scripts. Once installed these scripts can all be run from the command line by a human, called from within other scripts like the pilot or run automatically with utilities like cron.
+One of the first robotic telescopes was the Wisconsin Automatic Photoelectric Telescope \citep{Wisconsin_APT}. Built in 1965, it could perform routine observations unattended for several days. Today huge number and variety of automated telescopes now regularly take observations of the night sky with limited or no human involvement, ranging from wide-field survey projects like the All-Sky Automated Survey for Supernovae \glsadd{asassn} \citep[ASAS-SN,][]{ASAS-SN}, large robotic telescopes like the \SI{2}{\metre} Liverpool Telescope \citep{Liverpool} or countless smaller telescopes on the roofs of physics departments and in amateur backyards. While larger facilities still tend to be manually operated they often have multiple instances of automation in their hardware control or scheduling system; the conversion of the 50-year-old Isaac Newton Telescope for the automated HARPS3 survey \citep{INT_robotic} is a recent example of large, established telescopes exploiting the benefits of automation. Larger purely robotic telescopes are also being developed, such as the proposed \SI{4}{\metre} successor to the Liverpool telescope \citep{Liverpool2}. The opportunity for multiple robotic telescopes to be networked together into global observatories has also been exploited by projects like the Las Cumbres Observatory Global Telescope Network \citep{LCO} and the MASTER network \citep{MASTER}.
 
-In order to send commands to the daemons each has an associated control script that can be called by a user from a terminal, or by the pilot in robotic mode (see \aref{sec:pilot}). The commands follow a simple format which was inherited from \gls{pt5m}, first the short name of the daemon, then the command and finally any arguments. There are several commands that are common to all daemons: \code{start}, \code{shutdown} and \code{restart} to control if the daemon is running; \code{ping} to see the current status of the daemon; \code{info} to see the current status of the hardware; \code{log} to print the daemon output log. Examples of daemon-specific commands include ``\code{dome~close}'' to close the dome, ``\code{mnt~slew~30.54~+62}'' to slew the mount to the given coordinates, ``\texttt{cam~image~60}'' to take a \SI{60}{\second} exposure with all connected cameras and ``\texttt{cam~image~2~60}'' to take a \SI{60}{\second} exposure with camera 2 only.
-
-Every daemon can also be controlled in ``interactive mode'', which is a user-friendly way to save time sending multiple commands to the same daemon. Interactive mode is entered with \code{i} and exited with \code{q}.
-
-There is also a utility script, \code{lilith}, which can send the same command to all the daemons. For example, to shutdown every daemon it is possible to call each directly (\code{cam shutdown}, \code{foc shutdown}, \code{mnt shutdown} etc\ldots) but it is instead much easier to run \code{lilith shutdown}. The name ``Lilith'' comes from the biblical ``mother of demons''.
-
-The most important script to the robotic operation of the telescope is the pilot, detailed in \aref{sec:pilot}. The pilot is started every night using cron at 5pm, but can also be started manually with the command \code{pilot start} (note although this uses the same syntax as a daemon it simply runs the pilot script in the current terminal instead of starting a background process). There is also a daytime counterpart to the pilot, called the day marshal, which is run in the same way. Finally within the pilot, several of the standard tasks are separated off into ``observation scripts'', lists of commands to the daemons to carry out tasks like focusing the telescope, taking flat fields or starting/shutting down the hardware in the evening/morning respectively. As standard tasks these can also be run by human observers though a command line script \code{obs\_script} (for example \code{obs\_script~startup} or \code{obs\_script~autofocus}).
+In G-TeCS, as in the pt5m system before it, the role of the observer is filled by a master control program called the pilot. The pilot decides what to observe, sends commands to the daemons, monitors the hardware and attempts to fix problems that may arise. The intention is that the pilot will fully replicate anything a trained on-site observer would be required to do. In order to manage this there are several auxiliary systems and additional support daemons that the pilot confers with. The conditions daemon monitors weather and other system conditions, the sentinel daemon listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
 
 \end{colsection}
 
+
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{System mode}
+\subsection{System modes}
 \label{sec:mode}
 \begin{colsection}
 
-\gls{goto} is a robotic telescope, and \gls{gtecs} is designed around that concept. This means the system will operate nightly with no human intervention needed. However, sometimes it is necessary for a human operator to take control of the telescope, if one of the automated scripts fails or a situation arises that is easer to deal with manually. One example was taking observations of the asteroid Phaethon \citep{Phaethon}: G-TeCS was not designed to observe solar system objects, and although the mount allows sidereal tracking there was no way to add a pointing into the database without fixed coordinates. Therefore it was necessary for a human observer to look up and slew to the coordinates of the asteroid as it moved past the Earth. There are also cases when it is important that the automated systems are disabled: if work is being done to the hardware on-site it could be dangerous if the system still tried to move the mount or dome autonomously.
+Although GOTO is a robotic telescope, sometimes it is necessary for a human operator to take control if one of the automated scripts fails or a situation arises that is easer to deal with manually. One example was taking observations of the asteroid Phaethon \citep{Phaethon}: G-TeCS was not designed to observe solar system objects, and although the mount allows sidereal tracking there was no way to add a pointing into the database without fixed coordinates. Therefore it was necessary for a human observer to look up and slew to the coordinates of the asteroid as it moved past the Earth. There are also cases when it is important that the automated systems are disabled: if work is being done to the hardware on-site it could be dangerous if the system still tried to move the mount or dome autonomously.
 
 \begin{table}[t]
     \begin{center}
@@ -102,139 +95,19 @@ The most important script to the robotic operation of the telescope is the pilot
         \end{tabular}
     \end{center}
     \caption[System mode comparison]{
-        A comparison of the three \gls{gtecs} system modes. In \code{robotic} mode all of the automated systems are enabled, in \code{engineering} mode they are all disabled, and in \code{manual} mode the pilot is paused and the observer can disable the dome systems if desired.
+        A comparison of the three G-TeCS system modes. In \code{robotic} mode all automated systems are enabled, in \code{engineering} mode they are all disabled, and in \code{manual} mode the pilot is paused and the observer can disable other systems if desired.
     }\label{tab:modes}
 \end{table}
 
-\gls{gtecs} deals with manual operation by having an overall system mode flag stored in a datafile which is checked by the automated systems before activating. There are three possible modes, outlined below and summarised in \aref{tab:modes}.
+G-TeCS deals with manual operation by having an overall system mode flag stored in a datafile, which is checked by the automated systems before activating. There are three possible modes, outlined below and summarised in \aref{tab:modes}.
 
 \begin{itemize}
-    \item \code{robotic} mode is the default mode for the telescope. In this case it is assumed that the system is completely automated and therefore could move at any time. In this mode during the night the pilot will be in complete control of the telescope, and the dome will automatically close in bad weather. The dome hatch being open is also treated as a critical conditions flag (see \aref{sec:conditions}).
+    \item \code{robotic} mode is the default. In this case it is assumed that the system is completely automated and therefore could move at any time. In this mode during the night the pilot will be in complete control of the telescope, and the dome will automatically close in bad weather. The dome hatch being open is also treated as a critical conditions flag (see \aref{sec:conditions_flags}).
 
-    \item \code{manual} mode is designed for manual observing, either on-site or remotely. In this mode the pilot will be paused and so will not interrupt commands sent by the observer. The dome will still sound the alarm when moving and autoclose in bad weather by default, but both of these features can be disabled; it is intended that they should only be disabled if there is an observer physically present in the dome, otherwise the dome should still be able to close automatically when observing remotely.
+    \item \code{manual} mode is designed for manual observing, either on-site or remotely. In this mode the pilot will be paused and so will not interrupt commands sent by the observer. The dome will still sound the alarm when moving and autoclose in bad weather by default, but both can be disabled. It is intended that they should only be disabled if there is an observer physically present in the dome, otherwise the dome should still be able to close automatically when observing remotely.
 
-    \item \code{engineering} mode is designed to be used only if there are workers on site in situations where the system moving without warning could be dangerous. All of the dome options are automatically disabled, and the pilot and day marshal will refuse to start. Leaving the system in this state for long periods of time is undesirable, and so it should only be used when physical work is ongoing or the telescope is completely deactivated.
+    \item \code{engineering} mode is designed to be used if there are workers on site, when the hardware moving automatically could be dangerous. All of the dome systems are automatically disabled, and the pilot and day marshal will refuse to start. Leaving the system in this state for long periods of time is undesirable, and so it should only be used while work is ongoing or the telescope is completely deactivated.
 \end{itemize}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
-% ########################################
-
-\newpage
-\section{The pilot}
-\label{sec:pilot}
-\begin{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\begin{colsection}
-
-The pilot is a Python script, \code{pilot.py}, not a daemon. It is run once each night; started automatically in the late afternoon by the Linux cron utility, it runs through to the morning and then quits. In the afternoon it will be started again and the process will be repeated.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-
-\subsection{Asynchronous code}
-\label{sec:async}
-\begin{colsection}
-
-The pilot is written as an \textit{asynchronous} program, using the standard Python module AsyncIO (\pkg{asyncio}). An asynchronous program is one where its code runs in separate parallel routines, which are switched between as required, and should not be confused with programs that are written utilising multiple processes or threads that run in parallel. See \aref{fig:async} for a graphical comparison between the two methods.
-
-An example of a simple task might be monitoring a particular source of data, like a weather station. It would contain a function to download the current weather information from the external mast, and then a \code{sleep} command to wait for 10 seconds, which when put inside a loop will ensure that the weather information is queried and updated every 10 seconds. If this loop was called in a multi-threaded program then the thread will be held up for a majority of the time not doing anything between checks. If there were multiple threads, for example checking different masts, then there could be no coordination between them and the whole program would end up being very inefficient. There are also other issues with multi-threaded programs, including input/output and sharing data between threads.
-
-Asynchronous code contains multiple parallel \textit{coroutines}. The program itself runs an \textit{event loop}, which is a function with the job of choosing between the different coroutines to execute in the main thread. In an asynchronous version of the weather-monitoring program instead of a \code{sleep} function each coroutine would include an \code{await} function. When a routine reaches an \code{await} command it is suspended for the given time period, and control is passed back to the event loop which then chooses which of the other suspended routines should be run. Importantly when it resumes the coroutine remembers where it stopped and continues from that point. The asynchronous style of writing code is ideally used with multiple coroutines that contain short functions with wait periods between when they need to be called again, and the pilot is a good example of this. The pilot runs a single-threaded event loop with multiple coroutines, which execute commands and then pause using the \texttt{await} command to allow other routines to be run.
-
-\begin{figure}[p]
-    \begin{center}
-        \includegraphics[width=0.89\linewidth]{images/async.pdf}
-    \end{center}
-    \caption[Multi-threaded vs asynchronous programming]{
-        A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolorbf{NavyBlue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolorbf{Green}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolorbf{Red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated for clarity, pilot tasks typically take less than a second and wait for between 10 and 60 seconds. \\
-        \textbf{Top}: The three tasks with different execution periods (solid blocks) and wait times (blank) are run in a multi-threaded program. Each task is being run in an independent parallel thread on its own core, even though they rarely overlap and it is uncommon for multiple cores to be in use at the same time. \\
-        \textbf{Bottom}: The same three tasks are run as coroutines in an asynchronous program. The event loop decides which coroutine to run on the single core, represented by the black arrows. This does lead to some coroutines being left waiting (lighter blocks) until the previous is finished, and as routines can be delayed it is not suitable for checks that need to happen at exact frequencies. However the overall core usage is much more efficient.
-    }\label{fig:async}
-\end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-\subsection{Check routines}
-\label{sec:checks}
-\begin{colsection}
-
-The coroutines within the pilot can be separated into two types: the check routines and the night marshal. Most of the coroutines are designed as monitors to regularly check different parts of the system, which fits well into the asynchronous model. These check routines are as follows:
-
-\begin{itemize}
-
-\item \texttt{check\_flags} is a routine that monitors the system flags, most notably those created by the conditions daemon (see \aref{sec:conditions}). If any of the conditions flags are bad then the dome daemon will enter lockdown and close the dome on its own (see \aref{sec:dome}), but the \texttt{check\_flags} routine will abort exposures, pause the pilot and ensure it is not resumed until the flag is cleared. When the pilot is paused the dome will close, the mount will park, and the night marshal (see below) will not trigger any more tasks. When conditions are clear again the pilot will reopen the dome and allow normal operations to be restored. The \texttt{check\_flags} routine also monitors the system mode and will pause the pilot if it is set to manual mode or exit if set to engineering mode (see \aref{sec:mode}).
-
-\item \texttt{check\_scheduler} is a routine that queries the scheduler daemon (see \aref{sec:scheduler}) every 10 seconds to find the best job to observe. If the pilot is currently observing the scheduler will either return the database ID of the current pointing, in which case the pilot will continue with the current job, or a new ID which will lead to the pilot interrupting the current job and moving to observe the new one. If the pilot is not currently observing (either it is the start of the night, resuming from being paused or the previous pointing has just completed) then it will begin observing whatever the scheduler returns. The details of how the scheduler decides which target to observe are given in \aref{sec:scheduler}. The ID returned is then passed to the observe (OBS) task run by the night marshal (see below).
-
-\item \texttt{check\_hardware} monitors the hardware daemons (see \aref{sec:hardware_control}), checking every 60 seconds that they are all reporting their expected statuses. It does this using the hardware monitor functions, which are described below. If an abnormal status is returned then the pilot will pause and a series of pre-set recovery commands generated by the monitor are executed in turn. While in recovery mode the pilot will check the monitors more frequently. If the commands work and the status returns to normal the pilot is resumed, but if the commands are exhausted without the problem being fixed then an alert is issued that the system requires human intervention and the pilot triggers an emergency shutdown.
-
-\item \texttt{check\_dome} is a backup to the primary hardware check routine. \texttt{check\_hardware} does monitor the dome along with the other hardware daemons, but \texttt{check\_dome} provides a simple, dedicated backup to ensure the dome is closed when it should be and to raise the alarm if it is not.
-
-\end{itemize}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-\subsection{Monitoring the hardware}
-\label{sec:monitors}
-\begin{colsection}
-
-One of the important tasks that the pilot is required to do is monitoring the status of the various system daemons, and therefore the hardware units they are connected to. If any problems were detected the easiest automated response would be to shutdown everything and send a message for a human to intervene. However this would be unnecessary in the case of small problems that could be easily fixed with one command, and it would be much better if the pilot could identify the problem and issue the command itself. The other benefit of this is a much faster reaction time than potentially needing to wake a human operator in the middle of the night, this is important both to minimise observing time lost and also potentially save the hardware by, for example, making sure the dome is closed in bad weather.
-
-Therefore a system was created to enable the pilot to attempt to respond and fix any errors that occur itself. This is done within the \code{check\_hardware} coroutine though a series of hardware monitor Python classes, one for each of the daemons (i.e. \code{DomeMonitor}, \code{CamMonitor} etc.). Each daemon has a set of recognised statuses, representing the current hardware state, and a set of valid modes which represent the expected state. The current status is fetched from the hardware daemon, the mode is set by the pilot, and the hardware checks consist of comparing the two to discover if there are any inconsistencies. For example, the dome daemon can have current statuses of \code{OPEN}, \code{CLOSED} or \code{MOVING}, and its valid modes are just \code{OPEN} and \code{CLOSED}. At the start of the night when the pilot starts the dome should be in \code{CLOSED} mode, and the pilot only switches it to \code{OPEN} mode when it is ready to open the dome. If when a check is carried out the dome is in \code{CLOSED} mode but the current status is reported as not \code{CLOSED} then that is a problem, and the hardware check function returns that it has detected an error with the dome. These checks can have timeouts associated with each status. For example if the dome is in \code{CLOSED} mode and is reported as \code{MOVING} that is not necessarily an error, as it might be currently closing. The hardware monitor stores the time since the hardware status last changed, so if the dome reports that it has been in the moving state for longer than it would take to close then that raises an error. This example used states specific to that hardware, but every daemon also has various other possible states and errors --- for example if the daemon is not running, or is running and not responding.
-
-When one of the monitor checks returns an error then the pilot will take action as described within the \code{check\_hardware} routine: pause night marshal (see below), stop any current tasks and send a Slack alert to record the error. But instead of stopping there, the monitor goes on to attempt to recover from the error and fix the problem. In the same way that a human observer would run though a series of commands in order to solve the problem, each monitor has a defined set of recovery steps to be run through depending on the error reported. Continuing with the previous example, if the dome reports \code{OPEN} when in \code{CLOSED} mode then the first recovery step is simple: execute the command \code{dome~open}. Each step then has a timeout value and an expected state if the recovery command worked. If after 10 seconds the status of the dome has not changed from \code{OPEN} to \code{MOVING}, then the error is persisting and more actions need to be taken. If however the dome daemon reports that the dome is moving then the error is not cleared immediately, only when the status finally reaches \code{CLOSED}. As mentioned previously, should a monitor run out of recovery steps then the pilot will send out an alert that there is nothing more that it can do and will attempt an emergency shutdown.
-
-Using the above method, the vast majority of hardware issues can be solved by the pilot without the need for human intervention. Every time the recovery steps are triggered a message is sent to Slack detailing the error and the steps required to fix it, so it is easy to then go back and examine why the error occurred and how to prevent it in the future.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-\subsection{The night marshal}
-\label{sec:night_marshal}
-\begin{colsection}
-
-The above check routines are support tasks for the primary routine, which is called the \texttt{night\_marshal}. Unlike the check routines the night marshal does not contain a loop, instead it runs through a list of tasks as the night progresses, based on the altitude of the Sun. Each task is contained in a separate Python observation script, which contains the commands to send to the hardware daemons. These scripts are self-contained programs which mean they can also be called independently, for example if the pilot is not running and a manual observer wants to run the autofocus routine they can use the command \texttt{obs\_script~autoFocus}. Each is run by spawning a new coroutine, meaning that while they are running the other routines such as the check tasks can continue. In the order they are performed during the night, the night marshal tasks are:
-
-\begin{enumerate}
-
-\item STARTUP, run immediately when the pilot starts. The \texttt{startup} script powers on the camera hardware, unparks the mount, homes the filter wheels and cools the CCDs down to their operating temperature of \SI{-20}{\celsius}. Once startup has finished the pilot will send a report of the current conditions to Slack (see \aref{fig:pilot_slack} below).
-
-\item DARKS, run after the system start up is complete before opening the dome. This executes the \texttt{takeBiasesAndDarks} script to take bias and dark frames at the start of the night. \todo{see commissioning}
-
-\item OPEN, run once the Sun reaches \SI{0}{\degree} altitude. It simply executes the \texttt{dome~open} command. If the pilot is paused due to bad weather or a hardware fault then the night marshal will wait and not open until the weather improves or fault is fixed. If it is never resolved then the night marshal will remain at this point until the end of the night and the shutdown timer runs out (see below).
-
-\item FLATS, run once the dome is open and the Sun reaches \SI{-1}{\degree}. This executes the \texttt{takeFlats} script, which moves the telescope into a position pointing away from the Sun and then takes flat fields in each filter, stepping in position between each exposure and automatically increasing the exposure time as the sky darkens. See \aref{sec:flats} for details of the flat field routine.
-
-\item FOCUS, run once the Sun reaches \SI{-11}{\degree}. This executes the \texttt{autoFocus} script, which finds the best focus position for each of the unit telescopes. See \aref{sec:autofocus} for details of the autofocus routine. If the routine fails for any reason the previous nights' focus positions are restored.
-
-\item OBS (short for ``observing''), begun once the Sun reaches \SI{-15}{\degree} and continuing for the majority of the night until the Sun reaches \SI{-15}{\degree} again in the morning. When a database ID is received from the scheduler via the \texttt{check\_schedule} routine the \texttt{observe} script is executed. The script queries the observation database (see \aref{sec:obsdb}) to get the coordinates and exposure settings for that pointing and then sends the commands to the mount and exposure queue daemons. Once a job is finished, either through completing all of its exposures or being interrupted, the entry in the database is updated and the routine starts observing the next job from the scheduler.
-
-\item FLATS is repeated once the Sun reaches \SI{-10}{\degree} in the morning, using the same script but this time increasing the exposure times as the sky brightens.
-
-\end{enumerate}
-
-Once the night marshal has completed all of its tasks it exits and triggers the \texttt{shutdown} script, which powers off the cameras, parks the mount and ensures the dome is closed. Once this is finished the pilot quits. In addition there is a separate night countdown timer within the pilot, which will trigger the shutdown if the Sun ever reaches \SI{0}{\degree}. Normally the night marshal will have finished and triggered the shutdown long before that point, but the countdown acts as a backup ensuring that if there is a problem with the night marshal the pilot will still trigger a shutdown.
-
-It is also possible for the pilot to trigger an emergency shutdown during the night. This triggers the same \texttt{shutdown} script observing script, with the only difference being that it ensures the dome is closed first. An emergency shutdown will be triggered by the pilot only in situations that it could not recover from without human intervention, notably if the \code{check\_hardware} routine reaches the end of a daemon's recovery steps without solving the problem.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
-\subsection{The day marshal}
-\label{sec:day_marshal}
-\begin{colsection}
-
-The day marshal is another script that provides a counterpart to the pilot (the mirror of the night marshal within the pilot). The \code{day\_marshal.py} script is run as a cron job like the pilot, but starts in the early morning rather than the late afternoon. The day marshal is a much simpler script, with only one key task --- to wait until dawn and then check that the dome is closed. In this sense it is yet another backup to the pilot's inbuilt \code{night\_countdown} timer, and as it is completely independent of the pilot it will run even if the pilot has crashed. Should it find that the dome is still open then the script will continuously try closing it, and send out human alerts that the system has failed. The day marshal will also send out a Slack report, again as a mirror of the report that the night marshal sends after startup, to confirm that the dome is closed.
 
 \end{colsection}
 
@@ -243,7 +116,11 @@ The day marshal is another script that provides a counterpart to the pilot (the 
 \label{sec:slack}
 \begin{colsection}
 
-Although the pilot is a completely robotic system it is still important that it doesn't operate completely unsupervised. As the \gls{goto} collaboration has adopted the Slack messaging client\footnote{\url{https://slack.com}} for instant messaging and collaboration it was decided that the telescope control system should send reports automatically to a dedicated Slack channel. This was implemented through the Python Slack \gls{api} module \pkg{slackclient}, and has been widely adopted throughout G-TeCS.\@ The two most complicated Slack messages are the startup report, sent by the night marshal within the pilot, and the morning report sent by the day marshal. The startup report includes a summary of the current condition flags, links to the site weather pages, the external webcam view and the latest IR satellite image over La Palma. The morning report includes the internal webcam view and plots showing what tiles the pilot observed last night and the current status of the all-sky survey. Examples of both are shown in \aref{fig:pilot_slack}. Several other functions send short reports, for example when the pilot starts and stops, when the dome opens and closes, if the system mode changes, or if a hardware error is being fixed. The pilot sends a majority of the messages to Slack but other daemons do as well, including the dome daemon when it enters lockdown (see \aref{sec:dome}) and the sentinel when it processes an interesting alert through GOTO-alert (see \aref{sec:sentinel} and \aref{sec:event_slack}).
+Although when in robotic mode GOTO is a completely autonomous system, it is still important that it doesn't operate completely unsupervised. As the GOTO collaboration has adopted the Slack messaging client\footnote{\url{https://slack.com}} for instant messaging and collaboration it was decided that the telescope control system should send reports automatically to a dedicated Slack channel. This was implemented through the Python Slack API module \pkg{slackclient}, and has been widely adopted throughout G-TeCS.\@
+
+The two most detailed Slack messages are the startup report, sent by the night marshal within the pilot (see \aref{sec:night_marshal}), and the morning report sent by the day marshal (see \aref{sec:day_marshal}). Examples of both are shown in \aref{fig:pilot_slack}. The startup report includes a summary of the current condition flags (see \aref{sec:conditions_flags}), links to the site weather pages, the external webcam view and the latest IR satellite image over La Palma. The morning report includes the internal webcam view and automatically-generated plots showing what the pilot observed last night and the current status of the all-sky survey.
+
+Several other functions within the pilot send short messages to Slack when called. For example, as shown in \aref{fig:pilot_slack} the pilot sends a message when the script starts and completes and when the dome opens or closes. A message will also be sent if the conditions turn bad, if the system mode changes, or if a hardware error is being fixed (see \aref{sec:monitors}). The pilot sends a majority of the messages to Slack but other daemons do as well, including the dome daemon when it enters lockdown (see \aref{sec:dome}) and the sentinel when it processes an interesting alert through GOTO-alert (see \aref{sec:sentinel} and \aref{sec:event_slack}).
 
 \begin{figure}[p]
     \begin{center}
@@ -263,6 +140,131 @@ Although the pilot is a completely robotic system it is still important that it 
 % ########################################
 
 \newpage
+\section{The pilot}
+\label{sec:pilot}
+\begin{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{colsection}
+
+The pilot is a Python script, \code{pilot.py}, not a daemon. It is run once each night; started automatically at 5pm by the Linux cron utility, it runs through to the morning, quits, and then starts again in the afternoon. This happens every day, unless the system is in engineering mode.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Asynchronous code}
+\label{sec:async}
+\begin{colsection}
+
+The pilot is written as an \textit{asynchronous} program, using the standard Python module AsyncIO (\pkg{asyncio}). An asynchronous program is one where its code runs in separate parallel routines, which are switched between as required, and should not be confused with programs that are written utilising multiple processes or threads that run in parallel. See \aref{fig:async} for a graphical comparison between the two methods.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.89\linewidth]{images/async.pdf}
+    \end{center}
+    \caption[Multi-threaded vs asynchronous programming]{
+        A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolorbf{NavyBlue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolorbf{Green}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolorbf{Red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated, typically pilot tasks wait for between 10--\SI{60}{\second}. \\
+        \textbf{Top}: The three tasks with different execution periods (solid blocks) and wait times (blank) are run in a multi-threaded program. Each task is being run in an independent parallel thread on its own core, even though they rarely overlap and it is uncommon for multiple cores to be in use at the same time. \\
+        \textbf{Bottom}: The same three tasks are run as coroutines in an asynchronous program. The event loop decides which coroutine to run on the single core, represented by the black arrows. This does lead to some coroutines being left waiting (lighter blocks) until the previous is finished, and as routines can be delayed it is not suitable for checks that need to happen at exact frequencies. However the overall core usage is much more efficient.
+    }\label{fig:async}
+\end{figure}
+
+An example of a simple task might be monitoring a particular source of data, like a weather station. It would contain a function to download the current weather information from the external mast, and then a \code{sleep} command to wait for 10 seconds, which when put inside a loop will ensure that the weather information is queried and updated every 10 seconds. If this loop was called in a multi-threaded program then the thread will be held up for a majority of the time not doing anything between checks. If there were multiple threads, for example checking different masts, then there could be no coordination between them and the whole program would end up being very inefficient. There are also other issues with multi-threaded programs, including input/output and sharing data between threads.
+
+Asynchronous code contains multiple parallel \textit{coroutines}. The program itself runs an \textit{event loop}, which is a function with the job of choosing between the different coroutines to execute in the main thread. In an asynchronous version of the weather-monitoring program instead of a \code{sleep} function each coroutine would include an \code{await} function. When a routine reaches an \code{await} command it is suspended for the given time period, and control is passed back to the event loop which then chooses which of the other suspended routines should be run. Importantly when it resumes the coroutine remembers where it stopped and continues from that point. The asynchronous style of writing code is ideally used with multiple coroutines that contain short functions with wait periods between when they need to be called again, and the pilot is a good example of this. The pilot runs a single-threaded event loop with multiple coroutines, which execute commands and then pause using the \texttt{await} command to allow other routines to be run.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\subsection{Check routines}
+\label{sec:checks}
+\begin{colsection}
+
+The coroutines within the pilot can be separated into two types: the check routines and the night marshal. Most of the coroutines are designed as monitors to regularly check different parts of the system, which fits well into the asynchronous model. These check routines are as follows:
+
+\begin{itemize}
+
+\item \texttt{check\_flags} is a routine that monitors the system flags, most notably those created by the conditions daemon (see \aref{sec:conditions}). If any of the conditions flags are bad then the dome daemon will enter lockdown and close the dome on its own (see \aref{sec:dome}), but the \texttt{check\_flags} routine will abort exposures, pause the pilot and ensure it is not resumed until the flag is cleared. When the pilot is paused the dome will close, the mount will park, and the night marshal (see below) will not trigger any more tasks. When conditions are clear again the pilot will reopen the dome and allow normal operations to be restored. The \texttt{check\_flags} routine also monitors the system mode and will pause the pilot if it is set to manual mode or exit if set to engineering mode (see \aref{sec:mode}).
+
+\item \texttt{check\_scheduler} is a routine that queries the scheduler daemon (see \aref{sec:scheduler}) every 10 seconds to find the best job to observe. If the pilot is currently observing the scheduler will either return the database ID of the current pointing, in which case the pilot will continue with the current job, or a new ID which will lead to the pilot interrupting the current job and moving to observe the new one. If the pilot is not currently observing (either it is the start of the night, resuming from being paused or the previous pointing has just completed) then it will begin observing whatever the scheduler returns. The details of how the scheduler decides which target to observe are given in \aref{sec:scheduler}. The ID returned is then passed to the observe (OBS) task run by the night marshal (see below).
+
+\item \texttt{check\_hardware} monitors the hardware daemons (see \aref{sec:hardware_control}), checking every 60 seconds that they are all reporting their expected statuses. It does this using the hardware monitor functions, which are described in \aref{sec:monitors} below. If an abnormal status is returned then the pilot will pause and a series of pre-set recovery commands generated by the monitor are executed in turn. While in recovery mode the pilot will check the monitors more frequently. If the commands work and the status returns to normal the pilot is resumed, but if the commands are exhausted without the problem being fixed then an alert is issued that the system requires human intervention and the pilot triggers an emergency shutdown.
+
+\item \texttt{check\_dome} is a backup to the primary hardware check routine. \texttt{check\_hardware} does monitor the dome along with the other hardware daemons, but \texttt{check\_dome} provides a simple, dedicated backup to ensure the dome is closed when it should be and to raise the alarm if it is not.
+
+\end{itemize}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Monitoring the hardware}
+\label{sec:monitors}
+\begin{colsection}
+
+One of the important tasks that the pilot is required to do is monitoring the status of the various system daemons, and therefore the hardware units they are connected to. If any problems were detected the easiest automated response would be to shutdown everything and send a message for a human to intervene. However this would be unnecessary in the case of small problems that could be easily fixed with one command, and it would be much better if the pilot could identify the problem and issue the command itself. The other benefit of this is a much faster reaction time than potentially needing to wake a human operator in the middle of the night, this is important both to minimise observing time lost and also potentially save the hardware by, for example, making sure the dome is closed in bad weather.
+
+Therefore a system was created to enable the pilot to attempt to respond and fix any errors that occur itself. This is done within the \code{check\_hardware} coroutine though a series of hardware monitor Python classes, one for each of the daemons (i.e. \code{DomeMonitor}, \code{CamMonitor} etc.). Each daemon has a set of recognised statuses, representing the current hardware state, and a set of valid modes which represent the expected state. The current status is fetched from the hardware daemon, the mode is set by the pilot, and the hardware checks consist of comparing the two to discover if there are any inconsistencies. For example, the dome daemon can have current statuses of \code{OPEN}, \code{CLOSED} or \code{MOVING}, and its valid modes are just \code{OPEN} and \code{CLOSED}. At the start of the night when the pilot starts the dome should be in \code{CLOSED} mode, and the pilot only switches it to \code{OPEN} mode when it is ready to open the dome. If when a check is carried out the dome is in \code{CLOSED} mode but the current status is reported as not \code{CLOSED} then that is a problem, and the hardware check function returns that it has detected an error with the dome. These checks can have timeouts associated with each status. For example if the dome is in \code{CLOSED} mode and is reported as \code{MOVING} that is not necessarily an error, as it might be currently closing. The hardware monitor stores the time since the hardware status last changed, so if the dome reports that it has been in the moving state for longer than it would take to close then that raises an error. This example used states specific to that hardware, but every daemon also has various other possible states and errors --- for example if the daemon is not running, or is running and not responding.
+
+When one of the monitor checks returns an error then the pilot will take action as described within the \code{check\_hardware} routine: pause night marshal (see below), stop any current tasks and send a Slack alert to record the error. But instead of stopping there, the monitor goes on to attempt to recover from the error and fix the problem. In the same way that a human observer would run though a series of commands in order to solve the problem, each monitor has a defined set of recovery steps to be run through depending on the error reported. Continuing with the previous example, if the dome reports \code{OPEN} when in \code{CLOSED} mode then the first recovery step is simple: execute the command \code{dome~open}. Each step then has a timeout value and an expected state if the recovery command worked. If after 10 seconds the status of the dome has not changed from \code{OPEN} to \code{MOVING}, then the error is persisting and more actions need to be taken. If however the dome daemon reports that the dome is moving then the error is not cleared immediately, only when the status finally reaches \code{CLOSED}. As mentioned previously, should a monitor run out of recovery steps then the pilot will send out an alert that there is nothing more that it can do and will attempt an emergency shutdown.
+
+Using the above method, the vast majority of hardware issues can be solved by the pilot without the need for human intervention. Every time the recovery steps are triggered a message is sent to Slack (see \aref{sec:slack}) the error and the steps required to fix it, so it is easy to then go back and examine why the error occurred and how to prevent it in the future.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\subsection{The night marshal}
+\label{sec:night_marshal}
+\begin{colsection}
+
+The above check routines are support tasks for the primary routine, which is called the \texttt{night\_marshal}. Unlike the check routines the night marshal does not contain a loop, instead it runs through a list of tasks as the night progresses, based on the altitude of the Sun. Each task is contained in a separate Python observation script, which contains the commands to send to the hardware daemons (see \aref{sec:scripts}). Each is run by spawning a new coroutine, meaning that while they are running the other routines such as the check tasks can continue. In the order they are performed during the night, the night marshal tasks are:
+
+\begin{enumerate}
+
+\item STARTUP, run immediately when the pilot starts. The \texttt{startup} script powers on the camera hardware, unparks the mount, homes the filter wheels and cools the CCDs down to their operating temperature of \SI{-20}{\celsius}. Once startup has finished the pilot will send a report of the current conditions to Slack (see \aref{fig:pilot_slack} below).
+
+\item DARKS, run after the system start up is complete before opening the dome. This executes the \texttt{takeBiasesAndDarks} script to take bias and dark frames at the start of the night.
+
+\item OPEN, run once the Sun reaches \SI{0}{\degree} altitude. It simply executes the \texttt{dome~open} command. If the pilot is paused due to bad weather or a hardware fault then the night marshal will wait and not open until the weather improves or fault is fixed. If it is never resolved then the night marshal will remain at this point until the end of the night and the shutdown timer runs out (see below).
+
+\item FLATS, run once the dome is open and the Sun reaches \SI{-1}{\degree}. This executes the \texttt{takeFlats} script, which moves the telescope into a position pointing away from the Sun and then takes flat fields in each filter, stepping in position between each exposure and automatically increasing the exposure time as the sky darkens. See \aref{sec:flats} for details of the flat field routine.
+
+\item FOCUS, run once the Sun reaches \SI{-11}{\degree}. This executes the \texttt{autoFocus} script, which finds the best focus position for each of the unit telescopes. See \aref{sec:autofocus} for details of the autofocus routine. If the routine fails for any reason the previous nights' focus positions are restored.
+
+\item OBS (short for ``observing''), begun once the Sun reaches \SI{-15}{\degree} and continuing for the majority of the night until the Sun reaches \SI{-15}{\degree} again in the morning. When a database ID is received from the scheduler via the \texttt{check\_schedule} routine the \texttt{observe} script is executed. The script queries the observation database (see \aref{sec:obsdb}) to get the coordinates and exposure settings for that pointing and then sends the commands to the mount and exposure queue daemons. Once a job is finished, either through completing all of its exposures or being interrupted, the entry in the database is updated and the routine starts observing the next job from the scheduler.
+
+\item FLATS is repeated once the Sun reaches \SI{-10}{\degree} in the morning, using the same script but this time increasing the exposure times as the sky brightens.
+
+\end{enumerate}
+
+Once the night marshal has completed all of its tasks it exits and triggers the \texttt{shutdown} script, which powers off the cameras, parks the mount and ensures the dome is closed. Once this is finished the pilot quits. In addition there is a separate night countdown timer within the pilot, which will trigger the shutdown if the Sun ever reaches \SI{0}{\degree}. Normally the night marshal will have finished and triggered the shutdown long before that point, but the countdown acts as a backup ensuring that if there is a problem with the night marshal the pilot will still trigger a shutdown.
+
+\newpage
+
+It is also possible for the pilot to trigger an emergency shutdown during the night. This triggers the same \texttt{shutdown} script observing script, with the only difference being that it ensures the dome is closed first. An emergency shutdown will be triggered by the pilot only in situations that it could not recover from without human intervention. Notably, this occurs if the hardware monitors called by the \code{check\_hardware} routine reach the end of a daemon's recovery steps without fixing the problem.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\subsection{The day marshal}
+\label{sec:day_marshal}
+\begin{colsection}
+
+The day marshal is completely separate script (\code{day\_marshal.py}) which provides a counterpart and backup to the pilot (the name is the mirror of the night marshal). The script is run as a cron job like the pilot, but starts in the early morning rather than the late afternoon. The day marshal is a much simpler script, with only one key task --- to wait until dawn and then check that the dome is closed. In this sense it is specifically a backup for the pilot's inbuilt night countdown timer, and as it is completely independent of the pilot it will run even if the pilot script has frozen or crashed.
+
+If the day marshal finds that the dome is still open when it runs it will send out Slack alerts that the system has failed, and then try closing it itself by sending commands to the dome daemon. So far this has not occurred, aside from deliberately during on-site tests. If all is well the day marshal will send out a Slack report as shown in \aref{fig:pilot_slack}, again as a mirror of the report that the night marshal sends after startup. This report will confirm that the dome is closed, and also contains some simple plots showing the targets the pilot observed last night.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\end{colsection}
+
+% ########################################
+
+\newpage
 \section{Conditions monitoring}
 \label{sec:conditions}
 \begin{colsection}
@@ -271,18 +273,7 @@ Although the pilot is a completely robotic system it is still important that it 
 
 \begin{colsection}
 
-\todo{Monitoring the conditions is important}
-\todo{Maybe a map of the site? Brief overview of weather in La Palma?}
-
-\begin{figure}[t]
-    \begin{center}
-        \includegraphics[width=0.3\textwidth]{images/conditions_photo.jpg}
-        \includegraphics[width=0.5\textwidth]{images/orm_east.png}
-    \end{center}
-    \caption[\todo{todo}]{
-        \todo{todo}.
-    }\label{fig:conditions}
-\end{figure}
+Perhaps the most important of the autonomous systems is monitoring the on-site conditions. The weather at the site on La Palma is typically very good, however storms can affect the mountaintop observatory especially in the winter months (see \aref{sec:challenges}). It is vital that the dome is closed whenever the weather turns bad, or in any other abnormal circumstances. For example if the site loses power or internet connection it is better to stop observing and close the dome in case they are not restored quickly. The system needs to be trusted to close in an emergency before it is able to run completely without human supervision.
 
 \end{colsection}
 
@@ -291,16 +282,30 @@ Although the pilot is a completely robotic system it is still important that it 
 \label{sec:conditions_daemon}
 \begin{colsection}
 
-The conditions daemon is a support daemon that runs on the central observatory server in the SuperWASP building on La Palma (see \aref{fig:flow}). It takes in readings from the three local weather stations next to the GOTO dome on La Palma, as well as other sources such as internal sensors, every 10 seconds. The daemon processes these inputs into a series of output flags, which have a value of \code{0} (good), \code{1} (bad) or \code{2} (error). If any of the flags are marked as not good (i.e.\ the sum of all flags is $>0$) then the overall conditions are bad: the dome will enter lockdown and automatically close if it is open (see \aref{sec:dome}) and the pilot \code{check\_flags} routine will trigger the pilot to pause observations (see \aref{sec:pilot}). The conditions daemon is run on the central server because it deals with site-wide values, so when the second GOTO telescope on La Palma is built it is envisioned that they will both share the same conditions daemon (see \aref{sec:gtecs_multisite}).
+The conditions daemon is a support daemon that runs on the central observatory server in the SuperWASP building on La Palma along side the observation database (see \aref{fig:flow}). The daemon is run on the central server because it deals with site-wide values, so when the second GOTO telescope on La Palma is built it is envisioned that they will both share the same conditions daemon (see \aref{sec:gtecs_future}).
+
+The daemon takes in readings from the three local weather stations next to the GOTO dome on La Palma (shown in \aref{fig:conditions}) every 10 seconds, as well as other sources such as internal sensors. The daemon processes these inputs into a series of output flags, which have a value of \code{0} (good), \code{1} (bad) or \code{2} (error). If any of the flags are marked as not good (i.e.\ the sum of all flags is $>0$) then the overall conditions are bad. The output flags are monitored by the the dome daemon and the pilot, if the conditions are bad the dome will enter lockdown and automatically close if it is open (see \aref{sec:dome}) and the pilot \code{check\_flags} routine will trigger the pilot to pause observations (see \aref{sec:pilot}).
+
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[height=0.5\textwidth]{images/orm_warwick.pdf}
+        \includegraphics[height=0.5\textwidth]{images/conditions_photo.jpg}
+    \end{center}
+    \caption[Locations of the three weather masts on La Palma]{
+        On the left the locations of the three local weather masts on La Palma are marked by the \textcolorbf{Red}{red} stars (see \aref{fig:orm} for the context of the site). There are three masts around GOTO:\@ one next to the GOTO platform (shown on the right), one on the SuperWASP shed and a third on the nitrogen plant next to the W1m.
+    }\label{fig:conditions}
+\end{figure}
 
 \end{colsection}
+
+\newpage
 
 % ~~~~~~~~~~~~~~~~~~~~
 \subsection{Conditions flags}
 \label{sec:conditions_flags}
 \begin{colsection}
 
-Each conditions flag has a limit below or above which the flag will turn from good to bad. For categories with multiple sources (for example there are three local weather stations, located at GOTO, SuperWASP and W1m, and each gives an independent external temperature reading) then the limit will be applied to each and if \textit{any} are found to be bad then the flag is set. If follows therefore that \textit{all} the conditions sources must be good for the flag to be set to good. Each category also has two parameters, the bad delay and the good delay. These are the time the conditions daemon waits between an input going bad/good and setting the flag accordingly, which has the effect of smoothing out any sudden spikes in a value and ensures the dome will not be opening and closing too often.
+Each conditions flag has a limit below or above which the flag will turn from good to bad. For categories with multiple sources (for example the three local weather stations each give an independent external temperature reading) then the limit will be applied to each and if \textit{any} are found to be bad then the flag is set. If follows therefore that \textit{all} the conditions sources must be good for the flag to be set to good. Each category also has two parameters, the bad delay and the good delay. These are the time the conditions daemon waits between an input going bad/good and setting the flag accordingly, which has the effect of smoothing out any sudden spikes in a value and ensures the dome will not be opening and closing too often.
 
 The conditions flags can be grouped into three categories, divided according to severity. The latest version of G-TeCS contains 13 flags, listed in \aref{tab:conditions_flags}. An explanation of the different categories, and the flags within each, is given below.
 
@@ -312,12 +317,12 @@ The conditions flags can be grouped into three categories, divided according to 
             \code{dark}         & Sun altitude
                                 & > \SI{0}{\degree}
                                 & < \SI{0}{\degree}
-                                & information
+                                & info
             \\[20pt]
             \code{clouds}       & IR opacity
                                 & > 40\%
                                 & < 40\%
-                                & information
+                                & info
             \\[20pt]
             \code{rain}         & Rain detectors
                                 & \makecell{\code{True} \\ for \SI{30}{\second}}
@@ -422,6 +427,8 @@ The final category are the `critical' flags, for more serious situations that mi
     \item \code{hatch}: A critical flag to detect if the access hatch into the dome has been left open. This flag is unique in that is is only valid in robotic mode (see \aref{sec:mode}); when in manual or engineering mode it is assumed that the hatch being opened is a result of someone operating the telescope. But when the system is observing robotically the hatch being open is a problem, as there is no way to close it remotely and in bad weather damage could be caused to the telescope.
 \end{itemize}
 
+The output of the conditions daemon is saved in a datafile, along with a timestamp. When checking the conditions it is this file that is read, and the dome daemon and the pilot monitor the file for changes instead of querying the conditions daemon directly. The reason for this is to prevent any errors if the conditions daemon freezes or crashes. When checking the file the timestamp can be compared to the current time, and if it is older than a certain parameter (2 minutes by default) then something must have happened to the conditions daemon and the flags are not reliable. A new pseudo-flag is then created: the \code{age} flag. This flag is normally 0 but is set to 1 if the conditions are too old or 2 if there was an error reading the file. The \code{age} flag is then treated identically to the other 11 non-info flags when checking the conditions: if the sum of all the flags is greater than 0 then the conditions are considered bad. Note that the \code{age} flag is included in the startup report sent to Slack in \aref{fig:pilot_slack} alongside the others given in \aref{tab:conditions_flags}.
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -439,7 +446,7 @@ The final category are the `critical' flags, for more serious situations that mi
 
 \begin{colsection}
 
-\todo{Needs a short intro}
+In order for the pilot to function during the night it needs to know what targets to observe. This section describes the architecture within G-TeCS to allow targets to be defined, selected and passed to the pilot, while the details of the scheduling algorithms are discussed in more detail in \aref{chap:scheduling}.
 
 \end{colsection}
 
@@ -449,30 +456,30 @@ The final category are the `critical' flags, for more serious situations that mi
 % Time Blocks??
 \begin{colsection}
 
-The scheduling system for \gls{gtecs} is based around a database known as the observation database or ``ObsDB''. This database is located on the central observatory server hosted by SuperWASP, which not only is a faster machine than the control computer in the dome but in the future will allow a single database to be shared between mounts (see \aref{sec:gtecs_multisite}). The database is implemented using the MariaDB database management system\footnote{\url{https://mariadb.com/}}, an open-source fork of the established MySQL system, and is queried and modified using \gls{sql} commands. In order to interact easily with the database within G-TeCS code a separate Python module, ObsDB (\pkg{obsdb}), was written as an \gls{orm} package utilising the Python \pkg{sqlalchemy} module\footnote{\url{https://sqlalchemy.org/}}.
+The scheduling system for G-TeCS is based around a database known as the observation database or ``ObsDB''. This database is located on the central observatory server hosted by SuperWASP, which not only is a faster machine than the control computer in the dome but in the future will allow a single database to be shared between mounts (see \aref{sec:multi_tel} and \aref{sec:gtecs_future}). The database is implemented using the MariaDB database management system\footnote{\url{https://mariadb.com/}}, an open-source fork of the established MySQL system, and is queried and modified using \glsfirst{sql} commands. In order to interact easily with the database within G-TeCS code a separate Python module, ObsDB (\pkg{obsdb}), was written as an \glsfirst{orm} package utilising the Python SQLAlchemy module (\pkg{sqlalchemy})\footnote{\url{https://sqlalchemy.org/}}.
 
 The primary table in the database is for individual \textit{pointings}. These each represent a single visit of the telescope, with defined RA and Dec coordinates and a valid time range for it to be observed within, as well as other observing constraints. Each pointing has a status value which is either \code{pending}, \code{running}, \code{completed} or some other terminal status (\code{aborted}, \code{interrupted}, \code{expired} or \code{deleted}). Ideally a pointing passes through three stages: it is created as \code{pending}, the scheduler selects it and the pilot marks it as \code{running}, then if all is well when it is finished it is marked as \code{completed}. If it stays in the database and never gets observed it will eventually pass its defined stop time (if it has one) and will be marked as \code{expired} by the database caretaker script. If the pointing is in the middle of being observed but is then cancelled before being completed it will be marked either \code{interrupted} (if the scheduler decided to observe another pointing of a higher priority) or \code{aborted} (in the case of a problem such as having to close for bad weather). The \code{deleted} status is reserved for pointings being removed from the queue before being observed, such as updated pointings being inserted by the sentinel and overwriting the previous ones (see \aref{sec:event_insert}). A representation of the relationship between the pointing statuses and how they progress is shown in \aref{fig:pointings}.
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.9\linewidth]{images/pointings_flowchart.pdf} %\todo{recolour}
+        \includegraphics[width=\linewidth]{images/pointings_flowchart.pdf}
     \end{center}
     \caption[Pointing status progression flowchart]{
         A flowchart showing how the status of an entry in the pointings table can change.
     }\label{fig:pointings}
 \end{figure}
 
-\clearpage
+As well as the target information (RA, Dec, name) a pointing entry contains constraints on when they can be observed. Each pointing can have set start and stop times; the scheduler will only select pointings where the current time is within their valid range (and once the stop time has passed they will be marked as \code{expired}). Limits can also be set on minimum target altitude, minimum distance from the Moon, maximum Moon brightness (in terms of Bright/Grey/Dark time) and maximum Sun altitude. These constraints are applied by the scheduler to each pointing when deciding which to observe, and unless they all pass the pointing is deemed invalid. When created, a pointing is also assigned a rank, usually from 0--9, as well as a True/False flag marking it as a time-critical \glsfirst{too}. These are used when calculating the priority of the pointing, to compare with others in order to determine which is the highest priority to observe (see \aref{sec:rank}).
 
-As well as the target information (RA, Dec, name) a pointing entry contains constraints on when they can be observed. Each pointing can have set start and stop times; the scheduler will only select pointings where the current time is within their valid range (and once the stop time has passed they will be marked as \code{expired}). Limits can also be set on minimum target altitude, minimum distance from the Moon, maximum Moon brightness (in terms of Bright/Grey/Dark time) and maximum Sun altitude. These constraints are applied by the scheduler to each pointing when deciding which to observe, and unless they all pass the pointing is deemed invalid (see \aref{sec:scheduler}). When created, a pointing is also assigned a rank, usually from 0--9, as well as a True/False flag marking it as a time-critical Target of Opportunity (ToO). These are used when calculating the priority of the pointing, to compare with others in order to determine which is the highest priority to observe.
+The commands to be executed once the telescope has slewed to a pointing are stored in a separate \code{exposure\_sets} table. The table has columns for the number of exposures to take, the exposure time and the filter to use; so for example an observation requiring three \SI{60}{\second} exposures in the \textit{L} filter only requires one entry in the table. When the pointing is observed the pilot will read the set information and issue the appropriate commands to the exposure queue daemon (see \aref{sec:exq}). Each exposure will then be added to the queue and observed in turn.
 
-The commands to be executed once the telescope has slewed to a pointing are stored in a separate \code{exposure\_sets} table. An exposure set defines what commands the pilot will give to the exposure queue daemon (see \aref{sec:exq}). The table has columns for the number of exposures to take, the exposure time and the filter to use. For example an observation requiring three \SI{60}{\second} exposures in the \textit{L} filter followed by one each in the \textit{R}, \textit{G} and \textit{B} filters would require four entries in the table: each with exposure time of \SI{60}{\second}, the first with number of exposures as 3 and filter as \textit{L} and the rest with number of exposures as 1 and the individual filters. When the pointing is observed by the pilot will add the linked exposure sets to the queue, and each will then be observed in turn.
+\newpage
 
-Each entry in the pointings table can only be observed once. For observing a target more than once there also exists the \code{mpointings} table, which contains information to dynamically re-generate pointings for a given target. An mpointing entry is defined with three key values: the requested number of observations, the time each should be valid in the queue and the time to wait between each observation. Each time the database caretaker script is run it looks for any entries in the mpointing table that still have observations to do and it creates another entry in the pointings table for that target. Setting the time values allows a lot of control over when pointings can be valid, for example scheduling follow-up observations a set number of hours or days after an initial pointing is observed.
+Each entry in the pointings table can only be observed once, after which it is marked as \code{completed} and is therefore excluded from future scheduler checks (which only consider \code{pending} pointings). For observing a target more than once there also exists the \code{mpointings} table, which contains information to dynamically re-generate pointings for a given target. An mpointing entry is defined with three key values: the requested number of observations, the time each should be valid in the queue and the time to wait between each observation. Each time the database caretaker script is run it looks for any entries in the mpointing table that still have observations to do and it creates another entry in the pointings table for that target. Setting the time values allows a lot of control over when pointings can be valid, for example scheduling follow-up observations a set number of hours or days after an initial pointing is observed.
 
-The three tables described above (\code{pointings}, \code{exposure\_sets} and \code{mpointings}) are the core tables required for observation scheduling. However there are other tables defined in the database which are used to group pointings together and relate to GOTO's purpose as a survey instrument. As described in more detail in \aref{sec:gototile}, GOTO observes the sky divided into a fixed grid of individual tiles. The database therefore also contains a \code{grids} table and a \code{grid\_tiles} table, which define the current grid based on the field of view of the telescope. Mapping pointings to the grid is achieved through two more tables, \code{surveys} and \code{survey\_tiles}. A \textit{survey} in this context is a group of tiles that are being observed for a specific reason, one example are the pointings comprising the all-sky survey that \gls{goto} carries out every night. Events that are processed by the alert sentinel (see \aref{sec:sentinel}) might have a skymap that covers multiple tiles, and therefore the set of pointings required to cover it forms a survey within the database. Each pointing within the survey is linked to a survey tile, and each survey tile is linked to a grid tile of the current grid. The additional field added by the survey tile is a `weighting' column, which allows tiles within a survey to be weighted relative to each other. In the all-sky survey each tile is weighted equally, but in a survey coming from an event skymap the tiles will be weighted by the contained probability within that tile. The scheduler takes this weighting into account when deciding which pointing to observe (see \aref{sec:scheduler}, and \aref{sec:scheduler_sims} for more details).
+The three tables described above (\code{pointings}, \code{exposure\_sets} and \code{mpointings}) are the core tables required for observation scheduling. However there are other tables defined in the database which are used to group pointings together and relate to GOTO's purpose as a survey instrument. As described in more detail in \aref{sec:gototile}, GOTO observes the sky divided into a fixed grid of individual tiles. The database therefore also contains a \code{grids} table and a \code{grid\_tiles} table, which define the current grid based on the field of view of the telescope. Mapping pointings to the grid is achieved through two more tables, \code{surveys} and \code{survey\_tiles}. A \textit{survey} in this context is a group of tiles that are being observed for a specific reason, one example are the pointings comprising the all-sky survey that GOTO carries out every night. Events that are processed by the alert sentinel might have a skymap that covers multiple tiles, and therefore the set of pointings required to cover it forms a survey within the database (the details of adding event pointings to the database are described in \aref{sec:event_insert}). Each pointing within the survey is linked to a survey tile, and each survey tile is linked to a grid tile of the current grid. The additional field added by the survey tile is a `weighting' column, which allows tiles within a survey to be weighted relative to each other. In the all-sky survey each tile is weighted equally, but in a survey coming from an event skymap the tiles will be weighted by the contained probability within that tile. The scheduler takes this weighting into account when deciding which pointing to observe (see \aref{sec:scheduler_tiebreaker}).
 
-There are two additional tables that are used to contain supporting information: the \code{events} and \code{users} tables. The \code{events} table contains fields such as the event type and source, and is filled by the sentinel when events are processed (see \aref{sec:sentinel}). The \code{users} table connects each pointing to the user who added it to the database. At the moment this is unused, and each pointing is linked to the single generic ``GOTO'' user, but in the future individuals might wish to insert and keep track of their own targets.
+There are two additional tables that are used to contain supporting information: the \code{events} and \code{users} tables. The \code{events} table contains fields such as the event type and source, and is filled by the sentinel when events are processed (see \aref{sec:event_insert}). The \code{users} table connects each pointing to the user who added it to the database. At the moment this is unused, and each pointing is linked to the single generic ``GOTO'' user, but in the future individuals might wish to insert and keep track of their own targets.
 
 \end{colsection}
 
@@ -482,11 +489,13 @@ There are two additional tables that are used to contain supporting information:
 \label{sec:sentinel}
 \begin{colsection}
 
-In order for targets to be observed by GOTO in robotic mode they must have entries defined in the \code{pointings} table in the observation database (see \aref{sec:obsdb}). These can be added manually, but for automated observation they have to be inserted whenever an alert is detected. This is the job of the sentinel daemon, as shown in \aref{fig:flow}.
+In order for targets to be observed by the pilot they must have entries defined in the \code{pointings} table in the observation database. These can be added manually, but for automated follow-up observations they have to be inserted whenever an alert is received. As shown in \aref{fig:flow} this is the job of the sentinel daemon.
 
-In addition the normal control loop, the sentinel daemon includes an independent alert listener loop that is continuously monitoring the transient alert stream outputted by the 4 Pi Sky event broker \citep{4pisky}, using functions from the PyGCN (\pkg{pygcn}) Python package\footnote{\url{https://pypi.org/project/pygcn/}}. Should the link to the 4 Pi Sky server fail then the daemon will automatically attempt to re-establish the connection every few seconds until it is restored. Alerts come in to the listener in the form of VOEvents \citep{voevent}, and pending alerts are appended to an internal queue before being processed using the event handler defined in the Python module GOTO-alert (\pkg{gotoalert}, see \aref{sec:gotoalert}). The sentinel also has an additional \code{ingest} command which can be used to manually insert test events or bypass the alert listener. The details of how alerts are processed are described in \aref{chap:alerts}, which includes details on how VOEvents are processed, mapped onto the GOTO all-sky grid and added to the database.
+In addition the normal control loop, the sentinel daemon includes an independent alert listener loop that is continuously monitoring the transient alert stream outputted by the 4 Pi Sky event broker \citep{4pisky}, using functions from the PyGCN Python module (\pkg{pygcn})\footnote{\url{https://pypi.org/project/pygcn/}}. Should the link to the server fail the daemon will automatically attempt to re-establish the connection every few seconds until it is restored. Alerts come in to the listener and are are appended to an internal queue, and the sentinel also has an additional \code{ingest} command which can be used to manually insert test events or bypass the alert listener. Alerts are then removed from the queue and processed using the handler from the Python module GOTO-alert. The details of how alerts are processed are described in \aref{chap:alerts}, which includes how events are defined, processed, mapped onto the all-sky grid and ultimately added to the database.
 
-The alert listener is a key part of the automated system but was not initially planned to be assigned to its own independent daemon. The \gls{pt5m} system uses the Comet software \citep{comet} in a separate script independent of any daemons. The advantages to including a dedicated alert listener daemon in G-TeCS, which became known as the sentinel, come from it being integrated into the pilot monitoring systems like the other daemons (described in \aref{sec:pilot}). Should the sentinel daemon crash or not respond to checks the pilot will notice and restart it like any other daemon.
+\newpage
+
+The alert listener is a key part of the automated system but was not initially planned to be assigned to its own independent daemon. The \gls{pt5m} system uses the Comet software \citep{comet} in a separate script independent of any daemons. The advantages to including a dedicated alert listener daemon in G-TeCS, which became known as the sentinel, come from it being integrated into the pilot monitoring systems like the other daemons (described in \aref{sec:monitors}). Should the sentinel daemon crash or not respond to checks the pilot will notice and restart it like any other daemon.
 
 \end{colsection}
 
@@ -496,13 +505,11 @@ The alert listener is a key part of the automated system but was not initially p
 \label{sec:scheduler}
 \begin{colsection}
 
-\todo{Need to link to new \aref{chap:scheduling}}
+All entries in the observing database \code{pointings} table with status ``\code{pending}'' form the current queue, and the task of selecting which of these pointings the system should observe is the role of the scheduler. Within G-TeCS the \emph{scheduler} can refer to two linked concepts: the scheduling functions or the scheduler daemon itself (which is often just called ``the'' scheduler, like the sentinel). This section describes how the scheduler daemon is implemented, for how the scheduling functions chose which pointing to observe see \aref{chap:scheduling}.
 
-In order for a target to be observed by the telescope in robotic mode an appropriate pointing must be added to the observation database (or an ``mpointing'' entry that generates pointings, as described in \aref{sec:obsdb}). These can be added manually if desired, but in most cases they are either defined once when the database is created (for the constant all-sky survey tiles) or added by the sentinel daemon when a transient alert is received. All entries in the \code{pointings} table with status ``\code{pending}'' form the current \textit{queue}, and the task of selecting which of these pointings the system should observe is the role of the scheduler.
+In the \gls{pt5m} system there is no independent scheduler daemon. When the pilot needs to know what to observe it simply calls the scheduling functions to read the current queue, rank the pointings and find the one with the highest priority. When expanding the system for GOTO it was decided to farm these calculations off to a separate daemon, which the pilot instead queries just like the other hardware daemons. There are several advantages to this method. Firstly, just like with the sentinel alert monitor, having a dedicated daemon means it can be monitored by the pilot using the functions described in \aref{sec:monitors}. Furthermore, the scheduling commands can take a significant amount of time to run (several seconds), so splitting them out to a separate program saves time and frees up the pilot thread for other routines (recall the pilot is asynchronous but not multi-threaded). Also having an independent scheduler daemon allows it to be run on the same central server in SuperWASP that hosts the observing database, as shown in \aref{fig:flow}. Having the scheduling functions run on the same machine as the database instead of over the network improves the speed of the database queries. The central server is also simply a more powerful machine than the NUC in the dome that runs the pilot and other hardware daemons, which also reduces the time to run the functions. Finally, when GOTO moves to a multi-telescope system it is anticipated that the scheduler will be one of the common systems shared between telescopes (see \aref{sec:multi_tel_scheduling}), and so it makes sense to have the scheduler daemon on the central server alongside the other shared systems (such as the conditions daemon).
 
-Within \gls{gtecs} the \textit{scheduler} can refer to two linked concepts: the scheduling functions or the scheduler daemon itself (which is often just called ``the'' scheduler, like the sentinel). In the \gls{pt5m} system there is no independent ``scheduler'' daemon, and when the pilot needs to know what to observe it simply calls the scheduling functions to read the current queue, rank the pointings and find the one with the highest priority. When expanding the system for \gls{goto} it was decided to farm these calculations off to a separate daemon, which the pilot instead queries just like the other hardware daemons. There are several advantages to this method. Firstly the scheduling commands can take a significant amount of time (several seconds), so splitting this out to a separate program saves time and frees up the pilot thread for other routines (recall the pilot is asynchronous but not multi-threaded). Secondly separating out the scheduling to an independent daemon allows it to be run on a different computer to the pilot. As shown in \aref{fig:flow} the scheduler daemon runs on the same central server in SuperWASP that hosts the observing database (see \aref{sec:obsdb}), which improves the speed of the database queries. The central server is also simply a more powerful machine than the NUC in the dome that runs the pilot and other hardware daemons, which also reduces the time to run the queries. Finally, when GOTO moves to a multi-telescope system it is anticipated that the scheduler will be one of the common systems shared between telescopes (see \aref{sec:gtecs_multisite}), and so it makes sense to have the scheduler daemon on the central server alongside the other shared systems.
-
-The scheduler daemon contains the usual control loop, which runs the scheduling functions described below and internally stores the returned highest-priority pointing. The daemon exposes a single command, \code{check\_queue}, which returns the ID of that pointing. The pilot \code{check\_schedule} coroutine queries the daemon every 10 seconds using this command, and the scheduler returns one of three results: carry on with the current observation, switch to a new observation, or park the telescope (in the case that there are no valid targets). Most of the time the pilot will be observing a pointing previously given by the scheduler, and on the next check the scheduler will return the same pointing as it is still the highest priority --- in which case pilot will continue observing it. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets whilst observing the current target, unless the new pointing has the \glsfirst{too} flag set. Otherwise the pilot will wait until it has finished the current job, mark it as complete in the database and ask the scheduler for the next target to observe. The different cases are summarised in \aref{tab:sched}.
+The scheduler daemon contains the usual control loop, which runs the scheduling functions described in \aref{chap:scheduling} and internally stores the returned highest-priority pointing. The daemon exposes a single command, \code{check\_queue}, which returns the ID of that pointing. The pilot \code{check\_schedule} coroutine queries the daemon every 10 seconds using this command, and the scheduler returns one of three results: carry on with the current observation, switch to a new observation, or park the telescope (in the case that there are no valid targets). Most of the time the pilot will be observing a pointing previously given by the scheduler, and on the next check the scheduler will return the same pointing as it is still the highest priority --- in which case pilot will continue observing it. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets whilst observing the current target, unless the new pointing has the \glsfirst{too} flag set. Otherwise the pilot will wait until it has finished the current job, mark it as complete in the database and ask the scheduler for the next target to observe. The different possible cases are summarised in \aref{tab:sched}.
 
 %\begin{landscape}
 %\begin{table}[p]
@@ -535,16 +542,16 @@ The scheduler daemon contains the usual control loop, which runs the scheduling 
             & \textcolor{Red}{Park}
             & \textcolor{Red}{Park}
             \\[1.5cm]
-            & \ldots N/A (parked)
-            & \textcolor{Red}{Remain parked}
-            & \textcolor{NavyBlue}{Unpark and start new pointing}
-            & \textcolor{Red}{Remain parked}
-            & \textcolor{Red}{Remain parked}
+            & \makecell{\ldots N/A}
+            & ---
+            & \textcolor{NavyBlue}{Start new pointing}
+            & \textcolor{Red}{Park}
+            & \textcolor{Red}{Park}
             \\[0.5cm]
         \end{tabular}
     \end{center}
     \caption[Actions to take based on scheduler results]{
-        Actions the pilot will take based on the scheduler results. The scheduler can return one of three options as the highest priority pointing: the current pointing, a different pointing or \code{None} (meaning the current queue is empty). Each pointing can either be valid or invalid. The pilot will either continue with the current pointing (\textcolorbf{Green}{green}), switch to the new pointing depending on the ToO flag (\textcolorbf{NavyBlue}{blue}, \textcolorbf{BlueGreen}{blue-green}) or park the telescope (\textcolorbf{Red}{red}).
+        Actions the pilot will take based on the scheduler results. The scheduler can return one of three options as the highest priority pointing: either the current pointing, a different pointing or None (meaning the current queue is empty). Each pointing can either be valid or invalid. The pilot will either continue with the current pointing (\textcolorbf{Green}{green}), switch to the new pointing depending on the ToO flag (\textcolorbf{NavyBlue}{blue}, \textcolorbf{BlueGreen}{blue-green}) or park the telescope (\textcolorbf{Red}{red}).
     }\label{tab:sched}
 \end{sidewaystable}
 
