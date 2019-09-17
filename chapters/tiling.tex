@@ -9,12 +9,12 @@
 \label{sec:tiling_intro}
 \begin{colsection}
 
-In this chapter I describe the software used by GOTO to create an all-sky survey gid, which gravitational-wave events are then mapped onto. \todo{this will change}
+In this chapter I describe the software used by GOTO to create an all-sky survey grid, which gravitational-wave events are then mapped onto.
 %
 \begin{itemize}
-    \item In \nref{sec:gototile} I describe the GOTO-tile Python module, and the algorithms is uses to define the all-sky grid and apply skymaps to it.
-    \item In \nref{sec:mapping_the_sky} I describe how transient alert localisations are mapped onto the celestial sphere.
-    \item In \nref{sec:grb_skymaps} I detail how GOTO-tile can be used to create our own skymaps for events that do not use them.
+    \item In \nref{sec:gototile} I describe the GOTO-tile Python module, and the algorithms is uses to define the GOTO all-sky survey grid.
+    \item In \nref{sec:skymaps} I describe how transient alert localisations are defined using skymaps and how they are mapped onto the GOTO-tile grid.
+    \item In \nref{sec:custom_skymaps} I give some examples of how other skymaps can be used to direct GOTO observations.
 \end{itemize}
 %
 All work described in this chapter is my own, and has not been published anywhere else. The GOTO-tile module was originally worked on by Darren White at Sheffield and Evert Rol at Monash, before I took over development and made substantial changes. The functions to create our own skymaps described in \aref{sec:grb_skymaps} I developed while working with Yik Lun Mong at Monash.
@@ -257,7 +257,7 @@ where the $+1$ is  to account for tiles being located both at $\alpha=$\SI{0}{\d
     \label{eq:minverlap_deltaalpha}
 \end{equation}
 
-This spacing is also shown in \aref{fig:minverlap_spacing}, with the grid points uniformly spaced around the celestial equator. Note that the ceiling function does mean that in some cases strips at different declinations can have the same number of tiles. For example, using the same parameters as previously $\Delta\delta=$\SI{10}{\degree}, so declination strips start at \SI{0}{\degree} and continue to \SI{\pm10}{\degree}, \SI{\pm20}{\degree} \ldots (mirrored in both hemispheres). From \aref{eq:minverlap_nra} the number of tiles on the equator is $n_\text{RA}(\delta=\SI{0}{\degree}) = \lceil 360/(10.4/\cos \SI{0}{\degree})) \rceil + 1 = \lceil 34.6 \rceil + 1 = 36$. But on the next strip up (or down) $n_\text{RA}(\delta=\SI{\pm10}{\degree}) = \lceil 360/(10.4/\cos(\pm\SI{10}{\degree})) \rceil + 1 = \lceil 34.1 \rceil + 1 = 36$ as well. This occurs because there are only a limited number of ways to fit an integer number of fixed tiles into a given declination strip, and so, as shown in \aref{fig:minverlap}, the three strips around the equator align perfectly with the same number of tiles.
+This spacing is also shown in \aref{fig:minverlap_spacing}, with the grid points uniformly spaced around the celestial equator. Note that the ceiling function does mean that in some cases strips at different declinations can have the same number of tiles. For example, using the same parameters as previously $\Delta\delta=$\SI{10}{\degree}, so declination strips start at \SI{0}{\degree} and continue to \SI{\pm10}{\degree}, \SI{\pm20}{\degree} \ldots (mirrored in both hemispheres). From \aref{eq:minverlap_nra} the number of tiles on the equator is $n_\text{RA}(\delta=\SI{0}{\degree}) = \lceil 360/(10.4/\cos \SI{0}{\degree}) \rceil + 1 = \lceil 34.6 \rceil + 1 = 36$. But on the next strip up (or down) $n_\text{RA}(\delta=\SI{\pm10}{\degree}) = \lceil 360/(10.4/\cos(\pm\SI{10}{\degree})) \rceil + 1 = \lceil 34.1 \rceil + 1 = 36$ as well. This occurs because there are only a limited number of ways to fit an integer number of fixed tiles into a given declination strip, and so, as shown in \aref{fig:minverlap}, the three strips around the equator align perfectly with the same number of tiles.
 
 % ---------
 \subsubsection{Limitations of the minverlap algorithm}
@@ -435,7 +435,9 @@ When gravitational-wave signals are detected the LVC analysis pipelines create H
 
 When a gravitational-wave event is processed event pointings are added into the observation database as described in \aref{sec:event_insert}. However, only a certain number of pointings should be added to prevent GOTO wasting too much time observing low-probability areas. Each pointing is mapped to a grid tile, and only tiles with a reasonably high contained probability are worth observing. The GOTO-alert event handling code described in \aref{chap:alerts} selects tiles based on their contour level, meaning GOTO could, for example, chose to observe the 90\% contour of each skymap. However, determining which contour level each tile is within is not as simple as calculating the contained probability, as there are multiple ways to define the contour value for each tile.
 
-For example, a tile could be defined as being within a given contour area if \textit{every} pixel contained within that tile is within that contour. However this is unreasonable for large tiles, such as GOTO's, as the tile areas are often wider than the long, stretched out probability areas seen in typical gravitational-wave typical skymaps. An alternative then would be say that a tile is within a contour if \textit{any} of its contained pixels are within the contour. However, this will find every tile covering the contour area even if only the smallest fraction of the tile's area is within that region, which leads to over-selecting tiles. Several alternative methods were considered, including taking the median or mean of the contained pixel contour levels within each tile. Some different selection methods applied to the S190521r skymap are shown in \aref{fig:selecting_tiles}. The chosen method used within GOTO-alert is to select all tiles which have a mean contour value within 90\%. However, more quantitative simulations of different skymaps could be used to determine if this is the optimal choice for all cases.
+For example, a tile could be defined as being within a given contour area if \textit{every} pixel contained within that tile is within that contour. However this is unreasonable for large tiles, such as GOTO's, as the tile areas are often wider than the long, stretched out probability areas seen in typical gravitational-wave typical skymaps. An alternative then would be say that a tile is within a contour if \textit{any} of its contained pixels are within the contour. However, this will find every tile covering the contour area even if only the smallest fraction of the tile's area is within that region, which leads to over-selecting tiles. Several alternative methods were considered, including taking the median or mean of the contained pixel contour levels within each tile. Some different selection methods applied to the S190521r skymap are shown in \aref{fig:selecting_tiles}.
+
+The method used within the GOTO-alert event handler is to select all tiles which have a mean contour value within 90\%. However, more quantitative simulations of different skymaps could be used to determine if this is the optimal choice for all cases. For example, the selection level could be modified depending on the size of the skymap, and the event strategy might need to be modified as more GOTO telescopes are built. These possibilities are discussed in \aref{sec:event_insert}.
 
 \begin{figure}[p]
     \begin{center}
@@ -457,18 +459,17 @@ For example, a tile could be defined as being within a given contour area if \te
 
 \newpage
 
-\aref{fig:170817_gw} shows an example of GOTO-tile applied to the skymap for the GW170817 event \citep{GW170817}. The points within each tile were identified and summed in order to find the total contained probability within each tile. There is some redundancy due to the overlap between tiles, however this is typically negligible (the final GW170817 skymap used was notably smaller than usual LVC skymaps due to the coincident \textit{Fermi} localisation, which makes the overlaps more pronounced).
-
-\begin{figure}[p]
+\begin{figure}[t]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/skymaps_170817_gw.pdf} %\todo{recolour}
+        \includegraphics[width=\linewidth]{images/tiling/170817.pdf}
     \end{center}
-    \caption[Tile probabilities for GW170817]{
-        Tile probabilities using the final skymap for GW170817 \citep{GW170817}. The sphere shows the whole skymap for this event, with each pixel coloured by probability, and the location of the source of the event is shown with the blue star. Overlaid is the GOTO-4 sky grid, with tiles of \SI{3.7}{\degree} $\times$ \SI{4.9}{\degree} and overlap of $0.1$. The inset shows the tiles coloured by their contained probability (the sum of all pixels within). The four tiles with contained probability of higher than 5\% are highlighted in red.
+    \caption[GOTO tile probabilities for GW170817]{
+        GOTO tiling applied to the final GW170817 skymap. \\
+        The grid shown is for the 4-UT GOTO field of view, with tiles of \SI{3.7}{\degree}$\times$\SI{4.9}{\degree} and an overlap of $0.1$. The inset shows the 10 tiles within the total 90\% contour (containing 97.4\% of the total probability) in \textcolorbf{NavyBlue}{blue} and the 2 selected by the 90\% mean contour (containing 79.5\%) in \textcolorbf{Green}{green}. Compare to \aref{fig:swope_decam}, which shows follow-up observations of GW170817 by the Swope and DECam projects.
     }\label{fig:170817_gw}
 \end{figure}
 
-\clearpage
+\aref{fig:170817_gw} shows the GOTO-tile selection code applied to the skymap for GW170817 \citep{GW170817}. As described in \aref{sec:followup} this is the only gravitational-wave detection so far with an identified counterpart, AT~2017gfo \citep{GW170817_followup}. In this case the mean contour selection method is perhaps too restrictive, only adding two tiles to the database, and for similarly well-localised events adding more tiles would be better. Still, based on the performance during commissioning (see \aref{sec:gw_results}) had GOTO been able to observe this event then the counterpart could have been observed in tile T0932 within minutes of the alert notice being received.
 
 \end{colsection}
 
@@ -479,67 +480,121 @@ For example, a tile could be defined as being within a given contour area if \te
 % ########################################
 
 \newpage
-\section{Creating skymaps for GRB events}
-\label{sec:grb_skymaps}
+\section{Creating and modifying skymaps}
+\label{sec:custom_skymaps}
 \begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-\todo{galaxies here --- go to ``creating custom skymaps''?}
-
-This system described in the previous sections works well for gravitational wave events using LVC skymaps, and it has since ben expanded to other types of events. As part of the commissioning observations (\todo{see commissioning}) when the LIGO-Virgo detectors were down GOTO also followed-up \gls{grb} events from the \textit{Fermi} satellite \gls{gbm} \citep{Fermi_GBM}. These events however do not include probability skymaps, instead they only include a central right ascension, declination and error radius. Yik Lun Mong and I developed code in order to create a skymap from these Fermi events, therefore allowing them to be processed by GOTO-tile using the same methods already created for gravitational wave events.
+The GOTO-tile skymap processing system described in \aref{sec:skymaps} provides a working framework which allows any gravitational-wave skymap to be mapped onto the GOTO survey grid, from which pointings can be generated for the pilot to observe. However, there is no particular reason that the system has to be restricted to just the gravitational-wave skymaps produced by the LVC.\@ This section describes three further projects based on the GOTO-tile skymap code, from when I was working with Yik Lun Mong at Monash.
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\subsection{Gaussian skymaps}
-\label{sec:gaussian_skymaps}
+\subsection{Creating Gaussian skymaps for GRB events}
+\label{sec:grb_skymaps}
 \begin{colsection}
 
-Instead of loading a skymap from a FITS file, a function was written to create a probability skymap based on a 2D Gaussian profile. First, the error radius ($r$, the 68\% containment radius) is converted into the standard deviation of the distribution $\sigma$ using
+As part of the GOTO commissioning observations when the LIGO-Virgo detectors were not operating (see \aref{sec:timeline}) GOTO followed up \glsfirst{grb} events from the \textit{Fermi} satellite Gamma-ray Burst Monitor \citep[GBM;][]{Fermi_GBM}. At the time the alert notices for GBM events did not include probability skymaps, only right ascension, declination and an error radius, and so code was developed in order to create a skymap from these details based on a 2D Gaussian profile; therefore allowing them to be processed by GOTO-tile using the same methods already created for gravitational wave events.
 
+Taking the radius $r$ as half the full-width at half-maximum, the standard deviation of a 2D Gaussian distribution $\sigma$ is given by
+%
 \begin{equation}
-    \sigma = \frac{r}{\sqrt{2.3}}.
+    \sigma = \frac{r}{\sqrt{2 \ln 2}}.
     \label{eq:gaussian_sigma}
 \end{equation}
-
+%
 The distance $d$ between a given point on the sphere ($\alpha, \delta$) and the central coordinates of the distribution ($\alpha_c, \delta_c$) is given by
-
+%
 \begin{equation}
     \sin^2 \left ( \frac{1}{2} d \right )
     = \sin^2 \left ( \frac{\delta-\delta_c}{2} \right)
-      + \cos (\delta) \cos (\delta_c) \sin^2 \left ( \frac{\alpha-\alpha_c}{2} \right),
+      + \cos \delta \cos \delta_c \sin^2 \left ( \frac{\alpha-\alpha_c}{2} \right),
     \label{eq:gaussian_distance}
 \end{equation}
 
-and the probability at each point is given by
-
+\noindent and the probability at each point is given by
+%
 \begin{equation}
     P(\alpha, \delta) = \frac{1}{2\pi\sigma} \exp \left ( \frac{d^2}{2\sigma^2} \right ).
     \label{eq:gaussian_prob}
 \end{equation}
+%
+This probability is calculated for the location of every HEALPix pixel on a sphere, which produces a skymap array that can then be processed using GOTO-tile.
 
-In order to create a HEALPix skymap this probability is calculated for every point on the grid, which creates the skymap array. This can then be processed with GOTO-tile exactly like an LVC skymap.
+Using the above method, skymaps can be created for any single-target alert that has a given error radius. Several sources of transient events, such as \textit{Gaia} and \textit{Swift}, produce well-localised events with error circles much smaller than the GOTO tiles, so creating skymaps is less important. \textit{Fermi} GRB skymaps however cover much larger areas. For example, the GBM detection of GRB~170817A that helped localise the GW170817 gravitational wave detection produced an initial alert with an error radius of \SI{17.45}{\degree}, later reduced to \SI{11.58}{\degree} in the final alert\footnote{GCN Notices available at \url{https://gcn.gsfc.nasa.gov/other/524666471.fermi}}, which corresponded to a 50\% confidence region of $\sim$500~square~degrees \citep{GW170817_Fermi}.
 
-Using this above method, skymaps can be created for any single-target alert that has a given error radius. Several sources of transient events, such as \textit{Gaia} or \textit{Swift}, produce very well-localised events with error regions well below the field of view of GOTO, so creating skymaps is less important. The skymaps for \glspl{grb} from \textit{Fermi} however cover much larger areas. For example, the \gls{gbm} detection of GRB~170817A that helped localise the GW170817 gravitational wave detection produced an initial alert with an error radius of \SI{17.45}{\degree}, later reduced to \SI{11.58}{\degree} in the final alert\footnote{GCN Notices available at \url{https://gcn.gsfc.nasa.gov/other/524666471.fermi}}, which corresponded to a 50\% confidence region of $\sim$500~square~degrees \citep{GW170817_Fermi}. The error values given in \gls{gbm} GCN Notices however only account for statistical errors for that event, not systematic errors. The \gls{gbm} systematic errors are described in \citet{Fermi_localisation} to be well modelled by a core Gaussian with a radius of \SI{3.71}{\degree} and a non-Gaussian tail extending to \SI{14}{\degree}. For the purposes of GOTO tiling the tail is ignored, and a single Gaussian is produced with an error radius simply combining the statistical radius ($r_\text{notice}$) and this  systematic profile in quadrature as
-
+The error values given in GBM notices only account for statistical errors for that event, not systematic errors. The GBM systematic errors are described in \citet{Fermi_localisation} to be well modelled by a core Gaussian with a radius (FWHM) of \SI{3.71}{\degree} and a non-Gaussian tail extending to \SI{14}{\degree}. For the purposes of GOTO tiling the tail is ignored, and a single Gaussian is produced with a radius obtained by combining the statistical radius ($r_\text{notice}$) and the systematic error in quadrature as
+%
 \begin{equation}
     r = \sqrt{r_\text{notice}^2 + {(\SI{3.71}{\degree})}^2}.
     \label{eq:fermi_radius}
 \end{equation}
+%
+This is then used with the previous method to create a Gaussian skymap, which can be processed by GOTO-tile as described in \aref{sec:mapping_skymaps}. The skymap generated using this method for GRB~170817A is shown in \aref{fig:170817_grb}. Note that the location of AT~2019gfo falls quite far from the reported peak of the GRB skymap, and had there not been the coincident gravitational-wave detection it would have been unlikely that the source of the gamma-ray burst would have been observed.
 
-This radius is then used with \aref{eq:gaussian_sigma} onwards to create the Gaussian skymap. It should be noted that in reality the probability areas from \textit{Fermi} are not perfectly symmetric Gaussian profiles, but until \gls{gbm} events start being published with \gls{healpix} skymaps this works as a reasonable approximation. For GRB~170817A the skymap and tiling solution is shown in \aref{fig:170817_grb}. Note that the source location falls quite far out of the peak of the \gls{grb} skymap, and had there not been the coincident gravitational wave detection it would be unlikely that the source of the gamma-ray burst would have been observed.
+\begin{figure}[t]
+    \begin{center}
+        \includegraphics[width=\linewidth]{images/tiling/170817_fermi.pdf}
+    \end{center}
+    \caption[Gaussian skymap for GRB 170817A]{
+        A Gaussian skymap generated from the initial GBM alert for GRB 170817A, shown on the GOTO tile grid. The \textcolorbf{Red}{red} star shows the location of the counterpart AT 2019gfo. The final GRB skymap for this event is shown in \aref{fig:170817_skymaps}.
+    }\label{fig:170817_grb}
+\end{figure}
+
+It should be noted that the GBM localisation areas are actually not perfectly symmetric, but the above procedure works as a reasonable approximation. Since May 2019 \textit{Fermi} has started including HEALPix skymaps with alert notices \citep{Fermi_skymaps}, however, unlike the LVC, the GBM team do not guarantee that the skymap will have been generated by the time the alert notice is issued. Therefore the above procedure is still used when processing alerts if the official skymap is not yet available.
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+\newpage
+\subsection{Weighting GW skymaps using galaxy positions}
+\label{sec:galaxy_skymaps}
+\begin{colsection}
+
+As described in \aref{sec:followup}, telescopes with much smaller fields of view than GOTO are not be able to cover the entirety of large gravitational-wave skymaps looking for counterparts. Many instead chose to focus on observing possible host galaxies within the GW probability region, and by doing this the Swope team were the first to observe the GW170817 counterpart \citep{GW170817_Swope}. The most recent catalogue of potential host galaxies is the \glsfirst{glade} catalogue \citep{GLADE}, which combines multiple prior catalogues including the Gravitational Wave Galaxy Catalogue \citep[GWGC,][]{GWGC} used by Swope for GW170817.
+
+GOTO does not use a galaxy-focused strategy; due to its large field of view each GOTO pointing will contain tens of possible host galaxies. However, for skymaps that cover large numbers of tiles the order in which GOTO observes could potentially be optimised by focusing on the tiles that contain the most potential host galaxies. One way of doing this using the existing G-TeCS scheduling framework (described in \aref{chap:scheduling}) is to adjust the weighting factor assigned to each tile, which can be done by convolving the LVC localisation skymap with another skymap, containing the position of possible host galaxies, before applying the result to the tile grid as described in \aref{sec:mapping_skymaps}.
+
+In order to create such a weighted skymap the GLADE catalogue can be queried for the position of each galaxy within the event distance limits (each LVC event notice contains an estimate for the distance to the source, see \aref{sec:event_strategy} for how this is used to determine the follow-up strategy for each event). This is only possible for events within a few \SI{100}{\mega\parsec}, beyond this the GLADE catalogue is increasingly incomplete \citep{GLADE}. Once found, a HEALPix skymap can be constructed by weighting each pixel by the number of possible host galaxies located within it. To account for the galaxies not being point sources the resulting skymap is then passed through a Gaussian smoothing function with a default standard deviation of 15~arcseconds. This new skymap can then be normalised and multiplied with the gravitational wave position skymap, to produce a new skymap which contains the information from both.
+
+\aref{fig:galaxy_skymap} shows this method applied to the large skymap for event S190425z, which included a reported luminosity distance of $155\pm\SI{45}{\mega\parsec}$. The underlying pattern of the gravitational-wave localisation regions is still clearly visible in the final skymap, but by including the galaxy information the resulting tile pointings will be weighted towards regions with larger numbers of possible host galaxies. This method still needs more work before being implemented, in particular the relative weighting to apply to each skymap needs to be considered. However it could prove beneficial by further prioritising GOTO observations towards regions more likely to include a counterpart source.
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/skymaps_170817_grb.pdf} %\todo{recolour}
+        \includegraphics[width=0.8\linewidth]{images/tiling/gal_before.pdf}
+        \includegraphics[width=0.8\linewidth]{images/tiling/gal.pdf}
+        \includegraphics[width=0.8\linewidth]{images/tiling/gal_after.pdf}
     \end{center}
-    \caption[Tile probabilities for GRB 170817A]{
-        Tile probabilities using the constructed Gaussian skymap for GRB 170817A \citep{GW170817_Fermi}. As in \aref{fig:170817_gw} the sphere shows the skymap and the GOTO-4 grid, with the identified source of GW170817 shown by the blue star. The tiles highlighted in red each contain more than 1\% of the probability instead of 5\% used in \aref{fig:170817_gw}, due to the greater spread of the skymap meaning no tile here contains more than 5\%.
-    }\label{fig:170817_grb}
+    \caption[Weighting a GW skymap using galaxy positions]{
+        Weighting a GW skymap (for event S190425z) using galaxy positions. The top plot shows the BAYESTAR skymap distributed by the LVC, the central plot shows a skymap using GLADE galaxies within the estimated distance to the source ($155\pm\SI{45}{\mega\parsec}$), and the lower plot shows the result of multiplying the two together.
+    }\label{fig:galaxy_skymap}
+\end{figure}
+
+\end{colsection}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\subsection{Prioritising observations using dust extinction skymaps}
+\label{sec:extinction_skymaps}
+\begin{colsection}
+
+In very crowded fields a single GOTO image can contain tens of thousands of sources, which makes it difficult for the GOTOphoto photometry pipeline (see \aref{sec:gotophoto}) to identify potential counterpart candidates. Observing in high-extinction areas such as through the galactic plane also makes it harder to observe extra-galactic sources, such as counterparts to gravitational-wave events. Therefore another possible reason to modify localisation skymaps is to de-prioritise observations of the galactic plane, by masking areas with low galactic latitudes.
+
+One method to do this is shown in \aref{fig:extinction_skymap} --- multiplying the gravitational-wave skymap by an inverted thermal dust emission skymap from the \textit{Planck} observatory \citep{Planck_dust}. The effect is intended to be subtle, not enough to completely wipe out the skymap probability in the high-extinction regions, but instead just reduce the weighting of those tiles so GOTO first prioritises other areas. Again, this is not currently implemented into the scheduling system, but it is presented as another example of using skymaps to optimise observation prioritises.
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{images/tiling/ext_before.pdf}
+        \includegraphics[width=0.8\linewidth]{images/tiling/ext.pdf}
+        \includegraphics[width=0.8\linewidth]{images/tiling/ext_after.pdf}
+    \end{center}
+    \caption[Weighting a GW skymap using galactic extinction]{
+        Weighting a GW skymap (for event S190521r) using galactic extinction. The top plot shows the BAYESTAR skymap distributed by the LVC, the central plot shows an inverted thermal dust emission skymap from \textit{Planck}, and the lower plot shows the result of multiplying the two together.
+    }\label{fig:extinction_skymap}
 \end{figure}
 
 \end{colsection}
