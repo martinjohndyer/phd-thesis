@@ -17,7 +17,7 @@ In this chapter I describe the software used by GOTO to create an all-sky survey
     \item In \nref{sec:custom_skymaps} I give some examples of how other skymaps can be used to direct GOTO observations.
 \end{itemize}
 %
-All work described in this chapter is my own unless otherwise indicated, and has not been published elsewhere. The origional GOTO-tile module was written by Darren White at Sheffield and Evert Rol at Monash, before I took over development and made substantial changes described in this chaper.
+All work described in this chapter is my own unless otherwise indicated, and has not been published elsewhere. The original GOTO-tile module was written by Darren White at Sheffield and Evert Rol at Monash, before I took over development and made substantial changes described in this chapter.
 
 \end{colsection}
 
@@ -301,7 +301,7 @@ When identifying a particular target in the sky coordinates can be given in righ
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.7\linewidth]{images/healpix.pdf} %\todo{recolour??}
+        \includegraphics[width=0.7\linewidth]{images/healpix.pdf}
     \end{center}
     \caption[HEALPix partitions of a sphere]{
         The first four orders of the HEALPix partition of a sphere, with increasing $N_\text{side}$ resolution parameter. Note that as the resolution doubles each pixel on the previous sphere is split into four, and $N_\text{side}$ is the number of pixels along the side of a first-order pixel (two of which are highlighted). Adapted from \citet{HEALPix}.
@@ -379,7 +379,7 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_probs.pdf} %\todo{recolour}
+        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_probs.pdf}
     \end{center}
     \caption[An example 2D probability skymap]{
         A cartoon 2-dimensional skymap. Each pixel (represented by one of the 81 squares) has an assigned probability, and together they all sum to 100\%. The \textcolorbf{BlueGreen}{blue} inner contour contains 50\% of the probability, while the \textcolorbf{Green}{green} outer contour contains 90\% of the probability. These contours are created based on the values shown in \aref{fig:sim_skymap_conts}.
@@ -390,7 +390,7 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf} %\todo{recolour}
+        \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf}
     \end{center}
     \caption[An example 2D skymap with pixel contour values]{
         The same cartoon skymap as in \aref{fig:sim_skymap_probs}, but now each pixel contains its contour value calculated by sorting the pixels by probability and assigning each pixel the value of the cumulative sum. The pixel with the highest probability (E5) has the same contour value as its probability value, the second highest (F5) has the sum of the probability values of both E5 and F5, and this continues to the pixel with the lowest probability value (A9) which has a contour value of 100\%. The \textcolorbf{BlueGreen}{blue} area is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\%. The \textcolorbf{Green}{green} area likewise encloses all pixels with a contour value of less than 90\%. Note in this example the contours are continuous, but it is possible to have multiple `islands' of probability within a single skymap.
