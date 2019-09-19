@@ -12,8 +12,8 @@
 In this chapter I detail my work characterising and modelling the GOTO hardware. This work was carried out predominantly in the first year and a half of my PhD, prior to GOTO's commissioning in 2017.
 %
 \begin{itemize}
-    \item In \nref{sec:detectors} I describe and give the results of the detector characterisation tests I ran on the GOTO cameras in the laboratory in Sheffield.
-    \item In \nref{sec:throughput} I detail creating a throughput model for the GOTO optical system, in particular examining the Baader filters GOTO uses.
+    \item In \nref{sec:detectors} I describe and give the results of the in-lab detector characterisation tests I ran on the GOTO CCD cameras.
+    \item In \nref{sec:throughput} I detail the throughput model of the GOTO optical system that I created.
     \item In \nref{sec:photometry} I apply the results of the previous two sections to predict the photometric properties of GOTO images, before comparing them to real observations taken once GOTO was fully operational.
 \end{itemize}
 %
@@ -32,7 +32,7 @@ All work described in this chapter is my own unless otherwise indicated, and has
 
 \begin{colsection}
 
-CCD cameras have a variety of characteristic parameters, including sources of noise. Analysing these under laboratory conditions is important to fully profile them before they are used to take scientific images.
+CCD cameras have a variety of characteristic parameters advertised by the manufacturers, including sources of noise. As described in \aref{sec:goto_design}, GOTO uses MicroLine ML50100 CCD cameras manufactured by \glsfirst{fli}, which contain KAF-50100 CCD sensors manufactured by ON Semiconductor. Both manufactures produce specification sheets advertising expected parameters\footnote{ML50100 available at \url{http://www.flicamera.com/spec_sheets/ML50100.pdf}}\textsuperscript{,}\footnote{KAF-50100 available at \href{http://www.onsemi.com/pub/Collateral/KAF-50100-D.PDF}{\texttt{http://www.onsemi.com/pub/Collateral/KAF-50100-D.pdf}}}. Confirming these under laboratory conditions is important before the detectors are used to take scientific images on the telescope. FLI carried out a limited series of tests on the cameras before selling them, but carrying out our own tests ensures that our cameras meet the specifications, and also allows independent measurements of the key parameters.
 
 \end{colsection}
 
@@ -41,37 +41,36 @@ CCD cameras have a variety of characteristic parameters, including sources of no
 \label{sec:noise}
 \begin{colsection}
 
-There are many possible sources of noise in images taken with CCD cameras \citep{CCDs}. The most important noise sources for astronomical images are:
-
+There are many sources of noise in images taken with CCD cameras. The most important noise sources for astronomical images are \citep{CCDs}:
+%
 \begin{itemize}
-    \item \emph{Shot noise} derived from counting photo-electrons from the source object.
+    \item \emph{Shot noise} derived from counting photo-electrons from the source and background.
     \item \emph{Dark current noise} from thermally generated electrons within the sensor.
-    \item \emph{Read-out noise} from the camera electronics.
+    \item \emph{Read-out noise} from the detector and CCD controller electronics.
     \item \emph{Fixed-pattern noise} from different sensitivities between pixels.
-    \item \emph{Bias count}, a fixed level of output for each pixel.
+    \item \emph{Bias}, an offset in counts added to each pixel which can vary with time.
 \end{itemize}
 
-The shot noise ($\sigma_\text{O}$) arises as photons from the target object arrive at the sensor at different times. The photon arrival time is a Poisson distribution, and if the number of electrons counted is $N$ for large numbers it tends towards a Gaussian distribution with mean $N$ and standard deviation $\sigma_O = \sqrt{N}$. When carrying out on-sky astronomical observations the source noise is typically divided into noise from the target object and noise from the background sky, but that is not relevant in this section.
+The shot noise ($\sigma_\text{SN}$) arises as photons from the target object arrive at the sensor at irregular intervals. The photon arrival time is a Poisson distribution, and if the number of electrons counted is $N$ for large numbers it tends towards a Gaussian distribution with mean $N$ and standard deviation $\sigma_\text{SN} = \sqrt{N}$. When taking on-sky astronomical observations there are two sources of shot noise, from the target object ($\sigma_\text{O}$) and the background sky ($\sigma_\text{BG}$), but the latter is not relevant for the in-lab tests described in this section.
 
-Dark current noise ($\sigma_\text{D}$) is due to electrons produced by thermal excitations, these are indistinguishable from photo-electrons and will increase with exposure time. As this is also a photon counting measurement it also follows a Poisson distribution, so the noise $\sigma_D = \sqrt{D}$ where $D$ is the dark current per pixel. The dark current depends on temperature, and cooling the cameras will reduce the thermal excitations.
+Dark current noise ($\sigma_\text{D}$) is due to electrons produced by thermal excitations, which are indistinguishable from photo-electrons and increase with exposure time. As this is also a photon counting measurement it follows a Poisson distribution, so the noise $\sigma_\text{D} = \sqrt{D}$ where $D$ is the dark current per pixel. The dark current depends on temperature: cooling the cameras reduces the thermal excitations and therefore reduces the dark current.
 
-\newpage
+Read-out noise ($\sigma_\text{RO}$) depends on the quality of the CCD outputs and readout electronics, and on the the speed data is read out from the CCD.\ The FLI MicroLine cameras read out at a fixed clock frequency of \SI{8}{\mega\hertz} per pixel, but other astronomical cameras have variable read-out speeds. Since read-out noise is a property of the output electronics, it is independent of signal or the exposure time used, and therefore it can be represented by a constant value for each frame, $\sigma_\text{RO} = R$, measured in electrons per pixel. The MicroLine cameras have two channels with independent readouts, so each will have an independent read-out noise.
 
-Read-out noise ($\sigma_\text{RO}$) depends on the speed data is read out from the CCD.\ The FLI MicroLine cameras read out at a fixed \SI{8}{\mega\hertz}, but other astronomical cameras have variable read-out speeds. As a property of the output electronics the read-out noise is independent of signal or the exposure time used, and therefore it can be represented by a constant value, $\sigma_R = R$, measured in electrons. The MicroLine cameras have two channels with independent readouts, so each will have an independent read-out noise.
+Fixed-pattern noise ($\sigma_\text{FP}$) is due to the small differences in size and response between pixels. It it increases linearly with the electron count, including source ($N$), sky ($S$) and dark ($D$) electrons (the fixed-pattern noise can be further broken down into the photo response non-uniformity and dark signal non-uniformity, but we will consider it as a single noise source). It can be parametrised as $\sigma_\text{FP} = k_\text{FP}(N+S+D)$ where $k_\text{FP}$ is a dimensionless constant of proportionality describing the fixed-pattern noise as a fraction of the full-well capacity. Scientific CCD cameras typically have very small non-uniformities between pixels, so $k_\text{FP}$ is usually $<1\%$, but this noise source can dominate when the signal count is high. However as the fixed-pattern noise is linearly related to the number of counts recorded  it can easily be removed by flat fielding, so the contribution from the fixed-pattern noise is negligible in calibrated astronomical images.
 
-Fixed-pattern noise ($\sigma_\text{FP}$) is due to the small differences in size and response between pixels. It it increases linearly with the electron count, including both source and dark electrons (the fixed-pattern noise can be further broken down into the photo response non-uniformity and dark signal non-uniformity, but we will consider it as a single noise source). It can be parametrised as $\sigma_\text{FP} = k_\text{FP}(N+D)$ where $k_\text{FP}$ is a dimensionless constant of proportionality describing the fixed-pattern noise as a percentage of the full-well capacity. Scientific CCD cameras typically have very small non-uniformities between pixels, so $k_\text{FP}$ is usually $<1\%$, but this noise source can dominate when the signal count is high. It can however be removed by flat fielding, so contribution from the fixed-pattern noise is negligible in calibrated astronomical images.
+Finally, the bias level is an offset in counts applied to each pixel independent of the input signal. A large bias level is applied each pixel by CCD manufacturers to prevent negative counts from being recorded due to fluctuations in the read-out noise. Across a frame the bias level will show structure due to being a different offset in each pixel, but it is simple to remove by subtracting a master bias frame. The bias level can change by a few counts during a night due to changes in the temperature. Bias should be measured regularly as any large changes might indicate a problem with the detector. The MicroLine cameras also include an overscan region (see \aref{sec:chip_layout}), which gives an independent measurement of the typical bias level for every image.
 
-Finally, the bias level is a fixed output of counts from each pixel, and is entirely independent of the input signal. It is therefore the easiest noise source to account for, as once a master bias frame has been constructed it can simply be subtracted from each frame. The MicroLine cameras also include an overscan region (see \aref{sec:chip_layout}), which gives an independent measurement of the bias level for every image.
-
-The noises described above (aside from the bias) are all independent Gaussian random variables, and therefore are added in quadrature to get the total noise per pixel
+The noise sources described above (aside from the bias) are all independent Gaussian random variables, and therefore are added in quadrature to get the total noise per pixel
 
 \begin{equation}
     \begin{split}
         \sigma_\text{Total}^2 & = \sigma_\text{O}^2 +
+                                  \sigma_\text{BG}^2 +
                                   \sigma_\text{DC}^2 +
                                   \sigma_\text{RO}^2 +
                                   \sigma_\text{FP}^2 \\
-                              & = N + D + R^2 + k_\text{FP}^2{(N+D)}^2.
+                              & = N + B + D + R^2 + k_\text{FP}^2{(N+B+D)}^2.
     \end{split}
     \label{eq:noise}
 \end{equation}
@@ -79,35 +78,30 @@ The noises described above (aside from the bias) are all independent Gaussian ra
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
 \subsection{In-lab tests}
 \label{sec:camera_tests}
 \begin{colsection}
 
-The initial deployment of GOTO was delayed for several months, due to delays on-site at the observatory on La Palma and manufacturing the unit telescopes. The cameras however had already been purchased from FLI, and the delay gave time to test them in the lab in Sheffield. The second set of cameras were also purchased long before the second four unit telescopes were built, these were also bought to Sheffield so the same tests could be repeated.
-
-A list of the nine FLI cameras bought for GOTO is given in \aref{tab:cameras}. Each camera is given a name (Camera 1, Camera 2 etc.) based on the order of their serial numbers. These do not match which GOTO unit telescope they were assigned to, and the cameras on La Palma are sometimes swapped around to allow for repairs.
-
-The first set of four cameras arrived in Warwick in February 2016, and one (Camera 2) was bought to Sheffield in March with a collection of other hardware. The other three were delivered in May and Camera 2 was returned to Warwick, these three were returned in June. The second set cameras were delivered to Warwick in April 2018: four for the next four unit telescopes as well as a spare. The second four cameras (5--8) were brought to Sheffield in May, with Warwick keeping the spare for their own use, these were returned in June.
+The initial deployment of GOTO was delayed for several months, due to delays on-site at the observatory on La Palma and manufacturing the unit telescopes. The first set of four cameras however had already been purchased from FLI, and the delay gave time to test them in the lab in Sheffield in 2016. The second set of cameras were also purchased long before the second four unit telescopes were built; these were also brought to Sheffield  in 2018 so the same tests could be repeated. A list of the nine FLI cameras bought for GOTO is given in \aref{tab:cameras}. Each camera is given a name (Camera 1, Camera 2 etc.) based on the order of their serial numbers. These names are used throughout this section but do not necessarily match which GOTO unit telescope they were assigned to, and the cameras on La Palma are sometimes swapped around to allow for repairs.
 
 \begin{table}[t]
     \begin{center}
         \begin{tabular}{c|ccc} %chktex 44
             Name     & Serial number & Set & Tested \\
             \midrule
-            Camera 1 & ML0010316     &   1 & May---June 2016  \\
-            Camera 2 & ML0330316     &   1 & March---May 2016 \\
-            Camera 3 & ML0420516     &   1 & May---June 2016  \\
-            Camera 4 & ML0430516     &   1 & May---June 2016  \\
-            Camera 5 & ML5644917     &   2 & May---June 2018  \\
-            Camera 6 & ML6054917     &   2 & May---June 2018  \\
-            Camera 7 & ML6094917     &   2 & May---June 2018  \\
-            Camera 8 & ML6304917     &   2 & May---June 2018  \\
-            Camera 9 & ML6314917     &   2 & N/A              \\
+            Camera 1 & ML0010316     &   1 & May---June 2016     \\
+            Camera 2 & ML0330316     &   1 & March---May 2016    \\
+            Camera 3 & ML0420516     &   1 & May---June 2016     \\
+            Camera 4 & ML0430516     &   1 & May---June 2016     \\
+            Camera 5 & ML5644917     &   2 & May---June 2018     \\
+            Camera 6 & ML6054917     &   2 & May---June 2018     \\
+            Camera 7 & ML6094917     &   2 & May---June 2018     \\
+            Camera 8 & ML6304917     &   2 & May---June 2018     \\
+            Camera 9 & ML6314917     &   2 & \textit{not tested} \\
         \end{tabular}
     \end{center}
     \caption[List of GOTO cameras]{
-        A list of the 9 GOTO cameras, with assigned names, serial numbers and dates when the tests were carried out.
+        A list of the 9 GOTO cameras, with assigned names, serial numbers and dates when the tests were carried out. The ninth camera (bought as a spare) was retained by Warwick for their own use, and was not tested in Sheffield.
     }\label{tab:cameras}
 \end{table}
 
@@ -116,19 +110,17 @@ The characterisation tests consisted of taking a series of calibration frames wi
 \begin{itemize}
     \item Zero-second dark exposures, to construct bias frames (see \aref{sec:bias}).
     \item Long (30 minute) dark exposures at different temperatures, to measure the dark current (see \aref{sec:dc}).
-    \item Flat illuminated frames at different exposure times, to construct photon transfer curves (see \aref{sec:ptc}) and measure linearity (see \aref{sec:lin}).
+    \item Flat illuminated frames at different exposure times, to construct photon transfer curves to measure read-out noise, gain and fixed-pattern noise (see \aref{sec:ptc}), and to measure linearity (see \aref{sec:lin}).
 \end{itemize}
 
-The cameras were tested using two different test setups. \aref{fig:dark_photo} shows the setup for taking dark frames: the cameras are face down and covered. The long dark exposures were taken overnight to as much as possible reduce any excess light reaching the detectors. The flat frames were harder to take. A LCD monitor showing a dark screen was used, with sheets of paper between the camera and the monitor to reduce the illumination. This is shown in \aref{fig:flat_photo}.
-
-The camera manufacturer \glsfirst{fli} and detector manufacturer ON Semiconductor both produce specification sheets advertising expected parameters\footnote{ML50100 available at \url{http://www.flicamera.com/spec_sheets/ML50100.pdf}}\textsuperscript{,}\footnote{KAF-50100 available at \href{http://www.onsemi.com/pub/Collateral/KAF-50100-D.PDF}{\texttt{http://www.onsemi.com/pub/Collateral/KAF-50100-D.pdf}}}, and FLI carried out a limited series of tests on the cameras before selling them. Carrying out our own tests ensures that the cameras meet the specifications, and also allows independent measurements of the key parameters.
+The cameras were tested using two different test setups. \aref{fig:dark_photo} shows the setup for taking dark frames: the cameras are face down and covered by a sheet. The long dark exposures required were taken overnight to minimise the background light reaching the detectors. The flat fields were harder to take. A LCD monitor showing a dark screen was used, with sheets of paper between the camera and the monitor to reduce the illumination. This is shown in \aref{fig:flat_photo}.
 
 \begin{figure}[p]
     \begin{center}
         \includegraphics[width=0.75\textwidth]{images/dark_photo.jpg}
     \end{center}
     \caption[The dark frame test setup]{
-        A photo of the dark frame test setup in the lab in Sheffield. Dark frames were taken at night with the cover down and ambient light minimised as much as possible.
+        A photo of the dark frame test setup in the lab in Sheffield. Dark frames were taken at night with the cover down to minimise the ambient light.
     }\label{fig:dark_photo}
 \end{figure}
 
@@ -136,8 +128,8 @@ The camera manufacturer \glsfirst{fli} and detector manufacturer ON Semiconducto
     \begin{center}
         \includegraphics[width=0.75\textwidth]{images/flat_photo.jpg}
     \end{center}
-    \caption[The flat frame test setup]{
-        A photo of the flat frame test setup. A spare computer monitor was used as a flat screen, with sheets of paper placed in front of the camera to reduce the illumination. The cover shown in \aref{fig:dark_photo} was also placed over the setup.
+    \caption[The flat field test setup]{
+        A photo of the flat field test setup. A spare computer monitor was used as a flat screen, with sheets of paper placed in front of the camera to reduce the illumination. The cover shown in \aref{fig:dark_photo} was also placed over the setup.
     }\label{fig:flat_photo}
 \end{figure}
 
@@ -146,28 +138,29 @@ The camera manufacturer \glsfirst{fli} and detector manufacturer ON Semiconducto
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\subsection{Sensor layout}
+\newpage
+\subsection{CCD sensors}
 \label{sec:chip_layout}
 \begin{colsection}
 
-The MicroLine ML50100 cameras used by GOTO are contain a KAF-50100 CCD sensor manufactured for FLI by ON Semiconductor\footnote{\url{http://www.onsemi.com/}}. The sensor consists of a 50-megapixel CCD with $\SI{6}{\micro\metre} \times \SI{6}{\micro\metre}$ square pixels. The sensors in the GOTO cameras have two channels each with an independent output, and read out at \SI{8}{\mega\hertz} (variations with four outputs and different readout speeds are also available).
+As mentioned previously, the MicroLine ML50100 cameras used by GOTO contain KAF-50100 \glsfirst{ccd} sensors manufactured for FLI by ON Semiconductor\footnote{\url{http://www.onsemi.com/}}. These are high-resolution, front-illuminated CCDs with two read-out channels. The detector includes a microlens array to focus light onto each pixel, as well as a multilayer anti-reflective coating. The \glsfirst{qe} curve for the detector is shown in \aref{fig:qe} in \aref{sec:qe}.
 
-The layout of the sensor is shown in \aref{fig:chip}, adapted from the ON Semiconductor sensor specification sheet. The physical sensor includes $8304 \times 6220$ pixels, while the central region available for data collection has an area of $8176 \times 6132$ pixels. When taking data in full-frame mode the camera outputs an $8304 \times 6220$ array. Surrounding the active area on each edge are 16 \emph{active buffer pixels}, which are light-sensitive but not considered part of the primary region. Around the edge of the active area is a border of light-shielded \emph{dark reference pixels}: 29 dark rows at the start, 26 rows at the end and 28 columns on the sides leading each row. These pixels do not respond to light and therefore can be used as a dark reference. At the beginning and end of each row there is also a test column with 4 blank columns either side, as well as a test row at the end of each frame; these are used to test charge transfer efficiency during the manufacturing process. Finally at the start of each row the register reads out one text pixel, used in the readout process, followed by 10 \emph{dummy pixels} which do not correspond to physical pixels on the sensor. These dummy pixels form an overscan region which can be used to measure the bias level.
+The sensor consists of a 50-megapixel CCD with $\SI{6}{\micro\metre} \times \SI{6}{\micro\metre}$ square pixels. The layout of the sensor is shown in \aref{fig:chip}, adapted from the ON Semiconductor sensor specification sheet. The sensor has $8304 \times 6220$ pixels with an imaging area of $8176 \times 6132$ pixels. When taking data in full-frame mode the camera outputs an $8304 \times 6220$ array. Surrounding the image area on each edge are 16 \emph{active buffer pixels}, which are light-sensitive but not considered part of the primary active region (they are not tested for deformities by the manufacturer). Around the edge of the active area is a border of light-shielded \emph{dark reference pixels}. These pixels do not respond to light and therefore can be used as a dark current reference. At the beginning and end of each row there is also a test column with 4 blank columns either side, as well as a test row at the end of each frame; these are used to test charge transfer efficiency during the manufacturing process. Finally, at the start of each row the register reads out a test pixel, used in the readout process, followed by 10 \emph{dummy pixels} which do not correspond to physical pixels on the sensor. These dummy pixels form an overscan region which can be used to measure the bias level.
 
-A sample frame from Camera 2 is shown in \aref{fig:frame} at high contrast. The extra regions around the frame are visible, including the dark reference and overscan regions.
+A sample frame from Camera 2 is shown in \aref{fig:frame} at high contrast. The extra regions around the image area are visible, including the dark reference and overscan regions.
 
 \begin{figure}[p]
     \begin{center}
         \includegraphics[width=0.85\textwidth]{images/chip}
     \end{center}
     \caption[The layout of the CCD chips in the MicroLine cameras used by GOTO]{
-        The layout of the CCD chips in the MicroLine cameras used by GOTO.\@ Note the central image area is not shown to scale.
+        The layout of the CCD chips in the MicroLine cameras used by GOTO.\@ The central image area is not shown to scale, but the surrounding rows and columns are all in proportion.
     }\label{fig:chip}
 \end{figure}
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{images/sample.png}
+        \includegraphics[width=0.65\textwidth]{images/sample.png}
     \end{center}
     \caption[A sample bright frame from one of the MicroLine cameras]{
         A sample bright frame from one of the MicroLine cameras. The highlighted area in the corner shows some of the features described in \aref{fig:chip}.
@@ -184,13 +177,7 @@ A sample frame from Camera 2 is shown in \aref{fig:frame} at high contrast. The 
 \label{sec:bias}
 \begin{colsection}
 
-The bias level is a fixed offset in counts for each pixel. Setting a reasonable bias level in a CCD is important in order to ensure counts are never recorded as negative due to random noise. In general the bias level of each pixel is considered a fixed value, although it can change over time due to degradation of the pixel electronics. Bias should therefore still be measured regularly, as any change might indicate a problem with the detector.
-
-Pixel bias levels can be measured by taking a dark, zero-second exposure time image. This image will not include any electrons from a source, so the shot noise is zero, and as the dark current is proportional to the exposure time this will also be minimised. The image will however still include random read-out noise, so to account for this multiple images are taken and then averaged to produce a master bias frame.
-
-For each of the eight cameras 50 bias images were taken, these were combined to form a master bias frame by taking the median value in each pixel (to account for superfluous counts due to cosmic rays). The mean count in a 2000$\times$2000 pixel region in the centre of each of the two camera channels was measured, using a one-sigma clip to exclude any defect pixels (see \aref{sec:defects}). These values are given in \aref{tab:bias}.
-
-The measured biases are all around the same level, 970--1010 counts, as would be expected. They also have a uniform standard deviation of approximately 0.3--0.4\% of the signal, which will come from the fixed-pattern noise (see \aref{sec:ptc}).
+The bias level in each pixel can be measured by taking a dark, zero-second exposure image. This image will not include any electrons from a source or background, so the shot noise is zero, and as the dark current is proportional to the exposure time this will also be minimised (there will be a small component due to the time taken to read out the sensor). To account for the read-out noise multiple images are taken, 50 for each of the eight cameras, and combined to form a master bias frame by taking the median value in each pixel (to eliminate cosmic rays). \aref{tab:bias} gives the median bias level from each master bias, measured within a 2000$\times$2000 pixel region in the centre of both channels, along with the standard deviation in the same region. The measured bias levels are all around 1000 counts, which would be typical for a bias level set by the manufacturer.
 
 \begin{table}[t]
     \begin{center}
@@ -224,110 +211,86 @@ The measured biases are all around the same level, 970--1010 counts, as would be
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
 \subsection{Gain, read-out noise and fixed-pattern noise}
 \label{sec:ptc}
 \begin{colsection}
 
-The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \gls{ptc} method \citep{CCDs, PTC}. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images the dark current noise is negligible, so once the images has the bias level subtracted the total number of electrons in each pixel, $N_\text{Total}$, will include a number of photo-electrons from the source $N$ plus extra electrons from the readout electronics $R$:
-
-\begin{equation}
-    N_\text{Total} = N + R.
-    \label{eq:total_count}
-\end{equation}
-
-The noise per pixel, excluding dark current, is given by \aref{eq:noise} as
-
+The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \glsfirst{ptc} method \citep{CCDs, PTC}. A photon transfer curve is a log-log plot of a signal value against the noise in the signal. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images there is no background signal, the cameras were cooled meaning dark current noise is negligible (see \aref{sec:dc}), and the master bias frames created in \aref{sec:bias} were subtracted from each frame. The total noise per pixel in electrons is therefore given by \aref{eq:noise} as
+%
 \begin{equation}
     \begin{split}
-        \sigma_\text{Total}^2 & = N + R^2 + k_\text{FP}^2 N^2 \\
-                              & = N_\text{Total} - R + R^2 + k_\text{FP}^2{(N_\text{Total} - R)}^2.
+        \sigma_\text{Total}^2 & = \sigma_\text{O}^2 +
+                                  \sigma_\text{RO}^2 +
+                                  \sigma_\text{FP}^2 \\
+                              & = N + R^2 + k_\text{FP}^2{(N)}^2.
     \end{split}
-    \label{eq:ptc_noise1}
+    \label{eq:noise_2}
 \end{equation}
 
-The counts and total noise here are all in electrons (\elec), however the output of the camera analog-to-digital converter is a digital signal, $S$, measured in \gls{adu}. This signal is linearly related to the actual number of electrons detected $N_\text{Total}$ through the gain $g$, in \elec/ADU, as
-
+The signal and total noise in \aref{eq:noise} are all in electrons (\elec), however the output of the camera's \glsfirst{adc} is a digital signal, $S$, measured in counts or \glsfirst{adu}. This signal is linearly related to the actual number of electrons detected $N$ through the gain $g$, in \elec/ADU, as
+%
 \begin{equation}
-    N_\text{Total} = g S.
+    N = g S.
     \label{eq:gain}
 \end{equation}
+%
+The gain is an important parameter of a CCD, and is set by the manufacturer based on the properties of the detector. For example, if a CCD has the gain set to 3 \elec/ADU then pixels containing 0, 1 or 2 electrons would all have a measured value of 0 ADU;\@ this is a form of rounding error called quantisation error. If the camera had a read-out noise of 1 \elec{} per pixel then the readout-noise would be under-sampled, and setting a lower gain would be required. However, setting the gain too low results in the full-well capacity of each pixel being underutilised. The KAF-50100 detectors have a full well capacity of 40,300 electrons, and the cameras have a 16-bit ADC (meaning the signal from each pixel can vary from 0 to 65535 ($2^{16}-1$) ADU). If the gain is set to $0.5$ \elec/ADU then the ADC would saturate after reading 32768 electrons, which is much less than the capacity of each pixel. Setting the gain therefore is a balance between these two effects.
 
-The gain is an important parameter of a CCD detector, and can be set to best utilise the dynamic range of the detector. The KAF-50100 detectors have a specification full well capacity of 40,300 electrons before they saturate, and the cameras have a 16-bit readout (meaning the signal from each pixel can vary from 0 to 65535 ($2^{16}$) ADU). Therefore if the gain was set to $1$ \elec/ADU a saturated pixel would produce a signal of 40300 ADU, which is only using two-thirds of the dynamic range. The ideal gain to utilise the full well capacity for these cameras would therefore be $0.62$ \elec/ADU.\@ However, a high gain introduces a quantisation error due to the random electrons produced by the read-out noise. Setting the gain therefore is a balance between these two effects.
-
-Since \aref{eq:gain} shows the signal $S$ is directly proportional to the number of electrons $N$, their errors are also directly proportional with the same constant. Therefore the noise in the signal, $\sigma_S$, is related to the noise in the total electron count as
-
+Using the gain \aref{eq:noise_2} can be converted to give the noise in ADU,
+%
 \begin{equation}
-    \sigma_\text{Total} = g \sigma_S.
-    \label{eq:noise_gain}
-\end{equation}
-
-Converting the total electron count and noise in \aref{eq:ptc_noise1} into ADU results in
-
-\begin{equation}
-    g^2\sigma_S^2 = gS - R + R^2 + k_\text{FP}^2 {(gS - R)}^2,
-    \label{eq:ptc_noise2}
-\end{equation}
-
-and rearranging this gives the final photon transfer curve equation
-
-\begin{equation}
-    \sigma_S^2 = \frac{R^2(1-k_\text{FP}^2) - R}{g^2} + \frac{1}{g}S + k_\text{FP}^2 S^2.
+    \sigma_S^2 = \frac{1}{g} S + \frac{R^2}{g^2} + \frac{k_\text{FP}^2}{g^2} S^2.
     \label{eq:ptc}
 \end{equation}
 
-This is a quadratic equation in $S$ which relates the measured total signal $S$ to the variance in the signal $\sigma_S^2$, where $S$ and $\sigma_S$ are in ADU, read-out noise $R$ is still in \elec, gain $g$ is in \elec/ADU and the fixed-pattern noise parameter $k_\text{FP}$ is dimensionless. Since $k_\text{FP}$ is expected to be a very small fraction, typically less than 1\%, the $(1-k_\text{FP}^2)$ factor is often ignored. As well the constant is often further simplified to just $R^2/g^2$, which could be considered as $R_S^2$ where $R_S$ is measured in ADU.\@ For this test the full equation was used when fitting to the data.
-
-A photon transfer curve is a log-log plot of a signal value against the noise in the signal, here represented by $S$ and standard deviation $\sigma_S$ (the square root of the variance). By fitting \aref{eq:ptc} to this plot values for the gain, read-out noise and fixed-pattern noise can be determined. The key features of a photon transfer curve are common for all CCDs, and are shown in cartoon form in \aref{fig:ptc_cartoon}.
+\newpage
 
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=0.75\textwidth]{images/ptc.pdf}
     \end{center}
     \caption[Key features of the photon transfer curve]{
-        The key features of a photon transfer curve, adapted from Figure 2.2 of \citet{CCDs}.
+        The key features of a photon transfer curve, adapted from \citet{CCDs}.
     }\label{fig:ptc_cartoon}
 \end{figure}
 
-There are three visible noise regimes in the photon transfer curve. The first is when the signal is zero. For small $S$ in \aref{eq:ptc} the noise is constant, and as there is no signal the overall noise is limited by the detector noise. This will include both the read-out noise and the dark current, but as these are very short exposure times (less than 1 second) the dark current is completely negligible and the read-out noise dominates. At higher signals the noise is dominated by the shot noise. As this is proportional to the square root of the signal this region has a gradient of 1/2 when plotted on the log-log axis, and when $\sigma_S$ is zero the signal will equal the gain (i.e.\ the value of the gain is where the linear fit crosses the x-axis). As the signal increases further the fixed-pattern noise begins to dominate over the shot noise, as it is proportional to the signal this produces a gradient of 1 in the \gls{ptc}. Finally the pixel will reach its full well value and saturate, so the noise drops to zero.
+\aref{eq:ptc} is a quadratic equation in $S$ which relates the measured total signal $S$ to the variance in the signal $\sigma_S^2$, and can be fitted to a photon transfer curve to determine values for the gain $g$, read-out noise $R$ and fixed-pattern noise $k_\text{FP}$. The key features of a photon transfer curve are common for all CCDs, and are shown in cartoon form in \aref{fig:ptc_cartoon}. The first noise regime is when the signal is small; for small $S$ in \aref{eq:ptc} the noise is constant, and as there is no signal the overall noise is limited by the detector noise. This will include both the read-out noise and the dark current, but for the very short exposure times used (less than 1 second) the dark current is negligible and the read-out noise dominates. At higher signals the noise is dominated by the shot noise which is proportional to the $\sqrt{S}$, so this region has a gradient of 1/2 when plotted on the log-log axis and value of the gain is where the linear fit crosses the x-axis (when $S=0$). As the signal increases further the fixed-pattern noise begins to dominate, and, as this noise is proportional to the signal, this produces a gradient of 1 in the PTC.\@ Finally, the pixel reaches its full well capacity (assuming the gain has been set so this occurs before the ADU saturates), so the noise drops to zero.
 
-As it is impossible to know the exact number of incoming photons on each pixel, it is not possible to determine the signal and noise values for a given pixel. Instead the PTC is constructed by selecting a region of pixels and plotting the mean signal value against the standard deviation. Repeated for several regions across the image this gives a reasonable approximation of the average noise in each pixel.
+\newpage
 
 \begin{table}[t]
     \begin{center}
-        \begin{tabular}{l|cc|cc|cc} %chktex 44
+        \begin{tabular}{l|cc|cc|cc|cc} %chktex 44
              &
             \multicolumn{2}{c|}{Gain} &
             \multicolumn{2}{c|}{RO noise} &
-            \multicolumn{2}{c}{FP noise} \\
+            \multicolumn{2}{c|}{FP noise} &
+            \multicolumn{2}{c}{Saturation level} \\
             &
             \multicolumn{2}{c|}{(\elec/ADU)} &
             \multicolumn{2}{c|}{(\elec)} &
-            \multicolumn{2}{c}{(\%)} \\
-             & L & R & L & R & L & R \\
+            \multicolumn{2}{c|}{(\%)} &
+            \multicolumn{2}{c}{(ADU)} \\
+             & L & R & L & R & L & R & L & R \\
             \midrule
-            Camera 1 & 0.53 & 0.53 & 12.9 & 12.6 & 0.46 & 0.45 \\
-            Camera 2 & 0.53 & 0.53 & 12.4 & 12.2 & 0.44 & 0.46 \\
-            Camera 3 & 0.57 & 0.57 & 13.1 & 12.3 & 0.45 & 0.42 \\
-            Camera 4 & 0.57 & 0.58 & 14.0 & 14.5 & 0.41 & 0.43 \\
-            Camera 5 & 0.62 & 0.63 & 12.8 & 13.3 & 0.40 & 0.40 \\
-            Camera 6 & 0.63 & 0.62 & 12.4 & 13.1 & 0.40 & 0.40 \\
-            Camera 7 & 0.62 & 0.62 & 13.6 & 13.1 & 0.41 & 0.39 \\
-            Camera 8 & 0.62 & 0.62 & 14.8 & 12.8 & 0.41 & 0.39 \\
+            Camera 1 & 0.53 & 0.53 & 12.4 & 12.0 & 0.24 & 0.24 & 64568 & 64585 \\
+            Camera 2 & 0.53 & 0.53 & 11.9 & 11.7 & 0.23 & 0.24 & 64552 & 64555 \\
+            Camera 3 & 0.57 & 0.57 & 12.6 & 11.8 & 0.26 & 0.24 & 64540 & 64552 \\
+            Camera 4 & 0.57 & 0.58 & 13.4 & 14.0 & 0.24 & 0.25 & 64577 & 64536 \\
+            Camera 5 & 0.62 & 0.63 & 12.3 & 12.8 & 0.25 & 0.25 & 64544 & 64550 \\
+            Camera 6 & 0.63 & 0.62 & 11.8 & 12.6 & 0.25 & 0.25 & 64554 & 64545 \\
+            Camera 7 & 0.62 & 0.62 & 13.1 & 12.5 & 0.25 & 0.24 & 64544 & 64552 \\
+            Camera 8 & 0.62 & 0.62 & 14.3 & 12.2 & 0.26 & 0.25 & 64529 & 64522 \\
         \end{tabular}
     \end{center}
-    \caption[Gain, read-out noise and fixed-pattern noise values]{
-        Gain, read-out noise and fixed-pattern noise values found by fitting photon transfer curves for each camera.
+    \caption[Gain, read-out noise, fixed-pattern noise and saturation values]{
+        Gain, read-out noise, fixed-pattern noise and saturation values found by fitting photon transfer curves for each camera.
     }\label{tab:ptc}
 \end{table}
 
-\glspl{ptc} were constructed for all eight cameras, by taking flat images of varying exposure times. Twelve 50$\times$50 pixel regions were selected across the field, and the mean and standard deviation of the pixel values were plotted to form the \gls{ptc}. These are shown in \aref{fig:ptcs}. The curves were fitted to \aref{eq:ptc}, and the resulting values for the gain ($g$), read-out noise ($R$) and fixed-pattern noise ($k_\text{FP}$) are given in \aref{tab:ptc}.
+Photon transfer curves were constructed for all eight cameras, by taking flat fields of varying exposure times between \SI{0.01}{\second} and \SI{90}{\second}. Twelve 50$\times$50 pixel regions were selected across the field, and the mean and standard deviation of the pixel values within each region were plotted to form the PTC for each camera, shown in \aref{fig:ptcs}. \aref{eq:ptc} was then fitted to the data, and the resulting values for the gain ($g$), read-out noise ($R$) and fixed-pattern noise ($k_\text{FP}$) parameters are given in \aref{tab:ptc}. The saturation level for each channel was also measured as the maximum signal (the point where the PTC turns over and the noise drops), these values are also given in \aref{tab:ptc}.
 
-As expected, the gain values are all around 0.6 \elec/ADU, and would have been set as such to maximise the dynamic range. There is a clear difference in gain levels between the first set of cameras (1--4) and the second set (5--8), which is most likely due to changes made by FLI over the two years between their manufacture.
-
-The read-out noise values match the FLI specifications which advertises a typical system noise of 12 \elec{} when reading out at \SI{8}{\mega\hertz}. The two channels on each camera are independent and therefore there is no correlation in read-out noise, unlike the gain which is always approximately the same in each amplifier.
-
-Finally, as expected the fixed-pattern noise is a low fraction of the signal. It notably decreases from $\sim$0.45\% to $\sim$0.40\%; if this is related to improved chip manufacturing this may be related to the change in gain in the later cameras. However, this test only includes a small sample of the 50 million pixels on each chip and so may not be a perfect measure of the overall photo response non-uniformity. The values for the fixed-pattern noise also match the standard deviations measured in the master biases in \aref{sec:bias}.
+The gain values are all around 0.6 \elec/ADU, and would have been set as such to maximise the dynamic range based on the full well capacity. The saturation levels are all around 64550, and 64550 $\times$ 0.6 $\approx$ 39,000 \elec, which is matches the advertised 40,300 capacity. The read-out noise values also match the FLI specifications, which advertise a typical read-out noise of 12 \elec{} for the MicroLine cameras. Finally, the fixed-pattern noise is a low fraction of the signal. This was to be expected, as modern CCD sensors have very low pixel non-uniformities.
 
 \begin{figure}[p]
     \begin{center}
@@ -360,7 +323,7 @@ Finally, as expected the fixed-pattern noise is a low fraction of the signal. It
         \end{minipage}
     \end{center}
     \caption[Photon transfer curve plots]{
-        Photon transfer curve plots for each camera.
+        Photon transfer curve plots for each camera. The vertical dashed line shows the measured saturation level.
     }\label{fig:ptcs}
 \end{figure}
 
@@ -374,23 +337,23 @@ Finally, as expected the fixed-pattern noise is a low fraction of the signal. It
 \label{sec:dc}
 \begin{colsection}
 
-Dark current is another source of noise in a CCD, produced by thermally excited electrons \citep{dark_current}. The dark current noise is therefore independent of the incoming signal or the exposure time, but increases as a function of temperature, $T$. Specifically the dark current increases at an exponential rate and so can be modelled in the form
-
+Dark current noise is independent of the incoming signal but depends on the exposure time of the image. It also increases as a function of temperature, $T$. The dark current per second increases at an exponential rate and can be modelled using the equation
+%
 \begin{equation}
-    D(T) = Ae^{kT + C}
+    D(T) = Ae^{kT + C},
     \label{eq:dark_model}
 \end{equation}
-
+%
 where $A$, $k$ and $C$ are constants. Dark current is usually defined as doubling after a fixed increase in temperature called the doubling temperature, $T_d$, so that if the dark current $D(T_0) = D_0$ then $D(T_0 + T_d) = 2D_0$. Redefining \aref{eq:dark_model} using these constants gives the equation for dark currant as
-
+%
 \begin{equation}
     D(T) = D_0 e^{\frac{\ln(2)}{T_d}(T + T_0)}.
     \label{eq:dc}
 \end{equation}
-
+%
 The choice of $T_0$ is arbitrary, and is usually decided as a reasonable operating temperature by the CCD manufacturer. The FLI specifications give a value for the typical dark current at \SI{-25}{\celsius}, so that is the value of $T_0$ used in this test.
 
-The MicroLine cameras have an in-built fan cooler which can reach \SI{40}{\celsius} below the ambient temperature. In order to find values for the dark current $D_0$ and doubling temperature $T_d$, a series of long (30 minute) dark exposures were taken with each camera at varying temperatures. The mean pixel count was then measured, and divided by 1800 to get the dark current in ADU/second. This value was plotted against temperature as shown in \aref{fig:dcs}. The points were fitted to \aref{eq:dc}, and the resulting values for the dark current and doubling temperature are given in \aref{tab:dc}.
+In order to find values for the dark current $D_0$ and doubling temperature $T_d$, a series of long (30 minute) dark exposures were taken with each camera at varying temperatures. The MicroLine cameras have an in-built air-cooled peltier cooler which can reach \SI{40}{\celsius} below the ambient temperature. The laboratory the tests were carried out were air-conditioned, but only to a typical office level and the cameras were unable to reach below \SI{-26}{\celsius} even when taking images in the middle of the night. The median dark signal was then measured in a 2000$\times$2000 pixel region in the centre of each channel, and divided by 1800 to get the dark current in ADU/second. This value was plotted against temperature, as shown in \aref{fig:dcs}. The points were fitted by \aref{eq:dc}, and the resulting values for the dark current and doubling temperature are given in \aref{tab:dc}.
 
 \begin{table}[t]
     \begin{center}
@@ -423,11 +386,11 @@ The MicroLine cameras have an in-built fan cooler which can reach \SI{40}{\celsi
     }\label{tab:dc}
 \end{table}
 
-The FLI MicroLine camera specification for dark current changed between the two test periods; initially it gave a typical per-pixel value of 0.002~\elec/s at \SI{-25}{\celsius}, but in between testing the two sets of cameras that was increased to 0.008~\elec/s. In order to convert the fitted value of dark current in ADU/s to e-/s the individual gain values found from the PTC were used, as listed in \aref{tab:ptc}. All the cameras were found to have a dark current well within the revised specification value, and all except Camera 3 are comfortably below the original 0.002~\elec/s specification.
+The FLI specification for dark current changed between the two test periods; initially the company gave a typical per-pixel value of 0.002~\elec/s at \SI{-25}{\celsius}, for the second set of cameras this was increased to 0.008~\elec/s. All the cameras were found to have a dark current well within the revised specification value, and all except Camera 3 are comfortably below the original 0.002~\elec/s specification.
 
-The KAF-50100 specification includes a value for the dark current doubling temperature of \SI{5.7}{\celsius}, the measured values are all higher: between 6.5--\SI{11}{\celsius}. In practice the temperature dependence of the dark current is not important to GOTO, as the cameras are always cooled to \SI{-25}{\celsius} before images are taken and remain steady at that temperature throughout the night.
+The KAF-50100 specification includes a value for the doubling temperature of \SI{5.7}{\celsius} but the measured values are all higher than this. In practice the temperature dependence of the dark current is not important, the GOTO cameras are cooled to \SI{-20}{\celsius} in the evening and remain there through the night (\SI{-20}{\celsius} is used instead of \SI{-25}{\celsius} as during the summer on La Palma the ambient nightly temperature can reach higher than \SI{15}{\celsius}).
 
-The dark current was also examined as a function of time since power on, as in some cameras there are a noticeable amount of free electrons left trapped in the lattice which take time to dissipate \citep{Liam}. No such trend was visible using the FLI cameras. Since the MicroLine cameras have the detector and cooler integrated into the same body there has to be some time spent waiting after power on for the camera to cool to the target temperature before any images could be taken, thus negating the effect.
+The dark current was also examined as a function of time since power on, as in some cameras there are a noticeable amount of free electrons left trapped in the lattice which take time to dissipate \citep{Liam}. No such trend was visible using the FLI cameras. Since the MicroLine cameras have the detector and cooler integrated into the same body there has to be some time spent waiting after power on for the camera to cool to the target temperature before any images can be taken, thus negating the effect.
 
 \begin{figure}[p]
     \begin{center}
@@ -474,11 +437,11 @@ The dark current was also examined as a function of time since power on, as in s
 \label{sec:lin}
 \begin{colsection}
 
-Linearity is a measure of the response of the CCD over its dynamic range. It is particularly important for scientific imaging that the measured counts are directly proportional to the object signal.
+Linearity is a measure of the response of the CCD over its dynamic range. The output counts should ideally be linearly related to the input photons, i.e.\@ if the target doubles in brightness then double the counts are recorded.
 
-The non-linearity of each camera was measured using the same images taken for the photon transfer curves in \aref{sec:ptc}, bright images of a flat source with increasing exposure times. The images were bias-subtracted, and the mean counts of a central 2000$\times$2000 pixel region in the centre of each channel was plotted against the exposure time, shown in \aref{fig:lin}. A linear relation was fitted to the central potion of the data, excluding the upper and lower 10\% of the dynamic range. Residuals from this fit as a percentage of the count are also plotted in \aref{fig:lin}, and the mean absolute deviation from the linear fit over the central region is given in \aref{tab:lin}.
+The non-linearity of each camera was measured using the same images taken for the photon transfer curves in \aref{sec:ptc} --- bright images of a flat field with increasing exposure times. The images were bias-subtracted, and the median counts of a central 2000$\times$2000 pixel region in the centre of each channel was plotted against the exposure time, shown in \aref{fig:lin}. A linear relation was fitted to the central potion of the data, excluding the upper and lower 10\% of the dynamic range. Residuals from this fit as a percentage of the median count are also plotted in \aref{fig:lin}, and the mean absolute deviation from the linear fit over the central region is given in \aref{tab:lin}.
 
-The values for non-linearity measured vary greatly between each camera, and several are over 1\%. If these values were true this would be a major problem when making accurate photometric measurements. However, the FLI specification advertises a non-linearity of <1\%, and FLI's own tests of the cameras consistently report non-linearity of 0.2\% or less. Accurately measuring the response of a CCD requires a perfectly uniform light source and an integrating sphere, which FLI would have access to. I had to make do with a LCD screen when carrying out the tests in the lab, which is a poor substitute. Therefore the values in \aref{tab:lin} should not be considered reliable measurements.
+The values for non-linearity measured vary greatly between each camera, and several are over 1\%. If these values were true this would be a major problem when making accurate photometric measurements. However, the FLI specification advertises a non-linearity of <1\%, and FLI's own tests of the cameras consistently report non-linearity of 0.2\% or less. Accurately measuring the response of a CCD requires a uniform light source that is perfectly stable with time, which FLI would have access to. I had to make do with a LCD screen when carrying out the tests in the lab, which is a poor substitute. Therefore the values in \aref{tab:lin} should not be considered reliable measurements.
 
 \begin{table}[t]
     \begin{center}
@@ -511,36 +474,36 @@ The values for non-linearity measured vary greatly between each camera, and seve
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_1.png}
         \end{minipage}
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_2.png}
         \end{minipage}
 
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_3.png}
         \end{minipage}
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_4.png}
         \end{minipage}
 
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_5.png}
         \end{minipage}
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_6.png}
         \end{minipage}
 
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_7.png}
         \end{minipage}
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.47\textwidth}\vspace{10pt}
             \includegraphics[width=\linewidth]{images/detectors/lin_8.png}
         \end{minipage}
     \end{center}
     \caption[Linearity plots]{
-        Linearity plots for each camera.
+        Linearity plots for each camera. The horizontal dashed line in the top panel shows the saturation level from \aref{tab:ptc}, and the dashed lines in the lower panels show the target $\pm$1\% non-linearity range.
     }\label{fig:lin}
 \end{figure}
 
@@ -554,14 +517,14 @@ The values for non-linearity measured vary greatly between each camera, and seve
 \label{sec:defects}
 \begin{colsection}
 
-There are several possible defects in CCD sensors \citep{CCDs}: hot pixels, which have atypically high dark currents, dead pixels, which produce zero counts, and trap pixels, which ``trap'' electrons and prevent read out from it and any pixels above it in the column. For targeted astronomical observations it is important to track any bad pixels, so whenever possible photons from the target object does not fall on any of them. GOTO's wide-field survey observations make this less of an issue, but the pipeline will track bad pixels and columns when calibrating images from each camera.
+There are several possible defects in CCD sensors \citep{CCDs}: hot pixels, which have atypically high dark currents, dead pixels, which produce low or zero counts, and trap pixels, which ``trap'' electrons and prevent read out from it and any pixels above it in the column. It is important to identify any bad pixels so that the GOTOphoto pipeline (see \aref{sec:gotophoto}) can mask them when reducing the images from each camera.
 
-Single hot or dead pixels are not a major problem, as they can be removed by subtracting bias frames and flat fielding. If necessary the value of the bad pixel can be interpolated from the surrounding pixels. Trap pixels are more of an issue, as they take out the entire column behind them. For each camera a defect mask was made by taking the ratio of two flat images with different exposure times, making any bad pixels or columns easy to pick out by comparing to the surrounding pixels. And example of a trap pixel is shown in \aref{fig:itsatrap}. The positions of trap pixels for each camera are given in \aref{tab:traps}. The KAF-50100 chip specification gives an allowed limit of less than 20 column defects per device, which the GOTO cameras are well within.
+Single hot or dead pixels can be removed to some extent by subtracting dark frames and flat fielding. Trap pixels are more of an issue, as they can take out up to the entire column. For each camera a defect mask was made by taking the ratio of two flat field images with different exposure times, making any bad columns easy to pick out by comparing to the surrounding pixels. An example of a bad column caused by a trap pixel is shown in \aref{fig:itsatrap}. The positions of bad columns for each camera are given in \aref{tab:traps}. The KAF-50100 chip specification gives an allowed limit of less than 20 column defects per device, which the GOTO cameras are well within.
 
 \begin{table}[t]
     \begin{center}
         \begin{tabular}{c|ccc} %chktex 44
-             & \multicolumn{2}{c}{Trap location} & Lost \\
+             & \multicolumn{2}{c}{Trap location} & Height \\
              & x & y & \% \\
             \midrule
             Camera 1 & 7751 & 4361 & 30 \\
@@ -574,7 +537,7 @@ Single hot or dead pixels are not a major problem, as they can be removed by sub
         \end{tabular}
         \hspace{0.5cm}
         \begin{tabular}{c|ccc} %chktex 44
-            & \multicolumn{2}{c}{Trap location} & Lost \\
+            & \multicolumn{2}{c}{Trap location} & Height \\
             & x & y & \% \\
             \midrule
             Camera 7 & 1344 & 3037 & 51 \\
@@ -586,8 +549,8 @@ Single hot or dead pixels are not a major problem, as they can be removed by sub
             \multicolumn{4}{c}{} \\
         \end{tabular}
     \end{center}
-    \caption[Locations of trap pixels]{
-        Locations of trap pixels and fraction of the column lost for each camera.
+    \caption[Locations of bad columns]{
+        Locations and extent (as a percentage of the total column height) of bad columns for each camera.
     }\label{tab:traps}
 \end{table}
 
@@ -595,8 +558,8 @@ Single hot or dead pixels are not a major problem, as they can be removed by sub
     \begin{center}
         \includegraphics[width=\textwidth]{images/detectors/defect_plot.pdf}
     \end{center}
-    \caption[An example of a trap pixel]{
-        A flat frame for Camera 1 showing an example of a trap pixel. The plot below of counts averaged in the y axis clearly shows the bad column, and the depth of the well beneath the field level is proportional to the height of the trap pixel in the column.
+    \caption[An example of a column defect]{
+        A flat field for Camera 1 showing a bad column. The location of the trap pixel is magnified, the pixels in the column above the trap have been prevented from being read out. The bad column is also also clearly visible in the plot below showing counts averaged in the y axis.
     }\label{fig:itsatrap}
 \end{figure}
 
@@ -619,7 +582,7 @@ Single hot or dead pixels are not a major problem, as they can be removed by sub
 
 \begin{colsection}
 
-Unfortunately, not every photon emitted by a target object will reach our cameras. Photons will be lost due to the finite transmittance of the telescope optics, and before that a certain fraction of light will be lost due to extension in the atmosphere. Understanding each element is required in order to produce a complete throughput model.
+Unfortunately, not every photon emitted by a target object will be recorded by a telescope. Photons will be lost due to absorption and scattering in the Earth's atmosphere, and the telescope's optics and camera. Understanding each of these factors is required in order to produce a complete throughput model, which can then be compared to the real system (in \aref{sec:onsky_comparison}) to see if the hardware is performing to the expected level.
 
 \end{colsection}
 
@@ -628,12 +591,12 @@ Unfortunately, not every photon emitted by a target object will reach our camera
 \label{sec:optics}
 \begin{colsection}
 
-The GOTO unit telescopes are Wynne-Newtonian astrographs: fast (f/2.5) Newtonian telescopes with a \SI{40}{\centi\meter} primary mirror, a flat elliptical secondary (\SI{19}{\centi\metre} short axis) and a three-lens Wynne corrector between the secondary mirror and camera to focus light back onto the CCD detector. The full \gls{ota} design is shown in \aref{fig:ota}, and the five elements the light must pass through (the three corrector lenses, the filter in the filter wheel and the window in front of the detector) are shown in \aref{fig:wynne}. In order to correctly model the throughput each element needed to be considered in turn.
+As described in \aref{sec:goto_design}, the GOTO unit telescopes are Wynne-Newtonian astrographs: fast (f/2.5) Newtonian telescopes with a \SI{40}{\centi\meter} primary mirror, a flat elliptical secondary (\SI{19}{\centi\metre} short axis) and a Wynne corrector between the secondary and the camera. A drawing of the \glsfirst{ota} is shown in \aref{fig:ota}, and the five elements the light must pass through (the three corrector lenses, the filter in the filter wheel and the window in front of the detector) are shown in \aref{fig:wynne}. In order to model the throughput each element needed to be considered in turn.
 
 % ---------
 \subsubsection{Mirrors}
 
-The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Optics\footnote{\url{https://www.orionoptics.co.uk/}}. Orion uses their own ``HiLux'' high reflectivity coating, and while individual reflectance curves were not available for the GOTO mirrors at the time this work was carried out Orion does provide a representative reflectance curve on their website (shown in \aref{fig:trans_ota}). As there are two mirrors this curve will be included twice in the final throughput model. Orion's website states that the difference in angle of incidence of the two mirrors is accounted for in the thickness of the coating applied, so otherwise the two mirrors can be treated as identical.
+The GOTO mirrors are were manufactured by Orion Optics\footnote{\url{https://www.orionoptics.co.uk/}}. Orion used their own ``HiLux'' high reflectivity aluminium coating, and while individual reflectance curves were not available for the GOTO mirrors at the time this work was carried out, Orion did provide a representative reflectance curve on their website (shown in \aref{fig:trans_ota}). As there are two mirrors this curve will be included twice in the final throughput model. The difference in the angle of incidence of light on the two mirrors is accounted for in the coating applied to each mirror, so the reflectivity curves of the two are assumed to be identical.
 
 \newpage
 
@@ -642,7 +605,7 @@ The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Op
         \includegraphics[width=0.7\textwidth]{images/throughput/OTA_optics.png}
     \end{center}
     \caption[GOTO optical telescope assembly]{
-        The \gls{ota} design for one of the GOTO prototype unit telescopes. Light enters from the left, and the optical elements have been highlighted: the primary mirror in \textcolorbf{Green}{green}, the secondary mirror in \textcolorbf{BlueGreen}{blue}, the Wynne corrector lenses in \textcolorbf{Red}{red} and the FLI camera hardware (focuser, filter wheel and camera) in \textcolorbf{Purple}{purple}.
+        The \glsfirst{ota} design for one of the GOTO unit telescopes. Light enters from the left, and relevant elements have been highlighted: the primary mirror in \textcolorbf{Green}{green}, the secondary mirror in \textcolorbf{BlueGreen}{blue}, the Wynne corrector in \textcolorbf{Red}{red} and the FLI camera hardware in \textcolorbf{Purple}{purple}.
     }\label{fig:ota}
 \end{figure}
 
@@ -651,7 +614,7 @@ The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Op
         \includegraphics[width=0.7\textwidth]{images/throughput/wynne.pdf}
     \end{center}
     \caption[Ray tracing the corrector elements]{
-        A ray trace showing the optical elements after the secondary mirror. From left-to-right light passes through the three Wynne corrector lenses, the focuser (which contains no optical elements), the filter in the filter wheel and the camera window before reaching the detector located in the focal plane.
+        A ray trace through the optical elements after the primary and secondary mirrors. From left-to-right light passes through the three Wynne corrector lenses, the filter, and the camera window before reaching the detector located in the focal plane.
     }\label{fig:wynne}
 \end{figure}
 
@@ -662,12 +625,13 @@ The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Op
 
 \begin{table}[t]
     \begin{center}
-        \begin{tabular}{c|cccc} %chktex 44
-            Lens & Type     & Glass (manufacturer) & Diameter               & On-axis thickness \\
+        \begin{tabular}{c|ccccc|c} %chktex 44
+                 &       &                        & \multicolumn{2}{c}{Radius of curvature}         & On-axis               & Glass \\
+            Lens & Shape & Diameter               & Exterior               & Interior               & thickness             & type \\
             \midrule
-               1 & Crescent &    H-K9L (Schott)    & \SI{120}{\milli\meter} & \SI{12}{\milli\meter} \\
-               2 & Crescent &    H-K9L (Schott)    & \SI{90}{\milli\meter}  & \SI{5}{\milli\meter} \\
-               3 & Biconvex &  S-FPL53 (Ohara)     & \SI{90}{\milli\meter}  & \SI{20}{\milli\meter} \\
+            1 & Meniscus & \SI{120}{\milli\metre} &  \SI{89}{\milli\metre} &  \SI{86}{\milli\metre} & \SI{12}{\milli\metre} & H-K9L   \\
+            2 & Meniscus &  \SI{90}{\milli\metre} & \SI{278}{\milli\metre} &  \SI{71}{\milli\metre} &  \SI{5}{\milli\metre} & H-K9L   \\
+            3 & Biconvex &  \SI{90}{\milli\metre} &  \SI{77}{\milli\metre} & \SI{378}{\milli\metre} & \SI{20}{\milli\metre} & S-FPL53 \\
         \end{tabular}
     \end{center}
     \caption[Wynne corrector lens properties]{
@@ -675,11 +639,19 @@ The GOTO mirrors are made of coated aluminium, and were manufactured by Orion Op
     }\label{tab:lenses}
 \end{table}
 
-Each Wynne corrector contains three lenses, as shown in \aref{fig:wynne}, and the physical details of each lens are given in \aref{tab:lenses}. No complete transmission data was available, so a model throughput curve was created.
+Each Wynne corrector contains three lenses, as shown in \aref{fig:wynne} --- the details of each lens are given in \aref{tab:lenses}. No complete transmission data was available, so a model throughput curve had to be created.
 
-Both the reflectivity of the front surface and the internal transmittance of the lens glass needs to be considered. Each lens was coated with an anti-reflection coating, the profile of which was included in the GOTO optical report. Transmittance curves for each lens were not available, however the glass types were included in the report and are given in \aref{tab:lenses}. Transmittance data provided by the manufacturers was retrieved from the online Refractive Index Database\footnote{\url{https://refractiveindex.info/}}. For simplicity each lens was modelled as having a constant thickness, using their on-axis thickness. As shown in \aref{fig:wynne} this is true for lens 1 but will typically underestimate the thickness of lens 2 and overestimate the thickness of lens 3. However the thickness of glass each light path travels through should be the same, and as there is very little difference between the two types of glass the overall throughput will be approximately the same.
+For each lens the reflectivity of the front and rear surfaces and the internal transmittance of the glass needs to be considered. Each surface is coated with an anti-reflection coating, the profile of which was included in the GOTO optical report. Transmittance curves for each lens were not available, but the glass types were included in the report and are given in \aref{tab:lenses}. Transmittance data provided by the glass manufacturers were retrieved from the online Refractive Index Database\footnote{\url{https://refractiveindex.info/}}. For simplicity, each lens was modelled as having a constant thickness, using their on-axis thickness. As shown in \aref{fig:wynne}, this is a good approximation for lens 1 but will underestimate the absorption within lens 2 and overestimate the absorption within lens 3.
 
-Throughput curves for the anti-reflection coating and the three lenses are shown in \aref{fig:trans_lenses}, along with the total throughput found by multiplying the contribution from the glass and coating for each lens.
+Throughput curves for the anti-reflection coatings and the glass for the three lenses are shown in \aref{fig:trans_lenses} along with the total throughput of the corrector, found by multiplying the contributions from the glass transmission and the coating on both surfaces of each lens:
+%
+\begin{equation}
+    T_\text{corrector} = T_\text{Lens1} \times
+                         T_\text{Lens2} \times
+                         T_\text{Lens3} \times
+                         {(T_\text{coating})}^6.
+    \label{eq:corrector}
+\end{equation}
 
 \newpage
 
@@ -688,33 +660,40 @@ Throughput curves for the anti-reflection coating and the three lenses are shown
         \includegraphics[width=\textwidth]{images/throughput/trans_lenses.png}
     \end{center}
     \caption[Wynne corrector transmission curve]{
-        Transmission curve for the Wynne corrector, comprised of the three lenses each with an anti-reflection (AR) coating.
+        Transmission curve for the Wynne corrector (the \textcolorbf{Orange}{orange} solid line), comprised of the glass throughput of each lens (\textcolorbf{Red}{red}, \textcolorbf{Green}{green} and \textcolorbf{Purple}{purple} dashed lines) and an anti-reflection (AR) coating on all six surfaces (\textcolorbf{NavyBlue}{blue} dotted line).
     }\label{fig:trans_lenses}
 \end{figure}
 
 % ---------
 \subsubsection{Filters}
 
-The filter transmittance is included in their bandpass profiles, described below in \aref{sec:filters}. At this stage we will consider the \gls{ota} with no filter in place.
+The filter transmittance is included in their bandpass profiles, described below in \aref{sec:filters}. At this stage we will consider the OTA with no filter, so as to produce an unfiltered OTA transmission curve which can then by multiplied by the chosen filter bandpass.
 
 % ---------
 \subsubsection{Camera window}
 
-Finally, before reaching the detector light must pass through a glass window in the camera which protects the CCD sensor. The window is made of F116 glass, and a transmission profile was provided by FLI.\@ This is shown in \aref{fig:trans_ota}.
+Finally, before reaching the detector, light must pass through a glass window in the camera which protects the CCD sensor. The window is made of F116 glass, and a transmission profile was provided by FLI.\@ This is shown in \aref{fig:trans_ota}.
 
 \newpage
 
 % ---------
 \subsubsection{Combined OTA throughput}
 
-The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans_ota}. This was constructed by multiplying through the transmission curves for the two mirrors, the corrector and the camera window. In the 4000--\SI{7000}{\angstrom} visible region used by GOTO the throughput is typically 60\% or above, although all the elements have a sharp cut-off towards the UV at low wavelengths.
+The combined throughput for the whole unfiltered OTA is shown in \aref{fig:trans_ota}. This was constructed by multiplying through the transmission curves for the two mirrors, the corrector (from \aref{eq:corrector}) and the camera window:
+%
+\begin{equation}
+    T_\text{OTA} = {(T_\text{mirror})}^2 \times T_\text{corrector} \times T_\text{window}.
+    \label{eq:ota}
+\end{equation}
+%
+In the 4000--\SI{7000}{\angstrom} visible region used by GOTO the throughput is typically 60\% or above, although all the elements have a sharp cut-off towards the blue.
 
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=\textwidth]{images/throughput/trans_ota.png}
     \end{center}
     \caption[Combined OTA transmission curve]{
-        Transmission curve for the unfiltered OTA, including two mirrors, the corrector lenses and the camera window.
+        Transmission curve for the unfiltered OTA (the \textcolorbf{Red}{red} solid line), which includes the two mirrors (\textcolorbf{NavyBlue}{blue} dashed line), the combination of all three corrector lenses (\textcolorbf{Orange}{orange} dashed line, from \aref{fig:trans_lenses}) and the camera window (\textcolorbf{Green}{green} dashed line).
     }\label{fig:trans_ota}
 \end{figure}
 
