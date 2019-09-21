@@ -275,7 +275,7 @@ The key features of a photon transfer curve are common for all CCDs, and are sho
             Camera 5 & 0.62 & 0.63 & 12.3 & 12.8 & 0.40 & 0.40 & 64544 & 64550 \\
             Camera 6 & 0.63 & 0.62 & 11.8 & 12.6 & 0.40 & 0.40 & 64554 & 64545 \\
             Camera 7 & 0.62 & 0.62 & 13.1 & 12.5 & 0.41 & 0.39 & 64544 & 64552 \\
-            Camera 8 & 0.62 & 0.62 & 14.3 & 12.2 & 0.41 & 0.39 & 64529 & 64522 \
+            Camera 8 & 0.62 & 0.62 & 14.3 & 12.2 & 0.41 & 0.39 & 64529 & 64522 \\
         \end{tabular}
     \end{center}
     \caption[Gain, read-out noise, fixed-pattern noise and saturation values]{
@@ -285,7 +285,9 @@ The key features of a photon transfer curve are common for all CCDs, and are sho
 
 Photon transfer curves were constructed for all eight cameras, by taking flat fields of varying exposure times between \SI{0.01}{\second} and \SI{90}{\second}. Twelve 50$\times$50 pixel regions were selected across the field, and the mean and standard deviation of the pixel values within each region were plotted to form the PTC for each camera, shown in \aref{fig:ptcs}. \aref{eq:ptc} was then fitted to the data, and the resulting values for the gain ($g$), read-out noise ($R$) and fixed-pattern noise ($k_\text{FP}$) parameters are given in \aref{tab:ptc}. The saturation level for each channel was also measured as the maximum signal (the point where the PTC turns over and the noise drops), these values are also given in \aref{tab:ptc}.
 
-The gain values are all around 0.6 \elec/ADU, and would have been set as such to maximise the dynamic range based on the full well capacity. The saturation levels are all around 64550, and 64550 $\times$ 0.6 $\approx$ 39,000 \elec, which matches the advertised 40,300 capacity. The read-out noise values also match the FLI specifications, which advertise a typical read-out noise of 12 \elec{} for the MicroLine cameras. Finally, the fixed-pattern noise is a low fraction of the signal ($<0.5\%$). This was to be expected, as modern CCD sensors have very low pixel non-uniformities.
+The gain values are all around 0.6 \elec/ADU, and would have been set as such to maximise the dynamic range based on the full well capacity (65535\,$\times$\,0.6\,$\approx$\,40,000 \elec). The saturation levels are all around 64550 ADU, but note these images were bias-subtracted and \aref{sec:bias} found the bias levels were around 980--1000 ADU.\@ The read-out noise values match the FLI specification of 12 \elec{} for the MicroLine cameras, and also match the errors found in the master biases. Finally, the fixed-pattern noise is a very small fraction of the signal ($<0.5\%$) which suggests a low pixel non-uniformity.
+
+\newpage
 
 \begin{figure}[p]
     \begin{center}
@@ -748,7 +750,7 @@ The Baader filters were designed for amateur astronomers and astro-photographers
 
 \newpage
 
-\begin{figure}[t]
+\begin{figure}[p]
     \begin{center}
         \includegraphics[width=\textwidth]{images/throughput/filt_comp1.png}
     \end{center}
@@ -757,7 +759,7 @@ The Baader filters were designed for amateur astronomers and astro-photographers
     }\label{fig:filter_comparison1}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[p]
     \begin{center}
         \includegraphics[width=\textwidth]{images/throughput/filt_comp2.png}
     \end{center}
@@ -816,7 +818,7 @@ The complete GOTO throughput is a combination of all of the elements discussed i
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/throughput/ext.png}
+        \includegraphics[width=\textwidth]{images/throughput/ext2.png}
     \end{center}
     \caption[Atmospheric extinction in the GOTO filters]{
         Atmospheric extinction in the GOTO filters, in magnitude per airmass. The measured extinction curve from \citet{tn31} is shown by the black dashed line, and the filled lines show the extinction curve multiplied by the filter bandpasses from \aref{fig:filters} (shown by the coloured dotted lines).
@@ -831,7 +833,7 @@ The amount of light lost due to absorption and scattering in the atmosphere will
 
 Atmospheric extinction can be treated like the throughput elements considered in \aref{sec:total_throughput}, except it is not included in the throughput model as it is not a function of the GOTO hardware. For the \textit{LRGB} filters the mean extinction can be found by multiplying the extinction curve by the filter bandpasses, as shown in \aref{fig:extinction}, and then dividing the filled areas under each curve by the area of the unmodified filter bandpass. These extinction values are given in magnitudes per airmass in \aref{tab:throughput_extinction}.
 
-Another atmospheric factor unique to observing from La Palma is the \textit{calima}, large quantities of sand and dust from the Sahara Desert which can be carried over the site by westerly winds. The calima occurs most often in the summer, and analysis of dust-affected images has shown that the additional extinction is not wavelength dependent \citep{ORM_dust}. The extinction curve measured by \citep{tn31} was based on observations taken on dust-free nights, and the values in \aref{tab:throughput_extinction} do not include any additional extinction to model the effects of the calima. Based on analysing archival images over 20 years, \citet{ORM_dust} suggests the calima can increase the extinction by approximately 0.04 mag/airmass.
+Another atmospheric factor unique to observing from La Palma is the \textit{calima}, large quantities of sand and dust from the Sahara Desert which can be carried over the site by westerly winds. The calima occurs most often in the summer, and analysis of dust-affected images has shown that the additional extinction is not wavelength dependent \citep{ORM_dust}. The extinction curve measured by \citet{tn31} was based on observations taken on dust-free nights, and the values in \aref{tab:throughput_extinction} do not include any additional extinction to model the effects of the calima. Based on analysing archival images over 20 years, \citet{ORM_dust} suggests heady calima could increase the extinction by up to 0.04 mag/airmass.
 
 \begin{table}[t]
     \begin{center}
@@ -1167,22 +1169,22 @@ Each image was processed using the standard GOTOphoto pipeline described in \are
         \includegraphics[width=\textwidth]{images/throughput/zeropoint_real.png}
     \end{center}
     \caption[Finding the observed zeropoint from a GOTO image]{
-        Finding the observed zeropoint from a GOTO image.
+        Finding the observed zeropoint from a GOTO image. This particular frame was taken with UT1, the first of a set of three in the \textit{L} filter. It contains 8,271 matched sources, of which 8,188 have a signal-to-noise ratio (SNR) of 5 or less.
     }\label{fig:zeropoint}
 \end{figure}
 
 In order to find the zeropoint for each image a linear function was fitted to the measured instrumental magnitudes of each source as a function of the catalogue magnitude of the star it was matched against, with the $y$-intercept being equal to the zeropoint for that image. This is shown in \aref{fig:zeropoint} for one of the \textit{L}-band images. To exclude faint sources with large errors, only sources with a signal-to-noise ratio of 5$\sigma$ or above were included in the fit. This was repeated for every image, and the zeropoints for each are given in \aref{tab:zps_lms}.
 
-The theoretical zeropoints found in \aref{sec:model_zeropoints} were calculated for zero-magnitude stars above the atmosphere, i.e.\ not including the effects of atmospheric extinction described in \aref{sec:atmosphere}. Obviously the real zeropoints measured from GOTO images will include this effect, and so in order to compare the theoretical values to the observed zeropoints the extinction coefficients from \aref{tab:throughput_extinction} were subtracted (multiplied by 1.08, the airmass of the source at the time it was observed) from the theoretical values. This was done for each filter using the AB magnitudes from \aref{tab:pysynphot_zeropoints}, and the new theoretical zeropoints are given in \aref{tab:zps_comparison} along with the best observed zeropoint from each set of three images.
+The theoretical zeropoints found in \aref{sec:model_zeropoints} were calculated for zero-magnitude stars above the atmosphere, i.e.\ not including the effects of atmospheric extinction described in \aref{sec:atmosphere}. Obviously the real zeropoints measured from GOTO images will include this effect, and so in order to compare to the observed zeropoints the extinction coefficients from \aref{tab:throughput_extinction} were subtracted (multiplied by 1.08, the airmass of the source at the time it was observed) from the theoretical values. This was done for each filter using the AB magnitude zeropoints from \aref{tab:pysynphot_zeropoints}, as both the PS1 and APASS catalogues use AB magnitudes. The new theoretical zeropoints are given in \aref{tab:zps_comparison}, along with the best observed zeropoint from each set of three images.
 
-To measure the limiting magnitude from each image, the catalogue magnitude of each source was compared to the ratio of the source counts to the noise measured by Source Extractor, plotted in \aref{fig:lim_mag}. Sources with a signal-to-noise ratio between 4.5 and 5.5 were plotted on a histogram with bins of 0.1 mag, and the $5\sigma$ limiting magnitude was taken as the bin containing the most sources. The best limiting magnitudes from each set of three are given in \aref{tab:lms_comparison}, along with the theoretical dark-time limiting magnitudes from \aref{tab:lim_mags}.
+To measure the limiting magnitude from each image, the catalogue magnitude of each source was compared to the ratio of the source counts to the noise measured by Source Extractor, plotted in \aref{fig:lim_mag}. Sources with a signal-to-noise ratio between 4.5 and 5.5 were sorted into bins with a width of 0.1 mag, and the $5\sigma$ limiting magnitude was taken as the bin containing the most sources (as shown in the inset of \aref{fig:lim_mag}). The best limiting magnitudes from each set of three are given in \aref{tab:lms_comparison}, along with the theoretical dark-time limiting magnitudes from \aref{tab:lim_mags}.
 
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=\textwidth]{images/throughput/limiting_mag_real.png}
     \end{center}
     \caption[Finding the limiting magnitude from a GOTO image]{
-        Finding the limiting magnitude from a GOTO image. The catalogue magnitude of sources with SNR of between 4.5 and 5.5 (shown by the \textcolorbf{Gray}{grey} horizontal lines) are plotted on a histogram with bins of 0.1 mag (inset), the limiting magnitude is the magnitude of the bin with the highest number of sources (highlighted in \textcolorbf{Red}{red}).
+        Finding the limiting magnitude from a GOTO image. The catalogue magnitude of sources with SNR of between 4.5 and 5.5 (shown by the \textcolorbf{Gray}{grey} horizontal lines) are plotted on the inset histogram with bins of 0.1 mag, the limiting magnitude is the magnitude of the bin with the highest number of sources (highlighted in \textcolorbf{Red}{red}).
     }\label{fig:lim_mag}
 \end{figure}
 
@@ -1331,7 +1333,7 @@ To measure the limiting magnitude from each image, the catalogue magnitude of ea
 
 \clearpage
 
-In most cases the observed zeropoints and limiting magnitudes are very close to the theoretical values. Further images taken over more nights are needed to make any firm conclusions, but a few trends are clear. UT3 consistently has better zeropoints than the other unit telescopes, which might be because its mirrors were re-aluminised and returned to La Palma only a month before the images were taken (see \aref{sec:timeline}). Therefore the difference in the observed and theoretical zeropoints may be due to a lower mirror reflectivity than assumed in throughput model in \aref{sec:optics} (e.g.\ due to dust build up on the mirrors). It also seems that the throughput in the \textit{G} band has been underestimated, as the observations taken in the \textit{G} filter consistently have higher zeropoints and better limiting magnitudes than predicted. This may be due to the bandwidth being wider than modelled, as any other change in throughput would also affect the other filters.
+In most cases the observed zeropoints and limiting magnitudes are very close to the theoretical values. Further images taken over more nights are needed to make any firm conclusions, but a few trends are clear. UT3 consistently has better zeropoints than the other unit telescopes, which might be because its mirrors were re-aluminised and returned to La Palma only a month before the images were taken (see \aref{sec:timeline}). Therefore the difference in the observed and theoretical zeropoints may be due to a lower mirror reflectivity than assumed in throughput model in \aref{sec:optics} (e.g.\ due to dust build up on the mirrors). It also seems that the throughput in the \textit{G} band has been underestimated, as the observations taken in the \textit{G} filter consistently have higher zeropoints and better limiting magnitudes than predicted. This may be due to the bandwidth being wider than modelled, as any other change in throughput would also affect the other filters. Alternatively, it may indicate that matching the Baader \textit{G} filter to the PS1 catalogue taken in the Pan-STARRS \textit{g} filter is not a valid comparison, and perhaps a different reference catalogue should be used.
 
 \end{colsection}
 
