@@ -340,7 +340,7 @@ and therefore the area of each HEALPix pixel is
 
 In addition to being a way to divide the sphere, each HEALPix pixel has a unique index from one of two different numbering schemes: either the ring (counting around each ring from the north to the south) or nested (based on the sub-pixel tree) system.
 
-HEALPix is used to provide localisation of sky probabilities for transient astronomical events, in the form of ``skymaps''. Each point on the HEALPix grid is assigned a probability between 0 and 1 that the counterpart object is located within that pixel, and the whole sphere should sum to unity. \aref{fig:skymap_regrade} shows a typical LVC skymap, for the gravitational wave event S190521r\footnote{Downloaded from \url{https://gracedb.ligo.org/superevents/S190521r}}, at various HEALPix $N_\text{side}$ parameters.
+HEALPix is used to provide localisation of sky probabilities for transient astronomical events, in the form of ``skymaps''. Each point on the HEALPix grid is assigned a probability between 0 and 1 that the counterpart object is located within that pixel, and the whole sphere should sum to unity. \aref{fig:skymap_regrade} shows a typical LVC skymap, for the gravitational wave event S190521r \citep{S190521r}, at various HEALPix $N_\text{side}$ parameters.
 
 \begin{figure}[p]
     \begin{center}
@@ -450,7 +450,7 @@ The method used within the GOTO-alert event handler is to select all tiles which
         \includegraphics[width=0.49\linewidth]{images/tiling/S190521r_4.pdf}
     \end{center}
     \caption[Selecting tiles for a gravitational-wave skymap]{
-        Selecting tiles for the S190521r skymap (also shown in \aref{fig:skymap_regrade}).\\
+        Selecting tiles for the S190521r skymap \citep[also shown in \aref{fig:skymap_regrade}]{S190521r}.
         In the upper left the skymap is plotted on the celestial sphere, forming the ``banana'' shape typical of gravitational-wave localisations, and the 50\% and 90\% probability contours are shown.
         The other three plots show grid tiles selected using one of three methods: selecting tiles to cover the entire 90\% skymap (\textcolorbf{NavyBlue}{blue}), selecting tiles with a median contour value of 90\% (\textcolorbf{Orange}{orange}) and selecting tiles with a mean contour value of 90\% (\textcolorbf{Green}{green}). The number of tiles selected ($n$) and total probability within them ($P$) is given.
         The mean contour method provides a good compromise, selecting fewer than half of the tiles needed to cover the whole 90\% contour (31 compared to 63), but together they still contain nearly 87\% of the total probability.
@@ -464,7 +464,7 @@ The method used within the GOTO-alert event handler is to select all tiles which
         \includegraphics[width=\linewidth]{images/tiling/170817.pdf}
     \end{center}
     \caption[GOTO tile probabilities for GW170817]{
-        GOTO tiling applied to the final GW170817 skymap. \\
+        GOTO tiling applied to the final GW170817 skymap \citep{GW170817}.
         The grid shown is for the 4-UT GOTO field of view, with tiles of \SI{3.7}{\degree}$\times$\SI{4.9}{\degree} and an overlap of $0.1$. The inset shows the 10 tiles within the total 90\% contour (containing 97.4\% of the total probability) in \textcolorbf{NavyBlue}{blue} and the 2 selected by the 90\% mean contour (containing 79.5\%) in \textcolorbf{Green}{green}. Compare to \aref{fig:swope_decam}, which shows follow-up observations of GW170817 by the Swope and DECam projects.
     }\label{fig:170817_gw}
 \end{figure}
@@ -561,7 +561,7 @@ GOTO does not use a galaxy-focused strategy; due to its large field of view each
 
 In order to create such a weighted skymap the GLADE catalogue can be queried for the position of each galaxy within the event distance limits (each LVC event notice contains an estimate for the distance to the source, see \aref{sec:event_strategy} for how this is used to determine the follow-up strategy for each event). This is only possible for events within a few \SI{100}{\mega\parsec}, beyond this the GLADE catalogue is increasingly incomplete \citep{GLADE}. Once found, a HEALPix skymap can be constructed by weighting each pixel by the number of possible host galaxies located within it. To account for the galaxies not being point sources the resulting skymap is then passed through a Gaussian smoothing function with a default standard deviation of 15~arcseconds. This new skymap can then be normalised and multiplied with the gravitational wave position skymap, to produce a new skymap which contains the information from both.
 
-\aref{fig:galaxy_skymap} shows this method applied to the large skymap for event S190425z, which included a reported luminosity distance of $155\pm\SI{45}{\mega\parsec}$. The underlying pattern of the gravitational-wave localisation regions is still clearly visible in the final skymap, but by including the galaxy information the resulting tile pointings will be weighted towards regions with larger numbers of possible host galaxies. This method still needs more work before being implemented, in particular the relative weighting to apply to each skymap needs to be considered. However it could prove beneficial by further prioritising GOTO observations towards regions more likely to include a counterpart source.
+\aref{fig:galaxy_skymap} shows this method applied to the large skymap for event S190425z \citep{S190425z}, which included a reported luminosity distance of $155\pm\SI{45}{\mega\parsec}$. The underlying pattern of the gravitational-wave localisation regions is still clearly visible in the final skymap, but by including the galaxy information the resulting tile pointings will be weighted towards regions with larger numbers of possible host galaxies. This method still needs more work before being implemented, in particular the relative weighting to apply to each skymap needs to be considered. However it could prove beneficial by further prioritising GOTO observations towards regions more likely to include a counterpart source.
 
 \begin{figure}[p]
     \begin{center}
@@ -582,7 +582,7 @@ In order to create such a weighted skymap the GLADE catalogue can be queried for
 \label{sec:extinction_skymaps}
 \begin{colsection}
 
-In very crowded fields a single GOTO image can contain tens of thousands of sources, which makes it difficult for the GOTOphoto photometry pipeline (see \aref{sec:gotophoto}) to identify potential counterpart candidates. Observing in high-extinction areas such as through the galactic plane also makes it harder to observe extra-galactic sources, such as counterparts to gravitational-wave events. Therefore another possible reason to modify localisation skymaps is to de-prioritise observations of the galactic plane, by masking areas with low galactic latitudes.
+In very crowded fields a single GOTO image can contain tens of thousands of sources, which makes it difficult for the GOTOphoto photometry pipeline (see \aref{sec:gotophoto}) to identify potential counterpart candidates. Observing in high-extinction areas such as through the galactic plane also makes it harder to observe extra-galactic sources, such as counterparts to gravitational-wave events. Therefore another possible reason to modify localisation skymaps is to de-prioritise observations of the galactic plane.
 
 One method to do this is shown in \aref{fig:extinction_skymap} --- multiplying the gravitational-wave skymap by an inverted thermal dust emission skymap from the \textit{Planck} observatory \citep{Planck_dust}. The effect is intended to be subtle, not enough to completely wipe out the skymap probability in the high-extinction regions, but instead just reduce the weighting of those tiles so GOTO first prioritises other areas. Again, this is not currently implemented into the scheduling system, but it is presented as another example of using skymaps to optimise observation prioritises.
 
