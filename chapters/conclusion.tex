@@ -1,13 +1,16 @@
+% ########################################
+
 \chapter{Conclusions and Future Work}
 \label{chap:conclusion}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \chaptoc{}
 
 % ########################################
 
-\newpage
 \section{Summary and Conclusions}
 \label{sec:conclusion}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -23,14 +26,16 @@ In this thesis I have described my work as part of the GOTO project, primarily w
 \label{sec:control_results}
 \begin{colsection}
 
-The core of my work has been the \glsfirst{gtecs}, a Python software package that controls every aspect of the telescope. The hardware control daemons interface with the dome, mount and cameras (see \aref{chap:gtecs}) while the ``pilot'' master control program and its associated systems allow the telescope to function with no human involvement (see \aref{chap:autonomous}). GOTO has now been operating successfully for years with the pilot in full control. The conditions monitoring systems have proven robust enough to trust the telescope to close in bad weather, and when the occasional unexpected hardware issues do occur the pilot recovery systems can fix the problem and resume observing in the majority of cases, often before a human even has time to log in. Of course, commissioning was not entirely without incident, as described in \aref{chap:commissioning}. However all of the software challenges were overcome, and the majority of the delays to GOTO were due to hardware faults which were out of my purview.
+The core of my work has been the \acro{gtecs}, a Python software package that controls every aspect of the telescope. The hardware control daemons interface with the dome, mount and cameras (see \aref{chap:gtecs}) while the ``pilot'' master control program and its associated systems allow the telescope to function with no human involvement (see \aref{chap:autonomous}). GOTO has now been operating successfully for years with the pilot in full control. The conditions monitoring systems have proven robust enough to trust the telescope to close in bad weather, and when the occasional unexpected hardware issues do occur the pilot recovery systems can fix the problem and resume observing in the majority of cases, often before a human even has time to log in. Of course, commissioning was not entirely without incident, as described in \aref{chap:commissioning}. However all of the software challenges were overcome, and the majority of the delays to GOTO were due to hardware faults which were out of my purview.
 
 Each set of exposures taken with the G-TeCS camera daemon are assigned an incremental run number. From the initial installation in the summer of 2017 up until September 2019, GOTO has taken over 185,000 such exposure sets, and produced many tens of terabytes of data. The current all-sky survey that began in February 2019 has almost completely covered the northern sky, and at the time of writing the GOTO photometry database contains approximately 642 million sources from almost 500,000 individual frames taken since the start of the survey.
+
+\newpage
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Scheduling and alert follow-up}
 \label{sec:gw_results}
 \begin{colsection}
@@ -112,16 +117,10 @@ As described in \aref{sec:gw_detections}, three of the 25 real events detected i
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Future work}
 \label{sec:future}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -165,12 +164,14 @@ The move from one 8-UT mount to two 8-UT mounts should mean the same all-sky gri
 % ---------
 \subsubsection{Stage 4}
 
-The final form of the GOTO project is intended to include multiple telescopes at different sites across the globe. This is unlikely to happen before the second mount is built on La Palma, so by the time an Australian site is added the advanced systems described under Stage 3 above should already be in place, and ideally the next-generation scheduler should be able to delegate observations to multiple telescopes wherever they are in the world. There are several existing projects that operate in this manner which GOTO can emulate, such as the \glsfirst{lco} network \citep{LCO_scheduling}.
+The final form of the GOTO project is intended to include multiple telescopes at different sites across the globe. This is unlikely to happen before the second mount is built on La Palma, so by the time an Australian site is added the advanced systems described under Stage 3 above should already be in place, and ideally the next-generation scheduler should be able to delegate observations to multiple telescopes wherever they are in the world. There are several existing projects that operate in this manner which GOTO can emulate, such as the \acro{lco} network \citep{LCO_scheduling}.
+
+\newpage
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Continued development}
 \label{sec:software_future}
 \begin{colsection}
@@ -206,10 +207,6 @@ Another potential future project that is being considered is the generalisation 
 \bigskip
 
 Overall the GOTO Telescope Control System is still under active development, and this will continue as the GOTO project evolves. Based on the initial results from O3 the system has been working well and fulfilling its requirements, and it is therefore most likely only a matter of time until GOTO observes the next gravitational-wave counterpart.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 

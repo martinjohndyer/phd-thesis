@@ -1,12 +1,19 @@
+% ########################################
+
 \chapter{Scheduling Observations}
 \label{chap:scheduling}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \chaptoc{}
 
 % ########################################
 
-\newpage
 \section{Introduction}
 \label{sec:scheduling_intro}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 Completing the chapters describing the core functions of the GOTO Telescope Control System, in this chapter I detail how the robotic system decides which targets to observe.
@@ -23,10 +30,8 @@ All work described in this chapter is my own unless otherwise indicated. The fir
 
 % ########################################
 
-\newpage
 \section{Determining target priorities}
 \label{sec:ranking}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -43,6 +48,7 @@ In order to find which pointing is the highest priority the queue is sorted usin
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Applying target constraints}
 \label{sec:constraints}
 \begin{colsection}
@@ -52,6 +58,7 @@ The first consideration is determining which pointings are currently valid. As d
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Effective rank}
 \label{sec:rank}
 \begin{colsection}
@@ -72,15 +79,17 @@ This formula means a pointing with a starting rank of 2 that has been observed f
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Targets of Opportunity}
 \label{sec:toos}
 \begin{colsection}
 
-For pointings with the same effective rank the next sorting parameter is the \glsfirst{too} flag assigned to the pointing when it was inserted into the database. The flag is simply a boolean value that is true if the target is a ToO and false if it is not, and pointings that have the flag as true are sorted higher than those of the same rank that are not ToOs. This ensures that time-sensitive targets are prioritised ahead of other targets at the same rank, although it is important to remember that the effective rank does still take priority (this means a ToO at rank 4 will be sorted above any other rank 4 pointings, but will still be a lower priority than a non-ToO at rank 3).
+For pointings with the same effective rank the next sorting parameter is the \acro{too} flag assigned to the pointing when it was inserted into the database. The flag is simply a boolean value that is true if the target is a ToO and false if it is not, and pointings that have the flag as true are sorted higher than those of the same rank that are not ToOs. This ensures that time-sensitive targets are prioritised ahead of other targets at the same rank, although it is important to remember that the effective rank does still take priority (this means a ToO at rank 4 will be sorted above any other rank 4 pointings, but will still be a lower priority than a non-ToO at rank 3).
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Breaking ties}
 \label{sec:breaking_ties}
 \begin{colsection}
@@ -101,13 +110,11 @@ In the unlikely event that two pointings are still tied, all other parameters be
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Queue sorting example}
 \label{sec:sorting_example}
+
 \begin{colsection}
-
-In order to show how the above sorting methods are applied in practice, an example queue of pointings is shown in \aref{tab:priority}. The current highest-priority pointing is one of four pointings from a fictional gravitational-wave event, GW191202. At the top of the queue are two of these pointings, marked as P3 and P4. Both are valid, both have the same starting rank (2) and neither have been observed yet ($n_\text{obs}=0$). They are also both are at the same airmass (1.1), but as P3 has a higher tile weighting (containing 10\% of the skymap probability compared to 5\% for P4) it has a higher tiebreak value and is therefore sorted higher. Therefore P3 would be returned by the scheduler.
-
-As a demonstration, the rest of the queue is also shown. The gravitational-wave pointing containing the highest probability, P1, is unfortunately not valid and is therefore at the bottom of the queue (but still above other invalid pointings). The second highest, P2, has already been observed once and therefore has an effective rank of 12. This puts it below a non-ToO pointing of M101 which has a lower starting rank, 9 compared to 2, but has not yet been observed and is therefore sorted higher. The other non-survey pointings in the queue are a pointing of a transient event, AT 2019xyz, and one of M31. Both are valid and have the same effective rank of 26, but the transient is a target of opportunity and therefore is sorted higher. This is true even though it is at a worse airmass, as the ToO sorting takes priority over the tiebreak; had they both (or neither) been ToOs then the M31 pointing would have been higher. Finally below those pointings is the first of the all-sky survey pointings. These will only be the highest priority if there are no other valid pointings above them, which for GOTO is actually most of the time.
 
 \begin{table}[t]
     \begin{center}
@@ -127,22 +134,20 @@ As a demonstration, the rest of the queue is also shown. The gravitational-wave 
         \end{tabular}
     \end{center}
     \caption[Examples of sorting pointings by priority]{
-        Some examples of a queue of pointings sorted by priority. Pointings are first sorted by validity, with invalid pointings shown at the bottom of the queue. Then pointings are sorted by effective rank, which is comprised of the starting rank ($R_s$) and the observation count ($n_\text{obs}$). Pointings with the same effective rank are sorted based on if they are targets of opportunity or not, with ToOs being ranked higher. Finally pointings with all other factors being equal are ranked by the tiebreaker value, based on combining any tile weighting ($W$) and the current airmass of the target ($X$) using \aref{eq:tiebreak}.
+        Some examples of a queue of pointings sorted by priority. Pointings are first sorted by validity, with invalid pointings shown at the bottom of the queue. Then pointings are sorted by effective rank, which is comprised of the starting rank ($R_s$) and the observation count ($n_\text{obs}$). Pointings with the same effective rank are sorted based on if they are targets of opportunity or not, with ToOs being ranked higher. Finally pointings with all other factors being equal are ranked by the tiebreaker value, combining tile weighting ($W$) and the current airmass ($X$) using \aref{eq:tiebreak}.
     }\label{tab:priority}
 \end{table}
 
-\end{colsection}
+In order to show how the above sorting methods are applied in practice, an example queue of pointings is shown in \aref{tab:priority}. The current highest-priority pointing is one of four pointings from a fictional gravitational-wave event, GW191202. At the top of the queue are two of these pointings, marked as P3 and P4. Both are valid, both have the same starting rank (2) and neither have been observed yet ($n_\text{obs}=0$). They are also both are at the same airmass (1.1), but as P3 has a higher tile weighting (containing 10\% of the skymap probability compared to 5\% for P4) it has a higher tiebreak value and is therefore sorted higher. Therefore P3 would be returned by the scheduler.
 
-% ~~~~~~~~~~~~~~~~~~~~
+As a demonstration, the rest of the queue is also shown. The gravitational-wave pointing containing the highest probability, P1, is unfortunately not valid and is therefore at the bottom of the queue (but still above other invalid pointings). The second highest, P2, has already been observed once and therefore has an effective rank of 12. This puts it below a non-ToO pointing of M101 which has a lower starting rank, 9 compared to 2, but has not yet been observed and is therefore sorted higher. The other non-survey pointings in the queue are a pointing of a transient event, AT 2019xyz, and one of M31. Both are valid and have the same effective rank of 26, but the transient is a target of opportunity and therefore is sorted higher. This is true even though it is at a worse airmass, as the ToO sorting takes priority over the tiebreak; had they both (or neither) been ToOs then the M31 pointing would have been higher. Finally below those pointings is the first of the all-sky survey pointings. These will only be the highest priority if there are no other valid pointings above them, which for GOTO is actually most of the time.
 
 \end{colsection}
 
 % ########################################
 
-\newpage
 \section{Calculating the tiebreaker}
 \label{sec:scheduler_tiebreaker}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -155,20 +160,22 @@ The older pt5m scheduling code that G-TeCS is based on (see \aref{sec:pt5m}) use
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Tile weighting}
 \label{sec:weights}
 \begin{colsection}
 
- All the pointings added from a gravitational-wave skymap (or similar event such as a gamma-ray burst) will have the same rank, but they will have different weights from the amount of skymap probability they each contain (how event skymaps are mapped onto the tile grid is described in \aref{chap:tiling}). It makes sense that, of all the tiles from a given event, the ones with higher probability should be the ones to prioritise and observe first.
+All the pointings added from a gravitational-wave skymap (or similar event such as a gamma-ray burst) will have the same rank, but they will have different weights from the amount of skymap probability they each contain (how event skymaps are mapped onto the tile grid is described in \aref{chap:tiling}). It makes sense that, of all the tiles from a given event, the ones with higher probability should be the ones to prioritise and observe first.
 
 However, unlike an integer parameter such as the rank or the True/False ToO flag, the tile weights cover a wide range and often there will only be a small amount of difference between the values for neighbouring tiles. Prioritising a tile that contains 2.71\% of the skymap over another that contains 2.70\% in all cases is not the best strategy, especially if the latter is close to zenith while the former is low down close to the horizon. Observing a high-airmass tile over a low-airmass one for a gain of only 0.01\% probability is a poor choice, especially if the former tile is currently rising and will be at a better altitude in a few hours. For these reasons it was decided that the skymap probability weighting should be considered at the same level as the airmass tiebreaker, meaning a lower-airmass tile with only a slightly lower probability will be prioritised over one further from zenith. This should only be true up to a reasonable limit, however, as in the case of two tiles where one contains a probability of 95\% and the other 3\% it should always be true that observing the former is the better choice, even if it has a slightly worse airmass.
 
 It should be noted that skymap probability is not necessarily the only way for a group of tiles to be weighted. In the past GOTO has carried out more focused surveys: when carrying out a galaxy-focused survey, for example, tiles were weighted by the total flux of all galaxies within each. The only requirement is that each tile has a weighting of between 0 and 1, relative to the other tiles added in that survey. For non-survey pointings, such as a single observation of a particular target, the weight is set to 1 (this can be considered as that tile having a 100\% chance of containing the target). This is also true for survey pointings where all tiles are weighted equally, such as the all-sky survey. This can be seen in the example \aref{tab:priority} in the previous section, as all the non-gravitational-wave pointings have $W=1$.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
 \subsection{Combining tile weight and airmass}
 \label{sec:wa}
 \begin{colsection}
@@ -193,10 +200,12 @@ In order to combine both weight and airmass into a single tiebreak value it was 
 %
 where the balance of tile weight $W$ to airmass $X$ is described by the ratio $w$:$a$. Using a ratio of 10:1, i.e.\ prioritising the tile weight 10 times more than the airmass, produces \aref{eq:tiebreak} in \aref{sec:breaking_ties}.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Time-to-set}
 \label{sec:tts}
 \begin{colsection}
@@ -210,8 +219,8 @@ In order to correct this problem, a new parameter was required that prioritises 
         \includegraphics[width=\linewidth]{images/airmass-tts.png}
     \end{center}
     \caption[Plotting scaled airmass and time-to-set values for a target]{
-        Plotting scaled airmass and time-to-set values for a target over 24 hours. \\
-        The altitude of the target is shown by the \textcolorbf{NavyBlue}{blue} dashed line, and the \textcolorbf{Gray}{grey} regions show the times when the target is below the \SI{30}{\degree} horizon altitude limit (the black dotted line).\\
+        Plotting scaled airmass and time-to-set values for a target over 24 hours.
+        The altitude of the target is shown by the \textcolorbf{NavyBlue}{blue} dashed line, and the \textcolorbf{Gray}{grey} regions show the times when the target is below the \SI{30}{\degree} horizon altitude limit (the black dotted line).
         The two tiebreak values are also plotted, scaled between 0 and 1. Airmass (in \textcolorbf{Orange}{orange}) is set to 0 when the target is at airmass 2 or below, the time-to-set (in \textcolorbf{Green}{green}) linearly increases to 1 until the target passes below the horizon and it is reset to 0.
     }\label{fig:airmass_tts}
 \end{figure}
@@ -247,16 +256,10 @@ where $w$, $a$ and $t$ are the relative weightings factors for the tile weight, 
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Scheduler simulations}
 \label{sec:scheduler_sims}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -283,9 +286,12 @@ However, the fully-featured test suite described above is not necessary for the 
     \item While the real pilot works using loops that sleep until a given time has passed, the fake pilot contains an internal time which is increased for each `step' in the simulation. At each step the script checks the scheduler using the normal commands. One important factor in speeding the simulations up is to increase this step size, up to the point that each observation takes a single step. This means that at each step the pilot will observe a new target, and increase the internal simulation time by the appropriate amount. If, for example, the target pointing asks for three \SI{60}{\second} exposures the simulations would increase by 3 minutes, plus extra time for readout and slewing to the target before the exposures start.
 \end{itemize}
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Simulation results}
 \label{sec:scheduler_sim_results}
 \begin{colsection}
@@ -298,10 +304,12 @@ In order to run the simulations, a selection of model skymaps from the LIGO Firs
 
 Two metrics were used to judge the effectiveness of the scheduler response: the mean airmass of each tile when observed and the fraction of the skymap probability covered (i.e.\ the total contained probability within all observed tiles). As simulated skymaps were being used the location of the source of the gravitational-wave signal was known, so it was possible to record if the tile containing the source was observed or not. However, for these simulations the overall response, in terms of skymap coverage, was deemed a better indicator of the scheduler performance than just if the source was observed or not (for example, the source might not have even been visible from La Palma). The later, more advanced simulations described in \aref{chap:multiscope} go into more detail about the source location and the probability that the source position is observed.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Analysis of simulation results}
 \label{sec:scheduler_sim_analysis}
 \begin{colsection}
@@ -347,10 +355,6 @@ Although the time-to-set value seemed to only hinder the scheduler other possibl
 As mentioned previously, the simulations presented in this section were carried out before a lot of the G-TeCS code was finalised. Therefore it would also make sense to revisit the scheduler simulations with the newer simulation code, as used by the simulations in \aref{sec:gw_sims}, in order to confirm if the 10:1:0 ratio is still found to be the best case. This would also allow the real parameters from the commissioned telescope to be included. When the next four unit telescopes are added to GOTO the effective field of view will be doubled, and the results in this section based on the 4-UT telescope might not necessarily be the same in the 8-UT case.
 
 Finally, GOTO is ultimately planned to expand to multiple telescopes at several sites, as described in \aref{sec:goto_expansion}. Adapting the scheduling system described into this chapter to deal with multiple telescopes will be a major future project, which is considered in more detail in \aref{chap:multiscope}.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 

@@ -1,12 +1,19 @@
+% ########################################
+
 \chapter{Tiling the Sky}
 \label{chap:tiling}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \chaptoc{}
 
 % ########################################
 
-\newpage
 \section{Introduction}
 \label{sec:tiling_intro}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 In this chapter I describe the software used by GOTO to create an all-sky survey grid, which gravitational-wave events are then mapped onto.
@@ -23,10 +30,8 @@ All work described in this chapter is my own unless otherwise indicated, and has
 
 % ########################################
 
-\newpage
 \section{Defining the sky grid}
 \label{sec:gototile}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -70,9 +75,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
         \includegraphics[width=\linewidth]{images/globe1.pdf}
     \end{center}
     \caption[The celestial sphere]{
-        The celestial sphere. The northern and southern celestial poles are marked as \textbf{NCP} \glsadd{ncp} and \textbf{SCP} \glsadd{scp} respectively, and the celestial equator is marked in \textcolorbf{Red}{red}. The ecliptic (the path of the Sun) is marked in \textcolorbf{Green}{green}, the point where the ecliptic rises above the celestial equator (the vernal equinox) is marked with the symbol \Aries{}, and the meridian that intercepts the poles and the vernal equinox is marked in \textcolorbf{NavyBlue}{blue}.\\
-        Traditionally the equatorial coordinate system defined as shown: declination (\textcolorbf{NavyBlue}{Dec}, $\delta$) is the angle from the equator (between \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP) and right ascension (\textcolorbf{Red}{RA}, $\alpha$) \glsadd{ra} is the angle east of the vernal equinox (between \SI{0}{\degree} and \SI{360}{\degree}). \\
-        The modern \glsfirst{icrs} defines coordinates based on radio sources which approximately match the ones described here \citep{ICRF}.
+        The celestial sphere. The northern and southern celestial poles are marked as \textbf{NCP} \acroadd{ncp} and \textbf{SCP} \acroadd{scp} respectively, and the celestial equator is marked in \textcolorbf{Red}{red}. The ecliptic (the path of the Sun) is marked in \textcolorbf{Green}{green}, the point where the ecliptic rises above the celestial equator (the vernal equinox) is marked with the symbol \Aries{}, and the meridian that intercepts the poles and the vernal equinox is marked in \textcolorbf{NavyBlue}{blue}. Traditionally the equatorial coordinate system defined as shown: declination (\textcolorbf{NavyBlue}{Dec}, $\delta$) is the angle from the equator (between \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP) and right ascension (\textcolorbf{Red}{RA}, $\alpha$) \acroadd{ra} is the angle east of the vernal equinox (between \SI{0}{\degree} and \SI{360}{\degree}). The modern \acro{icrs} defines coordinates based on radio sources which approximately match the ones described here \citep{ICRF}.
     }\label{fig:sphere}
 \end{figure}
 
@@ -83,8 +86,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
         \includegraphics[width=\linewidth]{images/globe2.pdf}
     \end{center}
     \caption[Defining declination strips]{
-        Defining the declination strips (shown in \textcolorbf{Orange}{orange}). The full declination range (\SI{-90}{\degree} to \SI{90}{\degree}) is divided equally by a constant spacing value $\Delta\delta$ (in \textcolorbf{NavyBlue}{blue}). \\
-        In this example $\Delta\delta =$ \SI{10}{\degree}, and so the centre of each strip is set at $\delta=$ \SI{0}{\degree}, $\pm$\SI{10}{\degree}, $\pm$\SI{20}{\degree} etc. This gives 19 strips, 9 in each hemisphere and one on the equator. There is always a strip centred on $\delta=0$, and using the ``minverlap'' algorithm (see \aref{sec:algorithms}) there is always a `strip' of tiles at the poles which will include a single point.
+        Defining the declination strips (shown in \textcolorbf{Orange}{orange}). The full declination range (\SI{-90}{\degree} to \SI{90}{\degree}) is divided equally by a constant spacing value $\Delta\delta$ (in \textcolorbf{NavyBlue}{blue}). In this example $\Delta\delta =$ \SI{10}{\degree}, and so the centre of each strip is set at $\delta=$ \SI{0}{\degree}, $\pm$\SI{10}{\degree}, $\pm$\SI{20}{\degree} etc. This gives 19 strips, 9 in each hemisphere and one on the equator. There is always a strip centred on $\delta=0$, and using the ``minverlap'' algorithm (see \aref{sec:algorithms}) there is always a `strip' of tiles at the poles which will include a single point.
     }\label{fig:deltadelta}
 \end{figure}
 
@@ -95,8 +97,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
         \includegraphics[width=\linewidth]{images/globe3.pdf}
     \end{center}
     \caption[Defining grid points]{
-        Defining the grid points, based on the declination strips from \aref{fig:deltadelta}. Using the ``minverlap'' algorithm (see \aref{sec:algorithms}) points are uniformly distributed on each declination strip with a spacing $\Delta\alpha(\delta)$. Unlike $\Delta\delta$, which is fixed across the sphere, $\Delta\alpha$ varies as a function of declination, meaning strips closer to the poles will contain fewer points (and therefore fewer tiles). \\
-        Two examples of defining grid points are shown, one at declination $\delta_1=+$\SI{50}{\degree} (in \textcolorbf{Purple}{purple}) in the northern hemisphere and another at $\delta_2=-$\SI{10}{\degree} (in \textcolorbf{BlueGreen}{cyan}) in the southern hemisphere. The survey tiles are then centred on the grid points, as shown for these two strips.
+        Defining the grid points, based on the declination strips from \aref{fig:deltadelta}. Using the ``minverlap'' algorithm (see \aref{sec:algorithms}) points are uniformly distributed on each declination strip with a spacing $\Delta\alpha(\delta)$. Unlike $\Delta\delta$, which is fixed across the sphere, $\Delta\alpha$ varies as a function of declination, meaning strips closer to the poles will contain fewer points (and therefore fewer tiles). Two examples of defining grid points are shown, one at declination $\delta_1=+$\SI{50}{\degree} (in \textcolorbf{Purple}{purple}) in the northern hemisphere and another at $\delta_2=-$\SI{10}{\degree} (in \textcolorbf{BlueGreen}{cyan}) in the southern hemisphere. The survey tiles are then centred on the grid points, as shown for these two strips.
     }\label{fig:deltaalpha}
 \end{figure}
 
@@ -107,8 +108,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
         \includegraphics[width=\linewidth]{images/globe4.pdf}
     \end{center}
     \caption[A fully tiled celestial sphere]{
-        A fully tiled celestial sphere. The same two strips of tiles are coloured in \textcolorbf{Purple}{purple} and \textcolorbf{BlueGreen}{cyan} as in \aref{fig:deltaalpha}. As each strip starts with a tile at RA$=0$ there is a fully aligned column of tiles along the meridian through the vernal equinox, coloured in \textcolorbf{YellowOrange}{yellow}, and there is always a tile centred on the vernal equinox and each pole. \\
-        This grid was defined using the ``minverlap'' algorithm (see \aref{sec:algorithms}), with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and a overlap of zero for clarity. Note zero overlap can lead to gaps between tiles towards the poles, shown by the \textcolorbf{Red}{red} patches. In this case the complete grid contains 424 tiles.
+        A fully tiled celestial sphere. The same two strips of tiles are coloured in \textcolorbf{Purple}{purple} and \textcolorbf{BlueGreen}{cyan} as in \aref{fig:deltaalpha}. As each strip starts with a tile at RA$=0$ there is a fully aligned column of tiles along the meridian through the vernal equinox, coloured in \textcolorbf{YellowOrange}{yellow}, and there is always a tile centred on the vernal equinox and each pole. This grid was defined using the ``minverlap'' algorithm (see \aref{sec:algorithms}), with each tile having a field of view of \SI{10}{\degree} $\times$ \SI{10}{\degree} and a overlap of zero for clarity. Note zero overlap can lead to gaps between tiles towards the poles, shown by the \textcolorbf{Red}{red} patches. In this case the complete grid contains 424 tiles.
     }\label{fig:tiledsphere}
 \end{figure}
 
@@ -170,11 +170,11 @@ The minverlap algorithm solves these problems by treating the overlap parameter 
 \newpage
 
 \begin{figure}[p]
-    \begin{minipage}[c]{0.46\textwidth}
+    \begin{minipage}[c]{0.46\linewidth}
         \includegraphics[width=\linewidth]{images/algo_product.pdf}
     \end{minipage}
     \hfill
-    \begin{minipage}[c]{0.50\textwidth}
+    \begin{minipage}[c]{0.50\linewidth}
         \caption[The product gridding algorithm]{
             A sky grid of tiles defined using the ``product'' gridding algorithm. The inputs were a field of view of \SI{13}{\degree} $\times$ \SI{13}{\degree} and an overlap factor of $0.2$ in both axes. The colours show overlapping coverage: \textcolorbf{YellowOrange}{yellow} areas are within only one tile, \textcolorbf{ForestGreen}{green} two, \textcolorbf{blue}{blue} three, \textcolorbf{cyan}{cyan} four and \textcolorbf{RubineRed}{pink} five or more. This grid contains 595 tiles. Note the constant spacing of tiles in RA and the huge number of redundant tiles at the pole.
         }\label{fig:product}
@@ -182,23 +182,23 @@ The minverlap algorithm solves these problems by treating the overlap parameter 
 \end{figure}
 
 \begin{figure}[p]
-    \begin{minipage}[c]{0.50\textwidth}
+    \begin{minipage}[c]{0.50\linewidth}
         \caption[The cosine gridding algorithm]{
             A sky grid of tiles defined using the ``product'' gridding algorithm. The input parameters and colours are the same as in \aref{fig:product}. This grid contains 393 tiles. Note the asymmetric ``seam'' along the $\alpha=0$ meridian, and the \textcolorbf{red}{red} areas near the pole that are not within the area of any tiles.
         }\label{fig:cosine}
     \end{minipage}
     \hfill
-    \begin{minipage}[c]{0.46\textwidth}
+    \begin{minipage}[c]{0.46\linewidth}
         \includegraphics[width=\linewidth]{images/algo_cosine.pdf}
     \end{minipage}
 \end{figure}
 
 \begin{figure}[p]
-    \begin{minipage}[c]{0.46\textwidth}
+    \begin{minipage}[c]{0.46\linewidth}
         \includegraphics[width=\linewidth]{images/algo_minverlap.pdf}
     \end{minipage}
     \hfill
-    \begin{minipage}[c]{0.50\textwidth}
+    \begin{minipage}[c]{0.50\linewidth}
         \caption[The minverlap gridding algorithm]{
             A sky grid of tiles defined using the ``minverlap'' gridding algorithm. The input parameters and colours are the same as in \aref{fig:product}. This grid contains 407 tiles. Note the even spacing of tiles even over the $\alpha=0$ meridian, and the better coverage at the pole.
         }\label{fig:minverlap}
@@ -272,22 +272,16 @@ As it happens, when viewed from La Palma, the northern celestial pole is below t
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Probability skymaps}
 \label{sec:skymaps}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-When identifying a particular target in the sky coordinates can be given in right ascension and declination, and if there is some uncertainty in the position then errors can be given on the coordinate values. For example, a \glsfirst{grb} event detected by the \textit{Fermi} \glsfirst{gbm} might have a central position and an error radius ranging from arcseconds to tens of degrees. However, multiple gravitational-wave detectors produce large and distinctly asymmetric localisation areas (see \aref{sec:gw_localisation}). For these cases, the \glsfirst{lvc} produce probability skymaps which map the localisation area onto the celestial sphere. This section describes how these skymaps are defined and how they are mapped onto the GOTO all-sky grid as described in \aref{sec:gototile}.
+When identifying a particular target in the sky coordinates can be given in right ascension and declination, and if there is some uncertainty in the position then errors can be given on the coordinate values. For example, a \acro{grb} event detected by the \textit{Fermi} \acro{gbm} might have a central position and an error radius ranging from arcseconds to tens of degrees. However, multiple gravitational-wave detectors produce large and distinctly asymmetric localisation areas (see \aref{sec:gw_localisation}). For these cases, the \acro{lvc} produce probability skymaps which map the localisation area onto the celestial sphere. This section describes how these skymaps are defined and how they are mapped onto the GOTO all-sky grid as described in \aref{sec:gototile}.
 
 \end{colsection}
 
@@ -297,7 +291,7 @@ When identifying a particular target in the sky coordinates can be given in righ
 \label{sec:healpix}
 \begin{colsection}
 
-\glsfirst{healpix} is a system used to define pixelised data on the surface of a sphere~\citep{HEALPix}. Developed at NASA JPL for microwave background data, it is now widely used for other applications including for gravitational-wave skymaps produced by the LVC.\@ HEALPix divides the sphere into a series of nested (hierarchical), equal-area (although not equal-shape) pixels arranged in declination strips (``isoLatitude''). The first four orders of spheres are shown in \aref{fig:healpix}, starting from a base resolution with 12 pixels and increasing as each pixel is split into four.
+\acro{healpix} is a system used to define pixelised data on the surface of a sphere~\citep{HEALPix}. Developed at NASA JPL for microwave background data, it is now widely used for other applications including for gravitational-wave skymaps produced by the LVC.\@ HEALPix divides the sphere into a series of nested (hierarchical), equal-area (although not equal-shape) pixels arranged in declination strips (``isoLatitude''). The first four orders of spheres are shown in \aref{fig:healpix}, starting from a base resolution with 12 pixels and increasing as each pixel is split into four.
 
 \begin{figure}[t]
     \begin{center}
@@ -403,11 +397,12 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
 \setlength{\@fptop}{0\p@ \@plus 1fil} % chktex 1
 \makeatother
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\newpage
 \subsection{Mapping skymaps onto the grid}
 \label{sec:mapping_skymaps}
 \begin{colsection}
@@ -424,11 +419,12 @@ When gravitational-wave signals are detected the LVC analysis pipelines create H
     }\label{fig:sim_skymap_tiles}
 \end{figure}
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\newpage
 \subsection{Selecting tiles}
 \label{sec:selecting_tiles}
 \begin{colsection}
@@ -473,16 +469,10 @@ The method used within the GOTO-alert event handler is to select all tiles which
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Creating and modifying skymaps}
 \label{sec:custom_skymaps}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -498,7 +488,7 @@ The GOTO-tile skymap processing system described in \aref{sec:skymaps} provides 
 \label{sec:grb_skymaps}
 \begin{colsection}
 
-As part of the GOTO commissioning observations when the LIGO-Virgo detectors were not operating (see \aref{sec:timeline}) GOTO followed up \glsfirst{grb} events from the \textit{Fermi} satellite Gamma-ray Burst Monitor \citep[GBM;][]{Fermi_GBM}. At the time the alert notices for GBM events did not include probability skymaps, only right ascension, declination and an error radius, and so code was developed in order to create a skymap from these details based on a 2D Gaussian profile; therefore allowing them to be processed by GOTO-tile using the same methods already created for gravitational-wave events.
+As part of the GOTO commissioning observations when the LIGO-Virgo detectors were not operating (see \aref{sec:timeline}) GOTO followed up \acro{grb} events from the \textit{Fermi} satellite Gamma-ray Burst Monitor \citep[GBM;][]{Fermi_GBM}. At the time the alert notices for GBM events did not include probability skymaps, only right ascension, declination and an error radius, and so code was developed in order to create a skymap from these details based on a 2D Gaussian profile; therefore allowing them to be processed by GOTO-tile using the same methods already created for gravitational-wave events.
 
 Taking the radius $r$ as half the full-width at half-maximum, the standard deviation of a 2D Gaussian distribution $\sigma$ is given by
 %
@@ -547,15 +537,17 @@ This is then used with the previous method to create a Gaussian skymap, which ca
 
 It should be noted that the GBM localisation areas are actually not perfectly symmetric, but the above procedure works as a reasonable approximation. Since May 2019 \textit{Fermi} has started including HEALPix skymaps with alert notices \citep{Fermi_skymaps}, however, unlike the LVC, the GBM team do not guarantee that the skymap will have been generated by the time the alert notice is issued. Therefore the above procedure is still used when processing alerts if the official skymap is not yet available.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Weighting GW skymaps using galaxy positions}
 \label{sec:galaxy_skymaps}
 \begin{colsection}
 
-As described in \aref{sec:followup}, telescopes with much smaller fields of view than GOTO are not be able to cover the entirety of large gravitational-wave skymaps looking for counterparts. Many instead chose to focus on observing possible host galaxies within the GW probability region, and by doing this the Swope team were the first to observe the GW170817 counterpart \citep{GW170817_Swope}. The most recent catalogue of potential host galaxies is the \glsfirst{glade} catalogue \citep{GLADE}, which combines multiple prior catalogues including the Gravitational Wave Galaxy Catalogue \citep[GWGC,][]{GWGC} used by Swope for GW170817.
+As described in \aref{sec:followup}, telescopes with much smaller fields of view than GOTO are not be able to cover the entirety of large gravitational-wave skymaps looking for counterparts. Many instead chose to focus on observing possible host galaxies within the GW probability region, and by doing this the Swope team were the first to observe the GW170817 counterpart \citep{GW170817_Swope}. The most recent catalogue of potential host galaxies is the \acro{glade} catalogue \citep{GLADE}, which combines multiple prior catalogues including the Gravitational Wave Galaxy Catalogue \citep[GWGC,][]{GWGC} used by Swope for GW170817.
 
 GOTO does not use a galaxy-focused strategy; due to its large field of view each GOTO pointing will contain tens of possible host galaxies. However, for skymaps that cover large numbers of tiles the order in which GOTO observes could potentially be optimised by focusing on the tiles that contain the most potential host galaxies. One way of doing this using the existing G-TeCS scheduling framework (described in \aref{chap:scheduling}) is to adjust the weighting factor assigned to each tile, which can be done by multiplying the LVC localisation skymap with another skymap, containing the position of possible host galaxies, before applying the result to the tile grid as described in \aref{sec:mapping_skymaps}.
 
@@ -596,10 +588,6 @@ One method to do this is shown in \aref{fig:extinction_skymap} --- multiplying t
         Weighting a GW skymap (for event S190521r) using galactic extinction. The top plot shows the BAYESTAR skymap distributed by the LVC, the central plot shows an inverted thermal dust emission skymap from \textit{Planck}, and the lower plot shows the result of multiplying the two together.
     }\label{fig:extinction_skymap}
 \end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 

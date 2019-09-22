@@ -340,8 +340,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.24748737"
-     inkscape:cx="1412.5666"
-     inkscape:cy="212.49582"
+     inkscape:cx="2175.2705"
+     inkscape:cy="623.015"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -367,7 +367,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -429,25 +429,30 @@
        height="1034.4373"
        x="-3896.6909"
        y="2690.9246" />
-    <path
-       sodipodi:nodetypes="cc"
-       inkscape:connector-curvature="0"
-       id="path13478"
-       d="m -3164.1142,2736.4569 257.1427,0"
-       style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <flowRoot
-       transform="matrix(3.6236069,0,0,3.6236069,-7402.9768,-7727.6514)"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.24800873px;line-height:125%;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.27596813;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="flowRoot13480"
-       xml:space="preserve"><flowRegion
-         id="flowRegion13482"><rect
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.24800873px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.27596813"
-           y="2887.3008"
-           x="1170.0863"
-           height="52.135517"
-           width="179.70955"
-           id="rect13484" /></flowRegion><flowPara
-         id="flowPara13486">15 arcsec</flowPara></flowRoot>    <rect
+    <g
+       id="g4243">
+      <path
+         style="fill:#ffff00;fill-rule:evenodd;stroke:#ffff00;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -3164.1142,2736.4569 257.1427,0"
+         id="path13478"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <flowRoot
+         transform="translate(0,10)"
+         xml:space="preserve"
+         id="flowRoot13480"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"><flowRegion
+           style="stroke-width:1"
+           id="flowRegion13482"><rect
+             id="rect13484"
+             width="651.19678"
+             height="188.91862"
+             x="-3188.0684"
+             y="2734.7917"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-opacity:1;" /></flowRegion><flowPara
+           style="stroke-width:1;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-opacity:1;"
+           id="flowPara13486">15 arcsec</flowPara></flowRoot>    </g>
+    <rect
        y="2690.9246"
        x="-1729.4607"
        height="1034.4373"
@@ -461,47 +466,11 @@
        height="1034.4373"
        x="-2813.0757"
        y="2690.9246" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m -2080.4161,2736.4569 257.1427,0"
-       id="path13514"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
     <flowRoot
-       xml:space="preserve"
-       id="flowRoot13516"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.24800873px;line-height:125%;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.27596813;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       transform="matrix(3.6236069,0,0,3.6236069,-6319.2787,-7727.6514)"><flowRegion
-         id="flowRegion13518"><rect
-           id="rect13520"
-           width="179.70955"
-           height="52.135517"
-           x="1170.0863"
-           y="2887.3008"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.24800873px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.27596813" /></flowRegion><flowPara
-         id="flowPara13522">15 arcsec</flowPara></flowRoot>    <path
-       sodipodi:nodetypes="cc"
-       inkscape:connector-curvature="0"
-       id="path13526"
-       d="m -996.80102,2736.4569 257.14274,0"
-       style="fill:none;fill-rule:evenodd;stroke:#ffffff;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <flowRoot
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.5px;line-height:125%;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       id="flowRoot13528"
-       xml:space="preserve"
-       transform="translate(-11.835607,-13.131983)"><flowRegion
-         id="flowRegion13530"><rect
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.5px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1"
-           y="2747.9236"
-           x="-983.89679"
-           height="188.91862"
-           width="651.19678"
-           id="rect13532" /></flowRegion><flowPara
-         id="flowPara13534">15 arcsec</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot4214"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.62766451;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       transform="matrix(1.594179,0,0,1.5922373,2233.7697,-1675.3151)"><flowRegion
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:0.62766451;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="matrix(1.594179,0,0,1.5922373,2233.7697,-1663.3151)"><flowRegion
          id="flowRegion4216"
          style="stroke-width:0.62766451"><rect
            id="rect4218"
@@ -509,27 +478,27 @@
            height="188.91862"
            x="-3834.4727"
            y="2734.7917"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.62766451" /></flowRegion><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:0.62766451;stroke-opacity:1" /></flowRegion><flowPara
          id="flowPara4220"
-         style="stroke-width:0.62766451">a)</flowPara></flowRoot>    <flowRoot
-       transform="matrix(1.594179,0,0,1.5922373,3322.7141,-1675.3151)"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.62766451;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:0.62766451;stroke-opacity:1">a)</flowPara></flowRoot>    <flowRoot
+       transform="matrix(1.594179,0,0,1.5922373,3322.7141,-1663.3151)"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:0.62766451;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        id="flowRoot4222"
        xml:space="preserve"><flowRegion
          style="stroke-width:0.62766451"
          id="flowRegion4224"><rect
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.62766451"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:0.62766451"
            y="2734.7917"
            x="-3834.4727"
            height="188.91862"
            width="651.19678"
            id="rect4226" /></flowRegion><flowPara
-         style="stroke-width:0.62766451"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;stroke:#ffff00;stroke-width:0.62766451"
          id="flowPara4228">b)</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot4230"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.62766451;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       transform="matrix(1.594179,0,0,1.5922373,4405.6382,-1675.3151)"><flowRegion
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:0.62766451;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="matrix(1.594179,0,0,1.5922373,4405.6382,-1663.3151)"><flowRegion
          id="flowRegion4232"
          style="stroke-width:0.62766451"><rect
            id="rect4234"
@@ -537,7 +506,55 @@
            height="188.91862"
            x="-3834.4727"
            y="2734.7917"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:'Cambria Math';-inkscape-font-specification:'Cambria Math';fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.62766451" /></flowRegion><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:0.62766451" /></flowRegion><flowPara
          id="flowPara4236"
-         style="stroke-width:0.62766451">c)</flowPara></flowRoot>  </g>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;stroke:#ffff00;stroke-width:0.62766451">c)</flowPara></flowRoot>    <g
+       id="g4250"
+       transform="translate(1083.6967,0)">
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4252"
+         d="m -3164.1142,2736.4569 257.1427,0"
+         style="fill:#ffff00;fill-rule:evenodd;stroke:#ffff00;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <flowRoot
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot4254"
+         xml:space="preserve"
+         transform="translate(0,10)"><flowRegion
+           id="flowRegion4256"
+           style="stroke-width:1"><rect
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-opacity:1"
+             y="2734.7917"
+             x="-3188.0684"
+             height="188.91862"
+             width="651.19678"
+             id="rect4258" /></flowRegion><flowPara
+           id="flowPara4260"
+           style="fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-opacity:1">15 arcsec</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(2167.3118,0)"
+       id="g4262">
+      <path
+         style="fill:#ffff00;fill-rule:evenodd;stroke:#ffff00;stroke-width:16;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -3164.1142,2736.4569 257.1427,0"
+         id="path4264"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <flowRoot
+         transform="translate(0,10)"
+         xml:space="preserve"
+         id="flowRoot4266"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
+           style="stroke-width:1"
+           id="flowRegion4268"><rect
+             id="rect4271"
+             width="651.19678"
+             height="188.91862"
+             x="-3188.0684"
+             y="2734.7917"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:62.50000381px;font-family:sans-serif;-inkscape-font-specification:sans-serif;fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-opacity:1" /></flowRegion><flowPara
+           style="fill:#ffff00;fill-opacity:1;stroke:#ffff00;stroke-width:1;stroke-opacity:1"
+           id="flowPara4273">15 arcsec</flowPara></flowRoot>    </g>
+  </g>
 </svg>

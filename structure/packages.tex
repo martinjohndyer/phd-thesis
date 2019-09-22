@@ -11,6 +11,7 @@
 % Enhanced support for graphics
 % https://ctan.org/pkg/graphicx
 \usepackage{graphicx}
+%\usepackage[draft]{graphicx} % used to hide figures, to reduce file size (for Turnitin)
 
 % Driver-independent colour extensions
 % https://ctan.org/pkg/xcolor
@@ -79,12 +80,16 @@
 
 % Format hyperlinks (\href, \url)
 % https://ctan.org/pkg/hyperref
-\usepackage[pdfusetitle,      % Gets PDF metadata from \author and \title
+\usepackage[unicode,
 			breaklinks=true,  % Allow links to break over lines
 			colorlinks=true,  % Colours links instead of the default boxes
 			linkcolor=GOTOlightblue,  % Colour of internal links
 			urlcolor=GOTOlightblue,    % Colour of external hyperlinks
 			citecolor=GOTOlightblue,   % Colour of citations
+			% PDF metadata
+			pdfusetitle,      % Gets PDF metadata from \author and \title
+			pdfsubject={PhD Thesis},
+			pdfkeywords={astronomy}
 			]{hyperref}
 
 % A new bookmark (outline) organization for hyperref
@@ -105,7 +110,11 @@
 % ~~~~~~~~~~~~
 % Control over the typesetting of the \maketitle command
 % https://ctan.org/pkg/titling
-\usepackage{titling}
+%\usepackage{titling}
+
+% Tune the output format of dates according to language
+% https://ctan.org/pkg/isodate
+\usepackage[UKenglish]{isodate}
 
 
 
@@ -144,7 +153,7 @@
 %			sortcites=true,
 			uniquename=init,
 			giveninits=true,
-			sorting=nyvt,
+			sorting=nyt,
 			]{biblatex}
 
 
@@ -302,3 +311,7 @@
 % Selective filtering of error messages and warnings
 % https://ctan.org/pkg/silence
 \usepackage{silence}
+
+% Extending etoolbox patching commands
+% https://ctan.org/pkg/xpatch
+\usepackage{xpatch}

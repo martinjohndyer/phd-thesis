@@ -1,12 +1,19 @@
+% ########################################
+
 \chapter{On-Site Commissioning}
 \label{chap:commissioning}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \chaptoc{}
 
 % ########################################
 
-\newpage
 \section{Introduction}
 \label{sec:commissioning_intro}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 In this chapter I describe commissioning the GOTO hardware and parallel software developments.
@@ -22,10 +29,8 @@ All work described in this chapter is my own unless otherwise indicated, and has
 
 % ########################################
 
-\newpage
 \section{Deploying the hardware}
 \label{sec:hardware_commissioning}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -99,10 +104,10 @@ GOTO's deployment date was repeatedly set back for a variety of reasons, includi
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/inauguration_photo.jpg}
+        \includegraphics[width=\linewidth]{images/inauguration_photo.jpg}
     \end{center}
     \caption[Working in the GOTO dome prior to the inauguration in June 2017]{
-        Working in the GOTO dome prior to the inauguration in June 2017. \\
+        Working in the GOTO dome prior to the inauguration in June 2017.
         Photo taken looking west towards W1m and the WHT (with the orange CANARY laser visible). The second dome was installed on empty platform to the right later in the year.
     }\label{fig:inauguration}
 \end{figure}
@@ -119,20 +124,20 @@ GOTO operated in this mode for over a year. The gap between LIGO runs gave time 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{images/footprint_1_box.png}
+        \includegraphics[width=0.7\linewidth]{images/footprint_1_box.png}
     \end{center}
     \caption[The previous 3-UT GOTO footprint]{
-        The 3-UT GOTO footprint, used from August 2017 to February 2019. \\
+        The 3-UT GOTO footprint, used from August 2017 to February 2019.
         The initial \SI{5.5}{\degree} $\times$ \SI{2.6}{\degree} tile area used by GOTO-tile (see \aref{chap:tiling}) is shown in \textcolorbf{Green}{green}. Note that a reasonable amount of space is left around the edge of the tile.
     }\label{fig:3ut_footprint}
 \end{figure}
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.55\textwidth]{images/footprint_2_box.png}
+        \includegraphics[width=0.55\linewidth]{images/footprint_2_box.png}
     \end{center}
     \caption[The current 4-UT GOTO footprint]{
-        The current 4-UT GOTO footprint, in use from February 2019 onwards. \\
+        The current 4-UT GOTO footprint, in use from February 2019 onwards.
         The revised \SI{3.7}{\degree} $\times$ \SI{4.9}{\degree} tile area is shown in \textcolorbf{Green}{green}. The future four unit telescopes are expected to be arranged in two more columns on the left and right as shown in \aref{fig:fov}, creating an approximately \SI{7.8}{\degree}--wide footprint.
     }\label{fig:4ut_footprint}
 \end{figure}
@@ -143,8 +148,8 @@ One of the other problems found during commissioning was excessive scattered lig
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.4\textwidth]{images/commissioning_photo.jpg}
-        \includegraphics[width=0.4\textwidth]{images/commissioning_photo3.jpg}
+        \includegraphics[width=0.4\linewidth]{images/commissioning_photo.jpg}
+        \includegraphics[width=0.4\linewidth]{images/commissioning_photo3.jpg}
     \end{center}
     \caption[Photos from GOTO commissioning]{
         Photos from GOTO commissioning: monitoring the telescope from inside the dome in November 2017 on the left, and fitting the mirror counterweights in UT3 in January 2018 on the right.
@@ -163,7 +168,6 @@ By the time the 4-UT system was recommissioned, in February 2019, the G-TeCS pil
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\newpage
 \subsection{Additional dome systems}
 \label{sec:arduino}
 \begin{colsection}
@@ -173,14 +177,14 @@ GOTO uses a clamshell dome manufactured by Astrohaven, the same company that mad
 \begin{itemize}
     \item First, there was no easily-accessible emergency stop button to cut power to the dome in an emergency (e.g.\ something gets caught in the motors). This is a serious concern for pt5m as when the dome is open the shutters completely cover the access hatch, making it dangerous for anyone to be passing through the hatch when the dome is moving. Therefore, one of the additions to pt5m was an emergency stop button within arms reach of the hatch entrance. As the GOTO dome is taller the hatch is mostly uncovered when the dome is open, but installing an emergency stop button was still a priority for safety reasons.
     \item The dome does not come with a siren to sound when it opens or closes. This is an important safety feature when operating a robotic observatory, as the dome will be operated entirely through software and it is important to warn anyone on site several seconds before it is about to move. When members of the GOTO team are on-site the robotic systems can be disabled entirely by going into engineering mode (see \aref{sec:mode}), however it is still important to make sure that there is no chance of the dome moving without prior warning. In addition, the GOTO site on La Palma is publicly accessible, and it is not unknown for tourists or hikers, or other astronomers, to be around the dome when it is unsupervised.
-    \item By default, the dome \glsfirst{plc} only provides limited information about the status of the dome shutters. As described in \aref{sec:dome}, the PLC only returns a single status byte in response to a query. This is not enough to distinguish whether the dome is fully or only partially open, and if one side is moving the status of the other side is unknown. Adding our own sensors would allow the complete status of the dome to be determined. The dome comes with two in-built magnetic sensors on each side, which should detect when the shutters are either fully closed or fully open. However these have been known to be unreliable and tricky to align. In some cases the switches failed to trigger when the shutter reached its open limit, leading to the dome continuing to drive the belts and the shutter embedding itself into the ground. Therefore having secondary, independent sensors was a priority to ensure this did not happen.
+    \item By default, the dome \acro{plc} only provides limited information about the status of the dome shutters. As described in \aref{sec:dome}, the PLC only returns a single status byte in response to a query. This is not enough to distinguish whether the dome is fully or only partially open, and if one side is moving the status of the other side is unknown. Adding our own sensors would allow the complete status of the dome to be determined. The dome comes with two in-built magnetic sensors on each side, which should detect when the shutters are either fully closed or fully open. However these have been known to be unreliable and tricky to align. In some cases the switches failed to trigger when the shutter reached its open limit, leading to the dome continuing to drive the belts and the shutter embedding itself into the ground. Therefore having secondary, independent sensors was a priority to ensure this did not happen.
     \item The dome does not include a sensor on the hatch door to detect if it is open, and there is no way to close the hatch remotely in cases of bad weather. As GOTO will be operating without anyone on site the hatch should normally remain closed at all times, and by adding a sensor to the hatch this could be confirmed and an alert issues if the hatch was detected as open.
     \item One final proposed addition was a quick-close button, which acts as a simple and direct way to communicate with the dome daemon. The motivation is a practical one: in the case that the weather turns bad and the telescope is exposed, assuming the automatic monitoring systems fail and we can not connect to close it remotely, it is a lot easier and quicker to direct someone on site to access the dome and press the prominent ``close'' button than direct them to log on to the in-dome computer, open a terminal and type \code{dome~close}. This was also true during the commissioning phase, when the software was still being tested and someone has to be on-site all night. One requirement was that this button could not be easily confused with the emergency stop button (i.e.\ it should not be coloured red), as instead of stopping the dome this button will prompt it to move.
 \end{itemize}
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.9\textwidth]{images/button_photo.jpg}
+        \includegraphics[width=0.9\linewidth]{images/button_photo.jpg}
     \end{center}
     \caption[Building the quick-close button]{
         Building the quick-close button in the lab. The transmit (\textcolorbf{Brown}{brown}) and receive (\textcolorbf{Red}{red}) wires from the serial cable are attached to the button NC pins.
@@ -193,10 +197,10 @@ Adding an emergency stop button to the dome was fairly simple. There was enough 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{images/estop_photo.jpg}
+        \includegraphics[width=0.8\linewidth]{images/estop_photo.jpg}
     \end{center}
     \caption[The dome PLC and emergency stop button]{
-        The dome \glsfirst{plc} and emergency stop button. The green cable comes directly from the dome power supply at the top, passes through the button unit and into the PLC at the bottom.
+        The dome \acro{plc} and emergency stop button. The green cable comes directly from the dome power supply at the top, passes through the button unit and into the PLC at the bottom.
     }\label{fig:estop_plc}
 \end{figure}
 
@@ -206,7 +210,7 @@ Adding a siren and additional sensors to the dome required an additional system 
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.75\textwidth]{images/arduino.png}
+        \includegraphics[width=0.75\linewidth]{images/arduino.png}
     \end{center}
     \caption[Circuit design for the Arduino box]{
         Circuit design for the Arduino box.
@@ -217,8 +221,8 @@ Adding a siren and additional sensors to the dome required an additional system 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\textwidth]{images/arduino_photo.jpg}
-        \includegraphics[width=\textwidth]{images/box_photo.jpg}
+        \includegraphics[width=\linewidth]{images/arduino_photo.jpg}
+        \includegraphics[width=\linewidth]{images/box_photo.jpg}
     \end{center}
     \caption[Building the dome Arduino box]{
         Building the dome Arduino box in the lab in Sheffield. The top image shows the circuit design being tested, with the Arduino (circuit board in the back) and two of the dome switches: a magnetic proximity switch (grey blocks on the left) and a Honeywell limit switch (cyan unit in the centre, with the cover and arm detached). The lower image shows the completed weatherproof box with the siren, power and ethernet cables and one of the Honeywell switches attached.
@@ -229,7 +233,7 @@ Adding a siren and additional sensors to the dome required an additional system 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.75\textwidth]{images/box_installed_photo.jpg}
+        \includegraphics[width=0.75\linewidth]{images/box_installed_photo.jpg}
     \end{center}
     \caption[The Arduino box installed in the GOTO dome]{
         The Arduino box installed in the GOTO dome during my first trip to La Palma in March 2017. This photo was taken before the cover and cables were attached.
@@ -238,7 +242,7 @@ Adding a siren and additional sensors to the dome required an additional system 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.75\textwidth]{images/box_installed_photo2.jpg}
+        \includegraphics[width=0.75\linewidth]{images/box_installed_photo2.jpg}
     \end{center}
     \caption[The Arduino box and quick-close button in the GOTO dome]{
         The Arduino box and yellow quick-close button in the GOTO dome, attached to the southern pillar under the dome drive. The cables run to the computer rack which is just off to the left of the photo.
@@ -251,9 +255,9 @@ Four additional sensors were added to the dome, each connected to a port on the 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{images/dome_sensor_1.jpg}
-        \includegraphics[width=0.8\textwidth]{images/dome_sensor_2.jpg}
-        \includegraphics[width=0.8\textwidth]{images/dome_sensor_3.jpg}
+        \includegraphics[width=0.8\linewidth]{images/dome_sensor_1.jpg}
+        \includegraphics[width=0.8\linewidth]{images/dome_sensor_2.jpg}
+        \includegraphics[width=0.8\linewidth]{images/dome_sensor_3.jpg}
     \end{center}
     \caption[Additional sensors added to the dome]{
         Additional sensors added to the dome. The top photo shows one of the two Honeywell limit switches added to the rim of the dome wall to detect when the dome is fully open, the middle photo shows magnetic switch added to the inner-most shutters to detect when the dome is fully closed and the bottom photo shows the magnetic switch added to the dome hatch to detect if it is open or closed.
@@ -266,16 +270,10 @@ One further addition to the GOTO dome should be mentioned: the ``heartbeat'' mon
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Developing the software}
 \label{sec:software_commissioning}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -336,18 +334,18 @@ This method allows a reasonable set of flat fields to be taken in each filter mo
 
 The GOTO unit telescopes are designed to keep a stable focus through the night, and use carbon-fibre trusses to prevent any changes due to temperature fluctuations. Based on images taken during commissioning this is generally true, and as such the pilot only has to refocus the telescope once at the start of each night. Once the flats routine has finished the night marshal within in the pilot runs the \code{autofocus.py} observing script (see \aref{sec:night_marshal}). To save time, all of the unit telescopes are focused at the same time, although completely independently.
 
-The autofocus routine is based on the V-curve method of \citet{autofocus}. Instead of measuring the focus using the \glsfirst{fwhm} it is instead measured using the \glsfirst{hfd}. The HFD is defined as the diameter of a circle centred on a star in which half of the total flux lies inside the circle and half is outside. As this parameter is based only on the total spread of the flux and not on the maximum peak is is not disrupted due to seeing effects. But the most important property of the HFD is that should vary linearly with focus position, forming a V-shaped curve with a fixed gradient either side of the best focus, unlike the FWHM which forms a non-linear U-shaped curve. The gradient of this V-curve (shown in \aref{fig:autofocus}) is a function of the telescope hardware: changes in seeing move the curve up and down while changes in temperature will move the curve side-to-side, but the shape should remain the same. Therefore, if the V-curve has been defined for the given telescope and you can find which part of the curve you are on, you can use the known gradient and intercept to move directly to the minimum point, which will give the best focus.
+The autofocus routine is based on the V-curve method of \citet{autofocus}. Instead of measuring the focus using the \acro{fwhm} it is instead measured using the \acro{hfd}. The HFD is defined as the diameter of a circle centred on a star in which half of the total flux lies inside the circle and half is outside. As this parameter is based only on the total spread of the flux and not on the maximum peak is is not disrupted due to seeing effects. But the most important property of the HFD is that should vary linearly with focus position, forming a V-shaped curve with a fixed gradient either side of the best focus, unlike the FWHM which forms a non-linear U-shaped curve. The gradient of this V-curve (shown in \aref{fig:autofocus}) is a function of the telescope hardware: changes in seeing move the curve up and down while changes in temperature will move the curve side-to-side, but the shape should remain the same. Therefore, if the V-curve has been defined for the given telescope and you can find which part of the curve you are on, you can use the known gradient and intercept to move directly to the minimum point, which will give the best focus.
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{images/autofocus.pdf}
+        \includegraphics[width=0.8\linewidth]{images/autofocus.pdf}
     \end{center}
     \caption[Steps to find the best focus position using the HFD V-curve]{
         Steps to find the best focus position using the HFD V-curve.
     }\label{fig:autofocus}
 \end{figure}
 
-As GOTO is a wide-field instrument no particular focus star needs to be picked, and instead focusing takes place at zenith assuming that there are always enough stars to focus on within the field. Images are windowed to just a central 2000$\times$2000 pixel area, to avoid any distortions around the edge of the field. Sources are extracted and the half flux diameter measured using the SEP Python package (Source Extraction and Photometry, \pkg{sep}\footnote{\url{https://sep.readthedocs.io/}}) which implements the Source Extractor algorithms in Python \citep{SE}. This is done for all objects in the frame with a signal of more than $5\sigma$ above the background sky, excluding any sources that do not match a Gaussian shape i.e.\ are not point sources. This typically results in several hundred sources in each unit telescope, and the mean of all of the points is taken as the representative HFD for that image.
+As GOTO is a wide-field instrument no particular focus star needs to be picked, and instead focusing takes place at zenith assuming that there are always enough stars to focus on within the field. Images are windowed to just a central 2000$\times$2000 pixel area, to avoid any distortions around the edge of the field. Sources are extracted and the half flux diameter measured using the SEP Python package (Source Extraction and Photometry, \pkg{sep}\footnote{\url{https://sep.readthedocs.io}}) which implements the Source Extractor algorithms in Python \citep{SE}. This is done for all objects in the frame with a signal of more than $5\sigma$ above the background sky, excluding any sources that do not match a Gaussian shape i.e.\ are not point sources. This typically results in several hundred sources in each unit telescope, and the mean of all of the points is taken as the representative HFD for that image.
 
 At the start of the focus routine an initial image is taken and starting HFD values are measured. The starting focus position is also recorded at this point, so that if the script fails for any reason the initial focus can be restored. It is assumed that the initial value should be fairly close to the ideal focus position, but it is not known which side of the ideal position it is (i.e.\ if it is on the positive or negative gradient side of the V-curve). This starting point is shown by the \textbf{?} marker in \aref{fig:autofocus}.
 
@@ -355,7 +353,7 @@ The first step of the routine is to move the focuser by a large positive quantit
 
 The second step is a small step back in the opposite direction, towards the best focus position (point \textbf{B}). The HFD is measured again, and it should now be smaller than when measured at point \textbf{A} but still larger than the starting value. If this is not true then the script returns an error, as it is not possible to determine if we are on the correct side of the V-curve.
 
-The next stage is to continue taking small steps in the same (negative) direction, until the measured HFD is less than double the \emph{near-focus value} (NFV) \glsadd{nfv}. The NFV is chosen for each telescope to be a HFD value that is approximately equal to the best-focus value, based on previous measurements. Once at this point (point \textbf{C}) we should be well within the linear portion of the V-curve. At this stage the exact HFD values are important, so three consecutive images are taken at this focus position and the smallest of the HFD values is taken as the first point on the V-curve. The HFD values between images will change due to external factors, such as seeing or windshake, but these will only ever make the HFD worse than the ``true'' value, never better. Therefore taking the minimum minimises the effect of these external factors.
+The next stage is to continue taking small steps in the same (negative) direction, until the measured HFD is less than double the \emph{near-focus value} (NFV) \acroadd{nfv}. The NFV is chosen for each telescope to be a HFD value that is approximately equal to the best-focus value, based on previous measurements. Once at this point (point \textbf{C}) we should be well within the linear portion of the V-curve. At this stage the exact HFD values are important, so three consecutive images are taken at this focus position and the smallest of the HFD values is taken as the first point on the V-curve. The HFD values between images will change due to external factors, such as seeing or windshake, but these will only ever make the HFD worse than the ``true'' value, never better. Therefore taking the minimum minimises the effect of these external factors.
 
 Once the HFD value has been well measured at point \textbf{C} then the near-focus position (point \textbf{D}), the position that should produce a HFD equal to the near-focus value, can be found with
 %
@@ -393,7 +391,7 @@ In order to create a pointing model using PointXP the camera output from one of 
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{images/pointing_model.png}
+        \includegraphics[width=0.8\linewidth]{images/pointing_model.png}
     \end{center}
     \caption[Creating a pointing model using PointXP]{
         Creating a pointing model using PointXP.\@
@@ -426,7 +424,7 @@ A solution was eventually found using the pyudev Python package (\pkg{pyudev}\fo
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=0.7\textwidth]{images/cam_readout.png}
+        \includegraphics[width=0.7\linewidth]{images/cam_readout.png}
     \end{center}
     \caption[A corrupted image which was not read out fast enough]{
         An example of a corrupted image from one of the FLI MicroLine cameras which was not read out fast enough.
@@ -437,7 +435,7 @@ One of the more complicated parts of the camera control software is reading imag
 
 The cameras return a \code{DataReady} status once the exposure has finished and the data is reading out. However, when installing G-TeCS on site it was clear that the camera daemon was not able to reliably start downloading the data from the cameras quick enough to clear space in the internal buffer before it starts being overwritten. The solution was to add an internal image queue within the camera class, which would immediately begin downloading from the cameras as soon as they reported the exposure was finished. This meant the camera data was stored within the memory on the interface NUCs, and then the camera daemon queried the \code{fli} interfaces (see \aref{sec:fli}) to download the images across the network and write them to disk.
 
-This solution did run into a few problems with a feature of the Python programming language called the \glsfirst{gil}, which prevents multiple threads accessing the same Python object at once (the exact workings of the GIL are outside of the scope of this thesis). In short, this prevented reading out the cameras to the internal queue in parallel, which added an extra delay. Luckily, the FLI-API package was not written in standard Python (technically CPython) but in Cython, which interfaces between the FLI API code written in C and the rest of the system written in Python. Cython contains a GIL to maintain compatibility with CPython, however it is not required and can be disabled. Doing this allowed the cameras to be read out in parallel as intended.
+This solution did run into a few problems with a feature of the Python programming language called the \acro{gil}, which prevents multiple threads accessing the same Python object at once (the exact workings of the GIL are outside of the scope of this thesis). In short, this prevented reading out the cameras to the internal queue in parallel, which added an extra delay. Luckily, the FLI-API package was not written in standard Python (technically CPython) but in Cython, which interfaces between the FLI API code written in C and the rest of the system written in Python. Cython contains a GIL to maintain compatibility with CPython, however it is not required and can be disabled. Doing this allowed the cameras to be read out in parallel as intended.
 
 % ---------
 \subsubsection{Dec axis encoder failure}
@@ -461,8 +459,8 @@ Once informed about the event, Astrohaven manufactured brackets to fit inside th
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.45\textwidth]{images/ice_open.jpeg}
-        \includegraphics[width=0.45\textwidth]{images/ice_closed.jpeg}
+        \includegraphics[width=0.45\linewidth]{images/ice_open.jpeg}
+        \includegraphics[width=0.45\linewidth]{images/ice_closed.jpeg}
     \end{center}
     \caption[Internal webcam images showing the dome open during a snowstorm]{
         Internal webcam images showing the dome open during the 2018 snowstorm. The image on the left was taken when opening was discovered, with the upper shutter (which normally closes on the south side, to the left of the image) having been open by the weight of ice built up on the north side. The image on the right was taken after closing the shutter remotely. Moving the dome caused a large amount of ice to dislodge and fall into the dome, thankfully missing the mirrors and camera hardware.
@@ -471,7 +469,7 @@ Once informed about the event, Astrohaven manufactured brackets to fit inside th
 
 \begin{figure}[p]
     \begin{center}
-    \includegraphics[width=0.88\textwidth]{images/ice_outside.jpeg}
+    \includegraphics[width=0.88\linewidth]{images/ice_outside.jpeg}
     \end{center}
     \caption[External webcam image showing the ice rescue team]{
         External webcam image showing the ice rescue team. Note the build up of ice visible on the northern side of the upper shutter of the (empty) left-hand dome. A similar build up caused the upper shutter on the right-hand dome containing GOTO to be pulled open.
@@ -493,10 +491,6 @@ Since the start of O3 in April 2019 until the end of August there were 32 gravit
     \item The second skymap for the S190426c event was initially uploaded in a non-standard HEALPix format (see \aref{sec:healpix}) used internally in the LVC, which could not be read by GOTO-tile. Due to the above changes made following the S190521g event this did not interrupt GOTO observations, and the LVC have since clarified their filetypes.
     \item Finally, the updated skymap for the S190814bv event was incorrectly uploaded by the LVC to GraceDB with the same filename (\code{bayestar.fits.gz}) as the initial skymap (typically updates are called \code{bayestar1.fits.gz}, etc). By default, the Astropy FITS download function used within the sentinel caches each file, and if asked to download a file from the same URL will instead use the cached version. This lead to GOTO continuing to observe the large initial skymap instead of focusing on the smaller region given in the updated map. Again, the LVC have said that this will be prevented in the future, but just in case the sentinel was patched to disable the caching feature.
 \end{itemize}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 

@@ -1,12 +1,19 @@
+% ########################################
+
 \chapter{A Multi-Telescope Observatory}
 \label{chap:multiscope}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \chaptoc{}
 
 % ########################################
 
-\newpage
 \section{Introduction}
 \label{sec:multiscope_intro}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 In this chapter I describe the potential future expansion of the GOTO project, with additional telescopes at the current site in La Palma and a future second site in Australia.
@@ -23,10 +30,8 @@ All work described in this chapter is my own unless otherwise indicated, and has
 
 % ########################################
 
-\newpage
 \section{Scheduling for multiple telescopes}
 \label{sec:multi_tel}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -50,10 +55,11 @@ As none of the above has yet been implemented into the existing code, a simplifi
 
 The second simplification was to ensure the telescopes always stay in sync when observing. This was achievable for the simulations described in this chapter because every pointing uses the same exposure set (three \SI{60}{\second} exposures), and therefore they take the same amount of time to observe. However in practice each telescope would take a different amount of time to slew to its target, and so they would quickly get out of sync. Slew time is included in the fake pilot code for each telescope to acquire its new target, and so in order to remain synchronised with multiple telescopes the simulations simply wait the required amount of time for the telescope with the furthest distance to slew. This ensures both telescopes start and finish their observations at the same time, although it does mean a small amount of observing time is ``wasted'' while one telescope is waiting for the other to be in position.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
 \subsection{Multiple observing sites}
 \label{sec:multi_site_scheduling}
 \begin{colsection}
@@ -82,7 +88,7 @@ However, saying that the scheduler needs to find the top $X$ pointings, where $X
         \includegraphics[width=\linewidth]{images/sites.pdf}
     \end{center}
     \caption[Locations on the Earth with non-overlapping night times]{
-        Finding locations on the Earth with non-overlapping night times. In the upper plot the filled areas show the locations on the Earth where local night never overlaps with night on La Palma, at any time of the year. The different colours denote different night time definitions, with the \SI{-12}{\degree} definition also being surrounded by a white dashed line. The location of the GOTO sites considered (\textcolor{Blue}{La Palma}, \textcolor{Green}{Siding Spring} and \textcolor{Red}{Mt Kent}) are marked with stars and their antipodes are marked with hollow circles. The equivalent areas for Siding Spring and Mt Kent are also shown by the coloured dashed lines surrounding their antipodes, for the \SI{-12}{\degree} night definition only. The lower plots show how the region varies over the course of a year, from the solstices via the equinox (the plot is identical for the two equinoxes and therefore is only shown once).
+        Finding locations on the Earth with non-overlapping night times. In the upper plot the filled areas show the locations on the Earth where local night never overlaps with night on La Palma, at any time of the year. The different colours denote different night time definitions, with the \SI{-12}{\degree} definition also being surrounded by a white dashed line. The location of the GOTO sites considered (\textcolor{NavyBlue}{La Palma}, \textcolor{Green}{Siding Spring} and \textcolor{Red}{Mt Kent}) are marked with stars and their antipodes are marked with hollow circles. The equivalent areas for Siding Spring and Mt Kent are also shown by the coloured dashed lines surrounding their antipodes, for the \SI{-12}{\degree} night definition only. The lower plots show how the region varies over the course of a year, from the solstices via the equinox (the plot is identical for the two equinoxes and therefore is only shown once).
     }\label{fig:site_nights}
 \end{figure}
 
@@ -108,16 +114,10 @@ For the proposed GOTO system with near-identical GOTO-8 units around the world t
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Gravitational-wave follow-up simulations}
 \label{sec:gw_sims}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -239,10 +239,7 @@ The region of the sky visible during the night for a given site change over the 
     \end{center}
     \caption[Plotting sky visibility regions over a year]{
         Changing sky visibility regions over a year, plotted on the celestial sphere.
-        Visibility is shown at the equinoxes and the solstices for two different sites: the left column shows visibility for an observer located on the Earth's equator, the right column shows visibility from La Palma. \\
-        The \textcolorbf{Green}{green} regions are visible during the night. The area above the \SI{30}{\degree} altitude limit at sunset is shown by a white dashed line, with the local zenith marked with a white point, and the arrows show how the visible region moves in RA during the night until sunrise. \\
-        The position of the Sun on the ecliptic is shown by the black star, the \textcolorbf{Orange}{orange} region is within \SI{42}{\degree} of the Sun and is therefore not visible from anywhere on Earth. \\
-        The \textcolorbf{NavyBlue}{light blue} regions are permanently out of the visible declination range of the site, and the regions in \textcolorbf{Blue}{dark blue} would only be visible during the day.
+        Visibility is shown at the equinoxes and the solstices for two different sites: the left column shows visibility for an observer located on the Earth's equator, the right column shows visibility from La Palma. The \textcolorbf{Green}{green} regions are visible during the night. The area above the \SI{30}{\degree} altitude limit at sunset is shown by a white dashed line, with the local zenith marked with a white point, and the arrows show how the visible region moves in RA during the night until sunrise. The position of the Sun on the ecliptic is shown by the black star, the \textcolorbf{Orange}{orange} region is within \SI{42}{\degree} of the Sun and is therefore not visible from anywhere on Earth. The \textcolorbf{NavyBlue}{light blue} regions are permanently out of the visible declination range of the site, and the regions in \textcolorbf{Blue}{dark blue} would only be visible during the day.
     }\label{fig:visibility}
 \end{figure}
 
@@ -264,10 +261,10 @@ In order to find the optimal selection levels, further simulations could be run 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/non_selected.pdf} %\todo{this could be nicer}
+        \includegraphics[width=\linewidth]{images/non_selected.pdf}
     \end{center}
     \caption[Examples of mock GW event sources falling outside of the selected tiles]{
-        Two examples of mock GW event sources (marked by the star) falling outside the selected tiles (the tiles highlighted in \textcolorbf{Blue}{blue}). In the upper case (trigger ID 13630) the tiles the source fell within (highlighted in \textcolorbf{Red}{red}) were on the edge of the skymap and only just below the mean contour limit, while in the lower example (trigger ID 930001) the source was completely outside of the skymap probability regions.
+        Two examples of mock GW event sources (marked by the \textcolorbf{Red}{red} star) falling outside the selected tiles (the tiles highlighted in \textcolorbf{NavyBlue}{blue}). In the upper case (trigger ID 13630) the source fell just outside of the selected tiles, while in the lower case (trigger ID 930001) the source was on completely the other side of the sky.
     }\label{fig:poor_selection}
 \end{figure}
 
@@ -291,10 +288,10 @@ The results of the simulations for six key scenarios are given in the following 
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.15\textwidth}\vspace{0.6cm}
+        \begin{minipage}[t]{0.15\linewidth}\vspace{0.6cm}
             \includegraphics[trim={.5cm 0 .5cm 0},clip,width=\linewidth]{images/gw_sims/1n4_pie.png}
         \end{minipage}
-        \begin{minipage}[t]{0.45\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.45\linewidth}\vspace{0pt}
             \begin{tabular}{lrr}
                 \multicolumn{3}{c}{\textbf{Simulation results}} \\
                 \midrule
@@ -310,7 +307,7 @@ The results of the simulations for six key scenarios are given in the following 
                 %% PASTE ABOVE /\/\
             \end{tabular}
         \end{minipage}
-        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.37\linewidth}\vspace{0pt}
             \begin{tabular}{lr}
                 \multicolumn{2}{c}{\textbf{System: 1N4}} \\
                 \midrule
@@ -334,10 +331,10 @@ The results of the simulations for six key scenarios are given in the following 
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.15\textwidth}\vspace{0.6cm}
+        \begin{minipage}[t]{0.15\linewidth}\vspace{0.6cm}
             \includegraphics[trim={.5cm 0 .5cm 0},clip,width=\linewidth]{images/gw_sims/1n8_pie.png}
         \end{minipage}
-        \begin{minipage}[t]{0.45\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.45\linewidth}\vspace{0pt}
             \begin{tabular}{lrr}
                 \multicolumn{3}{c}{\textbf{Simulation results}} \\
                 \midrule
@@ -353,7 +350,7 @@ The results of the simulations for six key scenarios are given in the following 
                 %% PASTE ABOVE /\/\
             \end{tabular}
         \end{minipage}
-        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.37\linewidth}\vspace{0pt}
             \begin{tabular}{lr}
                 \multicolumn{2}{c}{\textbf{System: 1N8}} \\
                 \midrule
@@ -378,10 +375,10 @@ The results of the simulations for six key scenarios are given in the following 
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.15\textwidth}\vspace{0.6cm}
+        \begin{minipage}[t]{0.15\linewidth}\vspace{0.6cm}
             \includegraphics[trim={.5cm 0 .5cm 0},clip,width=\linewidth]{images/gw_sims/2n8_pie.png}
         \end{minipage}
-        \begin{minipage}[t]{0.45\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.45\linewidth}\vspace{0pt}
             \begin{tabular}{lrr}
                 \multicolumn{3}{c}{\textbf{Simulation results}} \\
                 \midrule
@@ -397,7 +394,7 @@ The results of the simulations for six key scenarios are given in the following 
                 %% PASTE ABOVE /\/\
             \end{tabular}
         \end{minipage}
-        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.37\linewidth}\vspace{0pt}
             \begin{tabular}{lr}
                 \multicolumn{2}{c}{\textbf{System: 2N8}} \\
                 \midrule
@@ -424,10 +421,10 @@ The results of the simulations for six key scenarios are given in the following 
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.15\textwidth}\vspace{0.6cm}
+        \begin{minipage}[t]{0.15\linewidth}\vspace{0.6cm}
             \includegraphics[trim={.5cm 0 .5cm 0},clip,width=\linewidth]{images/gw_sims/2n8&1s4_pie.png}
         \end{minipage}
-        \begin{minipage}[t]{0.45\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.45\linewidth}\vspace{0pt}
             \begin{tabular}{lrr}
                 \multicolumn{3}{c}{\textbf{Simulation results}} \\
                 \midrule
@@ -443,7 +440,7 @@ The results of the simulations for six key scenarios are given in the following 
                 %% PASTE ABOVE /\/\
             \end{tabular}
         \end{minipage}
-        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.37\linewidth}\vspace{0pt}
             \begin{tabular}{lr}
                 \multicolumn{2}{c}{\textbf{System: 2N8+1S4}} \\
                 \midrule
@@ -468,10 +465,10 @@ The results of the simulations for six key scenarios are given in the following 
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.15\textwidth}\vspace{0.6cm}
+        \begin{minipage}[t]{0.15\linewidth}\vspace{0.6cm}
             \includegraphics[trim={.5cm 0 .5cm 0},clip,width=\linewidth]{images/gw_sims/2n8+2s8_pie.png}
         \end{minipage}
-        \begin{minipage}[t]{0.45\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.45\linewidth}\vspace{0pt}
             \begin{tabular}{lrr}
                 \multicolumn{3}{c}{\textbf{Simulation results}} \\
                 \midrule
@@ -487,7 +484,7 @@ The results of the simulations for six key scenarios are given in the following 
                 %% PASTE ABOVE /\/\
             \end{tabular}
         \end{minipage}
-        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.37\linewidth}\vspace{0pt}
             \begin{tabular}{lr}
                 \multicolumn{2}{c}{\textbf{System: 2N8+2S8}} \\
                 \midrule
@@ -512,10 +509,10 @@ The results of the simulations for six key scenarios are given in the following 
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.15\textwidth}\vspace{0.6cm}
+        \begin{minipage}[t]{0.15\linewidth}\vspace{0.6cm}
             \includegraphics[trim={.5cm 0 .5cm 0},clip,width=\linewidth]{images/gw_sims/2n8+2k8_pie.png}
         \end{minipage}
-        \begin{minipage}[t]{0.45\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.45\linewidth}\vspace{0pt}
             \begin{tabular}{lrr}
                 \multicolumn{3}{c}{\textbf{Simulation results}} \\
                 \midrule
@@ -531,7 +528,7 @@ The results of the simulations for six key scenarios are given in the following 
                 %% PASTE ABOVE /\/\
             \end{tabular}
         \end{minipage}
-        \begin{minipage}[t]{0.37\textwidth}\vspace{0pt}
+        \begin{minipage}[t]{0.37\linewidth}\vspace{0pt}
             \begin{tabular}{lr}
                 \multicolumn{2}{c}{\textbf{System: 2N8+2K8}} \\
                 \midrule
@@ -620,16 +617,10 @@ Another factor to emerge from these simulations is the difference between two in
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{All-sky survey simulations}
 \label{sec:survey_sims}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -717,6 +708,7 @@ The results of the sky-survey simulations are given in \aref{tab:survey_sim_resu
         Summary of all-sky survey simulation results. The first 1N4 simulation, marked with an asterisk (*), was the only one carried out using the full scheduler and database system; all the other simulations used the `lite' script. The fraction of the sky observed each night is given as a range over the course of a year, as well as the total fraction of the sky observed over the whole year. The number of times each tile was observed is given as an average over all tiles observed and, in parenthesis, the minimum and maximum. The mean cadence between observations of each tile is also given, along with the mean airmass of each observation, over the whole year.
     }\label{tab:survey_sim_results}
 \end{table}
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
@@ -744,17 +736,19 @@ Together, the sky-survey simulations confirm that having more telescopes decreas
 
 Overall, the two sets of simulations together suggest that the proposed full GOTO network, the ``2N8+2S8'' system, should expect to observe the position of over of 75\% of gravitational-wave sources within 24 hours, and over 50\% within 12 hours. On average there should be a reference image taken of the same position within the past 1.7 days, which will greatly help narrowing in down potential candidate sources. When fully deployed GOTO would therefore be a powerful system for rapidly finding counterparts to gravitational-wave detections.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Comparison of simulations to real observations}
 \label{sec:survey_sim_150}
 \begin{colsection}
 
 The results of the 1N4 simulation can be compared to the real observations carried out by the existing telescope on La Palma, in order to confirm how good a model it is of the real system. The current phase of the GOTO project began on the night of the 21st of February 2019 (see \aref{sec:timeline}); this was the first night of fully robotic observations with the set of four unit telescopes, and marks the start of the ongoing all-sky survey. The first 5 months of observations span 150 days up to the night ending on the 21st of July, and this provides the benchmark to compare with simulations of the same period.
 
-\begin{figure}[t]
+\begin{figure}[p]
     \begin{center}
         \includegraphics[width=\linewidth]{images/150.pdf}
     \end{center}
@@ -765,7 +759,7 @@ The results of the 1N4 simulation can be compared to the real observations carri
 
 \aref{fig:150} shows the number of tiles observed each night by the real GOTO on La Palma and the corresponding 1N4 simulation, restricted to the first 150 days. Over the 5-month period, 16146 on-grid observations were carried out by the telescope on La Palma, of which 85\% were survey pointings, and over the same period the simulation produced 21300 observations. The simulated observations can be considered the idealised case, and the real observations carried out differ from simulation in three ways.
 
-First, the real system on La Palma is affected by periods of bad weather conditions, shown by the red and purple bars below the main plot. Bad conditions prevents observations being taken and reduces the number carried out each night. There there was one bad period of weather in late March and early April when the dome could not open for over a week. The simulations do not currently include the effects of bad weather, although the code exists to simulate periods of bad conditions and future simulations could include the real weather conditions over the same period. There were also other reasons for observations to be stopped on some nights, for example switching to manual mode to carry out calibration tests or on-site work.
+First, the real system on La Palma is affected by bad conditions which prevent observations from being taken, shown in \aref{fig:150} by the red and purple bars below the main plot. There was one particularly bad period in late March and early April when the dome could not open for over a week. The simulations do not currently include the effects of bad weather, although the code exists to simulate periods of bad conditions and future simulations could include the real weather conditions over the same period. There were also other reasons for observations to be stopped on some nights, for example switching to manual mode to carry out calibration tests or on-site work.
 
 Secondly, the real system had to deal with multiple distractions from observing the all-sky survey. The orange bars in \aref{fig:150} show non-survey observations, which take up a significant amount of time (15\% of all observations). Some nights are almost entirely orange, corresponding to LVC gravitational-wave triggers with particularly large skymaps visible from La Palma (see \aref{sec:gw_results}). These include S190425z and S190426c in late April, multiple events during May and S190720a just before the end of the period in mid-July. Other orange patches represent observations of smaller gravitational-wave skymaps, gamma-ray burst triggers, or other manually-inserted targets; these were also not considered in the sky-survey simulations.
 
@@ -773,7 +767,7 @@ Finally, there is still a regular offset in \aref{fig:150} between the number of
 
 \aref{fig:survey_real_150} shows the sky coverage map for the real observations in the first 150 days, while \aref{fig:survey_sim_1n4_150} shows the same for the 1N4 simulation. The real sky coverage is very similar in extent to the simulations: the real observations cover 2135 of the 2913 GOTO-4 grid tiles at least once while the simulation covers 2187. The reason for the small discrepancy is that initially the real system used an altitude limit of \SI{35}{\degree} for the all-sky survey, which was lowered to \SI{30}{\degree} in May. This change is visible in the bottom row of tiles in \aref{fig:survey_real_150}. The simulations all assume a constant \SI{30}{\degree} limit.
 
-The major difference in the coverage between the real and simulated results is in the number of times each tile as observed. \aref{fig:survey_real_150} shows the most a real tile was observed was nine times, while \aref{fig:survey_sim_1n4_150} shows that the simulated results included up to 13 observations of a single tile. This is entirely due to the factors described above, and the all-sky simulation overestimated the number of observations taken during the 150 days. The mean tile cadence of the real observations is $14\pm4$, compared to $10\pm2$ from the 1N4 simulation. It is clear that future simulations need to take into account the time lost to weather and other non-survey observations in order to accurately predict the output of the real system. Overall though, aside from the constant offset visible in \aref{fig:150}, the simulations do seem to provide a reasonable approximation of what GOTO could observe in this idealised case.
+The major difference in the coverage between the real and simulated results is in the number of times each tile as observed. \aref{fig:survey_real_150} shows the most a real tile was observed was nine times, while \aref{fig:survey_sim_1n4_150} shows that the simulated results included up to 13 observations of a single tile. The mean tile cadence of the real observations is $14\pm4$, compared to $10\pm2$ from the 1N4 simulation. It is clear that future simulations need to take into account the time lost to weather and other non-survey observations in order to accurately predict the output of the real system. Overall though, aside from the constant offset visible in \aref{fig:150}, the simulations do seem to provide a reasonable approximation of what GOTO could observe in this idealised case.
 
 \begin{figure}[p]
     \begin{center}
@@ -794,11 +788,12 @@ The major difference in the coverage between the real and simulated results is i
 \end{figure}
 
 \clearpage
+\newpage
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{An alternative, meridian-limited sky survey method}
 \label{sec:survey_sim_meridian}
 \begin{colsection}
@@ -842,10 +837,10 @@ A side effect of this method is that, as the width of the meridian strip is decr
 
 \begin{figure}[p]
     \begin{center}
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.49\linewidth}\vspace{10pt}
             \includegraphics[height=140pt]{images/survey_sims/365_1N4_lite_airmass3.png}
         \end{minipage}
-        \begin{minipage}[t]{0.49\textwidth}\vspace{10pt}
+        \begin{minipage}[t]{0.49\linewidth}\vspace{10pt}
             \includegraphics[height=140pt]{images/survey_sims/365_1N4_meridian_airmass3.png}
         \end{minipage}
     \end{center}
@@ -871,10 +866,6 @@ A side effect of this method is that, as the width of the meridian strip is decr
         Mean observation airmasses for the first month of a survey using the meridian scanning method, restricting observations to tiles within $\pm\SI{10}{\degree}$ of the observer's meridian. Using the hour angle limit it possible to optimise the airmass of observations, but at the cost of sky coverage.
     }\label{fig:survey_sim_airmass_meridian}
 \end{figure}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 

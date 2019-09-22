@@ -1,18 +1,25 @@
+% ########################################
+
 \chapter{Autonomous Observing}
 \label{chap:autonomous}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \chaptoc{}
 
 % ########################################
 
-\newpage
 \section{Introduction}
 \label{sec:autonomous_intro}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 Continuing the description of the GOTO Telescope Control System from \aref{chap:gtecs}, in this chapter I describe the higher level programs written to enable GOTO to operate as a robotic observatory.
 %
 \begin{itemize}
-    \item In \nref{sec:something} I outline the additional functionality added to G-TeCS in order to allow the telescope to operate autonomously.
+    \item In \nref{sec:auto} I outline the additional functionality added to G-TeCS in order to allow the telescope to operate autonomously.
     \item In \nref{sec:pilot} I describe the master control program that operates the telescope when in robotic mode.
     \item In \nref{sec:conditions} I detail how G-TeCS monitors the local conditions, and list the different flags used to judge if it is safe to observe.
     \item In \nref{sec:observing} I give an outline of how targets are observed by the robotic system. These topics are expanded further in following chapters.
@@ -24,10 +31,8 @@ All work described in this chapter is my own unless otherwise indicated. A descr
 
 % ########################################
 
-\newpage
 \section{Automating telescope operations}
-\label{sec:something}
-\begin{colsection}
+\label{sec:auto}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -45,12 +50,11 @@ GOTO, however, was always designed as a fully robotic installation, as described
 \label{sec:robotic_telescopes}
 \begin{colsection}
 
-One of the first robotic telescopes was the Wisconsin Automatic Photoelectric Telescope \citep{Wisconsin_APT}. Built in 1965, it could perform routine observations unattended for several days. Today huge number and variety of automated telescopes now regularly take observations of the night sky with limited or no human involvement, ranging from wide-field survey projects like the All-Sky Automated Survey for Supernovae \glsadd{asassn} \citep[ASAS-SN,][]{ASAS-SN}, large robotic telescopes like the \SI{2}{\metre} Liverpool Telescope \citep{Liverpool} or countless smaller telescopes on the roofs of physics departments and in amateur backyards. While larger facilities still tend to be manually operated they often have multiple instances of automation in their hardware control or scheduling system; the conversion of the 50-year-old Isaac Newton Telescope for the automated HARPS3 survey \citep{INT_robotic} is a recent example of large, established telescopes exploiting the benefits of automation. Larger purely robotic telescopes are also being developed, such as the proposed \SI{4}{\metre} successor to the Liverpool telescope \citep{Liverpool2}. The opportunity for multiple robotic telescopes to be networked together into global observatories has also been exploited by projects like the Las Cumbres Observatory Global Telescope Network \citep{LCO} and the MASTER network \citep{MASTER}.
+One of the first robotic telescopes was the Wisconsin Automatic Photoelectric Telescope \citep{Wisconsin_APT}. Built in 1965, it could perform routine observations unattended for several days. Today huge number and variety of automated telescopes now regularly take observations of the night sky with limited or no human involvement, ranging from wide-field survey projects like the All-Sky Automated Survey for Supernovae \acroadd{asassn} \citep[ASAS-SN,][]{ASAS-SN}, large robotic telescopes like the \SI{2}{\metre} Liverpool Telescope \citep{Liverpool} or countless smaller telescopes on the roofs of physics departments and in amateur backyards. While larger facilities still tend to be manually operated they often have multiple instances of automation in their hardware control or scheduling system; the conversion of the 50-year-old Isaac Newton Telescope for the automated HARPS3 survey \citep{INT_robotic} is a recent example of large, established telescopes exploiting the benefits of automation. Larger purely robotic telescopes are also being developed, such as the proposed \SI{4}{\metre} successor to the Liverpool telescope \citep{Liverpool2}. The opportunity for multiple robotic telescopes to be networked together into global observatories has also been exploited by projects like the Las Cumbres Observatory Global Telescope Network \citep{LCO} and the MASTER network \citep{MASTER}.
 
 In G-TeCS, as in the pt5m system before it, the role of the observer is filled by a master control program called the pilot. The pilot decides what to observe, sends commands to the daemons, monitors the hardware and attempts to fix problems that may arise. The intention is that the pilot will fully replicate anything a trained on-site observer would be required to do. In order to manage this there are several auxiliary systems and additional support daemons that the pilot confers with. The conditions daemon monitors weather and other system conditions, the sentinel daemon listens for alerts and enters new targets into the observation database and the scheduler daemon which reads that database and calculates what to observe. Each of these systems are described in the following sections.
 
 \end{colsection}
-
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -112,6 +116,7 @@ G-TeCS deals with manual operation by having an overall system mode flag stored 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Slack alerts}
 \label{sec:slack}
 \begin{colsection}
@@ -133,16 +138,10 @@ Several other functions within the pilot send short messages to Slack when calle
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{The pilot}
 \label{sec:pilot}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -165,9 +164,9 @@ The pilot is written as an \textit{asynchronous} program, using the AsyncIO pack
         \includegraphics[width=0.89\linewidth]{images/async.pdf}
     \end{center}
     \caption[Multi-threaded vs asynchronous programming]{
-        A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolorbf{NavyBlue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolorbf{Green}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolorbf{Red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated, typically pilot tasks wait for between 10--\SI{60}{\second}. \\
-        \textbf{Top}: The three tasks with different execution periods (solid blocks) and wait times (blank) are run in a multi-threaded program. Each task is being run in an independent parallel thread on its own core, even though they rarely overlap and it is uncommon for multiple cores to be in use at the same time. \\
-        \textbf{Bottom}: The same three tasks are run as coroutines in an asynchronous program. The event loop decides which coroutine to run on the single core, represented by the black arrows. This does lead to some coroutines being left waiting (lighter blocks) until the previous is finished, and as routines can be delayed it is not suitable for checks that need to happen at exact frequencies. However the overall core usage is much more efficient.
+        A comparison of multi-threaded vs asynchronous programming. This example uses a \textcolorbf{NavyBlue}{blue} task that takes \SI{0.5}{\second} to execute and then waits for \SI{1.5}{\second}, a \textcolorbf{Green}{green} task that takes \SI{0.75}{\second} and waits for \SI{1.5}{\second} and a \textcolorbf{Red}{red} task that takes \SI{0.5}{\second} and waits for \SI{2.5}{\second}. These times are exaggerated, typically pilot tasks wait for between 10--\SI{60}{\second}.
+        The upper plot shows three tasks with different execution periods (solid blocks) and wait times (blank) are run in a multi-threaded program. Each task is being run in an independent parallel thread on its own core, even though they rarely overlap and it is uncommon for multiple cores to be in use at the same time.
+        The lower plot shows the same three tasks are run as coroutines in an asynchronous program. The event loop decides which coroutine to run on the single core, represented by the black arrows. This does lead to some coroutines being left waiting (lighter blocks) until the previous is finished, and as routines can be delayed it is not suitable for checks that need to happen at exact frequencies. However the overall core usage is much more efficient.
     }\label{fig:async}
 \end{figure}
 
@@ -178,6 +177,7 @@ Asynchronous code contains multiple parallel \textit{coroutines}. The program it
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Check routines}
 \label{sec:checks}
 \begin{colsection}
@@ -196,10 +196,12 @@ The coroutines within the pilot can be separated into two types: the check routi
 
 \end{itemize}
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Monitoring the hardware}
 \label{sec:monitors}
 \begin{colsection}
@@ -212,9 +214,12 @@ When one of the monitor checks returns an error then the pilot will take action 
 
 Using the above method, the vast majority of hardware issues can be solved by the pilot without the need for human intervention. Every time the recovery steps are triggered a message is sent to Slack (see \aref{sec:slack}) the error and the steps required to fix it, so it is easy to then go back and examine why the error occurred and how to prevent it in the future.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{The night marshal}
 \label{sec:night_marshal}
 \begin{colsection}
@@ -248,6 +253,7 @@ It is also possible for the pilot to trigger an emergency shutdown during the ni
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{The day marshal}
 \label{sec:day_marshal}
 \begin{colsection}
@@ -258,16 +264,10 @@ If the day marshal finds that the dome is still open when it runs it will send o
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Conditions monitoring}
 \label{sec:conditions}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -278,6 +278,7 @@ Perhaps the most important of the autonomous systems is monitoring the on-site c
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{The conditions daemon}
 \label{sec:conditions_daemon}
 \begin{colsection}
@@ -288,19 +289,20 @@ The daemon takes in readings from the three local weather stations next to the G
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[height=0.5\textwidth]{images/orm_warwick.pdf}
-        \includegraphics[height=0.5\textwidth]{images/conditions_photo.jpg}
+        \includegraphics[height=0.5\linewidth]{images/orm_warwick.pdf}
+        \includegraphics[height=0.5\linewidth]{images/conditions_photo.jpg}
     \end{center}
     \caption[Locations of the three weather masts on La Palma]{
         On the left the locations of the three local weather masts on La Palma are marked by the \textcolorbf{Red}{red} stars (see \aref{fig:orm} for the context of the site). There are three masts around GOTO:\@ one next to the GOTO platform (shown on the right), one on the SuperWASP shed and a third on the nitrogen plant next to the W1m.
     }\label{fig:conditions}
 \end{figure}
 
-\end{colsection}
-
 \newpage
 
+\end{colsection}
+
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{Conditions flags}
 \label{sec:conditions_flags}
 \begin{colsection}
@@ -393,7 +395,7 @@ The first category are the `information' flags. These are assigned values like t
 \begin{itemize}
     \item \code{dark}: A simple information flag that is bad when the Sun is above the \SI{0}{\degree} horizon and good when it is below. This has no effect on the robotic system, but is useful for human observers.
 
-    \item \code{clouds}: This information flag uses free IR satellite images downloaded from the \url{sat24.com} website to measure a rough cloud coverage value, based on the methods of \citet{clouds}. Although initially trialled as a normal flag, meaning the dome would close when high cloud was detected, the results were not consistent enough and the presence of clouds was more reliably calculated by the zero point measured by the data processing pipeline. The flag remains a useful information source however, and the satellite cloud opacity is added to the image headers to assist in later data quality control checks.
+    \item \code{clouds}: This information flag uses free IR satellite images downloaded from the sat24.com website\footnote{\url{https://en.sat24.com}} to measure a rough cloud coverage value, based on the methods of \citet{clouds}. Although initially trialled as a normal flag, meaning the dome would close when high cloud was detected, the results were not consistent enough and the presence of clouds was more reliably calculated by the zero point measured by the data processing pipeline. The flag remains a useful information source however, and the satellite cloud opacity is added to the image headers to assist in later data quality control checks.
 \end{itemize}
 
 The second category contains the `normal' flags, and makes up the conditions flags relating to the external weather conditions. These flags going bad are valid grounds to close the dome, however as they relate to natural events they are not in any way unusual and the pilot can happily remain paused and wait for the flags to clear. The normal flags are described below:
@@ -431,16 +433,10 @@ The output of the conditions daemon is saved in a datafile, along with a timesta
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Observing targets}
 \label{sec:observing}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -451,12 +447,12 @@ In order for the pilot to function during the night it needs to know what target
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
+
 \subsection{The observation database}
 \label{sec:obsdb}
-% Time Blocks??
 \begin{colsection}
 
-The scheduling system for G-TeCS is based around a database known as the observation database or ``ObsDB''. This database is located on the central observatory server hosted by SuperWASP, which not only is a faster machine than the control computer in the dome but in the future will allow a single database to be shared between mounts (see \aref{sec:multi_tel} and \aref{sec:gtecs_future}). The database is implemented using the MariaDB database management system\footnote{\url{https://mariadb.com/}}, and is queried and modified using \glsfirst{sql} commands. In order to interact easily with the database within G-TeCS code a separate Python package, ObsDB (\pkg{obsdb}\footnote{\url{https://github.com/GOTO-OBS/goto-obsdb}}), was written as an \glsfirst{orm} package utilising the SQLAlchemy package (\pkg{sqlalchemy}\footnote{\url{https://sqlalchemy.org/}}).
+The scheduling system for G-TeCS is based around a database known as the observation database or ``ObsDB''. This database is located on the central observatory server hosted by SuperWASP, which not only is a faster machine than the control computer in the dome but in the future will allow a single database to be shared between mounts (see \aref{sec:multi_tel} and \aref{sec:gtecs_future}). The database is implemented using the MariaDB database management system\footnote{\url{https://mariadb.com}}, and is queried and modified using \acro{sql} commands. In order to interact easily with the database within G-TeCS code a separate Python package, ObsDB (\pkg{obsdb}\footnote{\url{https://github.com/GOTO-OBS/goto-obsdb}}), was written as an \acro{orm} package utilising the SQLAlchemy package (\pkg{sqlalchemy}\footnote{\url{https://sqlalchemy.org}}).
 
 The primary table in the database is for individual \textit{pointings}. These each represent a single visit of the telescope, with defined RA and Dec coordinates and a valid time range for it to be observed within, as well as other observing constraints. Each pointing has a status value which is either \code{pending}, \code{running}, \code{completed} or some other terminal status (\code{aborted}, \code{interrupted}, \code{expired} or \code{deleted}). Ideally a pointing passes through three stages: it is created as \code{pending}, the scheduler selects it and the pilot marks it as \code{running}, then if all is well when it is finished it is marked as \code{completed}. If it stays in the database and never gets observed it will eventually pass its defined stop time (if it has one) and will be marked as \code{expired} by the database caretaker script. If the pointing is in the middle of being observed but is then cancelled before being completed it will be marked either \code{interrupted} (if the scheduler decided to observe another pointing of a higher priority) or \code{aborted} (in the case of a problem such as having to close for bad weather). The \code{deleted} status is reserved for pointings being removed from the queue before being observed, such as updated pointings being inserted by the sentinel and overwriting the previous ones (see \aref{sec:event_insert}). A representation of the relationship between the pointing statuses and how they progress is shown in \aref{fig:pointings}.
 
@@ -469,7 +465,7 @@ The primary table in the database is for individual \textit{pointings}. These ea
     }\label{fig:pointings}
 \end{figure}
 
-As well as the target information (RA, Dec, name) a pointing entry contains constraints on when they can be observed. Each pointing can have set start and stop times; the scheduler will only select pointings where the current time is within their valid range (and once the stop time has passed they will be marked as \code{expired}). Limits can also be set on minimum target altitude, minimum distance from the Moon, maximum Moon brightness (in terms of Bright/Grey/Dark time) and maximum Sun altitude. These constraints are applied by the scheduler to each pointing when deciding which to observe, and unless they all pass the pointing is deemed invalid. When created, a pointing is also assigned a rank, usually from 0--9, as well as a True/False flag marking it as a time-critical \glsfirst{too}. These are used when calculating the priority of the pointing, to compare with others in order to determine which is the highest priority to observe (see \aref{sec:ranking}).
+As well as the target information (RA, Dec, name) a pointing entry contains constraints on when they can be observed. Each pointing can have set start and stop times; the scheduler will only select pointings where the current time is within their valid range (and once the stop time has passed they will be marked as \code{expired}). Limits can also be set on minimum target altitude, minimum distance from the Moon, maximum Moon brightness (in terms of Bright/Grey/Dark time) and maximum Sun altitude. These constraints are applied by the scheduler to each pointing when deciding which to observe, and unless they all pass the pointing is deemed invalid. When created, a pointing is also assigned a rank, usually from 0--9, as well as a True/False flag marking it as a time-critical \acro{too}. These are used when calculating the priority of the pointing, to compare with others in order to determine which is the highest priority to observe (see \aref{sec:ranking}).
 
 The commands to be executed once the telescope has slewed to a pointing are stored in a separate \code{exposure\_sets} table. The table has columns for the number of exposures to take, the exposure time and the filter to use; so for example an observation requiring three \SI{60}{\second} exposures in the \textit{L} filter only requires one entry in the table. When the pointing is observed the pilot will read the set information and issue the appropriate commands to the exposure queue daemon (see \aref{sec:exq}). Each exposure will then be added to the queue and observed in turn.
 
@@ -491,11 +487,11 @@ There are two additional tables that are used to contain supporting information:
 
 In order for targets to be observed by the pilot they must have entries defined in the \code{pointings} table in the observation database. These can be added manually, but for automated follow-up observations they have to be inserted whenever an alert is received. As shown in \aref{fig:flow} this is the job of the sentinel daemon.
 
-In addition the normal control loop, the sentinel daemon includes an independent alert listener loop that is continuously monitoring the transient alert stream outputted by the 4 Pi Sky event broker \citep{4pisky}, using functions from the PyGCN Python package (\pkg{pygcn}\footnote{\url{https://pypi.org/project/pygcn/}}). Should the link to the server fail the daemon will automatically attempt to re-establish the connection every few seconds until it is restored. Alerts come in to the listener and are are appended to an internal queue, and the sentinel also has an additional \code{ingest} command which can be used to manually insert test events or bypass the alert listener. Alerts are then removed from the queue and processed using the handler from the GOTO-alert Python package. The details of how alerts are processed are described in \aref{chap:alerts}, which includes how events are defined, processed, mapped onto the all-sky grid and ultimately added to the database.
+In addition the normal control loop, the sentinel daemon includes an independent alert listener loop that is continuously monitoring the transient alert stream outputted by the 4 Pi Sky event broker \citep{4pisky}, using functions from the PyGCN Python package (\pkg{pygcn}\footnote{\url{https://pypi.org/project/pygcn}}). Should the link to the server fail the daemon will automatically attempt to re-establish the connection every few seconds until it is restored. Alerts come in to the listener and are are appended to an internal queue, and the sentinel also has an additional \code{ingest} command which can be used to manually insert test events or bypass the alert listener. Alerts are then removed from the queue and processed using the handler from the GOTO-alert Python package. The details of how alerts are processed are described in \aref{chap:alerts}, which includes how events are defined, processed, mapped onto the all-sky grid and ultimately added to the database.
 
 \newpage
 
-The alert listener is a key part of the automated system but was not initially planned to be assigned to its own independent daemon. The \gls{pt5m} system uses the Comet software \citep{comet} in a separate script independent of any daemons. The advantages to including a dedicated alert listener daemon in G-TeCS, which became known as the sentinel, come from it being integrated into the pilot monitoring systems like the other daemons (described in \aref{sec:monitors}). Should the sentinel daemon crash or not respond to checks the pilot will notice and restart it like any other daemon.
+The alert listener is a key part of the automated system but was not initially planned to be assigned to its own independent daemon. The pt5m system uses the Comet software \citep{comet} in a separate script independent of any daemons. The advantages to including a dedicated alert listener daemon in G-TeCS, which became known as the sentinel, come from it being integrated into the pilot monitoring systems like the other daemons (described in \aref{sec:monitors}). Should the sentinel daemon crash or not respond to checks the pilot will notice and restart it like any other daemon.
 
 \end{colsection}
 
@@ -507,9 +503,9 @@ The alert listener is a key part of the automated system but was not initially p
 
 All entries in the observation database \code{pointings} table with status ``\code{pending}'' from the current queue, and the task of selecting which of these pointings the system should observe is the role of the scheduler. Within G-TeCS the \emph{scheduler} can refer to two linked concepts: the scheduling functions or the scheduler daemon itself (which is often just called ``the'' scheduler, like the sentinel). This section describes how the scheduler daemon is implemented, for how the scheduling functions chose which pointing to observe see \aref{chap:scheduling}.
 
-In the \gls{pt5m} system there is no independent scheduler daemon. When the pilot needs to know what to observe it simply calls the scheduling functions to read the current queue, rank the pointings and find the one with the highest priority. When expanding the system for GOTO it was decided to farm these calculations off to a separate daemon, which the pilot instead queries just like the other hardware daemons. There are several advantages to this method. Firstly, just like with the sentinel alert monitor, having a dedicated daemon means it can be monitored by the pilot using the functions described in \aref{sec:monitors}. Furthermore, the scheduling commands can take a significant amount of time to run (several seconds), so splitting them out to a separate program saves time and frees up the pilot thread for other routines (recall the pilot is asynchronous but not multi-threaded). Also having an independent scheduler daemon allows it to be run on the same central server in SuperWASP that hosts the observation database, as shown in \aref{fig:flow}. Having the scheduling functions run on the same machine as the database instead of over the network improves the speed of the database queries. The central server is also simply a more powerful machine than the NUC in the dome that runs the pilot and other hardware daemons, which also reduces the time to run the functions. Finally, when GOTO moves to a multi-telescope system it is anticipated that the scheduler will be one of the common systems shared between telescopes (see \aref{sec:multi_tel_scheduling}), and so it makes sense to have the scheduler daemon on the central server alongside the other shared systems (such as the conditions daemon).
+In the pt5m system there is no independent scheduler daemon. When the pilot needs to know what to observe it simply calls the scheduling functions to read the current queue, rank the pointings and find the one with the highest priority. When expanding the system for GOTO it was decided to farm these calculations off to a separate daemon, which the pilot instead queries just like the other hardware daemons. There are several advantages to this method. Firstly, just like with the sentinel alert monitor, having a dedicated daemon means it can be monitored by the pilot using the functions described in \aref{sec:monitors}. Furthermore, the scheduling commands can take a significant amount of time to run (several seconds), so splitting them out to a separate program saves time and frees up the pilot thread for other routines (recall the pilot is asynchronous but not multi-threaded). Also having an independent scheduler daemon allows it to be run on the same central server in SuperWASP that hosts the observation database, as shown in \aref{fig:flow}. Having the scheduling functions run on the same machine as the database instead of over the network improves the speed of the database queries. The central server is also simply a more powerful machine than the NUC in the dome that runs the pilot and other hardware daemons, which also reduces the time to run the functions. Finally, when GOTO moves to a multi-telescope system it is anticipated that the scheduler will be one of the common systems shared between telescopes (see \aref{sec:multi_tel_scheduling}), and so it makes sense to have the scheduler daemon on the central server alongside the other shared systems (such as the conditions daemon).
 
-The scheduler daemon contains the usual control loop, which runs the scheduling functions described in \aref{chap:scheduling} and internally stores the returned highest-priority pointing. The daemon exposes a single command, \code{check\_queue}, which returns the ID of that pointing. The pilot \code{check\_schedule} coroutine queries the daemon every 10 seconds using this command, and the scheduler returns one of three results: carry on with the current observation, switch to a new observation, or park the telescope (in the case that there are no valid targets). Most of the time the pilot will be observing a pointing previously given by the scheduler, and on the next check the scheduler will return the same pointing as it is still the highest priority --- in which case pilot will continue observing it. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets whilst observing the current target, unless the new pointing has the \glsfirst{too} flag set. Otherwise the pilot will wait until it has finished the current job, mark it as complete in the database and ask the scheduler for the next target to observe. The different possible cases are summarised in \aref{tab:sched}.
+The scheduler daemon contains the usual control loop, which runs the scheduling functions described in \aref{chap:scheduling} and internally stores the returned highest-priority pointing. The daemon exposes a single command, \code{check\_queue}, which returns the ID of that pointing. The pilot \code{check\_schedule} coroutine queries the daemon every 10 seconds using this command, and the scheduler returns one of three results: carry on with the current observation, switch to a new observation, or park the telescope (in the case that there are no valid targets). Most of the time the pilot will be observing a pointing previously given by the scheduler, and on the next check the scheduler will return the same pointing as it is still the highest priority --- in which case pilot will continue observing it. Even if the scheduler finds that a different pointing now has a higher priority it will not tell the pilot to change targets whilst observing the current target, unless the new pointing has the \acro{too} flag set. Otherwise the pilot will wait until it has finished the current job, mark it as complete in the database and ask the scheduler for the next target to observe. The different possible cases are summarised in \aref{tab:sched}.
 
 %\begin{landscape}
 %\begin{table}[p]
@@ -557,10 +553,6 @@ The scheduler daemon contains the usual control loop, which runs the scheduling 
 
 %\end{table}
 %\end{landscape}
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 

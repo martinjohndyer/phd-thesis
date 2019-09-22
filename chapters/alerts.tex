@@ -1,12 +1,19 @@
+% ########################################
+
 \chapter{Processing Transient Alerts}
 \label{chap:alerts}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \chaptoc{}
 
 % ########################################
 
-\newpage
 \section{Introduction}
 \label{sec:alerts_intro}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
 \begin{colsection}
 
 In this chapter I describe the software used by GOTO to process alerts generated from transient astronomical events, including as gravitational-wave detections.
@@ -23,25 +30,25 @@ All work described in this chapter is my own unless otherwise indicated, and has
 
 % ########################################
 
-\newpage
 \section{Transient event alerts}
 \label{sec:transient_alerts}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-For the last few decades the number of detections of transient astronomical sources has been rapidly increasing. From space-based gamma-ray burst monitors such as \textit{Fermi} and \textit{Swift} to wide-field survey telescopes such as the \glsfirst{ptf} and \glsfirst{asassn}, increasing numbers of time-critical events have been detected and rapidly sent to other observing partners for follow-up campaigns. Historically this was done, at a much slower pace, through physical post and telegrams --- hence the names of some of the current services offering modern, email-based alternatives: the Astronomer's Telegram \citep{ATel} and GCN Circulars \citep{GCN}.
+For the last few decades the number of detections of transient astronomical sources has been rapidly increasing. From space-based gamma-ray burst monitors such as \textit{Fermi} and \textit{Swift} to wide-field survey telescopes such as the \acro{ptf} and \acro{asassn}, increasing numbers of time-critical events have been detected and rapidly sent to other observing partners for follow-up campaigns. Historically this was done, at a much slower pace, through physical post and telegrams --- hence the names of some of the current services offering modern, email-based alternatives: the Astronomer's Telegram \citep{ATel} and GCN Circulars \citep{GCN}.
 
-Today the global system has evolved to remove the human factor entirely, in order to reduce the delay between events being detected and follow-up observations being taken. Robotic telescopes are now common and can be triggered automatically by machine processing of alerts, which are themselves generated automatically by the detection instruments. The \glsfirst{ivoa} VOEvent protocol \citep{voevent} has become the standard language for such robotic communications, allowing telescopes around the world to respond within seconds to transient detections. New projects such as the \glsfirst{ztf}, itself paving the way for the forthcoming \glsfirst{lsst}, will produce millions of events per night requiring even faster and more efficient alert systems \citep{ZTF_alerts}.
+Today the global system has evolved to remove the human factor entirely, in order to reduce the delay between events being detected and follow-up observations being taken. Robotic telescopes are now common and can be triggered automatically by machine processing of alerts, which are themselves generated automatically by the detection instruments. The \acro{ivoa} VOEvent protocol \citep{voevent} has become the standard language for such robotic communications, allowing telescopes around the world to respond within seconds to transient detections. New projects such as the \acro{ztf}, itself paving the way for the forthcoming \acro{lsst}, will produce millions of events per night requiring even faster and more efficient alert systems \citep{ZTF_alerts}.
 
-GOTO's priority is, of course, detecting optical counterparts to gravitational-wave events. Such events are published by the LIGO-Virgo Collaboration as VOEvents through the \glsfirst{gcn} Notice system.
+GOTO's priority is, of course, detecting optical counterparts to gravitational-wave events. Such events are published by the LIGO-Virgo Collaboration as VOEvents through the \acro{gcn} Notice system.
+
+\newpage
 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{GCN alerts}
 \label{sec:gcn}
 \begin{colsection}
@@ -60,7 +67,7 @@ There is a second form of alerts distributed by the network called GCN Circulars
 \label{sec:voevents}
 \begin{colsection}
 
-The GCN/TAN system broadcasts notices in multiple ways over many different channels, but the most useful for automated telescopes such as GOTO uses the IVOA VOEvent standard \citep{voevent}. VOEvents are a standard way to transmit information about transient astronomical events, in a structured format to make the reports easily machine-readable. Each event is assigned an \glsfirst{ivorn} and follows a defined schema. By defining a standard template to follow, diverse events can be automatically processed and robotic telescopes triggered without the need for human interpretation or vetting.
+The GCN/TAN system broadcasts notices in multiple ways over many different channels, but the most useful for automated telescopes such as GOTO uses the IVOA VOEvent standard \citep{voevent}. VOEvents are a standard way to transmit information about transient astronomical events, in a structured format to make the reports easily machine-readable. Each event is assigned an \acro{ivorn} and follows a defined schema. By defining a standard template to follow, diverse events can be automatically processed and robotic telescopes triggered without the need for human interpretation or vetting.
 
 The structure to transmit these events is fairly flexible, but there are certain common roles. The names below are taken from \citet{voevent}:
 
@@ -77,11 +84,11 @@ It is possible to listen directly to the GCN/TAN servers, in which case the sent
 
 \newpage
 
-4 Pi Sky combines alerts from the GCN system\footnote{\url{https://gcn.gsfc.nasa.gov/burst_info.html}} as well as from the \textit{Gaia}\footnote{\url{http://gsaweb.ast.cam.ac.uk/alerts/alertsindex}} and ASAS-SN\footnote{\href{http://www.astronomy.ohio-state.edu/~assassin/transients}{\texttt{http://www.astronomy.ohio-state.edu/\raisebox{0.5ex}{\texttildelow}assassin/transients}}} projects. At the time of writing GOTO only follows up LVC gravitational-wave events and \textit{Fermi} and \textit{Swift} gamma-ray burst detections, all of which are published through \glspl{gcn}, meaning there is technically no benefit of listening to 4 Pi Sky over listening directly to NASA.\@ However pt5m uses the 4 Pi Sky broker to receive and automatically follow up \textit{Gaia} transient detections, and it has been suggested GOTO could do the same in the future.
+4 Pi Sky combines alerts from the GCN system\footnote{\url{https://gcn.gsfc.nasa.gov/burst_info.html}} as well as from the \textit{Gaia}\footnote{\url{http://gsaweb.ast.cam.ac.uk/alerts/alertsindex}} and ASAS-SN\footnote{\href{http://www.astronomy.ohio-state.edu/~assassin/transients}{\texttt{http://www.astronomy.ohio-state.edu/\raisebox{0.5ex}{\texttildelow}assassin/transients}}} projects. At the time of writing GOTO only follows up LVC gravitational-wave events and \textit{Fermi} and \textit{Swift} gamma-ray burst detections, all of which are published through GCNs, meaning there is technically no benefit of listening to 4 Pi Sky over listening directly to NASA.\@ However pt5m uses the 4 Pi Sky broker to receive and automatically follow up \textit{Gaia} transient detections, and it has been suggested GOTO could do the same in the future.
 
 In order to receive VOEvents from any source it is necessary to set up a VOEvent client. The most common way to do this is using the Comet software \citep{comet}, which allows both sending and receiving of events. For the G-TeCS sentinel (see \aref{sec:sentinel}) all that was required was a simple way to listen to and download alerts, which is why it instead uses code based on the PyGCN Python package (\pkg{pygcn}\footnote{\url{https://github.com/lpsinger/pygcn}}). Despite the name, PyGCN can receive any VOEvents, not just those from the GCN servers. The sentinel uses PyGCN to open a socket to the 4 Pi Sky server and ingest binary packets, as well as sending the required receipt and ``\code{iamalive}'' responses to the server to ensure it keeps receiving events.
 
-VOEvents take the form of a structured \glsfirst{xml} document. XML is a ``markup'' language similar to HTML, JSON or \LaTeX, meaning it is understandable by humans but follows a set schema and so can be easily read and processed by computers. A sample of a VOEvent is given in \aref{fig:voevent_xml}.
+VOEvents take the form of a structured \acro{xml} document. XML is a ``markup'' language similar to HTML, JSON or \LaTeX, meaning it is understandable by humans but follows a set schema and so can be easily read and processed by computers. A sample of a VOEvent is given in \aref{fig:voevent_xml}.
 
 \begin{figure}[p]
     \lstinputlisting[language=xml,
@@ -104,22 +111,16 @@ VOEvents take the form of a structured \glsfirst{xml} document. XML is a ``marku
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Processing alerts}
 \label{sec:gotoalert}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
 \begin{colsection}
 
-Once a VOEvent is received by the G-TeCS sentinel the work of parsing and processing the event uses another Python package, GOTO-alert (\pkg{gotoalert}\footnote{\url{https://github.com/GOTO-OBS/goto-alert}}), which  contains functions related to processing transient alerts.
+Once a VOEvent is received by the G-TeCS sentinel the work of parsing and processing the event uses another Python package, GOTO-alert (\pkg{gotoalert}\footnote{\url{https://github.com/GOTO-OBS/goto-alert}}), which  contains functions related to processing transient alerts. GOTO-alert was originally written by Alex Obradovic at Monash to listen for GRB alerts, when I took the code over I completely rewrote it to integrate it into G-TeCS, as well as adding the capability to process gravitational-wave alerts.
 
 \end{colsection}
 
@@ -152,17 +153,17 @@ At the core of the GOTO-alert code is the \code{Event} object class. Events are 
 % ---------
 \subsubsection{GRB Events}
 
-The \code{GRBEvent} class is used for events relating to gamma-ray burst detections, specifically from \textit{Fermi} and \textit{Swift}. The VOEvents for these events contain a sky position in right ascension and declination as well as an error radius, so a HEALPix skymap is produced using the Gaussian method described in \aref{sec:grb_skymaps}. For \textit{Fermi} events the class also has an additional attribute extracted from the VOEvent: the duration of the burst (Long or Short). This property could then be used to select different observing strategies for either type of burst.
+The \code{GRBEvent} class is used for events relating to gamma-ray burst detections, specifically from \textit{Fermi} and \textit{Swift}. The VOEvents for these events contain a sky position in right ascension and declination as well as an error radius, so a HEALPix skymap is produced using the Gaussian method described in \aref{sec:grb_skymaps}. For \textit{Fermi} events the class also has an additional attribute extracted from the VOEvent: the duration of the burst (Long or Short).
 
 % ---------
 \subsubsection{GW Events}
 
-The \code{GWEvent} class is used for LVC gravitational-wave events. LVC events have several stages: a ``Preliminary'' alert is released as soon as the signal is detected, then an ``Initial'' alert is issued once it has been human-vetted. From then on future versions are marked as ``Update'' alerts, unless the event itself is found to be non-physical or below certain thresholds in which case a ``Retraction'' alert is issued. As these are events produced by LIGO-Virgo they should contain a \code{skymap\_fits} parameter (as shown in \aref{fig:voevent_xml}), which gives a URL pointing to where the skymap can be downloaded from GraceDB, the LIGO event database\footnote{\url{https://gracedb.ligo.org/}}. The gravitational-wave VOEvents also contain a variety of properties that are stored in the event class and which can be used to determine the observing strategy (see \aref{sec:event_strategy}) to use. These include:
+The \code{GWEvent} class is used for LVC gravitational-wave events. LVC events have several stages: a ``Preliminary'' alert is released as soon as the signal is detected, then an ``Initial'' alert is issued once it has been human-vetted. From then on future versions are marked as ``Update'' alerts, unless the event itself is found to be non-physical or below certain thresholds in which case a ``Retraction'' alert is issued. As these are events produced by LIGO-Virgo they should contain a \code{skymap\_fits} parameter (as shown in \aref{fig:voevent_xml}), which gives a URL pointing to where the skymap can be downloaded from GraceDB, the LIGO event database\footnote{\url{https://gracedb.ligo.org}}. The gravitational-wave VOEvents also contain a variety of properties that are stored in the event class and which can be used to determine the observing strategy (see \aref{sec:event_strategy}) to use. These include:
 \begin{itemize}
-    \item \textbf{\glsfirst{far}}: an estimate of the probability that this event is a false alarm, i.e.\ not from a real astronomical source. Given in the form of an expected frequency or rate, so an event with a false alarm rate of 1~per~year is much less significant than one with a FAR of 1~per~10,000 years.
-    \item \textbf{Instruments}: which of the three LVC detectors (LIGO-Livingston, LIGO-Hanford and Virgo) detected the signal. Non-detection in one or more instruments is accounted for in the \gls{far}.
-    \item \textbf{Group}: which type of GW pipeline detected the event signal, either ``CBC'' (Compact Binary Coalescence)\glsadd{cbc} or ``Burst'' \citep[other, unmodelled detections, see][]{GW_burst}. The following parameters only apply to CBC events.
-    \item \textbf{Classification}: the VOEvents for CBC events contain probabilities that the source falls into one of five categories: \glsfirst{bns} mergers, \glsfirst{nsbh} mergers, \glsfirst{bbh} mergers, ``MassGap'' mergers \citep[one or other of the components is in the hypothetical ``mass gap'' between neutron stars and black holes, defined as 3--\SI{5}{\solarmass};][]{GW_MassGap}, or ``Terrestrial'' (a non-astronomical source).
+    \item \textbf{\acro{far}}: an estimate of the probability that this event is a false alarm, i.e.\ not from a real astronomical source. Given in the form of an expected frequency or rate, so an event with a false alarm rate of 1~per~year is much less significant than one with a FAR of 1~per~10,000 years.
+    \item \textbf{Instruments}: which of the three LVC detectors (LIGO-Livingston, LIGO-Hanford and Virgo) detected the signal. Non-detection in one or more instruments is accounted for in the false alarm rate.
+    \item \textbf{Group}: which type of GW pipeline detected the event signal, either ``CBC'' (Compact Binary Coalescence)\acroadd{cbc} or ``Burst'' \citep[other, unmodelled detections, see][]{GW_burst}. The following parameters only apply to CBC events.
+    \item \textbf{Classification}: the VOEvents for CBC events contain probabilities that the source falls into one of five categories: \acro{bns} mergers, \acro{nsbh} mergers, \acro{bbh} mergers, ``MassGap'' mergers \citep[one or other of the components is in the hypothetical ``mass gap'' between neutron stars and black holes, defined as 3--\SI{5}{\solarmass};][]{GW_MassGap}, or ``Terrestrial'' (a non-astronomical source).
     \item \textbf{Properties}: CBC events also contain two important properties: ``HasNS'', the probability that the mass of one or both of the components is consistent with a neutron star ($<$\SI{3}{\solarmass}); and ``HasRemnant'', the probability that a non-zero amount of material was ejected during coalescence and therefore an electromagnetic signal might be expected \citep{LVC_userguide}.
     \item \textbf{Distance}: The skymaps produced by the LVC contain three-dimensional localisation information \citep{GW_distance}. For deciding on event strategy the mean distance, in megaparsec, is read from the skymap FITS header, along with the standard deviation.
 \end{itemize}
@@ -172,10 +173,12 @@ The \code{GWEvent} class is used for LVC gravitational-wave events. LVC events h
 
 \code{GWRetractionEvent} is a special event subclass used to handle LVC notices that are retractions of earlier events. They are effectively just a more limited version of the \code{GWEvent} class, as the retraction VOEvents do not contain a skymap or any of the additional parameters listed above. Having retraction events occupy their own subclass makes it easier to identify and process them when sent through the event handler (see \aref{sec:event_handler}).
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{The event handler}
 \label{sec:event_handler}
 \begin{colsection}
@@ -188,11 +191,12 @@ Once the event has a skymap the observing strategy for the event can be generate
 
 Finally the event handler inserts pointings and other information into the observation database, with parameters depending on the strategy determined in the previous stage. This is detailed in \aref{sec:event_insert}.
 
+\newpage
+
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\newpage
 \subsection{Event reports}
 \label{sec:event_slack}
 \begin{colsection}
@@ -224,16 +228,10 @@ An example of alerts generated for a gravitational-wave event are shown in \aref
 
 \end{colsection}
 
-% ~~~~~~~~~~~~~~~~~~~~
-
-\end{colsection}
-
 % ########################################
 
-\newpage
 \section{Strategies for follow-up observations}
 \label{sec:strategy}
-\begin{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
 
@@ -249,7 +247,6 @@ The importance of such a distinction is that the strategies and objectives decid
 
 % ~~~~~~~~~~~~~~~~~~~~
 
-\newpage
 \subsection{Determining observation strategies for events}
 \label{sec:event_strategy}
 \begin{colsection}
@@ -360,9 +357,9 @@ The sole current detection of a gravitational-wave counterpart kilonova, AT 2019
     \label{eq:absolute_magnitude}
 \end{equation}
 %
-AT 2019gfo would have peaked above 19th magnitude out to a distance of \SI{100}{\mega\parsec} and above 22nd magnitude out to a distance of \SI{400}{\mega\parsec}. Binary-black hole mergers are not expected to produce the same amounts of ejected matter that would produce a kilonova, but some predictions suggest there may be material ejected from disks around one or more of the black holes which might reach 22nd magnitude if closer than \SI{100}{\mega\parsec} \citep{BBH_EM, BBH_Gompertz}. As a first approximation, therefore, the 22nd magnitude limits were adopted for the close/far distinction. Note this is a very arbitrary division, and not one particularly based on GOTO's capability (which can only reach limiting magnitudes of 19--20, see \aref{sec:lim_mag}). Instead it is more a division into sources that \emph{could} have an optical counterpart visible from Earth.
+AT 2019gfo would have peaked above 19th magnitude out to a distance of \SI{100}{\mega\parsec} and above 22nd magnitude out to a distance of \SI{400}{\mega\parsec}. Binary-black hole mergers are not expected to produce the same amounts of ejected matter that would produce a kilonova, but some predictions suggest there may be material ejected from disks around one or more of the black holes which might reach 22nd magnitude if closer than \SI{100}{\mega\parsec} \citep{BBH_EM}. As a first approximation, therefore, the 22nd magnitude limits were adopted for the close/far distinction. Note this is a very arbitrary division, and not one particularly based on GOTO's capability (which can only reach limiting magnitudes of 19--20, see \aref{sec:lim_mag}). Instead it is more a division into sources that \emph{could} have an optical counterpart visible from Earth.
 
-The only difference in strategy between ``close'' and ``far'' events is that they are assigned different initial ranks when inserted into the database (shown in \aref{tab:strategy_dict}). The rest of the strategy values, including cadence and constraints, are identical, and therefore the division is completely academic except in the case where \emph{multiple} events exist in the observing queue at the same time. Should this happen, and tiles for both events are visible at the same time, then the ranking system provides a quick method to prioritise events for observations. Using the ranks given in \aref{tab:strategy_dict}, events from close neutron star mergers would be inserted at rank 2, while far mergers of the same type would be inserted at rank 13. As the rank of a pointing is increased by 10 every time it is observed (see \aref{sec:rank}), this would prioritise two passes of the ``close'' skymap before the ``far'' skymap. The first observation would be at rank 2, the second at rank 12, and by the third it would be in the queue at rank 22. This is lower than the initial rank of 13 for the ``far'' event, so the latter would then be higher in the queue. Any following observations would alternate between the two events: ``close'' observation 3 at rank 22, ``far'' observation 2 at rank 23, ``close'' observation 4 at rank 32 etc. The ranks for the other events are likewise carefully chosen: close \gls{bbh} events would be inserted at rank 24 and therefore fall behind the first three passes of a close NS or two passes of a far NS.\@ Far \gls{bbh} events are very unlikely to produce any visible optical counterparts, so although GOTO will still consider them they are inserted at rank 105, well below several passes of any more promising GW events.
+The only difference in strategy between ``close'' and ``far'' events is that they are assigned different initial ranks when inserted into the database (shown in \aref{tab:strategy_dict}). The rest of the strategy values, including cadence and constraints, are identical, and therefore the division is completely academic except in the case where \emph{multiple} events exist in the observing queue at the same time. Should this happen, and tiles for both events are visible at the same time, then the ranking system provides a quick method to prioritise events for observations. Using the ranks given in \aref{tab:strategy_dict}, events from close neutron star mergers would be inserted at rank 2, while far mergers of the same type would be inserted at rank 13. As the rank of a pointing is increased by 10 every time it is observed (see \aref{sec:rank}), this would prioritise two passes of the ``close'' skymap before the ``far'' skymap. The first observation would be at rank 2, the second at rank 12, and by the third it would be in the queue at rank 22. This is lower than the initial rank of 13 for the ``far'' event, so the latter would then be higher in the queue. Any following observations would alternate between the two events: ``close'' observation 3 at rank 22, ``far'' observation 2 at rank 23, ``close'' observation 4 at rank 32 etc. The ranks for the other events are likewise carefully chosen: close BBH events would be inserted at rank 24 and therefore fall behind the first three passes of a close NS or two passes of a far NS.\@ Far BBH events are very unlikely to produce any visible optical counterparts, so although GOTO will still consider them they are inserted at rank 105, well below several passes of any more promising GW events.
 
 What is currently not considered by the strategy outlined above is a \textit{maximum} valid distance, beyond which there is no point in GOTO taking any action. LVC detections have already reached out to the gigaparsec scale, and at those distances the chance of there being any optical counterpart visible from Earth is very low. At the time of writing GW events are rare enough that there is little reason for GOTO not to follow up everything reported by the LVC, but in the future if necessary it would be easy to put a cap on what events GOTO follows up based on distance or another parameter such as the false-alarm rate.
 
@@ -378,7 +375,7 @@ Gravitational-wave events from the LVC burst pipelines \citep{GW_burst} are hard
 
 Gamma-ray burst alerts from \textit{Fermi} and \textit{Swift} are also processed by the sentinel and inserted into the observation database. As shown in \aref{tab:strategy_dict} pointings from GRB events are inserted at ranks above 200, ensuring that GOTO will always prioritise gravitational-wave follow-up. GRB events use a different cadence strategy of \code{TWO\_FIRST\_ONE\_SECOND}, which as detailed in \aref{tab:cadence_dict} consists of three observations: two in the first night separated by 4 hours and another on the second night. This cadence was recently implemented to attempt to account for the fast-fading nature of GRB afterglows, and is an example of more complex cadences allowed by the G-TeCS scheduler.
 
-For gamma-ray burst events the only distinction is made between events originating from \textit{Swift} and \textit{Fermi}. Typically \textit{Swift}'s \glsfirst{bat} detections are much better localised than those from \textit{Fermi}'s \glsfirst{gbm}, and so, in cases where a source is detected by both, the \textit{Swift} detection should be prioritised. Further division could be made based on the burst being classified by \textit{Fermi} as Long or Short, but this is not currently implemented.
+For gamma-ray burst events the only distinction is made between events originating from \textit{Swift} and \textit{Fermi}. Typically \textit{Swift}'s \acro{bat} detections are much better localised than those from \textit{Fermi}'s \acro{gbm}, and so, in cases where a source is detected by both, the \textit{Swift} detection should be prioritised. Further division could be made based on the burst being classified by \textit{Fermi} as Long or Short, but this is not currently implemented.
 
 % ---------
 \subsubsection{Exposure sets}
@@ -395,7 +392,7 @@ Another possible modification to a follow-up campaign could be the inclusion of 
 \end{colsection}
 
 % ~~~~~~~~~~~~~~~~~~~~
-\newpage
+
 \subsection{Inserting events into the observation database}
 \label{sec:event_insert}
 \begin{colsection}
@@ -429,10 +426,6 @@ First a new entry in the \code{events} table is added for the event, containing 
 Finally, the individual tiles are inserted as entries in the \code{mpointings} table. The most important entries for the mpointings are determined by the event strategy as described in \aref{sec:event_strategy}: the rank (taken from \aref{tab:strategy_dict}), cadence parameters (from \aref{tab:cadence_dict}), the target constraint values (minimum altitude, moon phase etc; from \aref{tab:constraints_dict}), and the exposure settings (exposure time, filter and number in each set; from \aref{tab:exposuresets_dict}). Each mpointing is connected to an entry in the \code{grid\_tiles} table for this particular grid, and the tile probabilities are stored as corresponding weights in the \code{survey\_tiles} table. Once the mpointings are defined, the first pointings are also created and added to the \code{pointings} table with the status \code{pending}, to insure they are immediately valid in the queue (see \aref{sec:scheduler}).
 
 Once all of the entries described above have been added to the observation database the event has been successfully handled. At this point the GOTO-alert event handler sends the final visibility report to Slack (see \aref{sec:event_slack}) and exits. In total the entire event handling process, from the alert being received to the pointings being added to the database, takes under 10 seconds. The majority of this time for a gravitational-wave event is downloading the often quite large skymap files from GraceDB, and actually processing the event only takes a few seconds. Once the event pointings are added to the database they should be ready to observe the next time the scheduler fetches the queue, and if they are valid the highest priority pointing will be sent to the pilot to immediately begin follow-up observations.
-
-\end{colsection}
-
-% ~~~~~~~~~~~~~~~~~~~~
 
 \end{colsection}
 

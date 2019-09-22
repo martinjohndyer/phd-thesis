@@ -27,6 +27,10 @@
 % inline code
 \newcommand{\code}{\texttt}
 
+% acronyms
+\newcommand{\acro}{\glsfirst}
+\newcommand{\acroadd}{\glsadd}
+
 % coloured text
 \newcommand{\textcolorbf}[2]{\textcolor{#1}{\textbf{#2}}}
 \newcommand{\todo}[1]{\textcolorbf{Red}{#1}}
@@ -41,6 +45,11 @@
 
 % a completely blank environment, so I can collapse sections nicely
 \newenvironment{colsection}{}{}
+
+% start each section on a clear page
+% https://tex.stackexchange.com/questions/9497/start-new-page-with-each-section
+\let\stdsection\section{}
+\renewcommand\section{\newpage\stdsection}
 
 % format a quote
 \newcommand\makequote[3]{
@@ -94,18 +103,19 @@
     \begin{singlespacing}
     \begin{small}
     \vspace{-1.4cm}
-    \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
+    \noindent{\color{GOTOlightblue}\rule{\linewidth}{1.5pt}}
     \vspace{-1cm}
     {\hypersetup{linkcolor=black}
     \minitoc{}
     }
     \vspace{-0.5cm}
-    \noindent{\color{GOTOlightblue}\rule{\textwidth}{1.5pt}}
+    \noindent{\color{GOTOlightblue}\rule{\linewidth}{1.5pt}}
     \begin{center}
         \hyperref[contents]{\textcolor{white}{\uptriangle}}
     \end{center}
     \end{small}
     \end{singlespacing}
+    \newpage
     }
 
 % reference functions containing the type, also name
@@ -152,11 +162,24 @@
 % Remove comma inline citations
 \renewcommand*{\nameyeardelim}{\addspace}
 
-% bibliography
+% Bibliography
+% This is the closest I can get to MNRAS
 \addbibresource{bibliography.bib}
 \renewbibmacro{in:}{}
-\AtEveryBibitem{\clearfield{title}}
-\AtEveryBibitem{\clearfield{pages}}
+\AtEveryBibitem{%
+\clearfield{booktitle}%
+\clearfield{editor}%
+\clearfield{title}%
+\clearfield{number}%
+\clearfield{eid}%
+%\ifentrytype{article}{\iffieldundef{volume}{}{\clearfield{pages}}}{}
+}
+\renewcommand{\newunitpunct}{\addcomma\space}
+\renewcommand{\labelnamepunct}{\addcomma\space}
+\renewcommand{\finentrypunct}{}
+\DeclareFieldFormat{journaltitle}{#1,}
+\DeclareFieldFormat{pages}{#1}
+\xpatchbibmacro{date+extrayear}{\printtext[parens]}{\setunit{\addcomma\space}\printtext}{}{}
 
 % Ignore caption package warning
 \WarningFilter{caption}{\caption}
