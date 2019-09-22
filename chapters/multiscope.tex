@@ -13,7 +13,7 @@ In this chapter I describe the potential future expansion of the GOTO project, w
 %
 \begin{itemize}
     \item In \nref{sec:multi_tel} I give an outline of the additional work required to create a multi-site scheduling system, and how the existing simulation code can be modified to approximate the required functionality.
-    \item In \nref{sec:gw_sims} I describe simulations showing the benefits of additional telescopes observing gravitational wave alerts in order to locate the counterpart source.
+    \item In \nref{sec:gw_sims} I describe simulations showing the benefits of additional telescopes observing gravitational-wave alerts in order to locate the counterpart source.
     \item In \nref{sec:survey_sims} I describe further simulations detailing the effects of additional telescopes on the all-sky survey.
 \end{itemize}
 %
@@ -62,7 +62,7 @@ The modifications to the scheduler described in the previous section provide a g
 
 The scheduler functions (see \aref{sec:ranking}) need to know which site observations are being made from in order to correctly sort pointings. The visibility constraints (see \aref{sec:constraints}) check if each target is above the local horizon, as well as the local Sun altitude, and the tiebreak parameter (see \aref{sec:breaking_ties}) takes into account the airmass of each target. These are simple parameters to calculate if you have only one site observing at once, but once there are telescopes at multiple sites querying the scheduler at the same time then the responses will need to take the position of each into account.
 
-This could lead to problems when returning the highest priority pointings. For example, with two telescopes observing from different sites the scheduler could return the highest priority pointing visible from each. If they are different then each telescope can then observe the best target for its site; however if both telescopes were observing at the same time, and the visible portions of the sky from both sites overlapped, then it is very possible that the same pointing would be the highest priority from both sites. Assuming they shouldn't both observe the same target at the same time, the scheduler would need to chose which telescope to assign that pointing to and then recalculate a different target for the other telescope. What would be better is to use the same method described in \aref{sec:multi_tel_scheduling}, and have the scheduler always return the top $X$ pointings, where $X = N_\text{site1} + N_\text{site2} + \cdots$ is the total number of telescopes across the globe. In reality targets would need to be assigned to telescopes based on their airmass at each site, or the slew time from the current target, but as in \aref{sec:multi_tel_scheduling} for the simulations they can just be assigned to each telescope in order.
+This could lead to problems when returning the highest priority pointings. For example, with two telescopes observing from different sites the scheduler could return the highest priority pointing visible from each. If they are different then each telescope can then observe the best target for its site; however if both telescopes were observing at the same time, and the visible portions of the sky from both sites overlapped, then it is very possible that the same pointing would be the highest priority from both sites. Assuming they should not both observe the same target at the same time, the scheduler would need to chose which telescope to assign that pointing to and then recalculate a different target for the other telescope. What would be better is to use the same method described in \aref{sec:multi_tel_scheduling}, and have the scheduler always return the top $X$ pointings, where $X = N_\text{site1} + N_\text{site2} + \cdots$ is the total number of telescopes across the globe. In reality targets would need to be assigned to telescopes based on their airmass at each site, or the slew time from the current target, but as in \aref{sec:multi_tel_scheduling} for the simulations they can just be assigned to each telescope in order.
 
 \newpage
 
@@ -104,7 +104,7 @@ One fundamental feature of the existing G-TeCS code is that observations are car
 
 However, sharing the grid requires all of the telescopes to have essentially the same field of view. There is some leeway in the exact field of view of each telescope array; the grid tiles are defined to leave a slight overlap around the edge (see \aref{fig:4ut_footprint}). But if the field of view of the telescope array is much larger than the tile size then the pointings will be too close together and therefore inefficient. Even worse, if the field of view of the telescope array is much smaller than the defined tile size it would lead to gaps in the sky coverage.
 
-For the proposed GOTO system with near-identical GOTO-8 units around the world this is not an issue, but it should be recognised as a limitation of not just the simulations but the whole G-TeCS control system. One potential case where this may be an issue is when commissioning GOTO-South. If it spends time as a GOTO-4 system similar to La Palma before getting the second set of unit telescopes to bring it up to a full set of eight, then it will be observing concurrently with one or two GOTO-8 systems on La Palma. This is a likely enough situation that it was considered in the gravitational wave simulations as described in \aref{sec:gw_sims}, using the work around of two independent simulations mentioned previously. How this scenario would be dealt with within a real implementation of G-TeCS is a problem that needs development in the future, should it prove to be necessary.
+For the proposed GOTO system with near-identical GOTO-8 units around the world this is not an issue, but it should be recognised as a limitation of not just the simulations but the whole G-TeCS control system. One potential case where this may be an issue is when commissioning GOTO-South. If it spends time as a GOTO-4 system similar to La Palma before getting the second set of unit telescopes to bring it up to a full set of eight, then it will be observing concurrently with one or two GOTO-8 systems on La Palma. This is a likely enough situation that it was considered in the gravitational-wave simulations as described in \aref{sec:gw_sims}, using the work around of two independent simulations mentioned previously. How this scenario would be dealt with within a real implementation of G-TeCS is a problem that needs development in the future, should it prove to be necessary.
 
 \end{colsection}
 
@@ -115,7 +115,7 @@ For the proposed GOTO system with near-identical GOTO-8 units around the world t
 % ########################################
 
 \newpage
-\section{Gravitational wave follow-up simulations}
+\section{Gravitational-wave follow-up simulations}
 \label{sec:gw_sims}
 \begin{colsection}
 
@@ -256,7 +256,7 @@ The region of the sky visible during the night for a given site change over the 
 \label{sec:gw_selecting}
 \begin{colsection}
 
-Even if the source of a gravitational wave event is visible within 24 hours from a given site (or combination of sites) there is one further criterion that would prevent observations of the source --- whether or not the source is located within any of the tile pointings added to the database. The issue of determining which tiles to add to the database is detailed in \aref{sec:event_insert}, but is ultimately a matter of probability: if a telescope covers the 90\% confidence region for every gravitational wave event then it would be expected to observe 90\% of the sources.
+Even if the source of a gravitational-wave event is visible within 24 hours from a given site (or combination of sites) there is one further criterion that would prevent observations of the source --- whether or not the source is located within any of the tile pointings added to the database. The issue of determining which tiles to add to the database is detailed in \aref{sec:event_insert}, but is ultimately a matter of probability: if a telescope covers the 90\% confidence region for every gravitational-wave event then it would be expected to observe 90\% of the sources.
 
 GOTO-alert uses the mean contour level method to select tiles, as described in \aref{sec:event_insert}. For simulations described in this chapter a mean contour selection value of $0.9$ was used for the GOTO-4 grid and $0.95$ for the GOTO-8 grid. Using these values 92\% of GW events had sources within at least one of the selected tiles for the GOTO-4 grid, and 95\% for the GOTO-8 grid. Two events where the source location was outside of the selected tiles are shown in \aref{fig:poor_selection}. In the following simulation results the tile selection was only considered after the visibility restrictions in the previous section had been applied, as the visibility would be true for any telescopes at the relevant sites while the tiles are specific to GOTO.\@ In other words, if the source location was visible but was not within the tiles selected by GOTO that is only GOTO's problem, and other telescopes might still have observed it.
 
@@ -599,7 +599,7 @@ The results of the simulations for six key scenarios are given in the following 
 \label{sec:gw_sim_analysis}
 \begin{colsection}
 
-The results of the gravitational wave follow-up simulations support two conclusions: the addition of the southern site provides a huge benefit to the number of sources that can be observed, while adding further telescopes at a single site provides a much more modest benefit. \aref{fig:gw_sim_results} summarises the simulated post-event delay times for the different possible stages of GOTO deployment.
+The results of the gravitational-wave follow-up simulations support two conclusions: the addition of the southern site provides a huge benefit to the number of sources that can be observed, while adding further telescopes at a single site provides a much more modest benefit. \aref{fig:gw_sim_results} summarises the simulated post-event delay times for the different possible stages of GOTO deployment.
 
 \begin{figure}[t]
     \begin{center}
@@ -759,7 +759,7 @@ The results of the 1N4 simulation can be compared to the real observations carri
         \includegraphics[width=\linewidth]{images/150.pdf}
     \end{center}
     \caption[Observations carried out in the first 150 days of the all-sky survey]{
-        Observations carried out in the first 150 days of the current all-sky survey. The number of observations each night is shown in the upper plot, with the number of all-sky survey tiles observed shown in \textcolorbf{NavyBlue}{blue}, and any extra observations (of gravitational wave events, GRB triggers or manually-inserted pointings) shown in \textcolorbf{Orange}{orange}. The background \textcolorbf{Gray}{grey} bars show the number of tiles observed on the same nights by the 1N4 survey simulation. The lower ``barcode'' plot shows the periods when the conditions flags were recorded as bad, either due to weather (\textcolorbf{Red}{red}) or hardware errors (\textcolorbf{Purple}{purple}).
+        Observations carried out in the first 150 days of the current all-sky survey. The number of observations each night is shown in the upper plot, with the number of all-sky survey tiles observed shown in \textcolorbf{NavyBlue}{blue}, and any extra observations (of gravitational-wave events, GRB triggers or manually-inserted pointings) shown in \textcolorbf{Orange}{orange}. The background \textcolorbf{Gray}{grey} bars show the number of tiles observed on the same nights by the 1N4 survey simulation. The lower ``barcode'' plot shows the periods when the conditions flags were recorded as bad, either due to weather (\textcolorbf{Red}{red}) or hardware errors (\textcolorbf{Purple}{purple}).
     }\label{fig:150}
 \end{figure}
 
