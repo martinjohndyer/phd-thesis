@@ -41,13 +41,13 @@
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{#1}}
 
-% one page formatting
-\fancyhead[L]{\chaptername\ \thechapter: \leftmark}
-\fancyhead[R]{\textbf{\thepage}}
+% onepage formatting
+%\fancyhead[L]{\chaptername\ \thechapter: \leftmark}
+%\fancyhead[R]{\textbf{\thepage}}
 
-% two page formatting
-%\fancyhead[RE]{\chaptername\ \thechapter: \leftmark}
-%\fancyhead[LO]{Section \thesection: \rightmark}
-%\fancyhead[LE, RO]{\textbf{\thepage}}
+% twopage formatting
+\fancyhead[RE]{\chaptername\ \thechapter: \leftmark}
+\fancyhead[LO]{Section \thesection: \rightmark}
+\fancyhead[LE, RO]{\textbf{\thepage}}
 
 \fancyfoot{}

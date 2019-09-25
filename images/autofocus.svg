@@ -205,8 +205,8 @@
      showgrid="false"
      inkscape:object-nodes="false"
      inkscape:zoom="1.2102564"
-     inkscape:cx="576.39387"
-     inkscape:cy="307.32218"
+     inkscape:cx="504.51987"
+     inkscape:cy="180.59394"
      inkscape:window-x="0"
      inkscape:window-y="30"
      inkscape:window-maximized="1"
@@ -215,6 +215,12 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#9467bd;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:3, 6;stroke-dashoffset:0;stroke-opacity:1"
+     d="m 644.05865,479.74416 0,148.62806"
+     id="path4299"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc" />
   <path
      inkscape:connector-curvature="0"
      id="path10666"
@@ -375,6 +381,12 @@
          width="414.13849"
          id="rect7325" /></flowRegion><flowPara
        id="flowPara7327">B</flowPara></flowRoot>  <path
+     sodipodi:nodetypes="cc"
+     inkscape:connector-curvature="0"
+     id="path4415"
+     d="m 552.49072,603.02343 0,25.34879"
+     style="fill:none;fill-rule:evenodd;stroke:#d62728;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:3, 6;stroke-dashoffset:0;stroke-opacity:1" />
+  <path
      style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#1f77b4;stroke-width:5.99999952;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
      d="M 331.06108,293.29882 552.49076,605.15844 773.92037,293.29884"
      id="path7338"
@@ -407,7 +419,7 @@
      style="font-style:normal;font-weight:normal;font-size:37.5px;line-height:100%;font-family:Sans;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#666666;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
      id="flowRoot8382"
      xml:space="preserve"
-     transform="matrix(0.79509141,0,0,0.79509141,1734.6835,-186.94703)"><flowRegion
+     transform="matrix(0.79509141,0,0,0.79509141,1752.2114,-221.41849)"><flowRegion
        id="flowRegion8384"><rect
          style="font-size:37.5px;line-height:100%;text-align:center;text-anchor:middle;fill:#666666;fill-opacity:1"
          y="843.36115"
@@ -469,14 +481,33 @@
          height="199.81281"
          width="414.13849"
          id="rect9520" /></flowRegion><flowPara
-       id="flowPara9522">Step 4</flowPara></flowRoot>  <path
+       id="flowPara9522">Step 4</flowPara></flowRoot>  <flowRoot
+     style="font-style:normal;font-weight:normal;font-size:29.81592751px;line-height:100%;font-family:Sans;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#9467bd;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     id="flowRoot4386"
+     xml:space="preserve"
+     transform="translate(20,0)"><flowRegion
+       id="flowRegion4388"><rect
+         style="font-size:29.81592751px;line-height:100%;text-align:center;text-anchor:middle;fill:#9467bd;fill-opacity:1"
+         y="502.88281"
+         x="611.2713"
+         height="158.86945"
+         width="329.27795"
+         id="rect4390" /></flowRegion><flowPara
+       id="flowPara4392">Near-focus position</flowPara></flowRoot>  <path
      sodipodi:nodetypes="cc"
      inkscape:connector-curvature="0"
      id="path9913"
      d="m 639.68055,506.72151 -65.4247,94.35814"
      style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#bcbd22;fill-opacity:1;fill-rule:evenodd;stroke:#bcbd22;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker-end:url(#marker9915);color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate" />
+  <rect
+     style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:16;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:1, 2;stroke-dashoffset:0;stroke-opacity:1;marker:none;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+     id="rect4394"
+     width="8.4717989"
+     height="35.201786"
+     x="639.9129"
+     y="541.17261" />
   <flowRoot
-     transform="translate(1782.0381,-295.16072)"
+     transform="translate(1783.6449,-302.17186)"
      xml:space="preserve"
      id="flowRoot10513"
      style="font-style:normal;font-weight:normal;font-size:37.5px;line-height:100%;font-family:Sans;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#bcbd22;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
@@ -499,4 +530,16 @@
          x="-1314.4667"
          y="843.36115"
          style="font-size:37.5px;line-height:100%;text-align:center;text-anchor:middle;fill:#666666;fill-opacity:1" /></flowRegion><flowPara
-       id="flowPara10664">2xNFP</flowPara></flowRoot></svg>
+       id="flowPara10664">2xNFV</flowPara></flowRoot>  <flowRoot
+     transform="matrix(0.79509141,0,0,0.79509141,1752.2114,-221.41849)"
+     xml:space="preserve"
+     id="flowRoot4367"
+     style="font-style:normal;font-weight:normal;font-size:37.5px;line-height:100%;font-family:Sans;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#666666;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"><flowRegion
+       id="flowRegion4369"><rect
+         id="rect4371"
+         width="414.13849"
+         height="199.81281"
+         x="-1314.4667"
+         y="843.36115"
+         style="font-size:37.5px;line-height:100%;text-align:center;text-anchor:middle;fill:#666666;fill-opacity:1" /></flowRegion><flowPara
+       id="flowPara4373">Near-focus value</flowPara></flowRoot></svg>

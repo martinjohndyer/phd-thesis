@@ -15,6 +15,11 @@
 \newcommand{\rd}{\ensuremath{^{\rm rd}}}
 \newcommand{\nth}{\ensuremath{^{\rm th}}}
 
+% footnotes
+\makeatletter
+\renewcommand{\@makefntext}[1]{\leftskip=2em\hskip-2em\@makefnmark#1} %chktex 41
+\makeatother
+
 % code (see JSS style - https://www.jstatsoft.org/pages/view/style)
 % programs (Word, IRAF, VSCode...)
 %\newcommand{\software}{\textsc}
@@ -33,7 +38,7 @@
 
 % coloured text
 \newcommand{\textcolorbf}[2]{\textcolor{#1}{\textbf{#2}}}
-\newcommand{\todo}[1]{\textcolorbf{Red}{#1}}
+%\newcommand{\todo}[1]{\textcolorbf{Red}{#1}}
 
 % insert a blank page
 \newcommand\blankpage{

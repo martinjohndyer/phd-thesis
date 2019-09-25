@@ -196,6 +196,10 @@
 % https://ctan.org/pkg/rotfloat
 \usepackage{rotfloat}
 
+% Permit footnotes in tables (with \tablefootnote{})
+% https://ctan.org/pkg/tablefootnote
+\usepackage{tablefootnote}
+
 
 
 % FIGURES
@@ -302,7 +306,8 @@
 
 % Mark things to do
 % https://ctan.org/pkg/todonotes
-%\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[textsize=footnotesize]{todonotes}
+%\usepackage[disable,textsize=footnotesize]{todonotes}
 
 % Extended conditional commands
 % https://ctan.org/pkg/xifthen

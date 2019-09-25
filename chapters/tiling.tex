@@ -19,12 +19,12 @@
 In this chapter I describe the software used by GOTO to create an all-sky survey grid, which gravitational-wave events are then mapped onto.
 %
 \begin{itemize}
-    \item In \nref{sec:gototile} I describe the GOTO-tile Python package, and the algorithms is uses to define the GOTO all-sky survey grid.
+    \item In \nref{sec:gototile} I describe the GOTO-tile Python package, and the algorithms it uses to define the GOTO all-sky survey grid.
     \item In \nref{sec:skymaps} I describe how transient alert localisations are defined using skymaps and how they are mapped onto the GOTO-tile grid.
     \item In \nref{sec:custom_skymaps} I give some examples of how other skymaps can be used to direct GOTO observations.
 \end{itemize}
 %
-All work described in this chapter is my own unless otherwise indicated, and has not been published elsewhere. The original GOTO-tile package was written by Darren White at Sheffield and Evert Rol at Monash, before I took over development and made substantial changes described in this chapter.
+All work described in this chapter is my own unless otherwise indicated, and has not been published elsewhere. The original GOTO-tile package was written by Darren White at Sheffield and Evert Rol at Monash, before I took over development and made substantial changes as described in this chapter.
 
 \end{colsection}
 
@@ -37,7 +37,7 @@ All work described in this chapter is my own unless otherwise indicated, and has
 
 \begin{colsection}
 
-GOTO-tile is a Python package (\pkg{gototile}\footnote{\url{https://github.com/GOTO-OBS/goto-tile}}) created for the GOTO project to contain all of the functions related to tiling the sky and processing skymaps. It was originally developed by Darren White as a way to process gravitational-wave skymaps for GOTO, and then maintained by Evert Rol who rearranged it into a package usable for some other telescopes including SuperWASP on La Palma and a proposed southern GOTO node. My contributions to the package have been extensive: reworking the foundations to improve how the sky grid is defined and skymaps are applied, as well as adding additional code to create new skymaps (described in \aref{sec:grb_skymaps}).
+GOTO-tile is a Python package (\pkg{gototile}\footnote{\url{https://github.com/GOTO-OBS/goto-tile}}) created for the GOTO project to contain all of the functions related to tiling the sky and processing skymaps. It was originally developed by Darren White as a way to process gravitational-wave skymaps for GOTO, and then maintained by Evert Rol who rearranged it into a package usable for some other telescopes, including SuperWASP on La Palma and a proposed southern GOTO node. My contributions to the package have been extensive: reworking the foundations to improve how the sky grid is defined and skymaps are applied, as well as adding additional code to create new skymaps (described in \aref{sec:custom_skymaps}).
 
 \end{colsection}
 
@@ -57,11 +57,11 @@ As GOTO-tile has been developed the algorithm used to define the grid has change
 
 \begin{enumerate}
     \item On the celestial sphere (\aref{fig:sphere}) equally spaced lines of constant declination are defined, separated by the value $\Delta\delta$ (\aref{fig:deltadelta}). These ``declination strips'' are the basis for the grid points, which the tiles are centred on.
-    \item Each declination strip is then filled with equally spaced points separated by the value $\Delta\alpha$ (\aref{fig:deltaalpha}). This value is constant within each strip but is (in most algorithms) a function of declination $\Delta\alpha(\delta)$, meaning that as one moves away from the equator towards the poles each strip will contain a fewer number of points.
+    \item Each declination strip is then filled with equally spaced points, separated by the value $\Delta\alpha$ (\aref{fig:deltaalpha}). This value is constant within each strip but is (in most algorithms) a function of declination, $\Delta\alpha(\delta)$, meaning that as one moves away from the equator towards the poles each strip will contain a fewer number of points.
     \item These points are then defined as the centres of the tiles, the size of which is given by the field of view (\aref{fig:tiledsphere}).
 \end{enumerate}
 
-Once the grid has been created it is encapsulated within the GOTO-tile \code{SkyGrid} class. Each tile is defined by a coordinate at its centre, and each is also given a unique name of the form \code{T0001}. The grid itself is also given a name formed using the input field of view and overlap parameters, so the current  grid (with a field of view of \SI{3.7}{\degree}$\times$\SI{4.9}{\degree} and overlap factor of 0.1 in both axes) is given the name \code{allsky-3.7x4.9--0.1--0.1}. In this way a given tile in a given grid can be recreated just from the grid and tile name, which is used when storing the details in the \code{grids} and \code{grid\_tiles} tables in observation database (see \aref{sec:obsdb}). % chktex 29
+Once the grid has been created it is encapsulated within the GOTO-tile \code{SkyGrid} class. Each tile is defined by a coordinate at its centre, and each is also given a unique name of the form \code{T0001}. The grid itself is also given a name formed using the input field of view and overlap parameters, so the current  grid (with a field of view of \SI{3.7}{\degree}$\times$\SI{4.9}{\degree} and overlap factor of 0.1 in both axes) is given the name \code{allsky-3.7x4.9--0.1--0.1}. In this way a given tile in a given grid can be recreated just from the grid and tile name, which is used when storing the details in the \code{grids} and \code{grid\_tiles} tables in the observation database (see \aref{sec:obsdb}). % chktex 29
 
 \newpage
 
@@ -75,7 +75,7 @@ Once the grid has been created it is encapsulated within the GOTO-tile \code{Sky
         \includegraphics[width=\linewidth]{images/globe1.pdf}
     \end{center}
     \caption[The celestial sphere]{
-        The celestial sphere. The northern and southern celestial poles are marked as \textbf{NCP} \acroadd{ncp} and \textbf{SCP} \acroadd{scp} respectively, and the celestial equator is marked in \textcolorbf{Red}{red}. The ecliptic (the path of the Sun) is marked in \textcolorbf{Green}{green}, the point where the ecliptic rises above the celestial equator (the vernal equinox) is marked with the symbol \Aries{}, and the meridian that intercepts the poles and the vernal equinox is marked in \textcolorbf{NavyBlue}{blue}. Traditionally the equatorial coordinate system defined as shown: declination (\textcolorbf{NavyBlue}{Dec}, $\delta$) is the angle from the equator (between \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP) and right ascension (\textcolorbf{Red}{RA}, $\alpha$) \acroadd{ra} is the angle east of the vernal equinox (between \SI{0}{\degree} and \SI{360}{\degree}). The modern \acro{icrs} defines coordinates based on radio sources which approximately match the ones described here \citep{ICRF}.
+        The celestial sphere. The northern and southern celestial poles are marked as \textbf{NCP} \acroadd{ncp} and \textbf{SCP} \acroadd{scp} respectively, and the celestial equator is marked in \textcolorbf{Red}{red}. The ecliptic (the path of the Sun) is marked in \textcolorbf{Green}{green}, the point where the ecliptic rises above the celestial equator (the vernal equinox) is marked with the symbol \Aries{}, and the meridian that intercepts the poles and the vernal equinox is marked in \textcolorbf{NavyBlue}{blue}. Traditionally the equatorial coordinate system is defined as shown: declination (\textcolorbf{NavyBlue}{Dec}, $\delta$) is the angle from the equator (between \SI{-90}{\degree} at the SCP to \SI{90}{\degree} at the NCP) and right ascension (\textcolorbf{Red}{RA}, $\alpha$) \acroadd{ra} is the angle east of the vernal equinox (between \SI{0}{\degree} and \SI{360}{\degree}). The modern \acro{icrs} defines coordinates based on radio sources which approximately match the ones described here \citep{ICRF}.
     }\label{fig:sphere}
 \end{figure}
 
@@ -176,7 +176,7 @@ The minverlap algorithm solves these problems by treating the overlap parameter 
     \hfill
     \begin{minipage}[c]{0.50\linewidth}
         \caption[The product gridding algorithm]{
-            A sky grid of tiles defined using the ``product'' gridding algorithm. The inputs were a field of view of \SI{13}{\degree} $\times$ \SI{13}{\degree} and an overlap factor of $0.2$ in both axes. The colours show overlapping coverage: \textcolorbf{YellowOrange}{yellow} areas are within only one tile, \textcolorbf{ForestGreen}{green} two, \textcolorbf{blue}{blue} three, \textcolorbf{cyan}{cyan} four and \textcolorbf{RubineRed}{pink} five or more. This grid contains 595 tiles. Note the constant spacing of tiles in RA and the huge number of redundant tiles at the pole.
+            A sky grid of tiles defined using the ``product'' gridding algorithm. The inputs were a field of view of \SI{13}{\degree} $\times$ \SI{13}{\degree} and an overlap factor of $0.2$ in both axes. The colours show overlapping coverage: \textcolorbf{YellowOrange}{yellow} areas are within only one tile, \textcolorbf{ForestGreen}{green} two, \textcolorbf{cyan}{cyan} three, \textcolorbf{blue}{blue} four and \textcolorbf{RubineRed}{pink} five or more. This grid contains 595 tiles. Note the constant spacing of tiles in RA and the huge number of redundant tiles at the pole.
         }\label{fig:product}
     \end{minipage}
 \end{figure}
@@ -221,7 +221,7 @@ The minverlap algorithm solves these problems by treating the overlap parameter 
         \includegraphics[width=\linewidth]{images/spacing_minverlap.pdf}
     \end{center}
     \caption[Grid spacing with the minverlap algorithm]{
-        Grid spacing with the minverlap algorithm. Using the same parameters as \aref{fig:cosine_spacing} \aref{eq:minverlap_deltadelta} gives $\Delta\delta = $ \SI{10}{\degree}, therefore neatly arranging 19 declination strips between \SI{-90}{\degree} and \SI{90}{\degree}. \aref{eq:minverlap_deltaalpha} also gives $\Delta\alpha = $ \SI{10}{\degree} on the equator ($\delta=0$), so 36 points are uniformly arranged around the circumference.
+        Grid spacing with the minverlap algorithm. Using the same parameters as \aref{fig:cosine_spacing}, \aref{eq:minverlap_deltadelta} gives $\Delta\delta = $ \SI{10}{\degree}, therefore neatly arranging 19 declination strips between \SI{-90}{\degree} and \SI{90}{\degree}. \aref{eq:minverlap_deltaalpha} also gives $\Delta\alpha = $ \SI{10}{\degree} on the equator ($\delta=0$), so 36 points are uniformly arranged around the circumference.
     }\label{fig:minverlap_spacing}
 \end{figure}
 
@@ -243,7 +243,7 @@ where $\lceil x \rceil$ is the mathematical ceiling function. This is a modifica
 
 In this case the new $\Delta\delta = $ \SI{10}{\degree}, which gives an even arrangement of tiles from the equator to the poles, as shown in \aref{fig:minverlap_spacing}. The other benefit of this method is that, in addition to there always being a declination strip at $\delta=0$, there will always be ``strips'' at \SI{+90}{\degree} and \SI{-90}{\degree}, which results in a single tile being located over the celestial poles and ensuring there are no major gaps in coverage.
 
-In the minverlap algorithm the spacing in right ascension is treated in a simula way. The integer number of tiles that can fit into a given declination strip is given by
+In the minverlap algorithm the spacing in right ascension is treated in a similar way. The integer number of tiles that can fit into a given declination strip is given by
 %
 \begin{equation}
     n_\text{RA}(\delta) = \left \lceil \frac{360}{f_\text{RA}(1-v_\text{RA})/\cos \delta} \right \rceil + 1,
@@ -257,16 +257,16 @@ where the $+1$ is  to account for tiles being located both at $\alpha=$\SI{0}{\d
     \label{eq:minverlap_deltaalpha}
 \end{equation}
 
-This spacing is also shown in \aref{fig:minverlap_spacing}, with the grid points uniformly spaced around the celestial equator. Note that the ceiling function does mean that in some cases strips at different declinations can have the same number of tiles. For example, using the same parameters as previously $\Delta\delta=$\SI{10}{\degree}, so declination strips start at \SI{0}{\degree} and continue to \SI{\pm10}{\degree}, \SI{\pm20}{\degree} \ldots (mirrored in both hemispheres). From \aref{eq:minverlap_nra} the number of tiles on the equator is $n_\text{RA}(\delta=\SI{0}{\degree}) = \lceil 360/(10.4/\cos \SI{0}{\degree}) \rceil + 1 = \lceil 34.6 \rceil + 1 = 36$. But on the next strip up (or down) $n_\text{RA}(\delta=\SI{\pm10}{\degree}) = \lceil 360/(10.4/\cos(\pm\SI{10}{\degree})) \rceil + 1 = \lceil 34.1 \rceil + 1 = 36$ as well. This occurs because there are only a limited number of ways to fit an integer number of fixed tiles into a given declination strip, and so, as shown in \aref{fig:minverlap}, the three strips around the equator align perfectly with the same number of tiles.
+This spacing is also shown in \aref{fig:minverlap_spacing}, with the grid points uniformly spaced around the celestial equator. Note that the ceiling function means that, in some cases, strips at different declinations can have the same number of tiles. For example, using the same parameters as previously $\Delta\delta=$\SI{10}{\degree}, so declination strips start at \SI{0}{\degree} and continue to \SI{\pm10}{\degree}, \SI{\pm20}{\degree} \ldots (mirrored in both hemispheres). From \aref{eq:minverlap_nra} the number of tiles on the equator is $n_\text{RA}(\delta=\SI{0}{\degree}) = \lceil 360/(10.4/\cos \SI{0}{\degree}) \rceil + 1 = \lceil 34.6 \rceil + 1 = 36$. But on the next strip up (or down) $n_\text{RA}(\delta=\SI{\pm10}{\degree}) = \lceil 360/(10.4/\cos(\pm\SI{10}{\degree})) \rceil + 1 = \lceil 34.1 \rceil + 1 = 36$ as well. This occurs because there are only a limited number of ways to fit an integer number of fixed tiles into a given declination strip, and so, as shown in \aref{fig:minverlap}, the three strips around the equator align perfectly with the same number of tiles.
 
 % ---------
 \subsubsection{Limitations of the minverlap algorithm}
 
-The new minverlap algorithm is a significant improvement on the previous gridding algorithms. In particular it reduces the occurrences of gaps in coverage close to the poles which occur when using the cosine algorithm. However gaps can still occur when using the minverlap with a particularly low overlap parameter. For example, \aref{fig:tiledsphere} shows a sphere tiled using the minverlap algorithm with an overlap parameter of 0 and in this case gaps are visible just below the northern celestial pole.
+The new minverlap algorithm is a significant improvement on the previous gridding algorithms. In particular it reduces the occurrences of gaps in coverage close to the poles which occur when using the cosine algorithm. However, gaps can still occur when using the minverlap with a particularly low overlap parameter. For example, \aref{fig:tiledsphere} shows a sphere tiled using the minverlap algorithm with an overlap parameter of 0 and in this case gaps are visible just below the northern celestial pole.
 
 A proposed solution to this problem would be to force tiles to meet at their lower corners (in the northern hemisphere; upper corners in the south), therefore overlapping further and removing the possibility of gaps forming due to the angle between the tiles. An attempt to make this change and create an ``enhanced minverlap'' algorithm was tested, however ultimately it proved unnecessary. Although the current minverlap algorithm is deficient at low overlap values, this is only an issue when used with large tiles. The \SI{10}{\degree} $\times$ \SI{10}{\degree} tiles and 0 overlap used for \aref{fig:tiledsphere} are extreme values, and even for the roughly \SI{8}{\degree} $\times$ \SI{5}{\degree} full field of view of GOTO with 8 unit telescopes the overlap has to be less than 0.1 before noticeable gaps start appearing.
 
-A further possible improvement to the minverlap algorithm has also been identified since it was implemented. Instead of locating two grid points precisely at the celestial poles (i.e.\ using declination strips at $\pm$\SI{90}{\degree}) as show in \aref{fig:minverlap_spacing}, it would instead be enough to have the highest/lowest declination strips exactly half of the field of view away from the poles. This would ensure the poles were still included within the tiled area, at the top/bottom of the highest/lowest strip, but could reduce the number of strips needed to cover the entire sphere.
+A further possible improvement to the minverlap algorithm has also been identified since it was implemented. Instead of locating two grid points precisely at the celestial poles (i.e.\ using declination strips at $\pm$\SI{90}{\degree}) as shown in \aref{fig:minverlap_spacing}, it would instead be enough to have the highest/lowest declination strips exactly half of the field of view away from the poles (e.g.\ at $\pm$\SI{85}{\degree} if the tile was \SI{10}{\degree} tall). This would ensure the poles were still included within the tiled area, at the top/bottom of the highest/lowest strip, but could reduce the number of strips needed to cover the entire sphere.
 
 As it happens, when viewed from La Palma, the northern celestial pole is below the GOTO altitude limit of \SI{30}{\degree}. This means that tiles closest to the pole are not visible, and so the issues described above are irrelevant. Should GOTO-tile be applied in the future to other telescopes at other sites then this issue would need to be revisited, but it was not a priority to fix within the context of this work.
 
@@ -330,7 +330,7 @@ and therefore the area of each HEALPix pixel is
     \label{eq:healpix_area_degrees}
 \end{equation}
 
-\aref{fig:healpix} shows only the first four orders of HEALPix pixelisation, up to $N_\text{side} = 8$ where the sphere is split into 768 pixels each with an area of 53.7~sq deg. An initial, low-resolution LVC skymap might use a grid with $N_\text{side} = 64$ (approximately 49 thousand pixels) and each with an area of 0.84~sq~deg, whereas a final output skymap will have $N_\text{side} = 1024$, 12.5 million pixels and a pixel size resolution of $3.27 \times 10^{-3}$~sq~deg (11.7~square~arcminutes).
+\aref{fig:healpix} shows only the first four orders of HEALPix pixelisation, up to $N_\text{side} = 8$ where the sphere is split into 768 pixels each with an area of 53.7~sq deg. An initial, low-resolution LVC skymap might use a grid with $N_\text{side} = 64$ (approximately 49 thousand pixels, each with an area of 0.84~sq~deg), whereas a final output skymap will have $N_\text{side} = 1024$ (12.5 million pixels, and a pixel size resolution of $3.27 \times 10^{-3}$~sq~deg or 11.7~square~arcminutes).
 
 In addition to being a way to divide the sphere, each HEALPix pixel has a unique index from one of two different numbering schemes: either the ring (counting around each ring from the north to the south) or nested (based on the sub-pixel tree) system.
 
@@ -361,11 +361,11 @@ HEALPix is used to provide localisation of sky probabilities for transient astro
         \end{tabular}
     \end{center}
     \caption[Regrading a gravitational-wave skymap]{
-        Changing the HEALPix resolution of a gravitational-wave skymap (also known as regrading). At every stage each pixel is assigned a probability value which indicates the probability the source is located within that pixel, here darker colours denote higher probabilities. At lower $N_\text{side}$ values individual pixels are visible, but as the resolution increases the HEALPix structure is less visible.
+        Changing the HEALPix resolution of a gravitational-wave skymap (also known as regrading). At every stage each pixel is assigned a probability value which indicates the probability the source is located within that pixel; here, darker colours denote higher probabilities. At lower $N_\text{side}$ values individual pixels are visible, but as the resolution increases the HEALPix structure is less visible.
     }\label{fig:skymap_regrade}
 \end{figure}
 
-As well as the individual probabilities assigned to each pixel, it is also useful to consider the overall spread of the probability. This is done by considering the probability contour areas, typically at the 50\% and 90\% levels. The 50\% contour area of a skymap is defined by encircling the smallest number of pixels so that the total probability within the area is 50\% of the overall skymap probability. When a skymap is processed using GOTO-tile each pixel is assigned a contour value as well as its individual probability value. This is calculated by sorting all of the pixels by probability from highest to lowest, and the contour value for each pixel is then the cumulative sum of the probability within the pixels above it. This contour value can be considered as the lowest contour area that each pixel is within, meaning the pixels that are contained within the 50\% contour area are those with contour values of less than 50\%. \aref{fig:sim_skymap_probs} and \aref{fig:sim_skymap_conts} illustrate how the contours are calculated for a cartoon 2-dimensional skymap.
+As well as the individual probabilities assigned to each pixel, it is also useful to consider the overall spread of the probability. This is done by considering the probability contour areas, typically at the 50\% and 90\% levels. The 50\% contour area of a skymap is defined by encircling the smallest number of pixels so that the total probability within the area is 50\% of the overall skymap probability. When a skymap is processed using GOTO-tile each pixel is assigned a contour value as well as its individual probability value. This is calculated by sorting all of the pixels by probability from highest to lowest, and the contour value for each pixel is then the cumulative sum of the probability within the pixels above it. This contour value can be considered as the lowest contour area that each pixel is within, meaning the pixels that are contained within the 50\% contour area are those with contour values of less than 50\%. \aref{fig:sim_skymap_probs} shows a cartoon 2-dimensional skymap, and \aref{fig:sim_skymap_conts} illustrates how the 50\% and 90\% contours are calculated.
 
 \makeatletter
 \setlength{\@fptop}{1cm}
@@ -387,7 +387,7 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
         \includegraphics[width=0.95\linewidth]{images/sim/sim_skymap_conts.pdf}
     \end{center}
     \caption[An example 2D skymap with pixel contour values]{
-        The same cartoon skymap as in \aref{fig:sim_skymap_probs}, but now each pixel contains its contour value calculated by sorting the pixels by probability and assigning each pixel the value of the cumulative sum. The pixel with the highest probability (E5) has the same contour value as its probability value, the second highest (F5) has the sum of the probability values of both E5 and F5, and this continues to the pixel with the lowest probability value (A9) which has a contour value of 100\%. The \textcolorbf{BlueGreen}{blue} area is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\%. The \textcolorbf{Green}{green} area likewise encloses all pixels with a contour value of less than 90\%. Note in this example the contours are continuous, but it is possible to have multiple `islands' of probability within a single skymap.
+        The same cartoon skymap as in \aref{fig:sim_skymap_probs}, but now each pixel contains its contour value calculated by sorting the pixels by probability and assigning each pixel the value of the cumulative sum. The pixel with the highest probability (E5) has the same contour value as its probability value in \aref{fig:sim_skymap_probs}, the second highest (F5) has the sum of the probability values of both E5 and F5, and this continues to the pixel with the lowest probability value (A9) which has a contour value of 100\%. The \textcolorbf{BlueGreen}{blue} area is the 50\% probability contour, which encloses all pixels with a contour value of less than 50\%. The \textcolorbf{Green}{green} area likewise encloses all pixels with a contour value of less than 90\%. Note in this example the contours are continuous, but it is possible to have multiple `islands' of probability within a single skymap.
     }\label{fig:sim_skymap_conts}
 \end{figure}
 
@@ -407,7 +407,7 @@ As well as the individual probabilities assigned to each pixel, it is also usefu
 \label{sec:mapping_skymaps}
 \begin{colsection}
 
-When gravitational-wave signals are detected the LVC analysis pipelines create HEALPix skymaps to describe the sky localisation, and these are then distributed with the public VOEvent (see \aref{sec:voevents}). GOTO-tile is used to map the skymaps onto the grid used for the all-sky survey (defined in \aref{sec:gototile}). This requires finding which HEALPix pixels fall within each tile, which is done by defining polygons that match the projected tile areas and using the \code{query\_polygon} function from the healpy Python package (\pkg{healpy}\footnote{\url{https://healpy.readthedocs.io}}). For each tile it is then simple to sum the probability of all the HEALPix pixels within it, which gives the total contained probability. This is shown for a cartoon skymap in \aref{fig:sim_skymap_tiles}. In cases where grid tiles overlap a given HEALPix pixel could fall within the area of multiple tiles, and therefore that pixel would contribute to the total probability of more than one tile. This means the total contained probability within all tiles can add to more than 100\%.
+When a gravitational-wave signal is detected the LVC analysis pipelines create HEALPix skymaps to describe the sky localisation, and these are then distributed with the public alert (see \aref{sec:voevents}). GOTO-tile is used to map the skymaps onto the grid used for the all-sky survey (defined in \aref{sec:gototile}). This requires finding which HEALPix pixels fall within each tile, which is done by defining polygons that match the projected tile areas and using the \code{query\_polygon} function from the healpy Python package (\pkg{healpy}\footnote{\url{https://healpy.readthedocs.io}}). For each tile it is then simple to sum the probability of all the HEALPix pixels within it, which gives the total contained probability. This is shown for a cartoon skymap in \aref{fig:sim_skymap_tiles}. In cases where grid tiles overlap a given HEALPix pixel could fall within the area of multiple tiles, and therefore that pixel would contribute to the total probability of more than one tile. This means the total contained probability within all tiles can add to more than 100\%.
 
 \begin{figure}[t]
     \begin{center}
@@ -429,7 +429,7 @@ When gravitational-wave signals are detected the LVC analysis pipelines create H
 \label{sec:selecting_tiles}
 \begin{colsection}
 
-When a gravitational-wave event is processed event pointings are added into the observation database as described in \aref{sec:event_insert}. However, only a certain number of pointings should be added to prevent GOTO wasting too much time observing low-probability areas. Each pointing is mapped to a grid tile, and only tiles with a reasonably high contained probability are worth observing. The GOTO-alert event handling code described in \aref{chap:alerts} selects tiles based on their contour level, meaning GOTO could, for example, chose to observe the 90\% contour of each skymap. However, determining which contour level each tile is within is not as simple as calculating the contained probability, as there are multiple ways to define the contour value for each tile.
+When a gravitational-wave event is processed, event pointings are added into the observation database as described in \aref{sec:event_insert}. However, only a certain number of pointings should be added to prevent GOTO wasting too much time observing low-probability areas. Each pointing is mapped to a grid tile, and only tiles with a reasonably high contained probability are worth observing. The GOTO-alert event handling code described in \aref{chap:alerts} selects tiles based on their contour level, meaning GOTO could, for example, chose to observe the 90\% contour of each skymap. However, determining which contour level each tile is within is not as simple as calculating the contained probability, as there are multiple ways to define the contour value for each tile.
 
 For example, a tile could be defined as being within a given contour area if \textit{every} pixel contained within that tile is within that contour. However this is unreasonable for large tiles, such as GOTO's, as the tile areas are often wider than the long, stretched out probability areas seen in typical gravitational-wave typical skymaps. An alternative then would be say that a tile is within a contour if \textit{any} of its contained pixels are within the contour. However, this will find every tile covering the contour area even if only the smallest fraction of the tile's area is within that region, which leads to over-selecting tiles. Several alternative methods were considered, including taking the median or mean of the contained pixel contour levels within each tile. Some different selection methods applied to the S190521r skymap are shown in \aref{fig:selecting_tiles}.
 
@@ -448,7 +448,7 @@ The method used within the GOTO-alert event handler is to select all tiles which
     \caption[Selecting tiles for a gravitational-wave skymap]{
         Selecting tiles for the S190521r skymap \citep[also shown in \aref{fig:skymap_regrade}]{S190521r}.
         In the upper left the skymap is plotted on the celestial sphere, forming the ``banana'' shape typical of gravitational-wave localisations, and the 50\% and 90\% probability contours are shown.
-        The other three plots show grid tiles selected using one of three methods: selecting tiles to cover the entire 90\% skymap (\textcolorbf{NavyBlue}{blue}), selecting tiles with a median contour value of 90\% (\textcolorbf{Orange}{orange}) and selecting tiles with a mean contour value of 90\% (\textcolorbf{Green}{green}). The number of tiles selected ($n$) and total probability within them ($P$) is given.
+        The other three plots show grid tiles selected using one of three methods: selecting tiles to cover the entire 90\% contour (\textcolorbf{NavyBlue}{blue}), selecting tiles with a median contour value of 90\% (\textcolorbf{Orange}{orange}) and selecting tiles with a mean contour value of 90\% (\textcolorbf{Green}{green}). The number of tiles selected ($n$) and total probability within them ($P$) is given.
         The mean contour method provides a good compromise, selecting fewer than half of the tiles needed to cover the whole 90\% contour (31 compared to 63), but together they still contain nearly 87\% of the total probability.
     }\label{fig:selecting_tiles}
 \end{figure}
@@ -465,7 +465,7 @@ The method used within the GOTO-alert event handler is to select all tiles which
     }\label{fig:170817_gw}
 \end{figure}
 
-\aref{fig:170817_gw} shows the GOTO-tile selection code applied to the skymap for GW170817 \citep{GW170817}. As described in \aref{sec:followup} this is the only gravitational-wave detection so far with an identified counterpart, AT~2017gfo \citep{GW170817_followup}. In this case the mean contour selection method is perhaps too restrictive, only adding two tiles to the database, and for similarly well-localised events adding more tiles would be better. Still, based on the performance during commissioning (see \aref{sec:gw_results}) had GOTO been able to observe this event then the counterpart could have been observed in tile T0932 within minutes of the alert notice being received.
+\aref{fig:170817_gw} shows the GOTO-tile selection code applied to the skymap for GW170817 \citep{GW170817}. As described in \aref{sec:followup} this is the only gravitational-wave detection so far with an identified counterpart, AT~2017gfo \citep{GW170817_followup}. In this case the mean contour selection method is perhaps too restrictive, only adding two tiles to the database, and for similarly well-localised events adding more tiles would be better. Still, based on the performance during O3 (see \aref{sec:gw_results}), had GOTO been able to observe this event then the counterpart could have been observed in tile T0932 within minutes of the alert notice being received.
 
 \end{colsection}
 
@@ -478,7 +478,7 @@ The method used within the GOTO-alert event handler is to select all tiles which
 
 \begin{colsection}
 
-The GOTO-tile skymap processing system described in \aref{sec:skymaps} provides a working framework which allows any gravitational-wave skymap to be mapped onto the GOTO survey grid, from which pointings can be generated for the pilot to observe. However, there is no particular reason that the system has to be restricted to just the gravitational-wave skymaps produced by the LVC.\@ This section describes three further projects based on the GOTO-tile skymap code, from when I was working with Yik Lun Mong at Monash.
+The GOTO-tile skymap processing system described in \aref{sec:skymaps} provides a framework which allows any gravitational-wave skymap to be mapped onto the GOTO survey grid, from which pointings can be generated for the pilot to observe. However, there is no particular reason that the system has to be restricted to just the gravitational-wave skymaps produced by the LVC.\@ This section describes three further projects based on the GOTO-tile skymap code, from when I was working with Yik Lun Mong at Monash.
 
 \end{colsection}
 
@@ -488,7 +488,7 @@ The GOTO-tile skymap processing system described in \aref{sec:skymaps} provides 
 \label{sec:grb_skymaps}
 \begin{colsection}
 
-As part of the GOTO commissioning observations when the LIGO-Virgo detectors were not operating (see \aref{sec:timeline}) GOTO followed up \acro{grb} events from the \textit{Fermi} satellite Gamma-ray Burst Monitor \citep[GBM;][]{Fermi_GBM}. At the time the alert notices for GBM events did not include probability skymaps, only right ascension, declination and an error radius, and so code was developed in order to create a skymap from these details based on a 2D Gaussian profile; therefore allowing them to be processed by GOTO-tile using the same methods already created for gravitational-wave events.
+As part of the GOTO commissioning observations (see \aref{sec:timeline}), when the LIGO-Virgo detectors were not operating GOTO followed up \acro{grb} events from the \textit{Fermi} satellite Gamma-ray Burst Monitor \citep[GBM;][]{Fermi_GBM}. At the time, the alert notices for GBM events did not include probability skymaps, only right ascension, declination and an error radius, and so code was developed in order to create a skymap from these details based on a 2D Gaussian profile; therefore allowing them to be processed by GOTO-tile using the same methods already created for gravitational-wave events.
 
 Taking the radius $r$ as half the full-width at half-maximum, the standard deviation of a 2D Gaussian distribution $\sigma$ is given by
 %
@@ -506,7 +506,7 @@ The distance $d$ between a given point on the sphere ($\alpha, \delta$) and the 
     \label{eq:gaussian_distance}
 \end{equation}
 
-\noindent and the probability at each point is given by
+\noindent and the probability at each point for a 2D Gaussian is given by
 %
 \begin{equation}
     P(\alpha, \delta) = \frac{1}{2\pi\sigma} \exp \left ( \frac{d^2}{2\sigma^2} \right ).
@@ -547,13 +547,13 @@ It should be noted that the GBM localisation areas are actually not perfectly sy
 \label{sec:galaxy_skymaps}
 \begin{colsection}
 
-As described in \aref{sec:followup}, telescopes with much smaller fields of view than GOTO are not be able to cover the entirety of large gravitational-wave skymaps looking for counterparts. Many instead chose to focus on observing possible host galaxies within the GW probability region, and by doing this the Swope team were the first to observe the GW170817 counterpart \citep{GW170817_Swope}. The most recent catalogue of potential host galaxies is the \acro{glade} catalogue \citep{GLADE}, which combines multiple prior catalogues including the Gravitational Wave Galaxy Catalogue \citep[GWGC,][]{GWGC} used by Swope for GW170817.
+As described in \aref{sec:followup}, telescopes with small fields of view can focus on observing possible host galaxies instead of covering an entire GW probability region \citep{GW_weighting}. The most recent catalogue of potential host galaxies is the \acro{glade} catalogue \citep{GLADE}, which combines multiple prior catalogues including the Gravitational Wave Galaxy Catalogue \citep[GWGC,][]{GWGC} used by Swope to successfully find the GW170817 counterpart.
 
-GOTO does not use a galaxy-focused strategy; due to its large field of view each GOTO pointing will contain tens of possible host galaxies. However, for skymaps that cover large numbers of tiles the order in which GOTO observes could potentially be optimised by focusing on the tiles that contain the most potential host galaxies. One way of doing this using the existing G-TeCS scheduling framework (described in \aref{chap:scheduling}) is to adjust the weighting factor assigned to each tile, which can be done by multiplying the LVC localisation skymap with another skymap, containing the position of possible host galaxies, before applying the result to the tile grid as described in \aref{sec:mapping_skymaps}.
+GOTO does not use a galaxy-focused strategy; due to its large field of view each GOTO pointing will contain tens of possible host galaxies. However, for skymaps that cover large numbers of tiles, the order in which GOTO observes could potentially be optimised by focusing on the tiles that contain the most potential host galaxies. One way of doing this using the existing G-TeCS scheduling framework (described in \aref{chap:scheduling}) is to adjust the weighting factor assigned to each tile, which can be done by multiplying the LVC localisation skymap with another skymap, containing the position of possible host galaxies, before applying the result to the tile grid as described in \aref{sec:mapping_skymaps}. Constructing weighted skymaps like this a strategy used by several smaller field-of-view instruments, such as \textit{Swift} \citep{GW_Swift}.
 
 In order to create such a weighted skymap the GLADE catalogue can be queried for the position of each galaxy within the event distance limits (each LVC event notice contains an estimate for the distance to the source, see \aref{sec:event_strategy} for how this is used to determine the follow-up strategy for each event). This is only possible for events within a few \SI{100}{\mega\parsec}, beyond this the GLADE catalogue is increasingly incomplete \citep{GLADE}. Once found, a HEALPix skymap can be constructed by weighting each pixel by the number of possible host galaxies located within it. To account for the galaxies not being point sources the resulting skymap is then passed through a Gaussian smoothing function with a default standard deviation of 15~arcseconds. This new skymap can then be normalised and multiplied with the gravitational-wave position skymap, to produce a new skymap which contains the information from both.
 
-\aref{fig:galaxy_skymap} shows this method applied to the large skymap for event S190425z \citep{S190425z}, which included a reported luminosity distance of $155\pm\SI{45}{\mega\parsec}$. The underlying pattern of the gravitational-wave localisation regions is still clearly visible in the final skymap, but by including the galaxy information the resulting tile pointings will be weighted towards regions with larger numbers of possible host galaxies. This method still needs more work before being implemented, in particular the relative weighting to apply to each skymap needs to be considered. However it could prove beneficial by further prioritising GOTO observations towards regions more likely to include a counterpart source.
+\aref{fig:galaxy_skymap} shows this method applied to the large skymap for event S190425z \citep{S190425z}, which included a reported luminosity distance of $155\pm\SI{45}{\mega\parsec}$. The underlying pattern of the gravitational-wave localisation regions is still clearly visible in the final skymap, but by including the galaxy information the resulting tile pointings will be weighted towards regions with larger numbers of possible host galaxies. This method still needs more work before being implemented, in particular the relative weighting to apply to each skymap needs to be considered. However, it could prove beneficial by further prioritising GOTO observations towards regions more likely to include a counterpart source.
 
 \begin{figure}[p]
     \begin{center}
@@ -562,7 +562,7 @@ In order to create such a weighted skymap the GLADE catalogue can be queried for
         \includegraphics[width=0.8\linewidth]{images/tiling/gal_after.pdf}
     \end{center}
     \caption[Weighting a GW skymap using galaxy positions]{
-        Weighting a GW skymap (for event S190425z) using galaxy positions. The top plot shows the BAYESTAR skymap distributed by the LVC, the central plot shows a skymap using GLADE galaxies within the estimated distance to the source ($155\pm\SI{45}{\mega\parsec}$), and the lower plot shows the result of multiplying the two together.
+        Weighting a GW skymap (for event S190425z) using galaxy positions. The top plot shows the skymap distributed by the LVC, the central plot shows a skymap using GLADE galaxies within the estimated distance to the source ($155\pm\SI{45}{\mega\parsec}$), and the lower plot shows the result of multiplying the two together.
     }\label{fig:galaxy_skymap}
 \end{figure}
 
@@ -574,9 +574,9 @@ In order to create such a weighted skymap the GLADE catalogue can be queried for
 \label{sec:extinction_skymaps}
 \begin{colsection}
 
-In very crowded fields a single GOTO image can contain tens of thousands of sources, which makes it difficult for the GOTOphoto photometry pipeline (see \aref{sec:gotophoto}) to identify potential counterpart candidates. Observing in high-extinction areas such as through the galactic plane also makes it harder to observe extra-galactic sources, such as counterparts to gravitational-wave events. Therefore another possible reason to modify localisation skymaps is to de-prioritise observations of the galactic plane.
+In very crowded fields a single GOTO image can contain tens of thousands of sources, which makes it difficult for the GOTOphoto photometry pipeline (see \aref{sec:gotophoto}) to identify potential counterpart candidates. Observing high-interstellar-extinction areas, i.e.\ through the galactic plane, also makes it harder to observe extra-galactic sources such as counterparts to gravitational-wave events. Therefore another possible reason to modify localisation skymaps is to de-prioritise observations of the galactic plane.
 
-One method to do this is shown in \aref{fig:extinction_skymap} --- multiplying the gravitational-wave skymap by an inverted thermal dust emission skymap from the \textit{Planck} observatory \citep{Planck_dust}. The effect is intended to be subtle, not enough to completely wipe out the skymap probability in the high-extinction regions, but instead just reduce the weighting of those tiles so GOTO first prioritises other areas. Again, this is not currently implemented into the scheduling system, but it is presented as another example of using skymaps to optimise observation prioritises.
+One method to do this is shown in \aref{fig:extinction_skymap} --- multiplying the gravitational-wave skymap by an inverted thermal dust emission skymap from the \textit{Planck} observatory \citep{Planck_dust}. The effect is intended to be subtle, not enough to completely wipe out the skymap probability in the high-extinction regions, but instead to just reduce the weighting of those tiles so that GOTO first prioritises other areas. Again, this is not currently implemented in the scheduling system, but it is presented as another example of using skymaps to optimise observation priorities.
 
 \begin{figure}[p]
     \begin{center}
@@ -585,7 +585,7 @@ One method to do this is shown in \aref{fig:extinction_skymap} --- multiplying t
         \includegraphics[width=0.8\linewidth]{images/tiling/ext_after.pdf}
     \end{center}
     \caption[Weighting a GW skymap using galactic extinction]{
-        Weighting a GW skymap (for event S190521r) using galactic extinction. The top plot shows the BAYESTAR skymap distributed by the LVC, the central plot shows an inverted thermal dust emission skymap from \textit{Planck}, and the lower plot shows the result of multiplying the two together.
+        Weighting a GW skymap (for event S190521r) using galactic extinction. The top plot shows the skymap distributed by the LVC, the central plot shows an inverted thermal dust emission skymap from \textit{Planck}, and the lower plot shows the result of multiplying the two together.
     }\label{fig:extinction_skymap}
 \end{figure}
 
