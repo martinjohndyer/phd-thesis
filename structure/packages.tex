@@ -17,6 +17,9 @@
 % https://ctan.org/pkg/xcolor
 \usepackage[dvipsnames]{xcolor}
 
+% Selective filtering of error messages and warnings
+% https://ctan.org/pkg/silence
+\usepackage{silence}
 
 
 % PAGE FORMATTING
@@ -139,6 +142,7 @@
 
 % Sophisticated Bibliographies
 % https://ctan.org/pkg/biblatex
+\WarningFilter{biblatex}{Using}
 \usepackage[backend=bibtex,      % Specifies the database backend
 			bibencoding=ascii,   % Bibtex backend expects ASCII
 			style=authoryear,    % Style
@@ -178,6 +182,7 @@
 
 % Customising captions in floating environments
 % https://ctan.org/pkg/caption
+\WarningFilter{caption}{\caption}
 \usepackage[style=base, labelfont={bf, color=GOTOdarkblue}]{caption}
 
 % Retain float number across several floats
@@ -312,10 +317,6 @@
 % Extended conditional commands
 % https://ctan.org/pkg/xifthen
 \usepackage{xifthen}
-
-% Selective filtering of error messages and warnings
-% https://ctan.org/pkg/silence
-\usepackage{silence}
 
 % Extending etoolbox patching commands
 % https://ctan.org/pkg/xpatch
