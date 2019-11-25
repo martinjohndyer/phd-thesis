@@ -24,6 +24,7 @@ thesis.pdf
 *.out
 *.ptc
 *.run.xml
+*.sav
 *.synctex.gz*
 *.tdo
 *.toc
