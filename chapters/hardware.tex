@@ -39,7 +39,7 @@ All work described in this chapter is my own unless otherwise indicated, and has
 
 \begin{colsection}
 
-CCD cameras have a variety of characteristic parameters advertised by the manufacturers, including the amount of detector noise. As described in \aref{sec:goto_design}, GOTO uses MicroLine ML50100 CCD cameras manufactured by \acro{fli}, which contain KAF-50100 CCD sensors manufactured by ON Semiconductor. Both manufactures produce specification sheets advertising expected parameters\footnote{ML50100 available at \url{http://www.flicamera.com/spec_sheets/ML50100.pdf}}\textsuperscript{,}\footnote{KAF-50100 available at \href{http://www.onsemi.com/pub/Collateral/KAF-50100-D.PDF}{\texttt{http://www.onsemi.com/pub/Collateral/KAF-50100-D.pdf}}}. Confirming these under laboratory conditions is important before the detectors are used to take scientific images on the telescope. FLI carried out a limited series of tests on the cameras before selling them, but carrying out our own tests ensures that our cameras meet the specifications, and also allows independent measurements of the key parameters.
+CCD cameras have a variety of characteristic parameters advertised by the manufacturers, including the amount of detector noise. As described in \aref{sec:goto_design}, GOTO uses MicroLine ML50100 CCD cameras manufactured by \acro{fli}, which contain KAF-50100 CCD sensors manufactured by ON Semiconductor. Both manufactures produce specification sheets advertising expected parameters\footnote{ML50100 available at \url{http://www.flicamera.com/spec_sheets/ML50100.pdf}.}\textsuperscript{,}\footnote{KAF-50100 available at \href{http://www.onsemi.com/pub/Collateral/KAF-50100-D.PDF}{\texttt{http://www.onsemi.com/pub/Collateral/KAF-50100-D.pdf}}.}. Confirming these under laboratory conditions is important before the detectors are used to take scientific images on the telescope. FLI carried out a limited series of tests on the cameras before selling them, but carrying out our own tests ensures that our cameras meet the specifications, and also allows independent measurements of the key parameters.
 
 \end{colsection}
 
@@ -63,9 +63,9 @@ The shot noise ($\sigma_\text{N}$) arises as photons from the target object arri
 
 Dark current noise ($\sigma_\text{DC}$) is due to electrons produced by thermal excitations, which are indistinguishable from photo-electrons and increase with exposure time. This is also a photon counting measurement, so the noise $\sigma_\text{DC} = \sqrt{D}$ where $D$ is the dark current per pixel. The dark current depends on temperature: cooling the cameras reduces the thermal excitations and therefore reduces the dark current.
 
-Read-out noise ($\sigma_\text{RO}$) depends on the quality of the CCD outputs and readout electronics, and on the speed data is read out from the CCD.\ The FLI MicroLine cameras read out at a fixed frequency of \SI{8}{\mega\hertz} per pixel, but other astronomical cameras have variable read-out speeds. Since read-out noise is a property of the output electronics, it is independent of signal or the exposure time used, and therefore it can be represented by a constant value for each frame, $\sigma_\text{RO} = R$, measured in electrons per pixel. The MicroLine cameras have two channels with independent readouts, so each will have an independent read-out noise.
+Read-out noise ($\sigma_\text{RO}$) depends on the quality of the CCD outputs and readout electronics, and on the speed data is read out from the CCD.\ The FLI MicroLine cameras read out at a fixed frequency of \SI{8}{\mega\hertz} per pixel, but other astronomical cameras have variable read-out speeds. Since read-out noise is a property of the output electronics, it is independent of signal or the exposure time used, and therefore it can be represented by a constant value for each frame, $\sigma_\text{RO} = R$, measured in electrons per pixel. The MicroLine cameras have two channels with independent readouts, so each will have an independent read-out noise (see \aref{sec:chip_layout}).
 
-Fixed-pattern noise ($\sigma_\text{FP}$, also called flat-field noise) is due to the small differences in size and response between pixels. It increases linearly with the electron count, including source ($N$), background ($N_\text{sky}$) and dark ($D$) electrons (the fixed-pattern noise can be further broken down into the photo response non-uniformity and dark signal non-uniformity, but we will consider it as a single noise source). It can be parametrised as $\sigma_\text{FP} = k_\text{FP}(N+N_\text{sky}+D)$, where $k_\text{FP}$ is a dimensionless constant of proportionality describing the fixed-pattern noise as a fraction of the full-well capacity. Scientific CCD cameras typically have very small non-uniformities between pixels, so $k_\text{FP}$ is usually $<1\%$, but this noise source can dominate when the signal count is high. However, as the fixed-pattern noise is linearly related to the number of counts recorded  it can easily be removed by flat fielding, so the contribution from the fixed-pattern noise is negligible in calibrated astronomical images.
+Fixed-pattern noise ($\sigma_\text{FP}$, also called flat-field noise) is due to the small differences in size and response between pixels. It increases linearly with the electron count, including source ($N$), background ($N_\text{sky}$) and dark ($D$) electrons (the fixed-pattern noise can be further broken down into the photo response non-uniformity and dark signal non-uniformity, but we will consider it as a single noise source). It can be parametrised as $\sigma_\text{FP} = k_\text{FP}(N+N_\text{sky}+D)$, where $k_\text{FP}$ is a dimensionless constant describing the fixed-pattern noise as a fraction of the full-well capacity. Scientific CCD cameras typically have very small non-uniformities between pixels, so $k_\text{FP}$ is usually $<1\%$, but this noise source can dominate when the signal count is high. However, as it is linearly related to the number of counts recorded fixed-pattern noise can easily be removed by flat fielding.
 
 Finally, the bias level is an offset in counts applied to each pixel independent of the input signal. A large bias level is applied to each pixel by CCD manufacturers to prevent negative counts from being recorded due to fluctuations in the read-out noise. Across a frame the bias level will sometimes show structure, but it is simple to remove by subtracting a master bias frame. The bias level can change by a few counts during a night due to changes in the temperature, and it should be measured regularly, as any large changes might indicate a problem with the detector. The MicroLine cameras also include an overscan region (see \aref{sec:chip_layout}), which gives an independent measurement of the typical bias level for every image.
 
@@ -91,7 +91,7 @@ The noise sources described above (aside from the bias) are all independent Gaus
 \label{sec:camera_tests}
 \begin{colsection}
 
-The initial deployment of GOTO was delayed for several months, due to delays on-site at the observatory on La Palma and manufacturing the unit telescopes. The first set of four cameras, however, had already been purchased from FLI, and the delay gave time to test them in the lab in Sheffield in 2016. The second set of cameras were also purchased long before the second four unit telescopes were built; these were also brought to Sheffield  in 2018 so the same tests could be repeated. A list of the nine FLI cameras bought for GOTO is given in \aref{tab:cameras}. Each camera is given a name (Camera 1, Camera 2 etc.) based on the order of their serial numbers. These names are used throughout this section but do not necessarily match which GOTO unit telescope they were assigned to, and the cameras on La Palma are sometimes swapped around to allow for repairs.
+The initial deployment of GOTO was delayed for several months, due to delays on-site and manufacturing the unit telescopes (see \aref{sec:hardware_commissioning}). The first set of four cameras, however, had already been purchased from FLI, and the delay gave time to test them in the lab in Sheffield in 2016. The second set of cameras were also purchased before the second four unit telescopes; these were also brought to Sheffield in 2018 so the same tests could be repeated. A list of the nine FLI cameras bought for GOTO is given in \aref{tab:cameras}. Each camera is given a name (Camera 1, Camera 2 etc.) based on the order of their serial numbers. These names are used throughout this section but do not necessarily match which GOTO unit telescope they were assigned to, and the cameras on La Palma are sometimes swapped around to allow for repairs.
 
 \begin{table}[t]
     \begin{center}
@@ -119,10 +119,10 @@ The characterisation tests consisted of taking a series of calibration frames wi
 \begin{itemize}
     \item Zero-second dark exposures, to construct bias frames (see \aref{sec:bias}).
     \item Long (30 minute) dark exposures at different temperatures, to measure the dark current (see \aref{sec:dc}).
-    \item Flat illuminated frames at different exposure times, to construct photon transfer curves to measure read-out noise, gain and fixed-pattern noise (see \aref{sec:ptc}), and to measure linearity (see \aref{sec:lin}).
+    \item Flat illuminated frames at different exposure times, to construct photon transfer curves (see \aref{sec:ptc}) and measure linearity (see \aref{sec:lin}).
 \end{itemize}
 
-The cameras were tested using two different test setups. \aref{fig:dark_photo} shows the setup for taking dark frames: the cameras are face down and covered by a sheet. The long dark exposures required were taken overnight to minimise the background light reaching the detectors. The flat fields were harder to take. A LCD monitor showing a dark screen was used, with sheets of paper between the camera and the monitor to reduce the illumination. This is shown in \aref{fig:flat_photo}.
+The cameras were tested using two different test setups. \aref{fig:dark_photo} shows the setup for taking dark frames: the cameras are face down and covered by a sheet. The long dark exposures required were taken overnight to minimise the background light reaching the detectors. For flat fields a computer monitor was used as a flat source, shown in \aref{fig:flat_photo}. Sheets of paper were placed between the camera and the monitor to reduce the illumination and diffuse the light. The LCD monitor will produce polarised light, however this should not affect the resulting images as long as the angle of the camera remains constant.
 
 \begin{figure}[p]
     \begin{center}
@@ -138,7 +138,7 @@ The cameras were tested using two different test setups. \aref{fig:dark_photo} s
         \includegraphics[width=0.75\linewidth]{images/flat_photo.jpg}
     \end{center}
     \caption[The flat field test setup]{
-        A photo of the flat field test setup. A spare computer monitor was used as a flat screen, with sheets of paper placed in front of the camera to reduce the illumination. The cover shown in \aref{fig:dark_photo} was also placed over the setup.
+        A photo of the flat field test setup. A spare computer monitor was used as a flat panel, with sheets of paper placed between it and the camera. The cover shown in \aref{fig:dark_photo} was also placed over the setup.
     }\label{fig:flat_photo}
 \end{figure}
 
@@ -153,27 +153,25 @@ The cameras were tested using two different test setups. \aref{fig:dark_photo} s
 \label{sec:chip_layout}
 \begin{colsection}
 
-As mentioned previously, the MicroLine ML50100 cameras used by GOTO contain KAF-50100 \acro{ccd} sensors manufactured for FLI by ON Semiconductor\footnote{\url{http://www.onsemi.com}}. These are high-resolution, front-illuminated CCDs with two read-out channels. The \acro{qe} curve for the detector is shown in \aref{fig:qe} in \aref{sec:qe}. The detector includes a microlens array to focus light onto each pixel and improve the quantum efficiency, as well as a multilayer anti-reflective coating.
+As mentioned previously, the MicroLine ML50100 cameras used by GOTO contain KAF-50100 \acro{ccd} sensors manufactured for FLI by ON Semiconductor\footnote{\url{http://www.onsemi.com}}. These are high-resolution, front-illuminated CCDs with two read-out channels. The \acro{qe} curve for the detector is shown in \aref{fig:qe} in \aref{sec:qe}. The detector is covered in a multilayer anti-reflective coating, and includes a microlens array to focus light onto each pixel and improve the quantum efficiency. The microlenses limit the acceptance angle of the detector to approximately $\SI{\pm20}{\degree}$, for a \SI{40}{\centi\metre} aperture this corresponds to a maximum focal ratio of 2.8 (the \SI{40}{\centi\metre} GOTO unit telescopes are f/2.5, see \aref{sec:optics}).
 
-The sensor consists of a 50-megapixel CCD with $\SI{6}{\micro\metre} \times \SI{6}{\micro\metre}$ square pixels. The layout of the sensor is shown in \aref{fig:chip}, adapted from the ON Semiconductor sensor specification sheet. The sensor has $8282 \times 6220$ pixels with an imaging area of $8176 \times 6132$ pixels. When taking data in full-frame mode the camera outputs an $8304 \times 6220$ array. Surrounding the image area on each edge are 16 \emph{active buffer pixels}, which are light-sensitive but not considered part of the primary active region (they are not tested for deformities by the manufacturer). Around the edge of the active area is a border of light-shielded \emph{dark reference pixels}. These pixels do not respond to light and therefore can be used as a dark current reference. At the beginning and end of each row there is also a test column with 4 blank columns either side, as well as a test row at the end of each frame; these are used to test charge transfer efficiency during the manufacturing process. Finally, at the start of each row the register reads out a test pixel, used in the readout process, followed by 10 \emph{dummy pixels} which do not correspond to physical pixels on the sensor. These dummy pixels form an overscan region which can be used to measure the bias level.
-
-A sample frame from Camera 2 is shown in \aref{fig:frame} at high contrast. The extra regions around the image area are visible, including the dark reference and overscan regions.
+The KAF-50100 sensor consists of a 50-megapixel CCD with $\SI{6}{\micro\metre} \times \SI{6}{\micro\metre}$ square pixels. The layout of the sensor is shown in \aref{fig:chip}, adapted from the ON Semiconductor sensor specification sheet. The sensor has $8282 \times 6220$ pixels with an imaging area of $8176 \times 6132$ pixels; when taking data in full-frame mode the camera outputs an $8304 \times 6220$ array. Surrounding the image area on each edge are 16 \emph{active buffer pixels}, which are light-sensitive but not considered part of the primary active region (they are not tested for deformities by the manufacturer). Around the edge of the active area is a border of light-shielded \emph{dark reference pixels} which do not respond to light and therefore can be used as a dark current reference. At the beginning and end of each row there is also a test column with 4 blank columns either side, as well as a test row at the end of each frame; these are used to test charge transfer efficiency during the manufacturing process. Finally, at the start of each row the register reads out a test pixel, used in the readout process, followed by 10 \emph{dummy pixels} which do not correspond to physical pixels on the sensor. These form an overscan region which can be used to measure the bias level. A sample flat frame highlighting these areas is shown in \aref{fig:frame}.
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.85\linewidth]{images/chip}
+        \includegraphics[width=0.80\linewidth]{images/chip}
     \end{center}
-    \caption[The layout of the CCD chips in the MicroLine cameras used by GOTO]{
-        The layout of the CCD chips in the MicroLine cameras used by GOTO.\@ The central image area is not shown to scale, but the surrounding rows and columns are all in proportion.
+    \caption[The layout of the KAF-50100 CCD sensor]{
+        The layout of the KAF-50100 CCD sensor. The central image area is not shown to scale, but the surrounding rows and columns are all in proportion.
     }\label{fig:chip}
 \end{figure}
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.65\linewidth]{images/sample.png}
+        \includegraphics[width=0.80\linewidth]{images/sample3.pdf}
     \end{center}
     \caption[A sample bright frame from one of the MicroLine cameras]{
-        A sample bright frame from one of the MicroLine cameras. The highlighted area in the corner shows some of the features described in \aref{fig:chip}.
+        A sample bright frame from one of the MicroLine cameras. The highlighted corner shows some of the features described in \aref{fig:chip}. This image was taken as shown in \aref{fig:flat_photo} with no optical elements between the camera and the screen, note some vignetting still appears from the camera aperture.
     }\label{fig:frame}
 \end{figure}
 
@@ -188,7 +186,7 @@ A sample frame from Camera 2 is shown in \aref{fig:frame} at high contrast. The 
 \label{sec:bias}
 \begin{colsection}
 
-The bias level in each pixel can be measured by taking a dark, zero-second exposure image. This image will not include any electrons from a source or background, so the shot noise is zero, and as the dark current is proportional to the exposure time this will also be minimised (there will be a small component due to the time taken to read out the sensor). To account for the read-out noise, multiple images are taken, 50 for each of the eight cameras, and combined to form a master bias frame by taking the median value in each pixel (to eliminate cosmic rays).
+The bias level in each pixel can be measured by taking a dark, zero-second exposure image. This image will not include any electrons from a source or background, so the shot noise is zero, and as the dark current is proportional to the exposure time this will also be minimised (there will still be a small component due to the time taken to read out the sensor). To account for the read-out noise, multiple images are taken, 50 for each of the eight cameras, and combined to form a master bias frame by taking the median value in each pixel (to eliminate cosmic rays).
 
 \aref{tab:bias} gives the median bias level from each master bias, measured within a 2000$\times$2000 pixel region in the centre of both channels, along with the standard deviation in the same region. The measured bias levels are all around 1000 counts, which would be typical for a bias level set by the manufacturer. Combining $n$ frames should reduce the noise by $\sqrt{n}$, and, as expected, the errors are equivalent to the read-out noise values given in \aref{tab:ptc} when converted into counts and reduced by a factor of $\sqrt{50}$ ($\approx 7$).
 
@@ -229,7 +227,7 @@ The bias level in each pixel can be measured by taking a dark, zero-second expos
 \label{sec:ptc}
 \begin{colsection}
 
-The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \acro{ptc} method \citep{CCDs, PTC}. A photon transfer curve is a log-log plot of a signal value against the noise in the signal. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images there is no background signal, the cameras were cooled meaning dark current noise is negligible (see \aref{sec:dc}), and the master bias frames created in \aref{sec:bias} were subtracted from each frame. The total noise per pixel in electrons is therefore given by \aref{eq:noise} as
+The gain, read-out and fixed-pattern noise of a CCD camera can be measured using the \acro{ptc} method \citep{CCDs, PTC}. A photon transfer curve is a log-log plot of a signal value against the noise in the signal. To construct a photon transfer curve a series of bright exposures of a flat light source were taken with varying exposure times. For these images there is no background signal, the cameras were cooled meaning dark current noise is negligible (see \aref{sec:dc}), and the master bias frames described in \aref{sec:bias} were subtracted from each frame. The total noise per pixel in electrons is therefore given by \aref{eq:noise} as
 %
 \begin{equation}
     \sigma_\text{Total}^2 = N + R^2 + k_\text{FP}^2{(N)}^2.
@@ -243,7 +241,7 @@ The signal and total noise in \aref{eq:noise} are all in electrons (\elec), howe
     \label{eq:gain}
 \end{equation}
 %
-The gain is an important parameter of a CCD, and is set by the manufacturer based on the properties of the detector. For example, if a CCD has the gain set to 3 \elec/ADU then pixels containing 0, 1 or 2 electrons would all have a measured value of 0 ADU;\@ this is a form of rounding error called quantisation error. If the camera had a read-out noise of 1 \elec{} per pixel then the readout-noise would be under-sampled, and setting a lower gain would be required. However, setting the gain too low results in the full-well capacity of each pixel being under-utilised. The KAF-50100 detectors have a full well capacity of 40,300 electrons, and the cameras have a 16-bit ADC (meaning the signal from each pixel can vary from 0 to 65535 ($2^{16}-1$) ADU). If the gain is set to $0.5$ \elec/ADU then the ADC would saturate after reading 32,768 electrons, which is much less than the capacity of each pixel. Setting the gain therefore is a balance between these two effects.
+The gain is an important parameter of a CCD, and is set by the manufacturer based on the properties of the detector. For example, if a CCD has the gain set to 3 \elec/ADU then pixels containing 0, 1 or 2 electrons would all have a measured value of 0 ADU;\@ this is a form of rounding error called quantisation error. If the same camera had a read-out noise of 1 \elec{} per pixel then the readout-noise would be under-sampled, and setting a lower gain would be required. However, setting the gain too low results in the full-well capacity of each pixel being under-utilised. The KAF-50100 detectors have a full well capacity of 40,300 electrons, and the cameras have a 16-bit ADC (meaning the signal from each pixel can vary from 0 to 65535 ($2^{16}-1$) ADU). If the gain is set to $0.5$ \elec/ADU then the ADC would saturate after reading 32,768 electrons, which is much less than the capacity of each pixel. Setting the gain therefore is a balance between these two effects.
 
 As electrons and counts are proportional, the noise in both is also proportional (i.e.\ as $N=gS$ from \aref{eq:gain},  $\sigma_\text{Total} = g\sigma_S$). Using these relationships \aref{eq:noise_2} can be converted to give the noise in ADU,
 %
@@ -295,7 +293,7 @@ The key features of a photon transfer curve are common for all CCDs, and are sho
     }\label{tab:ptc}
 \end{table}
 
-Photon transfer curves were constructed for all eight cameras, by taking flat fields of varying exposure times between \SI{0.01}{\second} and \SI{90}{\second}. Twelve 50$\times$50 pixel regions were selected across the field, and the mean and standard deviation of the pixel values within each region were plotted to form the PTC for each camera, shown in \aref{fig:ptcs}. \aref{eq:ptc} was then fitted to the data, and the resulting values for the gain ($g$), read-out noise ($R$) and fixed-pattern noise ($k_\text{FP}$) parameters are given in \aref{tab:ptc}. The saturation level for each channel was also measured as the maximum signal (the point where the PTC turns over and the noise drops), these values are also given in \aref{tab:ptc}.
+Photon transfer curves were constructed for all eight cameras by taking flat fields of varying exposure times between \SI{0.01}{\second} and \SI{90}{\second}. Twelve 50$\times$50 pixel regions were selected across each image, and the mean and standard deviation of the pixel values within each region were plotted to form the PTC for each camera, shown in \aref{fig:ptcs}. \aref{eq:ptc} was then fitted to the data, and the resulting values for the gain ($g$), read-out noise ($R$) and fixed-pattern noise ($k_\text{FP}$) parameters are given in \aref{tab:ptc}. The saturation level for each channel was also measured as the maximum signal (the point where the PTC turns over and the noise drops), these values are also given in \aref{tab:ptc}.
 
 The gain values are all around 0.6 \elec/ADU, and would have been set as such to maximise the dynamic range based on the full well capacity (65535\,$\times$\,0.6\,$\approx$\,40,000 \elec). The saturation levels are all around 64550 ADU, but note these images were bias-subtracted and \aref{sec:bias} found the bias levels were around 980--1000 ADU.\@ The read-out noise values match the FLI specification of 12 \elec{} for the MicroLine cameras, and also match the errors found in the master biases. Finally, the fixed-pattern noise is a very small fraction of the signal ($<0.5\%$) which suggests a low pixel non-uniformity.
 
@@ -347,23 +345,16 @@ The gain values are all around 0.6 \elec/ADU, and would have been set as such to
 \label{sec:dc}
 \begin{colsection}
 
-Dark current noise is independent of the incoming signal but depends on the exposure time of the image. It also increases as a function of temperature, $T$. The dark current per second, $D$, increases at an exponential rate and can be modelled using the equation
+Dark current noise is independent of the incoming signal but depends on the exposure time of the image. It also increases as a function of temperature, $T$. The dark current per second, $D$, increases at an exponential rate and is usually parametrised as doubling after a fixed increase in temperature called the doubling temperature, $T_d$, so that if the dark current $D(T_0) = D_0$ then $D(T_0 + T_d) = 2D_0$. The dark current as a function of temperature is therefore defined as
 %
 \begin{equation}
-    D(T) = Ae^{kT + C},
-    \label{eq:dark_model}
-\end{equation}
-%
-where $A$, $k$ and $C$ are constants. Dark current is usually defined as doubling after a fixed increase in temperature called the doubling temperature, $T_d$, so that if the dark current $D(T_0) = D_0$ then $D(T_0 + T_d) = 2D_0$. Redefining \aref{eq:dark_model} using these constants gives the equation for dark currant as
-%
-\begin{equation}
-    D(T) = D_0 e^{\frac{\ln2}{T_d}(T + T_0)}.
+    D(T) = D_0 e^{\frac{\ln2}{T_d}(T - T_0)}.
     \label{eq:dc}
 \end{equation}
 %
 The choice of $T_0$ is arbitrary, and is usually decided as a reasonable operating temperature by the CCD manufacturer. The FLI specifications give a value for the typical dark current at \SI{-25}{\celsius}, so that is the value of $T_0$ used in this test.
 
-In order to find values for the dark current $D_0$ and doubling temperature $T_d$, a series of long (30 minute) dark exposures were taken with each camera at varying temperatures. The MicroLine cameras have an in-built air-cooled peltier cooler which can reach \SI{40}{\celsius} below the ambient temperature. The laboratory the tests were carried out in was air-conditioned, but only to a typical office level, and the cameras were unable to reach below \SI{-26}{\celsius} even when taking images in the middle of the night. The median dark signal was then measured in a 2000$\times$2000 pixel region in the centre of each channel, and divided by 1800 to get the dark current in ADU/second. This value was plotted against temperature, as shown in \aref{fig:dcs}. The points were fitted by \aref{eq:dc}, and the resulting values for the dark current and doubling temperature are given in \aref{tab:dc}.
+In order to find values for the dark current $D_0$ and doubling temperature $T_d$, a series of long (30 minute) dark exposures were taken with each camera at varying temperatures. The MicroLine cameras have an in-built air-cooled Peltier cooler which can reach \SI{40}{\celsius} below the ambient temperature. The laboratory the tests were carried out in was air-conditioned, but only to a typical office level, and the cameras were unable to reach below \SI{-26}{\celsius} even when taking images in the middle of the night. The median dark signal was then measured in a 2000$\times$2000 pixel region in the centre of each channel, and divided by 1800 (as each exposure was 30 minutes) to get the dark current in ADU/second. This value was plotted against temperature, as shown in \aref{fig:dcs}. The points were fitted by \aref{eq:dc}, and the resulting values for the dark current and doubling temperature are given in \aref{tab:dc}.
 
 \begin{table}[t]
     \begin{center}
@@ -448,11 +439,11 @@ The dark current was also examined as a function of time since power on, as in s
 \label{sec:lin}
 \begin{colsection}
 
-Linearity is a measure of the response of the CCD over its dynamic range. The output counts should ideally be linearly related to the input photons, i.e.\@ if the target doubles in brightness then double the counts are recorded.
+Linearity is a measure of the response of the CCD over its dynamic range. The output counts should ideally be linearly related to the input photons, i.e.\@ if the target doubles in brightness then double the counts should be recorded.
 
-The non-linearity of each camera was measured using the same images taken for the photon transfer curves in \aref{sec:ptc} --- bright images of a flat field with increasing exposure times. The images were bias-subtracted, and the median counts of a central 2000$\times$2000 pixel region in the centre of each channel was plotted against the exposure time, shown in \aref{fig:lin}. A linear relation was fitted to the central potion of the data, excluding the upper and lower 10\% of the dynamic range. Residuals from this fit as a percentage of the median count are also plotted in \aref{fig:lin}, and the mean absolute deviation from the linear fit over the central region is given in \aref{tab:lin}.
+The non-linearity of each camera was measured using the same images taken for the photon transfer curves in \aref{sec:ptc} --- bright images of a flat field with increasing exposure times. The images were bias-subtracted, and the median counts of a 2000$\times$2000 pixel region in the centre of each channel was plotted against the exposure time, shown in \aref{fig:lin}. A linear relation was fitted to the central potion of the data, excluding the upper and lower 10\% of the dynamic range. Residuals from this fit are also plotted in \aref{fig:lin}, and the mean absolute deviation from the linear fit is given in \aref{tab:lin}.
 
-The values for non-linearity measured vary greatly between each camera, and several are over 1\%. If these values were true this would be a major problem when making accurate photometric measurements. However, the FLI specification advertises a non-linearity of <1\%, and FLI's own tests of the cameras consistently report non-linearity of 0.2\% or less. Accurately measuring the response of a CCD requires a uniform light source that is perfectly stable with time, which FLI would have access to. I had to make do with a LCD screen when carrying out the tests in the lab, which is a poor substitute. Therefore the values in \aref{tab:lin} should not be considered reliable measurements.
+The values for non-linearity measured vary greatly between each camera, and several are over 1\%. If these values were true this would be a major problem when making accurate photometric measurements. However, the FLI specification advertises a non-linearity of <1\%, and FLI's own tests of the cameras consistently report non-linearity of 0.2\% or less. Accurately measuring the response of a CCD requires a stable, uniform light source, which I had to approximate with an LCD screen as described in a \aref{sec:camera_tests}. A better test would be to vary the screen brightness instead of the exposure time, which would prevent systematic effects such as the shutter closing time affecting the results.
 
 \begin{table}[t]
     \begin{center}
@@ -530,7 +521,7 @@ The values for non-linearity measured vary greatly between each camera, and seve
 
 There are several possible defects in CCD sensors \citep{CCDs}: hot pixels, which have atypically high dark currents, dead pixels, which produce low or zero counts, and trap pixels, which ``trap'' electrons and prevent read out from it and any pixels above it in the column. It is important to identify any bad pixels so that the GOTOphoto pipeline (see \aref{sec:gotophoto}) can mask them when reducing the images from each camera.
 
-Single hot or dead pixels can be removed to some extent by subtracting dark frames and flat fielding. Trap pixels are more of an issue, as they can take out up to the entire column. For each camera, a defect mask was made by taking the ratio of two flat field images with different exposure times, making any bad columns easy to pick out by comparing to the surrounding pixels. An example of a bad column caused by a trap pixel is shown in \aref{fig:itsatrap}. The positions of bad columns for each camera are given in \aref{tab:traps}. The KAF-50100 chip specification gives an allowed limit of less than 20 column defects per device, which the GOTO cameras are well within.
+Single hot or dead pixels can be removed to some extent by subtracting dark frames and flat fielding. Trap pixels are more of an issue, as they can potentially take out a large fraction of a column. For each camera, a defect mask was made by taking the ratio of two flat field images with different exposure times, making any bad columns easy to pick out by comparing to the surrounding pixels. An example of a bad column caused by a trap pixel is shown in \aref{fig:itsatrap}. The positions of bad columns for each camera are given in \aref{tab:traps}. The KAF-50100 chip specification gives an allowed limit of less than 20 column defects per device, which the GOTO cameras are well within.
 
 \begin{table}[t]
     \begin{center}
@@ -587,7 +578,7 @@ Single hot or dead pixels can be removed to some extent by subtracting dark fram
 
 \begin{colsection}
 
-Unfortunately, not every photon emitted by a target object will be recorded by a telescope: photons will be lost due to absorption and scattering in the Earth's atmosphere, and within the telescope's optics and camera. Understanding each of these factors is required in order to produce a complete throughput model, which can then be compared to the real system (in \aref{sec:onsky_comparison}) to see if the hardware is performing as expected.
+Unfortunately, not every photon emitted by a target object will be recorded by a telescope: photons will be lost due to absorption and scattering within the telescope's optics and camera, as well as in the Earth's atmosphere (for ground-based telescopes). Understanding each of these factors is required in order to produce a complete throughput model, which can then be compared to the real system (in \aref{sec:onsky_comparison}) to see if the hardware is performing as expected.
 
 \end{colsection}
 
@@ -602,7 +593,7 @@ As described in \aref{sec:goto_design}, the GOTO unit telescopes are Wynne-Newto
 % ---------
 \subsubsection{Mirrors}
 
-The GOTO mirrors are were manufactured by Orion Optics\footnote{\url{https://www.orionoptics.co.uk}}. Orion used their own ``HiLux'' high reflectivity aluminium coating, and while individual reflectance curves were not available for the GOTO mirrors at the time this work was carried out, Orion did provide a representative reflectance curve on their website (shown in \aref{fig:trans_ota}). As there are two mirrors this curve will be included twice in the final throughput model. The difference in the angle of incidence of light on the two mirrors is accounted for in the coating applied to each mirror, so the reflectivity curves of the two are assumed to be identical.
+The GOTO mirrors are were manufactured by Orion Optics\footnote{\url{https://www.orionoptics.co.uk}}. Orion used their own ``HiLux'' high reflectivity aluminium coating, and while individual reflectance curves were not available for the GOTO mirrors at the time this work was carried out, Orion does have a representative curve on their website (shown in \aref{fig:trans_ota}). As there are two mirrors this curve will be included twice in the final throughput model. The difference in the angle of incidence of light on the two mirrors is accounted for in the coating applied to each mirror, so the reflectivity curves of the two are assumed to be identical.
 
 \newpage
 
@@ -761,7 +752,12 @@ The Baader filters were designed for amateur astronomers and astro-photographers
 
 \newpage
 
-\begin{figure}[p]
+% https://texfaq.org/FAQ-vertposfp
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
+\begin{figure}[t]
     \begin{center}
         \includegraphics[width=\linewidth]{images/throughput/filt_comp1.png}
     \end{center}
@@ -770,7 +766,7 @@ The Baader filters were designed for amateur astronomers and astro-photographers
     }\label{fig:filter_comparison1}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[t]
     \begin{center}
         \includegraphics[width=\linewidth]{images/throughput/filt_comp2.png}
     \end{center}
@@ -780,6 +776,12 @@ The Baader filters were designed for amateur astronomers and astro-photographers
 \end{figure}
 
 \clearpage
+
+% https://tex.stackexchange.com/questions/28556/how-to-place-a-float-at-the-top-of-a-floats-only-page
+\makeatletter
+\setlength{\@fptop}{0\p@ \@plus 1fil} % chktex 1
+\makeatother
+
 \newpage
 
 \end{colsection}
@@ -799,7 +801,7 @@ The Baader filters were designed for amateur astronomers and astro-photographers
     }\label{fig:qe}
 \end{figure}
 
-After passing through the telescope photons are focused onto the CCD, where they interact with the photosensitive layer and produce electrons which are recorded by the detector \citep{CCDs}. The conversion from photons to electrons is the \acro{qe} of the CCD, and is dependent on wavelength: short-wavelength photons will be absorbed before reaching the photosensitive layer, while long-wavelength photons will not have enough energy to create free electrons in the silicon. CCDs that are back-side illuminated have improved blue QE due to the photons not having to pass through the electrode layer and therefore having less chance of being absorbed, however these are more complicated and expensive to build. The QE of can also change with temperature in the near IR, but this is negligible in the optical. The QE curve for the KAF-50100 CCDs is shown in \aref{fig:qe}. As described in \aref{sec:chip_layout}, these CCDs are front-illuminated, and include a microlens array in front of the sensor to improve the QE.\@
+After passing through the telescope photons are focused onto the CCD, where they interact with the photosensitive layer and produce electrons which are recorded by the detector \citep{CCDs}. The conversion from photons to electrons is the \acro{qe} of the CCD, and is dependent on wavelength: short-wavelength photons will be absorbed before reaching the photosensitive layer, while long-wavelength photons will not have enough energy to create free electrons in the silicon. CCDs that are back-side illuminated have improved blue QE due to the photons not having to pass through the electrode layer and therefore having less chance of being absorbed, however these are more complicated and expensive to build. The QE can also change with temperature in the near IR, but this is negligible in the optical. The QE curve for the KAF-50100 CCDs is shown in \aref{fig:qe}. As described in \aref{sec:chip_layout}, these CCDs are front-illuminated, and include a microlens array in front of the sensor to improve the QE.\@
 
 \end{colsection}
 
@@ -814,11 +816,11 @@ After passing through the telescope photons are focused onto the CCD, where they
         \includegraphics[width=\linewidth]{images/throughput/throughput.png}
     \end{center}
     \caption[Complete throughput model for the GOTO filters]{
-        The complete GOTO throughput model. The model elements (dashed lines) are the throughput of the OTA elements (from \aref{fig:trans_ota}) and the quantum efficiency of the microlensed CCD (from \aref{fig:qe}); and the Baader \textit{LRGB} filter bandpasses (from \aref{fig:filters}) are shown by the coloured dotted lines. The filled lines shown the total throughput in each filter when the model is applied.
+        The complete GOTO throughput model. The model elements (dashed lines) are the combined throughput of the OTA elements (from \aref{fig:trans_ota}) and the quantum efficiency of the microlensed CCD (from \aref{fig:qe}); and the Baader \textit{LRGB} filter bandpasses (from \aref{fig:filters}) are shown by the coloured dotted lines. The filled lines shown the total throughput in each filter when the model is applied.
     }\label{fig:throughput}
 \end{figure}
 
-The complete GOTO throughput is a combination of all of the elements discussed in the previous sections. Each source profile was linearly interpolated to the same wavelength range (3500--\SI{8500}{\angstrom}) and multiplied together to produce the total GOTO throughput model, shown in \aref{fig:throughput}. Since the quantum efficiency has been included, the total throughput describes the conversion between photons above the atmosphere to electrons detected in the CCD, and using the gain values given in \aref{tab:ptc} the full conversion between photons and output counts can be made. The mean throughput in each filter can be found by dividing the filled areas in \aref{fig:throughput} by the area of the filter bandpass, and are given in electrons per photon in \aref{tab:throughput_extinction}.
+The complete GOTO throughput is a combination of all of the elements discussed in the previous sections. Each source profile was linearly interpolated to the same wavelength range (3500--\SI{8500}{\angstrom}) and multiplied together to produce the total GOTO throughput model, shown in \aref{fig:throughput}. Since the quantum efficiency has been included, the total throughput describes the conversion between photons to electrons detected in the CCD, and using the gain values given in \aref{tab:ptc} the full conversion between photons and output counts can be made (this does not include photons lost to extinction in the atmosphere, see \aref{sec:atmosphere}). The mean throughput in each filter can be found by dividing the filled areas in \aref{fig:throughput} by the area of the filter bandpass, and are given in electrons per photon in \aref{tab:throughput_extinction}.
 
 \newpage
 
@@ -855,10 +857,10 @@ Another atmospheric factor unique to observing from La Palma is the \textit{cali
                    & Throughput     & Extinction \\
             Filter & (\elec/photon) & (mag/airmass) \\
             \midrule
-            Baader \textit{L} & 0.35 & 0.13 \\
-            Baader \textit{R} & 0.38 & 0.07 \\
-            Baader \textit{G} & 0.42 & 0.11 \\
-            Baader \textit{B} & 0.25 & 0.20 \\
+            Baader \textit{L} & 0.43 & 0.13 \\
+            Baader \textit{R} & 0.46 & 0.07 \\
+            Baader \textit{G} & 0.51 & 0.11 \\
+            Baader \textit{B} & 0.36 & 0.20 \\
         \end{tabular}
     \end{center}
     \caption[Theoretical throughput and extinction coefficients for the GOTO filters]{
@@ -924,7 +926,7 @@ where $t$ is the exposure time. The number of photo-electrons recorded per secon
 %
 where the constant $m_\text{ZP}$ is defined as the instrumental \emph{zeropoint}.
 
-The zeropoint is so called because observing an object with a true magnitude equal to the zeropoint ($m = m_\text{ZP}$) will produce an instrumental magnitude of 0, which corresponds to one electron per second on the detector. The zeropoint is usually defined based on the electron rate that would be measured above the atmosphere, which allows zeropoints to be compared between telescopes. Each telescope and filter combination will have a unique zeropoint, and once determined it can be used to convert instrumental magnitudes measured using that telescope to a calibrated magnitude using
+The zeropoint is so called because observing an object with a true magnitude equal to the zeropoint ($m = m_\text{ZP}$) will produce an instrumental magnitude of 0, which corresponds to one electron per second on the detector. The zeropoint is usually defined based on the electron rate that would be measured above the atmosphere, which allows zeropoints to be compared between telescopes (i.e.\ not including an atmospheric profile as discussed in \aref{sec:atmosphere}). Each telescope and filter combination will have a unique zeropoint, and once determined it can be used to convert instrumental magnitudes measured using that telescope to a calibrated magnitude using
 %
 \begin{equation}
     m = m_\text{ins} + m_\text{ZP}.
@@ -955,7 +957,7 @@ Consider taking an observation of a zero magnitude star, such as Vega. From \are
 % ---------
 \subsubsection{Estimating predicted counts from a 0 mag star}
 
-First, the zero-magnitude flux density needs to be converted into a flux in photons. \SI{3631}{\jansky} is equal to \SI{3.631e-20}{\erg\per\second\per\centi\metre\squared\per\hertz}. To convert from $F_\nu$ to $F_\lambda$ this needs to be multiplied by a factor of $c/\lambda_\text{eff}^2$, where $c$ is the speed of light and $\lambda_\text{eff}$ is the effective wavelength of the photon, in this case the effective wavelength of the filter in question\footnote{The $c/\lambda_\text{eff}^2$ conversion factor comes from differentiating the relationship $\nu = c/\lambda$}. This will then give a flux in \si{\erg\per\second\per\centi\metre\squared\per\angstrom}, but to convert to a photon count it needs to be divided by the energy of each photon given by
+First, the zero-magnitude flux density needs to be converted into a flux in photons. \SI{3631}{\jansky} is equal to \SI{3.631e-20}{\erg\per\second\per\centi\metre\squared\per\hertz}. To convert from $F_\nu$ to $F_\lambda$ this needs to be multiplied by a factor of $c/\lambda_\text{eff}^2$, where $c$ is the speed of light and $\lambda_\text{eff}$ is the effective wavelength of the photon, in this case the effective wavelength of the filter in question\footnote{The $c/\lambda_\text{eff}^2$ conversion factor comes from differentiating the relationship $\nu = c/\lambda$.}. This will then give a flux in \si{\erg\per\second\per\centi\metre\squared\per\angstrom}, but to convert to a photon count it needs to be divided by the energy of each photon given by
 %
 \begin{equation}
     \begin{split}
@@ -968,7 +970,7 @@ where $h$ is Planck's constant. Again, at this stage it is assumed that all of t
 %
 \begin{equation}
     \begin{split}
-        F_\lambda = 1.51 \times 10^{26}/\lambda_\text{eff}~\si{\photon\per\second\per\centi\metre\squared\per\angstrom}
+        F_\lambda = 5.5 \times 10^{6}/\lambda_\text{eff}~\si{\photon\per\second\per\centi\metre\squared\per\angstrom}
     \end{split}
     \label{eq:zero-mag_photons}
 \end{equation}
@@ -984,10 +986,10 @@ where $\lambda_\text{eff}$ is given in Angstroms.
             Filter & flux       & predicted signal            & Zeropoint \\
                    & (photon/s) & (\elec/s)                   & (mag) \\
             \midrule
-            Baader \textit{L} & \num{3.41e9} & \num{1.20e+09} & 22.70 \\
-            Baader \textit{R} & \num{9.24e8} & \num{3.52e+08} & 21.37 \\
-            Baader \textit{G} & \num{9.38e8} & \num{3.97e+08} & 21.50 \\
-            Baader \textit{B} & \num{1.63e9} & \num{4.80e+08} & 21.70 \\
+            Baader \textit{L} & \num{3.41e9} & \num{1.26e+09} & 22.75 \\
+            Baader \textit{R} & \num{9.24e8} & \num{3.67e+08} & 21.41 \\
+            Baader \textit{G} & \num{9.38e8} & \num{4.14e+08} & 21.54 \\
+            Baader \textit{B} & \num{1.63e9} & \num{5.04e+08} & 21.76 \\
         \end{tabular}
     \end{center}
     \caption[Theoretical zeropoints for each of the GOTO filters]{
@@ -995,16 +997,16 @@ where $\lambda_\text{eff}$ is given in Angstroms.
     }\label{tab:zeropoints}
 \end{table}
 
-Multiplying the value in \aref{eq:zero-mag_photons} by the effective filter bandwidth and the collecting area of the telescope will give the predicted photon flux in the detector. Each of GOTO's unit telescopes has a \SI{40}{\centi\metre} diameter primary mirror, however not all of this is available to collect photons due to the shadow cast by the secondary mirror. Assuming this blocks 10\% of the light gives an effective collecting area of \SI{1131}{\centi\metre\squared}. Using this and the filter properties given in \aref{tab:filters}, the theoretical flux in photons per second from a zero-magnitude star above the atmosphere can be calculated for each filter. These values are given in \aref{tab:zeropoints}.
+Multiplying the value in \aref{eq:zero-mag_photons} by the effective filter bandwidth (in \si{\angstrom}) and the collecting area of the telescope (in \si{\centi\metre\squared}) will give the predicted photon flux in the detector. Each of GOTO's unit telescopes has a \SI{40}{\centi\metre} diameter primary mirror, with an area of \SI{1257}{\centi\metre\squared}. However not all of this is available to collect photons due to the shadow cast by the secondary mirror. The secondary mirror measures \SI{19}{\centi\metre} on its short axis (see \aref{sec:optics}), modelling this as circular gives the GOTO unit telescopes an effective collecting area of \SI{973}{\centi\metre\squared} --- meaning approximately 23\% of light is blocked. Using this area and the filter bandwidths given in \aref{tab:filters}, the theoretical flux in photons per second expected above the atmosphere from a zero-magnitude star can be calculated for each filter. These values are given in \aref{tab:zeropoints}.
 
-Finally, multiplying the theoretical fluxes in \aref{tab:zeropoints} by the mean throughput values for each filter from \aref{tab:throughput_extinction} gives the predicted signal in the detector in photo-electrons per second. Converting these signals into magnitudes using \aref{eq:ins_mag} gives the instrumental magnitude, and using \aref{eq:zp2} with $m=0$ gives the theoretical zeropoint. The predicted signals and zeropoints are also given in \aref{tab:zeropoints}.
+Finally, multiplying these theoretical fluxes by the mean throughput values for each filter from \aref{tab:throughput_extinction} gives the predicted signal on the detector in photo-electrons per second (again still excluding atmospheric extinction), and using \aref{eq:zp2} gives the theoretical zeropoint. The predicted signals and zeropoints are also given in \aref{tab:zeropoints}.
 
 \newpage
 
 % ---------
 \subsubsection{Modeling observations with pysynphot}
 
-The above method is the typical way to calculate a theoretical zeropoint, but only approximates bandpasses of each filter by using the effective wavelength and bandwidth, and only considers the mean throughput instead of over the whole bandwidth. To account for the full bandpass a more robust model was created using the pysynphot Python package (Python Synthetic Photometry, \pkg{pysynphot}\footnote{\url{https://pysynphot.readthedocs.io}}), which is based the IRAF \pkg{SYNPHOT} package\footnote{\url{http://www.stsci.edu/institute/software_hardware/stsdas/synphot}}. Each of the throughput elements described in \aref{sec:throughput} were imported to create throughput profiles for each filter, and observations were simulated of a flat spectrum of \SI{3631}{\jansky} (0 mag in the AB system) and the built-in Vega spectrum (0 mag in the Vega system) by multiplying the spectra with the bandpasses. The resulting spectra are shown in \aref{fig:pysynphot}; the area under each curve gives the predicted number of electrons produced by the zero-magnitude star in each system.
+The above method is the typical way to calculate a theoretical zeropoint, but it only approximates the bandpasses of each filter by using the effective wavelength and bandwidth, and only considers the mean throughput instead of over the whole bandwidth. To account for the full bandpass a more robust model was created using the pysynphot Python package (Python Synthetic Photometry, \pkg{pysynphot}\footnote{\url{https://pysynphot.readthedocs.io}}), which is based the IRAF \pkg{SYNPHOT} package\footnote{\url{http://www.stsci.edu/institute/software_hardware/stsdas/synphot}}. Each of the throughput elements described in \aref{sec:throughput} were imported to create throughput profiles for each filter, and observations were simulated of a flat spectrum of \SI{3631}{\jansky} (0 mag in the AB system) and the built-in Vega spectrum (0 mag in the Vega system) by multiplying the spectra with the bandpasses. The resulting spectra are shown in \aref{fig:pysynphot}; the area under each curve gives the predicted number of electrons produced by the zero-magnitude star in each system.
 
 The predicted signals found using pysynphot, and the derived zeropoints, are given in \aref{tab:pysynphot_zeropoints}. The difference between the two photometric systems is visible, the AB spectrum gives more electrons in the red filter while the Vega spectrum is brighter in the blue (as shown in \aref{fig:pysynphot}).
 
@@ -1015,10 +1017,10 @@ The predicted signals found using pysynphot, and the derived zeropoints, are giv
             Filter & Signal    & Zeropoint & Signal    & Zeropoint\\
                    & (\elec/s) & (mag)     & (\elec/s) & (mag) \\
             \midrule
-            Baader L & \num{1.09e+09} & 22.59 & \num{1.08e+09} & 22.58 \\
-            Baader R & \num{3.16e+08} & 21.25 & \num{2.67e+08} & 21.07 \\
-            Baader G & \num{3.40e+08} & 21.33 & \num{3.44e+08} & 21.34 \\
-            Baader B & \num{4.74e+08} & 21.69 & \num{5.21e+08} & 21.79 \\
+            Baader \textit{L} & \num{1.25e+09} & 22.74 & \num{1.23e+09} & 22.72 \\
+            Baader \textit{R} & \num{3.84e+08} & 21.46 & \num{3.25e+08} & 21.28 \\
+            Baader \textit{G} & \num{4.19e+08} & 21.55 & \num{4.21e+08} & 21.56 \\
+            Baader \textit{B} & \num{4.98e+08} & 21.74 & \num{5.47e+08} & 21.84 \\
         \end{tabular}
     \end{center}
     \caption[Zeropoints in the AB and Vega systems calculated using pysynphot]{
@@ -1027,6 +1029,11 @@ The predicted signals found using pysynphot, and the derived zeropoints, are giv
 \end{table}
 
 \newpage
+
+% https://texfaq.org/FAQ-vertposfp
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
 
 \begin{figure}[p]
     \begin{center}
@@ -1039,6 +1046,12 @@ The predicted signals found using pysynphot, and the derived zeropoints, are giv
 \end{figure}
 
 \clearpage
+
+% https://tex.stackexchange.com/questions/28556/how-to-place-a-float-at-the-top-of-a-floats-only-page
+\makeatletter
+\setlength{\@fptop}{0\p@ \@plus 1fil} % chktex 1
+\makeatother
+
 \newpage
 
 \end{colsection}
@@ -1054,7 +1067,7 @@ Using the CCD parameters determined in \aref{sec:detectors}, the throughput mode
 % ---------
 \subsubsection{Signal-to-noise}
 
-The common sources of noise in CCDs are discussed in \aref{sec:noise}. Discounting the bias level and fixed-pattern noise, both properties of the detector that are easy to remove, the major sources of noise in an astronomical image will be the dark current and read-out noise, as well as the shot noise from the target and the sky background. Accounting for these, the total noise in the image is given by
+The common sources of noise in CCDs are discussed in \aref{sec:noise}. Discounting the bias level and fixed-pattern noise, both properties of the detector that are easy to remove by subtracting a master bias and dividing by a flat field respectively, the major sources of noise in an astronomical image will be the dark current and read-out noise, as well as the shot noise from the target and the sky background. Accounting for these, the total noise in the image is given by
 %
 \begin{equation}
     \sigma_\text{Total} = \sqrt{N + N_\text{sky} + D + R^2},
@@ -1084,9 +1097,9 @@ To be confident of the detection of an astronomical source a signal-to-noise rat
     }\label{fig:background}
 \end{figure}
 
-The one value in \aref{eq:snr} that has not yet been considered is the sky background noise, $N_\text{sky}$. The brightness of the sky will change most noticeably as a function of the Moon phase, with a full Moon creating a background noise several magnitudes brighter than during a new Moon or when the Moon is below the horizon. In order to model the background, sky spectra were taken from \citet{sky_background}, which were obtained from 6 years of VLT observations using the FORS1 instrument\footnote{Spectra available at \href{http://www.eso.org/~fpatat/science/skybright}{\texttt{http://www.eso.org/\raisebox{0.5ex}{\texttildelow}fpatat/science/skybright}}}. Three sample spectra were selected to give a range of background signals: a ``Dark'' spectrum taken when the Moon was new and below the horizon, a ``Grey'' spectrum taken when the Moon was 60\% illuminated, and a ``Bright'' spectrum taken when the Moon was full. These spectra are shown in \aref{fig:background}.
+The one value in \aref{eq:snr} that has not yet been considered is the sky background noise, $N_\text{sky}$. The brightness of the sky will change most noticeably as a function of the Moon phase, with a full Moon creating a background noise several magnitudes brighter than during a new Moon or when the Moon is below the horizon. In order to model the background, sky spectra were taken from \citet{sky_background}, which were obtained from 6 years of VLT observations on using the FORS1 instrument\footnote{Spectra available at \href{http://www.eso.org/~fpatat/science/skybright}{\texttt{http://www.eso.org/\raisebox{0.5ex}{\texttildelow}fpatat/science/skybright}}.} (no equivalent spectra taken form La Palma were available). Three sample spectra were selected to give a range of background signals: a ``Dark'' spectrum taken when the Moon was new and below the horizon, a ``Grey'' spectrum taken when the Moon was 60\% illuminated, and a ``Bright'' spectrum taken when the Moon was full. These spectra are shown in \aref{fig:background}.
 
-In order to determine the sky background noise in the GOTO filters the same method using pysynphot can be used as in \aref{sec:model_zeropoints}. The spectra were again multiplied by the throughput curve for each filter from \aref{sec:total_throughput}, and multiplied by the collecting area of the telescope in order to get an predicted signal in electrons per second. These were converted into instrumental magnitudes using \aref{eq:ins_mag} and then into calibrated magnitudes using \aref{eq:zp} and the AB zeropoints given in \aref{tab:pysynphot_zeropoints}. The resulting signals are given in \aref{tab:pysynphot_background}. Note that the values are given per square arcsecond; when calculating the sky background flux the signal must be multiplied by the squared plate scale of the camera to get the signal per pixel (the plate scale of the GOTO CCDs is 1.24 arcseconds/pixel).
+In order to determine the sky background noise in the GOTO filters the same method using pysynphot can be used as in \aref{sec:model_zeropoints}. The spectra were again multiplied by the throughput curve for each filter from \aref{sec:total_throughput}, the area under the curve was measured and multiplied by the collecting area of the telescope in order to get an predicted signal in photo-electrons. These were converted into instrumental magnitudes using \aref{eq:ins_mag} and then into calibrated magnitudes using \aref{eq:zp} and the AB zeropoints given in \aref{tab:pysynphot_zeropoints}. The resulting signals are given in \aref{tab:pysynphot_background}. Note that the values are given per square arcsecond; when calculating the sky background flux the signal must be multiplied by the squared plate scale of the camera to get the signal per pixel (the plate scale of the GOTO CCDs is \SI[per-mode=symbol]{1.24}{\arcsec\per\pixel}).
 
 \begin{table}[t]
     \begin{center}
@@ -1097,10 +1110,10 @@ In order to determine the sky background noise in the GOTO filters the same meth
             \multicolumn{3}{c}{(mag/s/arcsec$^2$)} \\
                    & Dark & Grey & Bright & Dark & Grey & Bright \\
             \midrule
-            Baader \textit{L} & 2.58 & 14.27 & 27.13 & 21.44 & 19.58 & 18.88 \\
-            Baader \textit{R} & 1.18 &  4.37 &  8.20 & 20.99 & 19.58 & 18.89 \\
-            Baader \textit{G} & 0.81 &  4.56 &  8.99 & 21.45 & 19.57 & 18.83 \\
-            Baader \textit{B} & 0.52 &  5.74 & 10.65 & 22.20 & 19.60 & 18.93 \\
+            Baader \textit{L} & 3.34 & 18.38 & 34.98 & 21.43 & 19.58 & 18.88 \\
+            Baader \textit{R} & 1.52 &  5.64 & 10.58 & 21.00 & 19.58 & 18.90 \\
+            Baader \textit{G} & 1.11 &  6.17 & 12.14 & 21.45 & 19.58 & 18.84 \\
+            Baader \textit{B} & 0.68 &  7.24 & 13.50 & 22.16 & 19.59 & 18.92 \\
         \end{tabular}
     \end{center}
     \caption[Sky background signals calculated using pysynphot]{
@@ -1114,13 +1127,13 @@ In order to determine the sky background noise in the GOTO filters the same meth
 The limiting magnitude of a telescope is defined as the signal which would be required to obtain a particular SNR, typically $5\sigma$. \aref{eq:snr} can be rearranged into a quadratic formula
 %
 \begin{equation}
-    N_\text{lim}^2 - \text{SNR}^2 N_\text{lim} + \text{SNR}^2 (N_\text{sky} + D + R^2) = 0,
+    N_\text{lim}^2 - \text{SNR}^2 N_\text{lim} - \text{SNR}^2 (N_\text{sky} + D + R^2) = 0,
     \label{eq:snr2}
 \end{equation}
 %
-and this can be solved to find $N_\text{lim}$.
+and this can be solved to find $N_\text{lim}$ for a given SNR (e.g.\ setting $\text{SNR}=5$).
 
-It is important to remember that $N_\text{lim}$, $N_\text{sky}$ and $D$ are in electrons per second per pixel, while $R$ is just in electrons per pixel. Each therefore needs to be multiplied by the number of pixels the source is spread across, which will be determined by the size of the seeing disk. A given seeing $s$ in arcseconds is defined as the \acro{fwhm} of the seeing disk in the image, which using a Gaussian profile is given by $ 2\sqrt{2 \ln 2}~\sigma$. Taking the $3\sigma$ radius, the number of pixels the source will be spread across is
+It is important to remember that $N_\text{lim}$, $N_\text{sky}$, $D$ and $R$ are usually given as a value per pixel. Each therefore needs to be multiplied by the number of pixels the source is spread across, which will be determined by the size of the seeing disk. A given seeing $s$ in arcseconds is defined as the \acro{fwhm} of the seeing disk in the image, which using a Gaussian profile is given by $ 2\sqrt{2 \ln 2}~\sigma$. Taking the $3\sigma$ radius, the number of pixels the source will be spread across is
 %
 \begin{equation}
     n = \pi {\left( \frac{3\sigma}{p} \right) }^2
@@ -1130,14 +1143,14 @@ It is important to remember that $N_\text{lim}$, $N_\text{sky}$ and $D$ are in e
 %
 where $p$ is the plate scale in arcseconds/pixel.
 
-Finally, the limiting magnitude in each filter can be calculated for a range of exposure times. These are plotted in \aref{fig:lim_mags} for dark and bright skies, for each GOTO filter and camera. Note that it is almost impossible to distinguish between the curves for each camera, as the differences between their dark and read out noise values are very small. The limiting magnitudes for a \SI{60}{\second} image, the typical exposure time for GOTO observations, are given in \aref{tab:lim_mags}.
+Finally, the limiting magnitude in each filter can be calculated for a range of exposure times. These are plotted in \aref{fig:lim_mags} for dark and bright skies, for each GOTO filter and camera and using a seeing of \SI{1.5}{\arcsecond}. Note that it is almost impossible to distinguish between the curves for each camera, as the differences between their dark and read out noise values are very small. The limiting magnitudes for a \SI{60}{\second} image, the typical exposure time for GOTO observations, are given in \aref{tab:lim_mags}.
 
 \begin{figure}[t]
     \begin{center}
         \includegraphics[width=\linewidth]{images/throughput/limiting_mag.png}
     \end{center}
     \caption[$5\sigma$ limiting magnitudes for GOTO]{
-        $5\sigma$ limiting magnitudes for GOTO plotted as a function of exposure time, assuming an airmass of 1 and seeing of 1.5''. Solid lines give the limiting magnitude during dark time, dotted lines during bright time. The vertical line marks \SI{60}{\second}, the typical GOTO exposure time.
+        $5\sigma$ limiting magnitudes for GOTO plotted as a function of exposure time, assuming an airmass of 1 and seeing of \SI{1.5}{\arcsecond}. Solid lines give the limiting magnitude during dark time, dotted lines during bright time. The \textcolorbf{Purple}{purple} vertical line marks \SI{60}{\second}, the typical GOTO exposure time.
     }\label{fig:lim_mags}
 \end{figure}
 
@@ -1148,10 +1161,10 @@ Finally, the limiting magnitude in each filter can be calculated for a range of 
             Filter & \multicolumn{3}{c}{(mag)} \\
                    & Dark & Grey & Bright \\
             \midrule
-            Baader \textit{L} & 19.76 & 19.53 & 19.35 \\
-            Baader \textit{R} & 18.51 & 18.43 & 18.35 \\
-            Baader \textit{G} & 18.56 & 18.46 & 18.37 \\
-            Baader \textit{B} & 18.85 & 18.72 & 18.62 \\
+            Baader \textit{L} & 19.88 & 19.61 & 19.41 \\
+            Baader \textit{R} & 18.71 & 18.61 & 18.51 \\
+            Baader \textit{G} & 18.77 & 18.65 & 18.63 \\
+            Baader \textit{B} & 18.88 & 18.63 & 18.61 \\
         \end{tabular}
     \end{center}
     \caption[$5\sigma$ limiting magnitudes for a \SI{60}{\second} exposure]{
@@ -1177,10 +1190,10 @@ Each image was processed using the standard GOTOphoto pipeline described in \are
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/throughput/zeropoint_real.png}
+        \includegraphics[width=\linewidth]{images/throughput/zeropoint_real_res.png}
     \end{center}
     \caption[Finding the observed zeropoint from a GOTO image]{
-        Finding the observed zeropoint from a GOTO image. This particular frame was taken with UT1, the first of a set of three in the \textit{L} filter. It contains 8,271 matched sources, of which 8,188 have a signal-to-noise ratio (SNR) of 5 or less.
+        Finding the observed zeropoint from a GOTO image. This particular frame was taken with UT1, the first of a set of three in the \textit{L} filter. It contains 6,117 matched sources, of which 6,126 have a signal-to-noise ratio (SNR) of 5 or better. Note the accuracy of the linear fit is much better than measured in \aref{sec:lin}.
     }\label{fig:zeropoint}
 \end{figure}
 
@@ -1188,14 +1201,14 @@ In order to find the zeropoint for each image a linear function was fitted to th
 
 The theoretical zeropoints found in \aref{sec:model_zeropoints} were calculated for zero-magnitude stars above the atmosphere, i.e.\ not including the effects of atmospheric extinction described in \aref{sec:atmosphere}. Obviously the real zeropoints measured from GOTO images will include this effect, and so in order to compare to the observed zeropoints the extinction coefficients from \aref{tab:throughput_extinction} were subtracted (multiplied by 1.08, the airmass of the source at the time it was observed) from the theoretical values. This was done for each filter using the AB magnitude zeropoints from \aref{tab:pysynphot_zeropoints}, as both the PS1 and APASS catalogues use AB magnitudes. The new theoretical zeropoints are given in \aref{tab:zps_comparison}, along with the best observed zeropoint from each set of three images.
 
-To measure the limiting magnitude from each image, the catalogue magnitude of each source was compared to the ratio of the source counts to the noise measured by Source Extractor, plotted in \aref{fig:lim_mag}. Sources with a signal-to-noise ratio between 4.5 and 5.5 were sorted into bins with a width of 0.1 mag, and the $5\sigma$ limiting magnitude was taken as the bin containing the most sources (as shown in the inset of \aref{fig:lim_mag}). The best limiting magnitudes from each set of three are given in \aref{tab:lms_comparison}, along with the theoretical dark-time limiting magnitudes from \aref{tab:lim_mags}.
+To measure the limiting magnitude from each image, the catalogue magnitude of each source was compared to the magnitude error measured by Source Extractor, plotted in \aref{fig:lim_mag}. A signal-to-noise ratio of 5 corresponds to a magnitude error of 0.198\footnote{An SNR of 5 means an error of $\pm20\%$, and $2.5\log(1.2)=0.198$. A common approximation is that the magnitude error $\approx 1/$SNR.}, and the limiting magnitude was taken as the lowest magnitude source with a magnitude error greater than 0.198. The best limiting magnitudes from each set of three are given in \aref{tab:lms_comparison}, along with the theoretical dark-time limiting magnitudes again accounting for the target airmass.
 
 \begin{figure}[t]
     \begin{center}
-        \includegraphics[width=\linewidth]{images/throughput/limiting_mag_real.png}
+        \includegraphics[width=\linewidth]{images/throughput/limiting_mag_real2.png}
     \end{center}
     \caption[Finding the limiting magnitude from a GOTO image]{
-        Finding the limiting magnitude from a GOTO image. The catalogue magnitude of sources with SNR of between 4.5 and 5.5 (shown by the \textcolorbf{Gray}{grey} horizontal lines) are plotted on the inset histogram with bins of 0.1 mag, the limiting magnitude is the magnitude of the bin with the highest number of sources (highlighted in \textcolorbf{Red}{red}).
+        Finding the limiting magnitude from a GOTO image.
     }\label{fig:lim_mag}
 \end{figure}
 
@@ -1220,79 +1233,79 @@ To measure the limiting magnitude from each image, the catalogue magnitude of ea
             ZP & LM & ZP & LM & ZP & LM & ZP & LM \\
             \midrule
             \textit{L} & 1 &
-            22.32 & 19.6 &
-            22.31 & 19.6 &
-            22.40 & 19.6 &
+            22.32 & 19.7 &
+            22.31 & 19.7 &
+            22.40 & 19.8 &
             22.32 & 19.6
             \\
             & 2 &
             22.26 & 19.6 &
-            22.27 & 19.5 &
+            22.27 & 19.7 &
             22.44 & 19.7 &
-            22.37 & 19.6
+            22.37 & 19.7
             \\
             & 3 &
             22.39 & 19.6 &
-            22.42 & 19.4 &
-            22.45 & 19.6 &
+            22.42 & 19.6 &
+            22.45 & 19.7 &
             22.40 & 19.7
             \\
             \midrule
             \textit{R} & 1 &
             20.83 & 18.3 &
-            21.05 & 18.2 &
+            21.05 & 18.3 &
             21.10 & 18.4 &
-            21.05 & 18.0
+            21.05 & 18.2
             \\
             & 2 &
-            20.84 & 18.2 &
+            20.84 & 18.4 &
             21.11 & 18.4 &
-            21.13 & 18.2 &
-            21.06 & 18.0
+            21.13 & 18.5 &
+            21.06 & 18.2
             \\
             & 3 &
-            20.91 & 18.3 &
-            21.01 & 18.2 &
-            21.04 & 18.4 &
+            20.91 & 18.4 &
+            21.01 & 18.4 &
+            21.04 & 18.5 &
             20.94 & 18.2
             \\
             \midrule
             \textit{G} & 1 &
             21.20 & 18.7 &
-            21.39 & 18.5 &
-            21.40 & 18.6 &
-            21.27 & 18.3
+            21.39 & 18.8 &
+            21.40 & 18.8 &
+            21.27 & 18.7
             \\
             & 2 &
-            21.16 & 18.6 &
-            21.43 & 18.6 &
-            21.46 & 18.6 &
-            21.36 & 18.4
+            21.16 & 18.7 &
+            21.43 & 18.8 &
+            21.46 & 18.7 &
+            21.36 & 18.6
             \\
             & 3 &
-            21.26 & 18.7 &
-            21.44 & 18.7 &
+            21.26 & 18.6 &
+            21.44 & 18.8 &
             21.45 & 18.8 &
-            21.32 & 18.5
+            21.32 & 18.6
             \\
             \midrule
             \textit{B} & 1 &
-            21.22 & 18.9 &
-            21.35 & 19.0 &
+            21.22 & 19.0 &
+            21.35 & 18.9 &
             21.43 & 19.1 &
-            21.27 & 18.9
+            21.27 & 19.1
             \\
             & 2 &
             21.22 & 19.0 &
-            21.32 & 18.8 &
+            21.32 & 19.2 &
             21.44 & 19.1 &
-            21.22 & 18.9
+            21.22 & 19.0
             \\
             & 3 &
-            21.20 & 19.1 &
-            21.35 & 18.9 &
+            21.20 & 18.9 &
+            21.35 & 19.0 &
             21.44 & 19.1 &
-            21.26 & 18.8
+            21.26 & 19.0
             \\
         \end{tabular}
     \end{center}
@@ -1311,10 +1324,10 @@ To measure the limiting magnitude from each image, the catalogue magnitude of ea
             \\
             Filter & zeropoint & UT1 & UT2 & UT3 & UT4 & UT1 & UT2 & UT3 & UT4 \\
             \midrule
-            \textit{L} & 22.45 & 22.39 & 22.42 & 22.45 & 22.40 & -0.06 & -0.03 &  0.00 & -0.05 \\
-            \textit{R} & 21.17 & 20.91 & 21.11 & 21.13 & 21.06 & -0.26 & -0.06 & -0.04 & -0.11 \\
-            \textit{G} & 21.21 & 21.26 & 21.44 & 21.46 & 21.36 & +0.05 & +0.23 & +0.25 & +0.15 \\
-            \textit{B} & 21.47 & 21.22 & 21.35 & 21.44 & 21.27 & -0.25 & -0.12 & -0.03 & -0.20 \\
+            \textit{L} & 22.60 & 22.39 & 22.42 & 22.45 & 22.40 & -0.21 & -0.18 & -0.15 & -0.20 \\
+            \textit{R} & 21.38 & 20.91 & 21.11 & 21.13 & 21.06 & -0.47 & -0.27 & -0.25 & -0.32 \\
+            \textit{G} & 21.43 & 21.20 & 21.44 & 21.46 & 21.36 & -0.23 & +0.01 & +0.03 & -0.07 \\
+            \textit{B} & 21.52 & 21.22 & 21.35 & 21.44 & 21.27 & -0.30 & -0.12 & -0.08 & -0.25 \\
         \end{tabular}
     \end{center}
     \caption[Comparison between theoretical and observed zeropoints]{
@@ -1331,10 +1344,10 @@ To measure the limiting magnitude from each image, the catalogue magnitude of ea
             \\
             Filter & limiting magnitude & UT1 & UT2 & UT3 & UT4 \\
             \midrule
-            \textit{L} & 19.76 & 19.6 & 19.6 & 19.7 & 19.6 \\
-            \textit{R} & 18.51 & 18.3 & 18.4 & 18.4 & 18.2 \\
-            \textit{G} & 18.56 & 18.7 & 18.7 & 18.8 & 18.5 \\
-            \textit{B} & 18.85 & 19.1 & 19.0 & 19.1 & 18.9 \\
+            \textit{L} & 19.87 & 19.7 & 19.7 & 19.8 & 19.7 \\
+            \textit{R} & 18.70 & 18.4 & 18.4 & 18.5 & 18.2 \\
+            \textit{G} & 18.76 & 18.7 & 18.8 & 18.8 & 18.7 \\
+            \textit{B} & 18.87 & 19.0 & 19.2 & 19.1 & 19.1 \\
         \end{tabular}
     \end{center}
     \caption[Comparison between theoretical and observed limiting magnitudes]{
@@ -1344,7 +1357,28 @@ To measure the limiting magnitude from each image, the catalogue magnitude of ea
 
 \clearpage
 
-In most cases the observed zeropoints and limiting magnitudes are very close to the theoretical values. Further images taken over more nights are needed to make any firm conclusions, but a few trends are clear. UT3 consistently has better zeropoints than the other unit telescopes, which might be because its mirrors were re-aluminised and returned to La Palma only a month before the images were taken (see \aref{sec:timeline}). Therefore, the difference in the observed and theoretical zeropoints may be due to a lower mirror reflectivity than assumed in throughput model in \aref{sec:optics} (e.g.\ due to dust build up on the mirrors). It also seems that the throughput in the \textit{G} band has been underestimated, as the observations taken in the \textit{G} filter consistently have higher zeropoints and better limiting magnitudes than predicted. This may be due to the bandwidth being wider than modelled, as any other change in throughput would also affect the other filters. Alternatively, it may indicate that matching the Baader \textit{G} filter to the PS1 catalogue taken in the Pan-STARRS \textit{g} filter is not a valid comparison, and perhaps a different reference catalogue should be used.
+From \aref{tab:zps_comparison} in most cases the theoretical zeropoints are 0.2--0.3 magnitudes higher than those measured from the sample images, which might suggest that the theoretical model is overestimating the throughput of the system. There is a clear difference between the four unit telescopes, with UT3 consistently performing better than the others. This might be because its mirrors were re-aluminised and returned to La Palma only a month before the images were taken (see \aref{sec:timeline}), and therefore the difference in the observed and theoretical zeropoints may be due to a lower mirror reflectivity than assumed in the throughput model in \aref{sec:optics} (e.g.\ due to dust build up on the mirrors).
+
+There is also a noticeable difference between filters, with all the unit telescopes performing worse in the \textit{R} filter but surpassing the predicted limiting magnitudes in \textit{B}. One limitation in the method used was having to match sources to existing catalogues taken in other filters, without correcting for colour terms i.e.\ the differences in the filter bandpasses (see \aref{sec:filters}). This is something that should be integrated into the GOTOphoto pipeline. Further images taken over more nights would be needed to make any firm conclusions on the performance of the hardware.
+
+\newpage
+
+\end{colsection}
+
+% ########################################
+
+\section{Summary and Conclusions}
+\label{sec:hardware_conclusion}
+
+% ~~~~~~~~~~~~~~~~~~~~
+
+\begin{colsection}
+
+In this chapter I have presented a description and analysis of the GOTO optical hardware.
+
+I first detailed a series of in-lab tests I carried out on the GOTO cameras to determine their key characteristics. I confirmed that the camera properties met the manufacturer's specifications, and was able to independently calculate many of the key properties including the gain and noise levels. I then created a full throughput model of the GOTO unit telescopes, including the contribution of the optics, filters and atmospheric extinction.
+
+I then used the throughput model and camera characteristics to predict values showing the performance of the GOTO telescopes, and then compared them to real on-sky observations. I confirmed that the model does a reasonable job at predicting the zeropoints and limiting magnitudes of real images, and it appears that the GOTO hardware is performing as expected. Future enhancements to the model would include a more detailed comparison of the Baader filters to other sets and calculation of colour terms, to better compare GOTO observations to existing catalogues.
 
 \end{colsection}
 

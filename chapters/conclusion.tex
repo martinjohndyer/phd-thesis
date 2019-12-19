@@ -26,7 +26,7 @@ In this thesis I have described my work as part of the GOTO project, primarily w
 \label{sec:control_results}
 \begin{colsection}
 
-The core of my work has been the \acro{gtecs}, a Python software package that controls every aspect of the telescope. The hardware control daemons interface with the dome, mount and cameras (see \aref{chap:gtecs}) while the ``pilot'' master control program and its associated systems allow the telescope to function with no human involvement (see \aref{chap:autonomous}). GOTO has now been operating successfully for years with the pilot in full control. The conditions monitoring systems have proven robust enough to trust the telescope to close in bad weather, and when the occasional unexpected hardware issues do occur the pilot recovery systems can fix the problem and resume observing in the majority of cases, often before a human even has time to log in. Of course, commissioning was not entirely without incident, as described in \aref{chap:commissioning}. However all of the software challenges were overcome, and the majority of the delays to GOTO were due to hardware faults which were out of my purview.
+The core of my work has been the \acro{gtecs}, a Python software package that controls every aspect of the telescope. The hardware control daemons interface with the dome, mount and cameras (see \aref{chap:gtecs}) while the ``pilot'' master control program and its associated systems allow the telescope to function with no human involvement (see \aref{chap:autonomous}). GOTO has now been operating successfully for years with the pilot in full control. The conditions monitoring systems have proven robust enough to trust the dome to close in bad weather, and when the occasional unexpected hardware issues do occur the pilot recovery systems can fix the problem and resume observing in the majority of cases, often before a human even has time to log in. Of course, commissioning was not entirely without incident, as described in \aref{chap:commissioning}. However all of the software challenges were overcome, and the majority of the delays to GOTO were due to hardware faults which were out of my purview.
 
 Each set of exposures taken with the G-TeCS camera daemon are assigned an incremental run number. From the initial installation in the summer of 2017 up until September 2019, GOTO had taken over 185,000 such exposure sets, and produced many tens of terabytes of data. The current all-sky survey that began in February 2019 has almost completely covered the northern sky, and at the time of writing the GOTO photometry database contains approximately 642 million sources from almost 500,000 individual frames taken since the start of the survey.
 
@@ -40,80 +40,218 @@ Each set of exposures taken with the G-TeCS camera daemon are assigned an increm
 \label{sec:gw_results}
 \begin{colsection}
 
-As described in \aref{sec:control_requirements}, GOTO needed an observation scheduling system that could deal with both the survey and gravitational-wave follow-up modes. The scheduler used by G-TeCS is a just-in-time system (see \aref{chap:scheduling}), where the highest priority target is recalculated every time the scheduler is called. This makes it very reactive to transient alerts, which was a requirement of the project.
+As outlined in \aref{sec:control_requirements}, GOTO needed an observation scheduling system that could deal with both the survey and gravitational-wave follow-up modes. The scheduler used by G-TeCS is a just-in-time system (see \aref{chap:scheduling}), where the highest priority target is recalculated every time the scheduler is called. This makes it very reactive to transient alerts, which was a requirement of the project.
 
-As described in \aref{sec:gw_detections}, in the first 5 months of the third LIGO-Virgo observing run (O3), 32 gravitational-wave events were detected. The G-TeCS sentinel received and reacted to every alert, with the results given in \aref{tab:obs_log}. In a few cases the event handler initially failed to process the VOEvent or the skymap, as described in \aref{sec:challenges}; this was usually due to a problem on the LVC's end, and, after each time, changes were made to the GOTO-alert code to work around the problem in the future. Each event had pointings added to the observation database, and observations were taken for 25 of the 32 events, of which three were later retracted. Of the remaining seven events, four were received during the day on La Palma and were then retracted before sunset, and only three had no part of the skymap visible from La Palma.
+As previously detailed in \aref{sec:gw_detections}, in the first 5 months of the third LIGO-Virgo observing run (O3) 32 gravitational-wave events were detected, all predicted to come from compact binary mergers. These events are listed in \aref{tab:gw_log}. Of the 32 alerts 7 were ultimately retracted by the LVC, leaving 25 real events, and only three of these (S190425z, S190426c and S190814bv) are thought to have originated from sources that could produce visible optical counterparts (binary neutron stars or neutron star-black hole binaries). However, events are currently infrequent enough for GOTO to react to all of them, even if there was a very low chance of there being a visible counterpart.
 
-Eight events occurred during the night on La Palma, and the GOTO-alert event handling system allowed the pilot to immediately begin observations of the visible skymap. As shown in \aref{tab:obs_log}, in all but one of the eight cases the first exposure was started less than \SI{60}{\second} after the sentinel received the alert. The time delay varies between 28 and 56 seconds, primarily depending on how far the mount had to slew from its previous target. Of the remaining $\sim$\SI{25}{\second} delay, a significant amount is due to having to download the LVC skymaps, with the rest due to various small delays in the event handler, sentinel and pilot, such as the pilot needing to wait up to \SI{10}{\second} for the next scheduler check (see \aref{sec:checks}). Future optimisation could potentially reduce these delays further. The one exception was event S190513bm, which was immediately visible but observations were delayed by 4 minutes. At the time the alert was received the pilot was already observing a pointing from the S190512at event received the previous day; as both events were black hole binaries they were inserted at the same rank, and, as detailed in \aref{sec:toos}, equal-rank ToO pointings will not interrupt each other, so the new pointing had to wait until the previous one was completed. In all other cases the pilot was observing a lower-rank target, usually a survey tile, which was immediately aborted when the scheduler check returned the ToO gravitational-wave pointing.
+The G-TeCS sentinel received and reacted to every one of these alerts. In a few cases the event handler initially failed to process the VOEvent or the skymap, as described in \aref{sec:challenges}; this was usually due to a problem on the LVC end, and, after each time, changes were made to the GOTO-alert code to work around the problem should it happen again. For every alert the sentinel received the VOEvent packet and passed it to the event handler code as described in \aref{chap:alerts}, which added pointings to the observation database which could then be observed by the pilot (see \aref{chap:autonomous}). Details of GOTO's reaction to every event are given in \aref{tab:obs_log}. Observations were taken for 25 of the 32 events; of the remaining seven events four were received during the day on La Palma and were then retracted before sunset, meaning the pointings were deleted from the database, and the last three events had no part of the skymap visible from La Palma.
 
-\begin{sidewaystable}[p]
+
+\newpage
+
+% https://texfaq.org/FAQ-vertposfp
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
+\begin{table}[t]
     \begin{footnotesize}
     \begin{center}
-        \begin{tabular}{l|cccrrl} % chktex 44
-            \multicolumn{1}{c|}{Event} & GW event detection & Alert received & Observations start & \multicolumn{1}{c}{$\Delta T$ (h)} & \multicolumn{1}{c}{$N_\text{obs}$} & Notes\\
+        \begin{tabular}{l|ccrrl} % chktex 44
+                                       & GW signal             & Source                      & \multicolumn{1}{c}{Dist.} & \multicolumn{1}{c}{90\% area} & \multicolumn{1}{c}{False Alarm} \\
+            \multicolumn{1}{c|}{Event} & detection time        & Classification              & \multicolumn{1}{c}{(Mpc)}    & \multicolumn{1}{c}{(sq deg)}     & \multicolumn{1}{c}{Rate} \\
             \midrule
-            \textcolor{Red}{S190405ar} & 2019--04--05 16:01:30 & 2019--04--12 15:07:26 & ---                   &   --- &   0 & \textit{(Retracted before sunset)}\\
-                            S190408an  & 2019--04--08 18:18:02 & 2019--04--08 19:02:50 & 2019--04--09 05:40:39 & 10.63 &  17 & \\
-                            S190412m   & 2019--04--12 05:30:44 & 2019--04--12 06:31:39 & 2019--04--12 20:28:35 & 13.95 &  36 & See GCN 24116 \citep{S190412m_GOTO}\\
-                            S190421ar  & 2019--04--21 21:38:56 & 2019--04--22 16:26:24 & 2019--04--23 21:54:59 & 29.48 &  49 & \\
-                            S190425z   & 2019--04--25 08:18:05 & 2019--04--25 09:00:56 & 2019--04--25 20:38:22 & 11.62 & 306 & See GCN 24224 \citep{S190425z_GOTO}\\
-                            S190426c   & 2019--04--26 15:21:55 & 2019--04--26 15:47:11 & 2019--04--26 20:38:45 &  4.86 &  96 & See GCN 24291 \citep{S190426c_GOTO}\\
-                            S190503bf  & 2019--05--03 18:54:04 & 2019--05--03 19:30:15 & ---                   &  ---  &   0 & \textit{(Never visible from La Palma)}\\
-                            S190510g   & 2019--05--10 02:59:39 & 2019--05--10 04:21:59 & 2019--05--10 04:22:55 &  0.02 &   7 & Visible immediately, $\Delta T=$ \textbf{56\,s}\\
-                            S190512at  & 2019--05--12 18:07:14 & 2019--05--12 18:59:01 & 2019--05--12 20:53:20 &  1.91 & 201 & \\
-                            S190513bm  & 2019--05--13 20:54:28 & 2019--05--13 21:21:51 & 2019--05--13 21:26:19 &  0.07 &  38 & Visible immediately, $\Delta T=$ \textbf{4\,min}\\
-                            S190517h   & 2019--05--17 05:51:01 & 2019--05--17 06:26:48 & 2019--05--17 21:42:06 & 15.26 &   9 & \\
-            \textcolor{Red}{S190518bb} & 2019--05--18 19:19:19 & 2019--05--18 19:25:49 & ---                   &   --- &   0 & \textit{(Retracted before sunset)}\\
-                            S190519bj  & 2019--05--19 15:35:44 & 2019--05--19 17:01:40 & 2019--05--19 20:55:19 &  3.89 & 139 & \\
-                            S190521g   & 2019--05--21 03:02:29 & 2019--05--21 03:08:49 & 2019--05--21 03:09:17 &  0.01 &  58 & Visible immediately, $\Delta T=$ \textbf{28\,s}\\
-                            S190521r   & 2019--05--21 07:43:59 & 2019--05--21 07:50:27 & 2019--05--21 22:54:03 & 15.06 &  90 & \\
-            \textcolor{Red}{S190524q}  & 2019--05--24 04:52:06 & 2019--05--24 04:58:40 & 2019--05--24 04:59:33 &  0.01 &   2 & Visible immediately, $\Delta T=$ \textbf{53\,s}\\
-                            S190602aq  & 2019--06--02 17:59:27 & 2019--06--02 18:06:01 & ---                   &   --- &   0 & \textit{(Never visible from La Palma)}\\
-                            S190630ag  & 2019--06--30 18:52:05 & 2019--06--30 18:55:47 & 2019--06--30 21:14:49 &  2.32 & 149 & \\
-                            S190701ah  & 2019--07--01 20:33:06 & 2019--07--01 20:38:06 & ---                   &   --- &   0 & \textit{(Never visible from La Palma)}\\
-                            S190706ai  & 2019--07--06 22:26:41 & 2019--07--06 22:44:31 & 2019--07--06 22:45:09 &  0.01 &  70 & Visible immediately, $\Delta T=$ \textbf{38\,s}\\
-                            S190707q   & 2019--07--07 09:33:26 & 2019--07--07 10:13:24 & 2019--07--07 21:54:47 & 11.69 & 116 & \\
-                            S190718y   & 2019--07--18 14:35:12 & 2019--07--18 15:03:13 & 2019--07--18 21:08:53 &  6.09 & 135 & \\
-                            S190720a   & 2019--07--20 00:08:36 & 2019--07--20 00:11:26 & 2019--07--20 00:11:57 &  0.01 & 175 & Visible immediately, $\Delta T=$ \textbf{31\,s}\\
-                            S190727h   & 2019--07--27 06:03:33 & 2019--07--27 06:12:02 & 2019--07--27 21:03:40 & 14.86 &  94 & \\
-                            S190728q   & 2019--07--28 06:45:10 & 2019--07--28 06:59:32 & 2019--07--28 21:29:58 & 14.51 &  36 & \\
-            \textcolor{Red}{S190808ae} & 2019--08--08 22:21:21 & 2019--08--08 22:28:00 & 2019--08--08 22:28:31 &  0.01 &  75 & Visible immediately, $\Delta T=$ \textbf{31\,s}\\
-                            S190814bv  & 2019--08--14 21:10:39 & 2019--08--14 21:31:44 & 2019--08--14 22:59:27 &  1.46 & 141 & See GCN 25337 \citep{S190814bv_GOTO}\\
-            \textcolor{Red}{S190816i}  & 2019--08--16 13:04:31 & 2019--08--16 13:11:35 & ---                   &   --- &   0 & \textit{(Retracted before sunset)}\\
-            \textcolor{Red}{S190822c}  & 2019--08--22 01:29:59 & 2019--08--22 01:37:00 & 2019--08--22 01:37:30 &  0.01 &  17 & Visible immediately, $\Delta T=$ \textbf{30\,s}\\
-                            S190828j   & 2019--08--28 06:34:05 & 2019--08--28 06:50:14 & 2019--08--28 22:38:25 & 15.80 &  54 & \\
-                            S190828l   & 2019--08--28 06:55:09 & 2019--08--28 07:17:46 & 2019--08--28 23:48:38 & 16.51 &  56 & \\
-            \textcolor{Red}{S190829u}  & 2019--08--29 21:05:56 & 2019--08--29 21:17:14 & ---                   &   --- &   0 & \textit{(Retracted before sunset)}\\
+            \textcolor{Red}{S190405ar} & 2019--04--05 16:01:30 & Terrestrial                                                                    &  268 & 2677 & 1 per 0.00015 yrs      \\ % chktex 1
+                            S190408an  & 2019--04--08 18:18:02 & \textcolorbf{BrickRed}{BBH}                                                    & 1473 &  386 & 1 per \SI{1.1e+10} yrs \\ % chktex 1
+                            S190412m   & 2019--04--12 05:30:44 & \textcolorbf{BrickRed}{BBH}                                                    &  812 &  157 & 1 per \SI{1.9e+19} yrs \\ % chktex 1
+                            S190421ar  & 2019--04--21 21:38:56 & \textcolorbf{BrickRed}{BBH}                                                    & 1628 & 1443 & 1 per 2.1 yrs          \\ % chktex 1
+                            S190425z   & 2019--04--25 08:18:05 & \textcolorbf{Cerulean}{BNS}                                                    &  156 & 7461 & 1 per 69882 yrs        \\ % chktex 1
+                            S190426c   & 2019--04--26 15:21:55 & \textcolorbf{Cerulean}{BNS}/\textcolorbf{Purple}{NSBH}/\textcolorbf{Green}{MG} &  377 & 1131 & 1 per 1.6 yrs          \\ % chktex 1
+                            S190503bf  & 2019--05--03 18:54:04 & \textcolorbf{BrickRed}{BBH}                                                    &  421 &  448 & 1 per 19.4 yrs         \\ % chktex 1
+                            S190510g   & 2019--05--10 02:59:39 & \textcolorbf{Cerulean}{BNS}                                                    &  227 & 1166 & 1 per 3.6 yrs          \\ % chktex 1
+                            S190512at  & 2019--05--12 18:07:14 & \textcolorbf{BrickRed}{BBH}                                                    & 1388 &  252 & 1 per 16.7 yrs         \\ % chktex 1
+                            S190513bm  & 2019--05--13 20:54:28 & \textcolorbf{BrickRed}{BBH}                                                    & 1987 &  691 & 1 per 84922 yrs        \\ % chktex 1
+                            S190517h   & 2019--05--17 05:51:01 & \textcolorbf{BrickRed}{BBH}                                                    & 2950 &  939 & 1 per 13.4 yrs         \\ % chktex 1
+            \textcolor{Red}{S190518bb} & 2019--05--18 19:19:19 & \textcolorbf{Cerulean}{BNS}                                                    &   28 &  136 & 1 per 3.2 yrs          \\ % chktex 1
+                            S190519bj  & 2019--05--19 15:35:44 & \textcolorbf{BrickRed}{BBH}                                                    & 3154 &  967 & 1 per 5.6 yrs          \\ % chktex 1
+                            S190521g   & 2019--05--21 03:02:29 & \textcolorbf{BrickRed}{BBH}                                                    & 3931 &  765 & 1 per 8.3 yrs          \\ % chktex 1
+                            S190521r   & 2019--05--21 07:43:59 & \textcolorbf{BrickRed}{BBH}                                                    & 1136 &  488 & 1 per 100 yrs          \\ % chktex 1
+            \textcolor{Red}{S190524q}  & 2019--05--24 04:52:06 & \textcolorbf{Cerulean}{BNS}                                                    &  192 & 5685 & 1 per 4.5 yrs          \\ % chktex 1
+                            S190602aq  & 2019--06--02 17:59:27 & \textcolorbf{BrickRed}{BBH}                                                    &  797 & 1172 & 1 per 16.7 yrs         \\ % chktex 1
+                            S190630ag  & 2019--06--30 18:52:05 & \textcolorbf{BrickRed}{BBH}                                                    &  926 & 1483 & 1 per 220922 yrs       \\ % chktex 1
+                            S190701ah  & 2019--07--01 20:33:06 & \textcolorbf{BrickRed}{BBH}                                                    & 1849 &   49 & 1 per 1.7 yrs          \\ % chktex 1
+                            S190706ai  & 2019--07--06 22:26:41 & \textcolorbf{BrickRed}{BBH}                                                    & 5263 &  825 & 1 per 16.7 yrs         \\ % chktex 1
+                            S190707q   & 2019--07--07 09:33:26 & \textcolorbf{BrickRed}{BBH}                                                    &  781 &  921 & 1 per 6023 yrs         \\ % chktex 1
+                            S190718y   & 2019--07--18 14:35:12 & Terrestrial                                                                    &  227 & 7246 & 1 per 0.9 yrs          \\ % chktex 1
+                            S190720a   & 2019--07--20 00:08:36 & \textcolorbf{BrickRed}{BBH}                                                    &  869 &  443 & 1 per 8.3 yrs          \\ % chktex 1
+                            S190727h   & 2019--07--27 06:03:33 & \textcolorbf{BrickRed}{BBH}                                                    & 2839 &  152 & 1 per 230 yrs          \\ % chktex 1
+                            S190728q   & 2019--07--28 06:45:10 & \textcolorbf{BrickRed}{BBH}                                                    &  874 &  105 & 1 per \SI{1.3e+15} yrs \\ % chktex 1
+            \textcolor{Red}{S190808ae} & 2019--08--08 22:21:21 & \textcolorbf{Cerulean}{BNS}                                                    &  208 & 5365 & 1 per 0.9 yrs          \\ % chktex 1
+                            S190814bv  & 2019--08--14 21:10:39 & \textcolorbf{Purple}{NSBH}                                                     &  267 &   24 & 1 per \SI{1.6e+25} yrs \\ % chktex 1
+            \textcolor{Red}{S190816i}  & 2019--08--16 13:04:31 & \textcolorbf{Purple}{NSBH}                                                     &  261 & 1467 & 1 per 2.2 yrs          \\ % chktex 1
+            \textcolor{Red}{S190822c}  & 2019--08--22 01:29:59 & \textcolorbf{Cerulean}{BNS}                                                    &   35 & 2767 & 1 per \SI{5.2e+09} yrs \\ % chktex 1
+                            S190828j   & 2019--08--28 06:34:05 & \textcolorbf{BrickRed}{BBH}                                                    & 1946 &  228 & 1 per \SI{3.7e+13} yrs \\ % chktex 1
+                            S190828l   & 2019--08--28 06:55:09 & \textcolorbf{BrickRed}{BBH}                                                    & 1528 &  358 & 1 per 685.0 yrs        \\ % chktex 1
+            \textcolor{Red}{S190829u}  & 2019--08--29 21:05:56 & \textcolorbf{Green}{MG}                                                        &  157 & 8972 & 1 per 6.2 yrs          \\ % chktex 1
         \end{tabular}
     \end{center}
     \end{footnotesize}
-    \vspace{-0.5cm}
-    \caption[GOTO observation log for O3 events so far]{
-        GOTO observation log for O3 events up to the end of August 2019. $\Delta T$ is the delay between GOTO receiving the alert and beginning observations, while $N_\text{obs}$ is the number of pointings observed by GOTO for each event. \textcolorbf{Red}{Red} events were later retracted by the LVC.\@
-    }\label{tab:obs_log}
-\end{sidewaystable}
+    \caption[GW detections from O3 so far]{
+        All 32 detections of gravitational-wave signals made during O3, up to the end of August 2019. Events in \textcolorbf{Red}{red} were ultimately retracted by the LVC.\@ All the given values are from the latest issued alert and final skymaps. The distance is the peak of the distribution included in the alert, and the area given is the area contained within the 90\% skymap contour level (see \aref{sec:healpix}).
+    }\label{tab:gw_log}
+\end{table}
 
-As described in \aref{sec:gw_detections}, three of the 25 real events detected in O3 so far were the most likely to have a potential electromagnetic counterpart: S190425z \citep{S190425z}, S190426c \citep{S190426c} and S190814bv \citep{S190814bv} were all classified as originating from either a binary neutron star or neutron star-black hole binary. These were the most important events to follow up, and the GOTO response to each was reported in the GCN notices \citet{S190425z_GOTO, S190426c_GOTO, S190814bv_GOTO}. After analysis, no counterparts were found for any of the three events, either by GOTO or other projects. The S190814bv skymap had a 90\% contour covering only 23 square degrees, which made it very easy to cover with GOTO;\@ on the other hand the initial skymaps for S190425z and S190426c covered areas of 10,000 sq deg and 1,900 sq deg respectively. The latter two events occurred within 36 hours of each other, and had non-overlapping skymaps, meaning observations of S190426c had to be carried out at the expense of S190425z. Ultimately, in the first two days after the alerts, GOTO covered 30\% of the S190425z probability \citep{S190425z_GOTO} and 54\% of the S190426c probability \citep{S190426c_GOTO} --- the coverage maps are shown in \aref{fig:190425_goto} and \aref{fig:190426_goto}. The follow-up code has proven to be fast and reliable, meaning if, or when, another GW170817-like event is detected GOTO should be ready, and potentially observing the counterpart within 60 seconds of the alert being received.
+\clearpage
+
+\begin{table}[t]
+    \begin{footnotesize}
+    \begin{center}
+        \begin{tabular}{l|ccrrrr} % chktex 44
+                                       & Time alert & Time of first & \multicolumn{1}{c}{Time}  &                &                  &                                    \\
+            \multicolumn{1}{c|}{Event} & received   & observation   & \multicolumn{1}{c}{delay} & $N_\text{obs}$ & $N_\text{tiles}$ & \multicolumn{1}{c}{$P_\text{obs}$} \\
+            \midrule
+            \textcolor{Red}{S190405ar} & 2019--04--12 15:07:26 & \multicolumn{5}{l}{\textcolor{Thistle}{\textit{(Not observed --- Event retracted before becoming visible)}}} \\
+                            S190408an  & 2019--04--08 19:02:50 & 2019--04--09 05:40:39 &              \SI{10.63}{\hour} &  17 &   9 & 22.5\% \\
+                            S190412m   & 2019--04--12 06:31:39 & 2019--04--12 20:28:35 &              \SI{13.95}{\hour} &  36 &  18 & 96.1\% \\
+                            S190421ar  & 2019--04--22 16:26:24 & 2019--04--23 21:54:59 &              \SI{29.48}{\hour} &  49 &   7 & 10.2\% \\
+                            S190425z   & 2019--04--25 09:00:56 & 2019--04--25 20:38:22 &              \SI{11.62}{\hour} & 306 & 173 & 22.6\% \\
+                            S190426c   & 2019--04--26 15:47:11 & 2019--04--26 20:38:45 &              \SI{ 4.86}{\hour} &  96 &  49 & 55.6\% \\
+                            S190503bf  & 2019--05--03 19:30:15 & \multicolumn{5}{l}{\textcolor{Thistle}{\textit{(Not observed --- Skymap not visible from La Palma)}}} \\
+                            S190510g   & 2019--05--10 04:21:59 & 2019--05--10 04:22:55 &  \textcolorbf{NavyBlue}{56\,s} &   7 &   7 &  0.2\% \\
+                            S190512at  & 2019--05--12 18:59:01 & 2019--05--12 20:53:20 &              \SI{ 1.91}{\hour} & 201 &  19 & 89.1\% \\
+                            S190513bm  & 2019--05--13 21:21:51 & 2019--05--13 21:26:19 & \textcolorbf{NavyBlue}{4\,min} &  38 &   7 & 30.2\% \\
+                            S190517h   & 2019--05--17 06:26:48 & 2019--05--17 21:42:06 &              \SI{15.26}{\hour} &   9 &   7 & 15.4\% \\
+            \textcolor{Red}{S190518bb} & 2019--05--18 19:25:49 & \multicolumn{5}{l}{\textcolor{Thistle}{\textit{(Not observed --- Event retracted before becoming visible)}}} \\
+                            S190519bj  & 2019--05--19 17:01:40 & 2019--05--19 20:55:19 &              \SI{ 3.89}{\hour} & 139 &  42 & 78.7\% \\
+                            S190521g   & 2019--05--21 03:08:49 & 2019--05--21 03:09:17 &  \textcolorbf{NavyBlue}{28\,s} &  58 &  24 & 44.5\% \\
+                            S190521r   & 2019--05--21 07:50:27 & 2019--05--21 22:54:03 &              \SI{15.06}{\hour} &  90 &  45 & 94.0\% \\
+            \textcolor{Red}{S190524q}  & 2019--05--24 04:58:40 & 2019--05--24 04:59:33 &  \textcolorbf{NavyBlue}{53\,s} &   2 &   2 & 14.2\% \\
+                            S190602aq  & 2019--06--02 18:06:01 & \multicolumn{5}{l}{\textcolor{Thistle}{\textit{(Not observed --- Skymap not visible from La Palma)}}} \\
+                            S190630ag  & 2019--06--30 18:55:47 & 2019--06--30 21:14:49 &              \SI{ 2.32}{\hour} & 149 &  75 & 62.9\% \\
+                            S190701ah  & 2019--07--01 20:38:06 & \multicolumn{5}{l}{\textcolor{Thistle}{\textit{(Not observed --- Skymap not visible from La Palma)}}} \\
+                            S190706ai  & 2019--07--06 22:44:31 & 2019--07--06 22:45:09 &  \textcolorbf{NavyBlue}{38\,s} &  70 &  35 & 27.0\% \\
+                            S190707q   & 2019--07--07 10:13:24 & 2019--07--07 21:54:47 &              \SI{11.69}{\hour} & 116 &  58 & 41.0\% \\
+                            S190718y   & 2019--07--18 15:03:13 & 2019--07--18 21:08:53 &              \SI{ 6.09}{\hour} & 135 &  15 & 61.5\% \\
+                            S190720a   & 2019--07--20 00:11:26 & 2019--07--20 00:11:57 &  \textcolorbf{NavyBlue}{31\,s} & 175 &  87 & 83.9\% \\
+                            S190727h   & 2019--07--27 06:12:02 & 2019--07--27 21:03:40 &              \SI{14.86}{\hour} &  94 &  47 & 42.4\% \\
+                            S190728q   & 2019--07--28 06:59:32 & 2019--07--28 21:29:58 &              \SI{14.51}{\hour} &  36 &   9 & 90.5\% \\
+            \textcolor{Red}{S190808ae} & 2019--08--08 22:28:00 & 2019--08--08 22:28:31 &  \textcolorbf{NavyBlue}{31\,s} &  75 &  31 & 17.3\% \\
+                            S190814bv  & 2019--08--14 21:31:44 & 2019--08--14 22:59:27 &              \SI{ 1.46}{\hour} & 141 &  45 & 95.4\% \\
+            \textcolor{Red}{S190816i}  & 2019--08--16 13:11:35 & \multicolumn{5}{l}{\textcolor{Thistle}{\textit{(Not observed --- Event retracted before becoming visible)}}} \\
+            \textcolor{Red}{S190822c}  & 2019--08--22 01:37:00 & 2019--08--22 01:37:30 &  \textcolorbf{NavyBlue}{30\,s} &  17 &   8 &  2.9\% \\
+                            S190828j   & 2019--08--28 06:50:14 & 2019--08--28 22:38:25 &              \SI{15.80}{\hour} &  54 &  27 &  9.3\% \\
+                            S190828l   & 2019--08--28 07:17:46 & 2019--08--28 23:48:38 &              \SI{16.51}{\hour} &  56 &  28 &  2.0\% \\
+            \textcolor{Red}{S190829u}  & 2019--08--29 21:17:14 & \multicolumn{5}{l}{\textcolor{Thistle}{\textit{(Not observed --- Event retracted before becoming visible)}}} \\
+        \end{tabular}
+    \end{center}
+    \end{footnotesize}
+    \caption[GOTO observation log for O3 events so far]{
+        GOTO observation log for O3 events (from \aref{tab:gw_log}). Seven events were not observed by GOTO (in \textcolorbf{Thistle}{pink}); four were retracted before observations could begin and three had skymaps never visible from La Palma. The time delay is the delay between the sentinel receiving the alert and observations beginning (including event processing and slew time), events with a delay in \textcolorbf{NavyBlue}{blue} were received during night on La Palma and had tiles immediately visible. $N_\text{obs}$ is the total number of pointings observed by GOTO for each event, $N_\text{tiles}$ is the number of tiles observed within those pointings and $P_\text{pbs}$ is the total contained skymap probability within the observed tiles.
+    }\label{tab:obs_log}
+\end{table}
+
+\clearpage
+
+% https://tex.stackexchange.com/questions/28556/how-to-place-a-float-at-the-top-of-a-floats-only-page
+\makeatletter
+\setlength{\@fptop}{0\p@ \@plus 1fil} % chktex 1
+\makeatother
+
+\newpage
 
 \begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.95\linewidth]{images/events_prob.png}
+    \end{center}
+    \caption[Histogram of probabilities covered for O3 events]{
+        Histogram of the skymap probability covered by GOTO for O3 events. \\
+        7 of the 32 events were never observed (see \aref{tab:obs_log}).
+    }\label{fig:events_prob}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+    \includegraphics[width=0.95\linewidth]{images/events_delay.png}
+    \end{center}
+    \caption[Histogram of post-event delay for O3 events]{
+        Histogram of the delay between the GW signal being detected by the LVC and GOTO commencing observations for O3 events. Events that GOTO did not observe are excluded. The outlier is S190421ar (due to a delay sending out the alert).
+    }\label{fig:events_delay}
+\end{figure}
+
+\clearpage
+
+\aref{fig:events_prob} shows the percentage of each event skymap covered by GOTO.\@ These value will depend on a variety of factors: for a particular event if only a small fraction of the skymap is covered that might be because of the position of the skymap in the sky, or a period of bad conditions forcing the dome to close. The coverage level is relatively even across all the events, once the seven events that GOTO did not observe are removed. \aref{fig:events_delay} shows the delay between the event being detected by the gravitational-wave detectors (from \aref{tab:gw_log}) and GOTO starting observations (from \aref{tab:obs_log}). For seven events GOTO was able to start observing less than an hour after the event was detected. This value includes factors such as the delay between the event being detected and the LVC releasing their alert, which was the cause for observations of S190421ar being delayed so long (see \aref{sec:challenges}). For this reason the time delay between the alert being received by the G-TeCS sentinel and the start of observations (given in \aref{tab:obs_log}) is a better indicator of the performance of the G-TeCS software.
+
+Eight alerts were received while it was night time on La Palma, and the GOTO-alert event handling system allowed the pilot to immediately begin observations of the visible skymap. As shown in \aref{tab:obs_log}, in all but one of the eight cases the first exposure was started less than \SI{60}{\second} after the sentinel received the alert. The time delay varies between 28 and 56 seconds, primarily depending on how far the mount had to slew from its previous target. Of the remaining $\sim$\SI{25}{\second} delay, a significant amount is due to having to download the LVC skymaps, with the rest due to various small delays in the event handler, sentinel and pilot, such as the pilot needing to wait up to \SI{10}{\second} for the next scheduler check (see \aref{sec:checks}). Future optimisation could potentially reduce these delays further. The one exception was event S190513bm, which was immediately visible but observations were delayed by 4 minutes. At the time the alert was received the pilot was already observing a pointing from the S190512at event received the previous day; as both events were black hole binaries they were inserted at the same rank, and, as detailed in \aref{sec:toos}, equal-rank ToO pointings will not interrupt each other, so the new pointing had to wait until the previous one was completed. In all other cases the pilot was observing a lower-rank target, usually a survey tile, which was immediately aborted when the scheduler check returned the ToO gravitational-wave pointing.
+
+\begin{table}[t]    \begin{center}
+        \begin{tabular}{l|ccccc} % chktex 44
+                                       & Post-detection   & Probability &  Area covered & $5\sigma$ limiting & GOTO \\
+            \multicolumn{1}{c|}{Event} & time delay       & covered     & (sq deg)      & magnitude          & GCN \\
+            \midrule
+                             S190425z  & \SI{12.3}{\hour} & 22.6\%      & 2857          & $g=20.1$           & 24224 \tablefootnote{~~\citet{S190425z_GOTO}} \\
+                             S190426c  &  \SI{5.3}{\hour} & 55.6\%      &  841          & $g=19.9$           & 24291 \tablefootnote{~~\citet{S190426c_GOTO}} \\
+                             S190814bv &  \SI{1.8}{\hour} & 95.4\%      &  811          & $g=18.9$           & 25337 \tablefootnote{~~\citet{S190814bv_GOTO}} \\
+        \end{tabular}
+    \end{center}
+    \caption[GOTO follow-up results for three key O3 events]{
+        GOTO follow-up results for three key O3 events.
+    }\label{tab:events_3key}
+\end{table}
+
+The three events that were the most likely to have a potential electromagnetic counterpart (originating from either a binary neutron star or neutron star-black hole binary) were S190425z, S190426c and S190814bv. The GOTO response to each was reported in a public GCN Notice, and the key values are given in \aref{tab:events_3key}.
+
+S190425z was the second detection of gravitational waves from a binary neutron star after GW170817 \citep{S190425z}. Unlike GW170817 however, the signal was only detected by a single detector, LIGO-Livingston (LIGO-Hanford was offline at the time, and while Virgo did detect a signal it was below the valid signal-to-noise threshold). This resulted in a very large initial skymap, shown in \aref{fig:190425_goto}, with a 90\% contour area of 10,183 square degrees. Many other projects aside from GOTO followed-up this event, and the \acro{ztf} efforts were described in \aref{sec:followup}. Unfortunately a large portion of the skymap was located behind the Sun at the time and was therefore unobservable (on the right of \aref{fig:190425_goto}). The alert was received at 09:00 UTC, a few hours after GOTO had closed in the morning, meaning observations from La Palma could not begin for just over 12 hours until sunset that evening. The final skymap reduced the search area to 7,416 square degrees but shifted the probability even further into the unobservable region of the sky, meaning in the end GOTO only covered 22.6\% of the final probability.
+
+\begin{figure}[t]
     \begin{center}
         \includegraphics[width=0.9\linewidth]{images/190425_goto.pdf}
     \end{center}
     \caption[Follow-up observations of S190425z with GOTO]{
-        GOTO follow-up observations of GW event S190425z \citep{S190425z_GOTO}. The tiled observations are shown in \textcolorbf{NavyBlue}{blue} over the background skymap. Compare to \aref{fig:ztf}, which shows ZTF's coverage of the same event.
+        GOTO follow-up observations of GW event S190425z \citep{S190425z_GOTO}. The tiled observations are shown in \textcolorbf{NavyBlue}{blue} over the initial skymap. Compare to \aref{fig:ztf}, which shows ZTF's coverage of the same event.
         }\label{fig:190425_goto}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[t]
     \begin{center}
         \includegraphics[width=0.9\linewidth]{images/190426_goto.pdf}
     \end{center}
     \caption[Follow-up observations of S190426c with GOTO]{
-        GOTO follow-up observations of GW event S190426c \citep{S190426c_GOTO}. The tiled observations are shown in \textcolorbf{NavyBlue}{blue} over the background skymap.
+        GOTO follow-up observations of GW event S190426c \citep{S190426c_GOTO}. The tiled observations are shown in \textcolorbf{NavyBlue}{blue} over the initial skymap.
         }\label{fig:190426_goto}
 \end{figure}
 
+190426c was detected just 31 hours after S190425z \citep{S190425z}. This meant that on the night of the 26th GOTO was completing both the first pass of the 190426c tiles and the second pass of the S190425z tiles which had been first observed the previous night. The initial 190426c skymap and the tiles observed are shown in \aref{fig:190426_goto}. This time event was detected by all three detectors; the initial skymap had an area of 1,932 square degrees, and changed very little in the final skymap. The skymaps from the two events also did not overlap. Following-up two events at once had been considered in the design of the G-TeCS scheduling system (described \aref{chap:scheduling}), and as planned GOTO alternated between the two as tiles were observed (therefore lowering the effective rank as described in \aref{sec:rank}).
+
+The latest event with a high chance of an optical counterpart was S190814bv \citep{S190814bv}. As shown in \aref{tab:gw_log} several other binary neutron star and neutron star-black hole binary events have been detected but have since been retracted. S190814bv is an event of particular interest as the first confirmed detection of gravitational waves from a neutron star-black hole binary. The initial skymap covered 772 square degrees and is shown in \aref{fig:190826_goto}. This initial skymap only included the contribution from the LIGO-Livingston and Virgo detectors, and a few hours later a revised skymap based on LIGO-Hanford as well was released. This second skymap reduced the 90\% contour region to just 38 square degrees, but due to an error in how the LVC uploaded the skymap this was not immediately processed by GOTO (see \aref{sec:challenges}). The lower plot of \aref{fig:190826_goto} shows the GOTO tiles over the final skymap, and although a portion was below the observable horizon from La Palma GOTO still covered 95.4\% of the probability in just 5 pointings.
+
+No electromagnetic counterparts were found for any of the three events, either by GOTO or other projects. But the G-TeCS follow-up code has proven to be fast and reliable, and GOTO will continue to follow-up LIGO-Virgo alerts. Based on the time from previous alerts, if, or when, another GW170817-like event is detected GOTO could potentially be observing the counterpart within seconds of the alert being received.
+
+\newpage
+
+% https://texfaq.org/FAQ-vertposfp
+\makeatletter
+\setlength{\@fptop}{0pt}
+\makeatother
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.9\linewidth]{images/190814_goto.pdf}
+        \includegraphics[width=0.8\linewidth]{images/190814_goto2.pdf}
+    \end{center}
+    \caption[Follow-up observations of S190814bv with GOTO]{
+        GOTO follow-up observations of GW event S190814bv \citep{S190814bv_GOTO}. In the upper plot the tiled observations are shown in \textcolorbf{NavyBlue}{blue} over the initial skymap. The final skymap for this event is shown in the lower plot, with the seven GOTO tiles needed to cover the 90\% probability region. The two tiles in \textcolorbf{Red}{red} were below the local horizon and so were not observed.
+        }\label{fig:190826_goto}
+\end{figure}
+
 \clearpage
+
+% https://tex.stackexchange.com/questions/28556/how-to-place-a-float-at-the-top-of-a-floats-only-page
+\makeatletter
+\setlength{\@fptop}{0\p@ \@plus 1fil} % chktex 1
+\makeatother
+
+\newpage
 
 \end{colsection}
 
@@ -206,7 +344,7 @@ Another potential future project that is being considered is the generalisation 
 
 \bigskip
 
-Overall the GOTO Telescope Control System is still under active development, and this will continue as the GOTO project evolves. Based on the initial results from O3 the system has been working well and fulfilling its requirements, and it is therefore most likely only a matter of time until GOTO observes the next gravitational-wave counterpart.
+Overall the GOTO Telescope Control System is still under active development, and this will continue as the GOTO project evolves. Based on the initial results from O3 the system has been working well and fulfilling its requirements, and it is therefore most likely only a matter of time until GOTO observes its first gravitational-wave counterpart.
 
 \end{colsection}
 

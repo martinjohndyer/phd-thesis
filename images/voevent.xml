@@ -1,10 +1,9 @@
-<?xml version=\'1.0\' encoding=\'UTF-8\'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <voe:VOEvent
-     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xmlns:voe="http://www.ivoa.net/xml/VOEvent/v2.0"
-     xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/v2.0
-                           http://www.ivoa.net/xml/VOEvent/VOEvent-v2.0.xsd"
-     role="observation"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:voe="http://www.ivoa.net/xml/VOEvent/v2.0"
+ xsi:schemaLocation="http://www.ivoa.net/xml/VOEvent/VOEvent-v2.0.xsd"
+     role="observation" 
      ivorn="ivo://gwnet/LVC#S190408an-2-Initial">
 <Who>
  <Date>2019-04-08T20:21:42</Date>
@@ -43,13 +42,13 @@
 </What>
 <WhereWhen>
  <ObsDataLocation>
- <ObservatoryLocation id="LIGO Virgo"/>
- <ObservationLocation>
- <AstroCoordSystem id="UTC-FK5-GEO"/>
- <AstroCoords coord_system_id="UTC-FK5-GEO">
- <Time><TimeInstant><ISOTime>2019-04-08T18:18:02.288180</ISOTime></TimeInstant></Time>
- </AstroCoords>
- </ObservationLocation>
+  <ObservatoryLocation id="LIGO Virgo"/>
+  <ObservationLocation>
+   <AstroCoordSystem id="UTC-FK5-GEO"/>
+   <AstroCoords coord_system_id="UTC-FK5-GEO">
+   <Time><TimeInstant><ISOTime>2019-04-08T18:18:02.288180</ISOTime></TimeInstant></Time>
+   </AstroCoords>
+  </ObservationLocation>
  </ObsDataLocation>
 </WhereWhen>
 ...

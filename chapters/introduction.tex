@@ -16,7 +16,7 @@
 
 \begin{colsection}
 
-Einstein's theory of General Relativity describes gravity as the curvature of spacetime \citep{Einstein1914}, and he went on to describe the propagation of distortions within the spacetime `fabric' \citep{Einstein1916}. These \emph{gravitational waves} (GWs) \acroadd{gw} are produced by the acceleration of matter within the field of spacetime and propagate at the speed of light, analogous to electromagnetic (EM) \acroadd{em} waves being produced by an accelerating charge. The existence of gravitational waves is a consequence of the finite propagation time of gravity in general relativity; there is no analogue to gravitational waves in Newtonian gravity as Newton described a force propagating instantaneously.
+Einstein's theory of General Relativity describes gravity as the curvature of spacetime \citep{Einstein1914}, and he went on to describe the propagation of distortions within the spacetime `fabric' \citep{Einstein1916}. These \emph{gravitational waves} (GWs) \acroadd{gw} are produced by the acceleration of matter within the field of spacetime and propagate at the speed of light \citep{GW170817_gravity}, analogous to electromagnetic (EM) \acroadd{em} waves being produced by an accelerating charge. The existence of gravitational waves is a consequence of the finite propagation time of gravity in general relativity; there is no analogue to gravitational waves in Newtonian gravity as Newton described a force propagating instantaneously.
 
 The result of Einstein's theory is the quadrupole formula \citep{Einstein1916}, which describes gravity propagating as a transverse wave, which alternately stretches and compresses spacetime in two orthogonal axes \citep{BIGcardiff}. A single object will never `observe' a gravitational wave, as it is embedded in the fabric, and the only way to detect the passing of gravitational waves is to look for changes in the relative positions of two or more objects as the wave passes through. A thought experiment considering the effects of gravitational waves on free-floating masses is shown in \aref{fig:wave}, for the two wave polarisation states. These perturbations are quantified by the strain, the fractional change in distance, which even for astronomical-scale events will be incredibly small --- the first direct detection of gravitational waves involved measuring strains of the order of $10^{-21}$ (see \aref{fig:chirp}). It is the goal of gravitational-wave detectors to observe these minute spatial perturbations as the wave passes through.
 
@@ -41,7 +41,7 @@ A detailed discussion of general relativity and gravitational-wave science is be
 \label{sec:gw_detecting}
 \begin{colsection}
 
-As described above, gravitational waves manifest as alternately stretching and compressing spacetime along perpendicular axes. Several methods of directly detecting gravitational waves have been proposed, but the most successful design uses a Michelson interferometer to observe how two test masses move relative to each other as a wave passes through \citep{BIGbirmingham}. As shown in \aref{fig:detector}, an input laser is split into two by a beam splitter, and each beam is sent into one of two long perpendicular arms. In order to detect the tiny strains from gravitational waves these arms needs to be kilometres in length, and each arm acts as a laser cavity, reflecting the beam multiple times between two mirrored test masses, to further increase the effective distance. When they exit the arms, the beams are recombined to form a single output. Should the lengths of the arms change relative to each other, due to a gravitational wave passing through, the distance the beams travel will be different, which will produce a change in the resulting interference pattern produced when they recombine. The test masses are suspended by a complex vibration isolation system in order to reduce any outside interference, such as from man-made vibrations or seismic events.
+As described above, gravitational waves manifest as alternately stretching and compressing spacetime along perpendicular axes. Several methods of directly detecting gravitational waves have been proposed, but the most successful design uses a Michelson interferometer to observe how two test masses move relative to each other as a wave passes through \citep{BIGbirmingham}. As shown in \aref{fig:detector}, an input laser is split into two by a beam splitter, and each beam is sent into one of two long perpendicular arms. In order to detect the tiny strains from gravitational waves these arms needs to be kilometres in length, and each arm acts as a laser cavity, reflecting the beam multiple times between two mirrored test masses, to further increase the effective distance. When they exit the arms, the beams are recombined to form a single output. Should the lengths of the arms change relative to each other, e.g.\ due to a gravitational wave passing through, the distance the beams travel will be different, which will produce a change in the resulting interference pattern produced when they recombine. The test masses are suspended by a complex vibration isolation system in order to reduce any outside interference, such as from man-made vibrations or seismic events.
 
 \begin{figure}[t]
     \begin{center}
@@ -61,9 +61,9 @@ As described above, gravitational waves manifest as alternately stretching and c
         }\label{fig:global}
 \end{figure}
 
-Several of these gravitational-wave detectors have been built around the world, as shown in \aref{fig:global}. Having multiple detectors acting together provides redundancy, and allows the source of the signal to be localised (see \aref{sec:gw_localisation}). There are currently three active detectors: the two Advanced \acro{ligo} detectors in the United States, at Hanford, Washington and Livingston, Louisiana \citep{LIGO}, and the \acro{ego} Advanced Virgo detector near Pisa, Italy \citep{Virgo}. These three detectors form a global network as the LIGO-Virgo Collaboration \acroadd{lvc} \citep[LVC,][]{LIGO-Virgo}. In addition, the older GEO600 detector in Germany is still in use, primarily as a technology test system \citep{GEO600}. The \acro{kagra} is currently under construction in Japan \citep{KAGRA}, and is expected to join the global network before the end of 2019 \citep{LIGO-Virgo-KAGRA}. In the next decade, work should also begin on building a third LIGO detector, LIGO-India \citep{LIGO_India}, relocating what was previously a second interferometer at Hanford.
+Several of these gravitational-wave detectors have been built around the world, as shown in \aref{fig:global}. Having multiple detectors acting together provides redundancy, and allows the source of the signal to be localised (see \aref{sec:gw_localisation}). There are currently three active detectors: the two Advanced \acro{ligo} detectors in the United States, at Hanford, Washington and Livingston, Louisiana \citep{LIGO}, and the \acro{ego} Advanced Virgo detector near Pisa, Italy \citep{Virgo}. These three detectors form a global network known as the LIGO-Virgo Collaboration \acroadd{lvc} \citep[LVC,][]{LIGO-Virgo}. In addition, the older German-British GEO600 detector in Germany is still active, primarily as a technology test system \citep{GEO600}. The \acro{kagra} is currently under construction in Japan \citep{KAGRA}, and is expected to join the global network before the end of 2019 \citep{LIGO-Virgo-KAGRA}. In the next decade, work should also begin on building a third LIGO detector, LIGO-India \citep{LIGO_India}, relocating what was previously a second interferometer at Hanford.
 
-In the longer term, the next generation of larger and more sensitive gravitational-wave detectors is already being designed, including the Einstein Telescope \citep{EinsteinTelescope} and the Cosmic Explorer \citep{CosmicExplorer}. Space-based gravitational-wave detectors are also being planned, such as the Laser Interferometer Space Antenna \acroadd{lisa} \citep[LISA,][]{LISA}. Detectors in space would be free from the seismic noise that limits ground-based detectors at low frequencies, and could therefore detect lower-frequency gravitational waves. This could potentially include signals from supermassive black holes and lower-mass binaries within our own galaxy.
+In the longer term, the next generation of larger and more sensitive gravitational-wave detectors is already being designed, including the Einstein Telescope \citep{EinsteinTelescope} and the Cosmic Explorer \citep{CosmicExplorer}. Space-based gravitational-wave detectors are also being planned, such as the Laser Interferometer Space Antenna \acroadd{lisa} \citep[LISA,][]{LISA}. Detectors in space would be free from the seismic noise that limits ground-based detectors at low frequencies, and could therefore detect lower-frequency gravitational waves. This could potentially include signals from supermassive black hole mergers, lower-mass white dwarf binaries within our own galaxy, and early detections of neutron star or black hole mergers that are subsequently observed by larger detectors on Earth.
 
 \newpage
 
@@ -75,7 +75,7 @@ In the longer term, the next generation of larger and more sensitive gravitation
 \label{sec:gw_sources}
 \begin{colsection}
 
-Any accelerating mass will generate gravitational waves as it moves through spacetime, as long as the motion is not spherically symmetric (e.g.\ a rotating disk or a uniformly expanding sphere) \citep{BIGcardiff,BIGparis}. However, in practice it is only possible to detect gravitational waves from astronomical sources, as only they will produce large enough strains to be picked up by the detectors.
+Any accelerating mass will generate gravitational waves as it moves through spacetime, as long as the motion is not spherically symmetric \citep[such as a rotating disk or a uniformly expanding sphere;][]{BIGcardiff,BIGparis}. However, in practice it is only possible to detect gravitational waves from astronomical sources, as only they will produce large enough strains to be picked up by the detectors.
 
 A continuous source of gravitational waves will be generated by two massive objects orbiting one another \citep{GW_sources}, and the loss of energy from the system in the form of gravitational waves will slowly cause the orbiting distance of the two objects to shrink. The first binary pulsar was discovered in 1974 \citep{HulseTaylor}, and after repeated observations it was apparent that the orbital period of the two stars was decreasing in perfect agreement with the predictions given by general relativity. This was the first real evidence, albeit indirect, of the existence of gravitational waves, and the discovery of the Hulse-Taylor pulsar was deemed so significant that its discoverers were awarded the Nobel Prize in 1993 \citep{HulseTaylor2}.
 
@@ -91,7 +91,7 @@ Coalescing binaries are not the only predicted sources of gravitational-wave sig
 \label{sec:gw_detections}
 \begin{colsection}
 
-The LIGO detectors became operational in 2002 and observed on-and-off until 2010 without detecting any gravitational-wave signals, after which they were taken offline in order to upgrade into the second-generation Advanced LIGO detectors \citep{LIGO_initial, LIGO_advanced}. The upgrade to the optics and lasers increased the strain sensitivity by a factor of 10, which corresponded to an increase in the search volume of space from which a signal could be detected by a factor of 1000 \citep{LIGO_advanced2}.
+The LIGO detectors became operational in 2002 and observed on-and-off until 2010 without detecting any gravitational-wave signals, after which they were taken offline in order to upgrade into the second-generation Advanced LIGO detectors \citep{LIGO_initial, LIGO_advanced}. The upgrade to the optics and lasers increased the strain sensitivity by a factor of 10, which corresponded to an increase in the search volume of space from which a signal could be detected by a factor of 1000 \citep{LIGO}.
 
 The detectors were recommissioned in 2015, and first direct detection of gravitational waves occurred on the 14th of September 2015, while the two LIGO detectors were still in engineering mode. The signal, GW150914\footnote{Confirmed gravitational-wave detections are named in the form GW\textit{YYMMDD}.}, was produced by the merger of a binary black hole system approximately \SI{440}{\mega\parsec} away with component masses of \SI{35}{\solarmass} and \SI{30}{\solarmass} \citep{GW150914}. The `chirp' signals recorded in the LIGO detectors are shown in \aref{fig:chirp}. Note the strain on the $y$-axis is of the order $10^{-21}$, meaning that, as the wave passed through, the \SI{4}{\kilo\metre}-long LIGO detector arms changed in length by approximately \SI{4e-18}{\metre}, a fraction of the size of a proton ($\approx$ \SI{e-15}{\metre}).
 
@@ -113,13 +113,13 @@ The second observing run (O2) \acroadd{o2} took place from November 2016 to Augu
         \includegraphics[width=\linewidth]{images/gw_masses2.png}
     \end{center}
     \caption[Sources of gravitational waves detected during O1 and O2]{
-        Masses of the sources and remnant objects from the 11 signals detected during O1 and O2. Image credit: LIGO/Virgo/Northwestern/Frank Elavsky.
+        Masses of the sources and remnant objects from the 11 signals detected during O1 and O2, compared to previous electromagnetic detections. Note the ``mass gap'' between 2--\SI{5}{\solarmass}. Image credit: LIGO/Virgo/Northwestern/Frank Elavsky.
         }\label{fig:gw_masses}
 \end{figure}
 
-After a few short engineering runs the third observing run (O3) \acroadd{o3} began on 1 April 2019. At the time of writing, O3 is still ongoing, and after a short break in October 2019 is expected to run until May 2020. This is the first run to include the three LIGO-Virgo detectors from the beginning, and KAGRA is expected to join before the end of 2019. O3 also marked the start of public alert releases\footnote{Public alerts are available at \url{https://gracedb.ligo.org/superevents/public/O3}}; during O1 and O2 the gravitational-wave alerts were only released to groups who had signed memoranda of understanding with the LVC (the GOTO Collaboration was one of these groups). In the first 5 months of O3, from the start of April to the end of August 2019, the LVC released 32 alerts; 7 were ultimately retracted as false alarms, leaving 25 due to real astronomical signals.
+After a few short engineering runs the third observing run (O3) \acroadd{o3} began on 1 April 2019. At the time of writing, O3 is still ongoing, and after a short break in October 2019 is expected to run until May 2020. This is the first run to include the three LIGO-Virgo detectors from the beginning, and KAGRA is expected to join before the end of 2019 \citep{LIGO-Virgo-KAGRA}. O3 also marked the start of public alert releases\footnote{Public alerts are available at \url{https://gracedb.ligo.org/superevents/public/O3}.}; during O1 and O2 immediate alerts were only released to groups who had signed memoranda of understanding with the LVC (the GOTO Collaboration was one of these groups).
 
-As O3 is currently ongoing the LVC has not yet published final values or mass estimates for any of these events. As such they are still treated as candidates, with provisional signal designations and preliminary classification probabilities. Of the 25 non-retracted events, 20 are currently classified as originating from binary black hole systems ($P_\text{BBH}>90\%$). Only one is likely from a binary neutron star \citep[S190425z;][]{S190425z}, one is classed as a likely neutron star-black hole binary \citep[S190814bv;][]{S190814bv}, and one \citep[S190426c;][]{S190426c} has an uncertain classification: a 49\% probability as coming from a binary neutron star, 24\% coming from a binary including a `MassGap' object \citep[a theorised object with a mass between a neutron star and a black hole;][]{GW_MassGap}, and 13\% from a neutron star-black hole binary (the remaining 14\% is the chance the signal is from a non-astrophysical source, i.e.\ detector noise). The remaining two events both have over 50\% non-astrophysical probability but have not been formally retracted by the LVC.\@
+In the first 5 months of O3, from the start of April to the end of August 2019, the LVC released 32 alerts; 7 were ultimately retracted as false alarms, leaving 25 due to real astronomical signals. As O3 is currently ongoing the LVC has not yet published final values or mass estimates for any of these events. As such they are still treated as candidates, with provisional signal designations and preliminary classification probabilities. Of the 25 non-retracted events, 20 are currently classified as originating from binary black hole systems ($P_\text{BBH}>90\%$). Only one is likely from a binary neutron star \citep[S190425z;][]{S190425z}, one is classed as a likely neutron star-black hole binary \citep[S190814bv;][]{S190814bv}, and one \citep[S190426c;][]{S190426c} has an uncertain classification: a 49\% probability as coming from a binary neutron star, 24\% coming from a binary including a `MassGap' object \citep[a theorised object with a mass between a neutron star and a black hole;][]{GW_MassGap}, and 13\% from a neutron star-black hole binary (the remaining 14\% is the chance the signal is from a non-astrophysical source, i.e.\ detector noise). The remaining two events both have over 50\% non-astrophysical probability but have not been formally retracted by the LVC.\@
 
 \end{colsection}
 
@@ -129,9 +129,9 @@ As O3 is currently ongoing the LVC has not yet published final values or mass es
 \label{sec:gw_localisation}
 \begin{colsection}
 
-One limitation with using interferometers to detect gravitational-wave signals is that alone they are very poor at localising the direction a signal originates from. It is possible to estimate a rough direction from the polarisation of the signal, and the distance to the origin can be estimated from the signal strength, but multiple detectors are needed to obtain more accurate sky localisations \citep{GW_localisation, GW_localisation2}. With two detectors, the difference between the arrival time of a signal at each allows the direction to the source to be narrowed down, based on the distance between the two detectors and knowing that gravitational waves propagate at the speed of light. However, this will only constrain the source to within an annulus on the celestial sphere, perpendicular to the line between the detectors. As shown in \aref{fig:triangulate}, at least three detectors are needed to triangulate the source location, and even then only to two positions on opposite sides of the sky (in practice the polarisation will suggest which of these two points is the more likely origin). The skymaps for the GW170817 event, shown in \aref{fig:170817_skymaps}, show how the contributions from multiple detectors dramatically improved the on-sky localisation.
+One limitation with using interferometers to detect gravitational-wave signals is that alone they are very poor at localising the direction a signal originates from. It is possible to estimate a rough direction from the polarisation of the signal, and the distance to the origin can be estimated from the signal strength, but multiple detectors are needed to obtain more accurate sky localisations \citep{GW_localisation, GW_localisation2}. With two detectors, the difference between the arrival time of a signal at each allows the direction to the source to be narrowed down, based on the distance between the two detectors and knowing that gravitational waves propagate at the speed of light. However, this will only constrain the source to within an annulus on the celestial sphere, perpendicular to the line between the detectors. As shown in \aref{fig:triangulate}, at least three detectors are needed to triangulate the source location, and even then only to two positions on opposite sides of the sky (in practice the polarisation will suggest which of these two points is the more likely origin). The localisation skymaps for the GW170817 event, showing regions on the sky that the source is predicted to be within, are shown in \aref{fig:170817_skymaps}. They show how the contributions from multiple detectors dramatically improved the on-sky localisation.
 
-Even with the three current detectors, sources can typically only be localised to areas of tens to hundreds of square degrees. This also requires all three detectors to be observing at the same time, with no redundancy for down time due to maintenance or hardware problems. This is why the full network is anticipated to include five detectors across the globe, as described in \aref{sec:gw_detecting}.
+Even with the three current detectors, sources that are detected by all three can typically only be localised to areas of tens to hundreds of square degrees. This also requires all three detectors to be observing at the same time, with no redundancy for down time due to maintenance or hardware problems. This is why the full network is anticipated to include five detectors across the globe, as described in \aref{sec:gw_detecting}.
 
 \begin{figure}[t]
     \begin{center}
@@ -202,11 +202,11 @@ GW170817 was a remarkably lucky event in several ways. The gravitational-wave si
         \includegraphics[width=0.8\linewidth]{images/sss17a.pdf}
     \end{center}
     \caption[Detection of the counterpart to GW170817]{
-        Detection of the counterpart to GW170817 with the Swope telescope. On the left is an archival image of NGC 4993, and on the right the position of the kilonova is marked. Adapted from \citet{GW170817_Swope}.
+        Detection of the counterpart to GW170817 with the Swope telescope. On the left is an archival image of NGC 4993 from HST, and on the right the position of the kilonova is marked in the Swope discovery image. Adapted from \citet{GW170817_Swope}.
         }\label{fig:sss17a}
 \end{figure}
 
-The first of many observations of the counterpart transient, designated AT 2017gfo, was taken by the One-Meter, Two-Hemisphere collaboration using the 1-metre Swope telescope at Las Campanas Observatory in Chile. The discovery image is shown in \aref{fig:sss17a}, and the Swope team designated the transient SSS17a \citep{GW170817_Swope}. The Swope telescope only has a field of view of $\SI{30}{\arcmin}\times\SI{30}{\arcmin}$, but due to the small and close-by search area potential host galaxies were selected based on the \acro{gwgc} of \citet{GWGC}. The Swope observations were then targeted to fields including these galaxies, as shown in \aref{fig:swope_decam}. The host galaxy, NGC 4993, was observed in the ninth pointing, and as shown in \aref{fig:sss17a} the kilonova was clearly visible at the outer edge of the galaxy.
+The first of many observations of the counterpart transient, designated AT~2017gfo, was taken by the One-Meter, Two-Hemisphere collaboration using the 1-metre Swope telescope at Las Campanas Observatory in Chile. The discovery image is shown in \aref{fig:sss17a}, and the Swope team designated the transient SSS17a \citep{GW170817_Swope}. The Swope telescope only has a field of view of $\SI{30}{\arcmin}\times\SI{30}{\arcmin}$, but as the event was localised to a small, near-by region a list of potential host galaxies could be selected from the Gravitational Wave Galaxy Catalogue \acroadd{gwgc} \citep[GWGC;][]{GWGC}. The Swope observations were targeted to fields including these galaxies, as shown in \aref{fig:swope_decam}. The host galaxy, NGC 4993, was observed in the ninth pointing approximately 10 hours after the gravitational-wave detection, and as shown in \aref{fig:sss17a} the kilonova was clearly visible at the outer edge of the galaxy.
 
 \begin{figure}[p]
     \begin{center}
@@ -219,7 +219,7 @@ The first of many observations of the counterpart transient, designated AT 2017g
 
 Five other groups independently observed the same transient within an hour of the Swope observation: the Dark Energy Camera \acroadd{decam}\citep[DECam,][]{GW170817_DECam}, the Distance Less Than \SI{40}{\mega\parsec} survey \acroadd{dlt40}\citep[DLT40,][]{GW170817_DLT40}, Las Cumbres Observatory \acroadd{lco}\citep[LCO,][]{GW170817_LCO}, the MASTER Global Robotic Net \citep{GW170817_MASTER} and the \acro{eso} Visible and Infrared Survey Telescope for Astronomy \acroadd{vista}\citep[VISTA,][]{GW170817_VISTA}. The observing strategy differed between groups depending on the field of view of the instruments. DLT40 was an existing supernova survey so targeted already-known galaxies, and the LCO and VISTA surveys both targeted their observations at possible host galaxies, just like Swope. On the other hand, DECam and MASTER had larger fields of view, and so could therefore cover the entire localisation region using a regular tiling pattern. The DECam tile pointings are shown on the right-hand plot of \aref{fig:swope_decam}.
 
-The relatively small GW170817 skymap allowed telescopes with small fields of view, such as Swope, to efficiently cover the search area and locate the counterpart source. However, there is no guarantee that this will always be the case, and indeed subsequent events have not been as well localised. As previously mentioned in \aref{sec:gw_sources}, the second binary neutron star gravitational-wave detection, S190425z, occurred in April 2019, a few weeks into the O3 run \citep{S190425z}. Unlike GW170817, this was only a single-detector detection, observed only by LIGO-Livingston (again Virgo was also observing at the same time, but LIGO-Hanford was shut down for maintenance). The initial skymap for this event covered an area of approximately 10,000 square degrees, and the final skymap only reduced this to 7,500~sq~deg; still 250 times the size of the final GW170817 skymap. For searching such large sky areas, containing thousands of galaxies, the method used by smaller telescopes such as Swope is impractical, and so dedicated wide-field survey telescopes are needed.
+The relatively small GW170817 skymap allowed telescopes with small fields of view, such as Swope, to efficiently cover the search area and locate the counterpart source. However, there is no guarantee that this will always be the case, and indeed subsequent events have not been as well localised. As previously mentioned in \aref{sec:gw_sources}, the second binary neutron star gravitational-wave detection, S190425z, occurred in April 2019, a few weeks into the O3 run \citep{S190425z}. Unlike GW170817, this was only a single-detector detection, observed only by LIGO-Livingston (again Virgo was also observing at the same time, but LIGO-Hanford was shut down for maintenance). The initial skymap for this event covered an area of approximately 10,000 square degrees, and the final skymap only reduced this to 7,500~sq~deg; still 250 times the size of the final GW170817 skymap (see \aref{fig:ztf}). For searching such large sky areas, containing thousands of galaxies, the method used by smaller telescopes such as Swope is impractical, and so dedicated wide-field survey telescopes are needed.
 
 The \acro{ztf} is one such telescope, with a field of view of 47~sq~deg \citep{ZTF}. Over the first two nights following the S190425z detection ZTF covered approximately 8,000~sq~deg of the initial skymap \citep{S190425z_ZTF}, shown in \aref{fig:ztf}. This still only corresponded to 46\% of the localisation probability, reduced to 21\% in the final skymap, as unfortunately a large fraction of the skymap was located too close to the Sun to observe.
 
@@ -230,7 +230,7 @@ The \acro{ztf} is one such telescope, with a field of view of 47~sq~deg \citep{Z
         \includegraphics[width=0.9\linewidth]{images/190425_ztf.pdf}
     \end{center}
     \caption[Follow-up observations of S190425z with ZTF]{
-        Follow-up observations of S190425z with the Zwicky Transient Facility. The ZTF tiled observations are shown in \textcolorbf{NavyBlue}{blue} over the background skymap. Adapted from \citet{S190425z_ZTF}. For a size comparison to \aref{fig:swope_decam} the position of the final GW170817 skymap is also shown in \textcolorbf{Green}{green}.
+        Follow-up observations of S190425z with the Zwicky Transient Facility. The ZTF tiled observations are shown in \textcolorbf{NavyBlue}{blue} over the initial LVC skymap in \textcolorbf{Orange}{orange}. Adapted from \citet{S190425z_ZTF}. For a size comparison to \aref{fig:swope_decam} the position of the final GW170817 skymap is also shown in \textcolorbf{Green}{green}.
         }\label{fig:ztf}
 \end{figure}
 
@@ -243,9 +243,10 @@ As a single-detector event S190425z was something of an extreme example, and as 
 \end{colsection}
 
 % ########################################
-
 \hfuzz=6pt % It only just overlaps!
-\section{The Gravitational-wave Optical Transient Observer}
+\section[The Gravitational-wave Optical Transient Observer]{%
+    \protect\scalebox{0.93}[1.0]{\mbox{The Gravitational-wave Optical Transient Observer}}
+}
 \hfuzz=.5pt % Reset
 \label{sec:goto}
 
@@ -283,7 +284,7 @@ The \acro{goto}\footnote{\url{https://goto-observatory.org}} is a project dedica
 
 Even before the first detection of gravitational waves in 2015 it was recognised that, due to the issues described in the previous section, the best chance of reliably detecting electromagnetic counterparts quickly was with a network of dedicated, robotic, wide-field telescopes \citep{Darren}. On most nights the telescopes would carry out an all-sky survey on a fixed grid, but when a gravitational-wave alert was received they could quickly change to covering the skymap. As robotic telescopes, they would be quicker to respond than human-operated telescopes, meaning follow-up observations could begin automatically just minutes after an alert was issued.
 
-Rapidly covering large areas of the sky maximises the chance of finding any possible counterpart before it fades from view. However, any such observations are going to be contaminated by a huge number of unrelated transient and variable objects (recall the hundreds of thousands of detections by ZTF when searching for the S190425z counterpart as described in \aref{sec:followup}). Therefore, the difficulty in finding any counterpart is not just in covering the large search area, but also in being able to distinguish the needle from the haystack of other astronomical transients and variables. The best way to reduce the number of candidate detections is temporally: any objects with detections prior to the gravitational-wave event time could not be associated with it. In order to perform this temporal filtering, the project needs an as-recent-as-possible image of the same patch of sky, which necessitates the telescope carrying out an all-sky survey with as low a cadence (the time between observing each point of the sky) as possible.
+Rapidly covering large areas of the sky maximises the chance of finding any possible counterpart before it fades from view. However, any such observations are going to be contaminated by a huge number of unrelated transient and variable objects (recall the hundreds of thousands of detections by ZTF when searching for the S190425z counterpart as described in \aref{sec:followup}). Therefore, the difficulty in finding any counterpart is not just in covering the large search area, but also in being able to distinguish the needle from the haystack of other astronomical transients and variables. The best way to reduce the number of candidate detections is temporally: any sources with detections prior to the gravitational-wave event time could not be the transient associated with it. In order to perform this temporal filtering, the project needs an as-recent-as-possible image of the same patch of sky, which necessitates the telescope carrying out an all-sky survey with as low a cadence (the time between observing each point of the sky) as possible.
 
 \citet{Darren} outlined the original GOTO proposal, including the requirements for each telescope. An instantaneous field of view of 50--100 square degrees and a limiting magnitude of $R\simeq21$ in 5 minutes was suggested to be able to have the best chance of observing electromagnetic counterparts, with the field of view ideally split between multiple independent mounts to allow for covering the irregularly-shaped gravitational-wave skymaps. These telescopes would need to respond quickly to alerts, covering the skymaps within a single night before any possible counterpart faded from view, necessitating the use of fast-slewing, robotic mounts. Based on the sensitivity regions of the LIGO-Virgo network, the best sites for these telescopes would be in the North Atlantic (e.g.\@ the Canary Islands) and Australia, at least until the detectors in Japan and India come online (as described in \aref{sec:gw_detecting}).
 
@@ -293,29 +294,92 @@ GOTO is, of course, not the only project searching for gravitational-wave counte
 
 \begin{table}[t]
     \begin{center}
-        \begin{tabular}{r|cccccl} %chktex 44
-                        &           $D$ &       FoV & Limiting  & Cost  & Etendue & \\
-            Name        &           (m) & (deg$^2$) & magnitude & (M\$) & (m$^2$deg$^2$) & \\
+        \begin{tabular}{r|ccccccl} %chktex 44
+                 & First & $D$ &    FoV    & Limiting  & Cost  &     Etendue    & \\
+            Name & light & (m) & (deg$^2$) & magnitude & (M\$) & (m$^2$deg$^2$) & \\
             \midrule
-            ATLAS       &  0.5$\times$2 & 120.0 & $g=19.3$ (\SI{30}{\second}) &   2.0 & 188 &
-            \tablefootnote{~~\citet{ATLAS}} \\
-            Pan-STARRS1 &  1.8          &   7.0 & $g=22.0$ (\SI{43}{\second}) &  25.0 &  18 &
-            \tablefootnote{~~\citet{Pan-STARRS}} \\
-            ZTF         &  1.2          &  47.0 & $g=20.8$ (\SI{30}{\second}) &  24.0 &  53 &
-            \tablefootnote{~~\citet{ZTF}} \\
-            BlackGEM    &  1.8$\times$3 &   8.1 & $q=23$ (\SI{300}{\second}) &    3.0 &  62 &
-            \tablefootnote{~~\citet{BlackGEM}} \\
-            LSST        &  8.4          &   9.6 & $g=25.6$ (\SI{15}{\second}) &  27.5 & 532 &
-            \tablefootnote{~~\citet{LSST}} \\
+            ATLAS &
+            2015 &
+            0.5$\times$2 &
+            60 &
+            $g=19.3$ (\SI{30}{\second}) &
+            2 &
+            12 &
+            \tablefootnote{~~\citet{ATLAS}}
             \\
-            GOTO-4          & (0.4$\times$4)          &  16.0 & $g=19.5$ (\SI{60}{\second}) & 1.5 &   8 \\
-            GOTO-8          & (0.4$\times$8)          &  40.0 & $g=19.5$ (\SI{60}{\second}) & 2.0 &  40 \\
-            2$\times$GOTO-8 & (0.4$\times$8$)\times$2 &  80.0 & $g=19.5$ (\SI{60}{\second}) & 4.0 & 160 \\
-            4$\times$GOTO-8 & (0.4$\times$8$)\times$4 & 160.0 & $g=19.5$ (\SI{60}{\second}) & 8.0 & 640 \\
+            Pan-STARRS1 &
+            2008 &
+            1.8 &
+            7 &
+            $g=22.0$ (\SI{43}{\second}) &
+            25 &
+            18 &
+            \tablefootnote{~~\citet{Pan-STARRS}}
+            \\
+            ZTF &
+            2017 &
+            1.2 &
+            47 &
+            $g=20.8$ (\SI{30}{\second}) &
+            24 &
+            54 &
+            \tablefootnote{~~\citet{ZTF}}
+            \\
+            \textit{BlackGEM} &
+            \textit{2019} &
+            0.65$\times$3 &
+            8.1 &
+            $q=23$ (\SI{300}{\second}) &
+            3 &
+            2.7 &
+            \tablefootnote{~~\citet{BlackGEM}}
+            \\
+            \textit{LSST} &
+            \textit{2020} &
+            8.4 &
+            9.6 &
+            $g=25.6$ (\SI{15}{\second}) &
+            500 &
+            532 &
+            \tablefootnote{~~\citet{LSST}}
+            \\
+            \\
+            GOTO-4 &
+            2017 &
+            (0.4$\times$4) &
+            18 &
+            $g=19.5$ (\SI{60}{\second}) &
+            1.0 &
+            2.3
+            \\
+            \textit{GOTO-8} &
+            \textit{2019} &
+            (0.4$\times$8) &
+            40 &
+            $g=19.5$ (\SI{60}{\second}) &
+            1.5 &
+            5
+            \\
+            \textit{2$\times$GOTO-8} &
+            \textit{2020} &
+            (0.4$\times$8$)\times$2 &
+            80 &
+            $g=19.5$ (\SI{60}{\second}) &
+            2.5 &
+            10
+            \\
+            \textit{4$\times$GOTO-8} &
+            \textit{2021} &
+            (0.4$\times$8$)\times$4 &
+            160 &
+            $g=19.5$ (\SI{60}{\second}) &
+            4.0 &
+            20
+            \\
         \end{tabular}
     \end{center}
     \caption[Comparison of projects involved in gravitational-wave follow-up]{
-        A comparison of selected projects involved in following-up gravitational-wave detections. Given for each is the diameter of the primary mirror (note GOTO has 4 or 8 small telescopes per mount, and ATLAS, BlackGEM and later GOTO stages include multiple mounts), the total instantaneous field of view, the limiting magnitude for a single exposure, estimated total cost, and entente (the product of the primary mirror area(s) and the field of view). Note the values for BlackGEM, LSST and GOTO past GOTO-4 are estimates of future performance. % chktex 36
+        A comparison of selected projects involved in following-up gravitational-wave detections. Given for each is the year it saw first light, the primary mirror diameter(s) (note GOTO has 4 or 8 small telescopes per mount, and ATLAS, BlackGEM and later GOTO stages include multiple mounts), the total instantaneous field of view, the limiting magnitude for a single exposure, estimated total cost, and etendue (the product of the primary mirror area(s) and the field of view). The projects in \textit{italics} are yet to be commissioned and so use predicted values. % chktex 36
     }\label{tab:rivals}
 \end{table}
 
@@ -331,7 +395,7 @@ The GOTO prototype, as shown in \aref{fig:goto_photo}, uses an array of four \SI
 
 \newpage
 
-The prototype unit telescopes and mount were constructed by APM Telescopes\footnote{\url{https://www.professional-telescopes.com}}. Each UT is a fast Wynne-Newtonian astrograph (see \aref{sec:optics}) with a focal ratio of f/2.5, and each uses off-the-shelf camera hardware from \acro{fli}\footnote{\url{https://www.flicamera.com}}. The FLI MicroLine cameras each use a 50 megapixel sensor from ON Semiconductor\footnote{\url{https://www.onsemi.com}}, which gives each UT a field of view of approximately 6 square degrees with a pixel scale of \SI[per-mode=symbol]{1.2}{\arcsec\per\pixel}. Three \SI{60}{\second} GOTO images can reach a limiting magnitude of $g \approx 20$ \citep[see \aref{sec:onsky_comparison};][]{S190425z_GOTO}. A full GOTO telescope will have eight UTs per mount, giving an overall field of view of \SI{40}{\square\deg} (accounting for some overlap between cameras). A sample frame taken with one UT is shown in \aref{fig:fov}, which also gives a comparison of the GOTO field of view to other projects.
+The prototype unit telescopes and mount were constructed by APM Telescopes\footnote{\url{https://www.professional-telescopes.com}}. Each UT is a fast Wynne-Newtonian astrograph (see \aref{sec:optics}) with a focal ratio of f/2.5, and each uses off-the-shelf camera hardware from \acro{fli}\footnote{\url{https://www.flicamera.com}}. The FLI MicroLine cameras each use a 50 megapixel sensor (see \aref{sec:chip_layout}), which gives each UT a field of view of approximately 6 square degrees with a plate scale of \SI[per-mode=symbol]{1.24}{\arcsec\per\pixel}. Three \SI{60}{\second} GOTO images can reach a limiting magnitude of $g \approx 20$ \citep[see \aref{sec:onsky_comparison};][]{S190425z_GOTO}. A full GOTO telescope will have eight UTs on an GE-300 German equatorial (parallactic) mount, giving an overall field of view of \SI{40}{\square\deg} (accounting for some overlap between cameras). A sample frame taken with one UT is shown in \aref{fig:fov}, which also gives a comparison of the GOTO field of view to some of the other projects from \aref{tab:rivals}.
 
 \begin{figure}[p]
     \begin{center}
@@ -342,7 +406,7 @@ The prototype unit telescopes and mount were constructed by APM Telescopes\footn
     }\label{fig:fov}
 \end{figure}
 
-Each unit telescope is fitted with a filter wheel with several wide-band coloured filters (see \aref{sec:filters}), which can be used for additional source identification. The telescopes are housed in an Astrohaven clamshell dome\footnote{\url{https://www.astrohaven.com}}, which when fully open allows an unrestricted view of the sky. This means that the telescope does not need to waste time waiting for the dome to move when slewing to a new position, and can instead move from observing one portion of the sky to another as fast as possible.
+Each unit telescope is fitted with a filter wheel with several wide-band coloured filters (see \aref{sec:filters}), which can be used for additional source identification. The telescopes are housed in an Astrohaven clamshell dome\footnote{\url{https://www.astrohaven.com}}, which when fully open allows an unrestricted view of the sky. This means that the telescope does not need to waste time waiting for the dome to move when slewing to a new position, and can instead quickly move from observing one portion of the sky to another.
 
 Each GOTO site is anticipated to host two domes, as shown in \aref{fig:goto_render}, with a total of 16 unit telescopes giving an instantaneous field of view of approximately \SI{80}{\square\deg}. Having two independent mounts will allow the sky to be surveyed at a higher cadence (every 2--3 days, see \aref{sec:survey_sims}), and also gives more options for survey and transient follow-up strategies. For example, the two mounts could observe different patches of the sky in order to cover the skymap as fast as possible, or they could combine to observe the same field to a greater depth. Alternately, each mount could observe using a different filter, to get immediate multi-colour information on any detected sources.
 
@@ -392,11 +456,11 @@ New candidates are presented for human vetting through a web interface called th
 \label{sec:goto_expansion}
 \begin{colsection}
 
-The 4-UT GOTO prototype shown in \aref{fig:goto_photo} was inaugurated in July 2017. The telescope is located at the \acro{orm_lapalma} on La Palma in the Canary Islands, at the site shown in \aref{fig:orm}. After some hardware issues (see \aref{sec:hardware_commissioning}), the telescope is now fully operational: since February 2019, GOTO has been carrying out an all-sky survey, and since the start of the third LIGO-Virgo observing run (O3, see \aref{sec:gw_detections}) in April 2019 it has been following-up gravitational-wave events when they occur.
+The 4-UT GOTO prototype shown in \aref{fig:goto_photo} was inaugurated in July 2017. The telescope is located at the \acro{orm_lapalma} on La Palma in the Canary Islands, at the site shown in \aref{fig:orm}. After some hardware issues (see \aref{sec:hardware_commissioning}), the telescope is now fully operational: since February 2019 GOTO has been carrying out an all-sky survey, and since the start of the third LIGO-Virgo observing run (O3, see \aref{sec:gw_detections}) in April 2019 it has been following-up gravitational-wave events when they occur.
 
 The next stage in the GOTO project will be the addition of the second set of four unit telescopes to the existing mount, due in late 2019. Funding for a second mount with another set of four unit telescopes has already been secured, and a second dome has already been constructed on La Palma. This second mount is expected to be commissioned in 2020.
 
-La Palma is one of the best observing site in the northern hemisphere, and is already home to several telescopes operated by GOTO collaboration members. It was therefore an obvious choice for the location of the first GOTO node. Ultimately, a second, complimentary node is planned to be built in the southern hemisphere, most likely in Australia. Having a site in both hemispheres allows the entire sky to be surveyed, and, as Australia is on the opposite side of the Earth from La Palma, the two sites would provide almost 24-hour coverage of gravitational-wave alerts. This second node would also host two GOTO telescopes with 8 UTs each, and the two sites combined would be able to survey the entire visible sky every 1--2 days (see \aref{sec:survey_sims}). As GOTO grows, it is anticipated that the telescopes at both sites will be operated as a single observatory, meaning observation scheduling will be optimised for each site and the output data will be unified into a single detection database.
+La Palma is one of the best observing sites in the northern hemisphere, and is already home to several telescopes operated by GOTO collaboration members. It was therefore an obvious choice for the location of the first GOTO node. Ultimately, a second, complimentary node is planned to be built in the southern hemisphere, most likely in Australia. Having a site in both hemispheres allows the entire sky to be surveyed, and, as Australia is on the opposite side of the Earth from La Palma, the two sites would provide almost 24-hour coverage of gravitational-wave alerts. This second node would also host two GOTO telescopes with 8 UTs each, and the two sites combined would be able to survey the entire visible sky every 1--2 days (see \aref{sec:survey_sims}). As GOTO grows, it is anticipated that the telescopes at both sites will be operated as a single observatory, meaning observation scheduling will be optimised for each site and the output data will be unified into a single detection database.
 
 \begin{figure}[p]
     \begin{center}
@@ -422,7 +486,7 @@ La Palma is one of the best observing site in the northern hemisphere, and is al
 
 This thesis details my work on the GOTO project carried out between 2015 and 2019.
 
-My primary role within the collaboration was to develop the software needed for GOTO to operate as an autonomous telescope. The hardware design of GOTO --- with multiple unit telescopes attached to each mount --- required custom software which could operate all of the cameras synchronously. Each unit telescope is also equipped with a filter wheel and a focuser, which also need to be controlled in parallel. Additional control software was also required to move the mount, open and close the dome, and control any other pieces of on-site hardware.
+My primary role within the collaboration was to develop the software needed for GOTO to operate as an autonomous telescope. The hardware design of GOTO --- with multiple unit telescopes attached to each mount --- required custom software which could operate all of the cameras synchronously. Each unit telescope is also equipped with a filter wheel and a focuser, which also need to be controlled in parallel. Additional control software was required to move the mount, open and close the dome, and control any other pieces of on-site hardware.
 
 The next stage of the control system development was writing the software that would operate the telescope without human involvement. The routine nightly operations (move to a target, take an exposure, repeat until sunrise) would need to be supported, and in addition standard observational tasks, such as taking calibration frames and focusing the telescopes, needed to be automated. Crucially, the control system required robust and reliable systems for monitoring the weather and the hardware status, and in the case of an emergency it had to be able to close the dome or recover from any problems without immediate human intervention.
 
