@@ -159,7 +159,7 @@ The KAF-50100 sensor consists of a 50-megapixel CCD with $\SI{6}{\micro\metre} \
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.80\linewidth]{images/chip}
+        \includegraphics[width=0.78\linewidth]{images/chip}
     \end{center}
     \caption[The layout of the KAF-50100 CCD sensor]{
         The layout of the KAF-50100 CCD sensor. The central image area is not shown to scale, but the surrounding rows and columns are all in proportion.
@@ -168,10 +168,10 @@ The KAF-50100 sensor consists of a 50-megapixel CCD with $\SI{6}{\micro\metre} \
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.80\linewidth]{images/sample3.pdf}
+        \includegraphics[width=0.78\linewidth]{images/sample3.pdf}
     \end{center}
     \caption[A sample bright frame from one of the MicroLine cameras]{
-        A sample bright frame from one of the MicroLine cameras. The highlighted corner shows some of the features described in \aref{fig:chip}. This image was taken as shown in \aref{fig:flat_photo} with no optical elements between the camera and the screen, note some vignetting still appears from the camera aperture.
+        A sample bright frame from one of the MicroLine cameras. The highlighted corner shows some of the features described in \aref{fig:chip}. This image was taken as shown in \aref{fig:flat_photo} with no optical elements between the camera and the screen. As no optical elements were used the cause of the visible vignetting is unclear, but may come from the camera aperture.
     }\label{fig:frame}
 \end{figure}
 
@@ -1097,7 +1097,7 @@ To be confident of the detection of an astronomical source a signal-to-noise rat
     }\label{fig:background}
 \end{figure}
 
-The one value in \aref{eq:snr} that has not yet been considered is the sky background noise, $N_\text{sky}$. The brightness of the sky will change most noticeably as a function of the Moon phase, with a full Moon creating a background noise several magnitudes brighter than during a new Moon or when the Moon is below the horizon. In order to model the background, sky spectra were taken from \citet{sky_background}, which were obtained from 6 years of VLT observations on using the FORS1 instrument\footnote{Spectra available at \href{http://www.eso.org/~fpatat/science/skybright}{\texttt{http://www.eso.org/\raisebox{0.5ex}{\texttildelow}fpatat/science/skybright}}.} (no equivalent spectra taken form La Palma were available). Three sample spectra were selected to give a range of background signals: a ``Dark'' spectrum taken when the Moon was new and below the horizon, a ``Grey'' spectrum taken when the Moon was 60\% illuminated, and a ``Bright'' spectrum taken when the Moon was full. These spectra are shown in \aref{fig:background}.
+The one value in \aref{eq:snr} that has not yet been considered is the sky background noise, $N_\text{sky}$. The brightness of the sky will change most noticeably as a function of the Moon phase, with a full Moon creating a background noise several magnitudes brighter than during a new Moon or when the Moon is below the horizon. In order to model the background, sky spectra were taken from \citet{sky_background}, which were obtained from 6 years of VLT observations on using the FORS1 instrument\footnote{Spectra available at \href{http://www.eso.org/~fpatat/science/skybright}{\texttt{http://www.eso.org/\raisebox{0.5ex}{\texttildelow}fpatat/science/skybright}}.} (no equivalent spectra taken from La Palma were available). Three sample spectra were selected to give a range of background signals: a ``Dark'' spectrum taken when the Moon was new and below the horizon, a ``Grey'' spectrum taken when the Moon was 60\% illuminated, and a ``Bright'' spectrum taken when the Moon was full. These spectra are shown in \aref{fig:background}.
 
 In order to determine the sky background noise in the GOTO filters the same method using pysynphot can be used as in \aref{sec:model_zeropoints}. The spectra were again multiplied by the throughput curve for each filter from \aref{sec:total_throughput}, the area under the curve was measured and multiplied by the collecting area of the telescope in order to get an predicted signal in photo-electrons. These were converted into instrumental magnitudes using \aref{eq:ins_mag} and then into calibrated magnitudes using \aref{eq:zp} and the AB zeropoints given in \aref{tab:pysynphot_zeropoints}. The resulting signals are given in \aref{tab:pysynphot_background}. Note that the values are given per square arcsecond; when calculating the sky background flux the signal must be multiplied by the squared plate scale of the camera to get the signal per pixel (the plate scale of the GOTO CCDs is \SI[per-mode=symbol]{1.24}{\arcsec\per\pixel}).
 
